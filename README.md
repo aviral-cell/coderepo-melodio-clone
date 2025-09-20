@@ -129,18 +129,6 @@ npm run lint               # Run linter
 - `DELETE /liked` - Remove liked song
 - `GET /liked/:userId` - Get user's liked songs
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the UNLICENSED License.
-
 ---
 
 For detailed documentation and setup instructions, please refer to the individual README files in the `frontend/` and `backend/` directories.
