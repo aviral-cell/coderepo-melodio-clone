@@ -1,0 +1,158 @@
+.header {
+  height: var(--header-height);
+  background-color: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-lg);
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background-color: rgba(26, 26, 26, 0.8);
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  transition: background-color var(--transition-fast);
+}
+
+.navButton:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.searchContainer {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  height: 40px;
+  background-color: var(--text-primary);
+  border-radius: var(--radius-full);
+  padding: 0 var(--spacing-lg) 0 40px;
+  font-size: var(--font-size-sm);
+  color: var(--text-inverse);
+  transition: box-shadow var(--transition-fast);
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.searchInput:focus {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.actionButton {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.exploreButton {
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
+}
+
+.exploreButton:hover {
+  transform: scale(1.05);
+}
+
+.installButton {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--text-muted);
+}
+
+.installButton:hover {
+  border-color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.iconButton:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.userProfile:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.userAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-inverse);
+  font-weight: bold;
+  font-size: var(--font-size-sm);
+}
+
+.userName {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}

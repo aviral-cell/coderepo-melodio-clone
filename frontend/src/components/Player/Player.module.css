@@ -1,0 +1,266 @@
+.player {
+  height: var(--player-height);
+  background-color: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-lg);
+  position: fixed;
+  bottom: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  z-index: 50;
+  border-top: 1px solid var(--border-primary);
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 0 0 30%;
+  min-width: 180px;
+}
+
+.songInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.songImage {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.songDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.songTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.songArtist {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.likeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.likeButton:hover {
+  color: var(--text-primary);
+}
+
+.likeButton.liked {
+  color: var(--primary);
+}
+
+.centerSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 1;
+  max-width: 722px;
+}
+
+.playerControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.controlButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.controlButton:hover {
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.controlButton.active {
+  color: var(--primary);
+}
+
+.playButton {
+  width: 32px;
+  height: 32px;
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.playButton:hover {
+  transform: scale(1.1);
+}
+
+.progressSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.timeDisplay {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  min-width: 40px;
+  text-align: center;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background-color: var(--text-muted);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 2px;
+  width: 0%;
+  transition: width var(--transition-fast);
+}
+
+.progressHandle {
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background-color: var(--primary);
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.progressBar:hover .progressHandle {
+  opacity: 1;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 0 0 30%;
+  justify-content: flex-end;
+}
+
+.volumeSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  max-width: 125px;
+}
+
+.volumeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.volumeButton:hover {
+  color: var(--text-primary);
+}
+
+.volumeSlider {
+  width: 93px;
+  height: 4px;
+  background-color: var(--text-muted);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+}
+
+.volumeFill {
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 2px;
+  width: 30%;
+  transition: width var(--transition-fast);
+}
+
+.volumeHandle {
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background-color: var(--primary);
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.volumeSlider:hover .volumeHandle {
+  opacity: 1;
+}
+
+.fullscreenButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.fullscreenButton:hover {
+  color: var(--text-primary);
+}

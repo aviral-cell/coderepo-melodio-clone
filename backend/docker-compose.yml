@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: hackify-mongodb
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - hackify-network
+    command: mongod --replSet rs0 --bind_ip_all
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', 'db.adminCommand("ping")']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB Replica Set Initialization
+  mongo-init:
+    image: mongo:7.0
+    container_name: hackify-mongo-init
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hackify-network
+    restart: 'no'
+    command: >
+      mongosh --host mongodb:27017 --eval "
+        try {
+          const status = rs.status();
+          print('Replica set already initialized');
+        } catch (e) {
+          if (e.message.includes('no replset config')) {
+            print('Initializing replica set...');
+            rs.initiate({
+              _id: 'rs0',
+              members: [
+                { _id: 0, host: 'mongodb:27017' }
+              ]
+            });
+            print('Replica set initialized successfully');
+          } else {
+            throw e;
+          }
+        }
+      "
+
+  # NestJS API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hackify-api
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    networks:
+      - hackify-network
+    command: npm run start:dev
+
+volumes:
+  mongodb_data:
+
+networks:
+  hackify-network:
+    driver: bridge
