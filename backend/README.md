@@ -71,7 +71,7 @@ src/
 
    ```bash
    git clone <your-repo-url>
-   cd backend
+   cd hackify-api
    ```
 
 2. **Create environment file:**
