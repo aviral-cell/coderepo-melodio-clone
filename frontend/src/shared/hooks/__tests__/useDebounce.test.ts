@@ -2,6 +2,31 @@ import { renderHook, act } from '@testing-library/react';
 
 import { useDebounce } from '../useDebounce';
 
+/**
+ * ============================================================================
+ * BUG D: DEBOUNCE HOOK - Search Input Optimization
+ * ============================================================================
+ *
+ * EXPECTED BEHAVIOR:
+ * The useDebounce hook should delay updating the returned value until the
+ * specified delay has passed since the last change. This prevents excessive
+ * API calls when users are typing in a search box.
+ *
+ * WHAT THE BUG LOOKS LIKE:
+ * - User types "hello" in search box
+ * - Instead of waiting for the user to stop typing, each keystroke triggers
+ *   a search API call: "h", "he", "hel", "hell", "hello"
+ * - This causes 5 API calls instead of 1, overwhelming the server
+ *
+ * WHERE TO LOOK: Search page (search/page.tsx) should use useDebounce for
+ * the search query. If it directly uses the query without debouncing,
+ * searches will fire on every keystroke.
+ *
+ * HINT: The search page should call:
+ *   const debouncedQuery = useDebounce(query, 300);
+ * And use debouncedQuery (not query) for the API call.
+ * ============================================================================
+ */
 describe('useDebounce', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -11,13 +36,16 @@ describe('useDebounce', () => {
     jest.useRealTimers();
   });
 
-  it('should return initial value immediately', () => {
+  it('should return initial value immediately without delay', () => {
+    // When the hook is first called, it should return the initial value right away
     const { result } = renderHook(() => useDebounce('initial', 500));
 
     expect(result.current).toBe('initial');
   });
 
-  it('should return debounced value after delay', () => {
+  it('should NOT update value immediately when input changes - value should be debounced', () => {
+    // SCENARIO: User types a new search query
+    // The debounced value should NOT update until the delay has passed
     const { result, rerender } = renderHook(
       ({ value, delay }) => useDebounce(value, delay),
       {
@@ -25,21 +53,60 @@ describe('useDebounce', () => {
       },
     );
 
-    // Initial value
+    // Initial value is returned immediately
     expect(result.current).toBe('initial');
 
-    // Update value
+    // User types new value - simulates user typing in search box
     rerender({ value: 'updated', delay: 500 });
 
-    // Value should not change immediately
+    // CRITICAL: Value should NOT change immediately!
+    // This is the essence of debouncing - wait for user to stop typing
     expect(result.current).toBe('initial');
 
-    // Fast-forward time
+    // After the delay passes (500ms), value should update
     act(() => {
       jest.advanceTimersByTime(500);
     });
 
-    // Value should now be updated
+    // NOW the value should be updated
     expect(result.current).toBe('updated');
+  });
+
+  it('should reset timer when value changes rapidly - only final value should be returned', () => {
+    // SCENARIO: User types "hello" quickly: h -> he -> hel -> hell -> hello
+    // Only "hello" should be the final debounced value after delay
+    const { result, rerender } = renderHook(
+      ({ value, delay }) => useDebounce(value, delay),
+      {
+        initialProps: { value: '', delay: 300 },
+      },
+    );
+
+    // Simulate rapid typing
+    rerender({ value: 'h', delay: 300 });
+    act(() => jest.advanceTimersByTime(100)); // 100ms passed
+
+    rerender({ value: 'he', delay: 300 });
+    act(() => jest.advanceTimersByTime(100)); // 200ms total
+
+    rerender({ value: 'hel', delay: 300 });
+    act(() => jest.advanceTimersByTime(100)); // 300ms total
+
+    rerender({ value: 'hell', delay: 300 });
+    act(() => jest.advanceTimersByTime(100)); // 400ms total
+
+    rerender({ value: 'hello', delay: 300 });
+
+    // Value should still be empty string (initial value)
+    // because timer keeps resetting with each keystroke
+    expect(result.current).toBe('');
+
+    // Wait for full debounce delay after last keystroke
+    act(() => {
+      jest.advanceTimersByTime(300);
+    });
+
+    // NOW we should get the final value
+    expect(result.current).toBe('hello');
   });
 });

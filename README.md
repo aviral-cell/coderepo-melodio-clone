@@ -1,115 +1,143 @@
-# Hackify - Spotify Clone
+# Hackify - Music Player State Management Challenge
 
-A full-stack music streaming application inspired by Spotify, built with the MNN Stack (MongoDB + Next.js + NestJS).
+A full-stack music streaming application inspired by Spotify, built with the MNN Stack (MongoDB + Next.js + NestJS). Built as a HackerRank assessment to evaluate React state management and debugging skills.
 
 ## Overview
 
-Hackify is a Spotify-like music streaming platform for HackerRank debugging challenges featuring:
+This project implements a Spotify-like music player with queue management, shuffle, repeat, and search functionality. The application compiles and runs successfully, but contains **4 intentional bugs** in the frontend that you must identify and fix.
 
-- **Frontend**: Next.js 15+ with App Router, Tailwind CSS, Shadcn UI
-- **Backend**: NestJS with MongoDB/Mongoose
-- **Features**: Music player, playlists, search, discover weekly, analytics, trending
+### Key Features
 
-## Architecture
+- **Music Player**: Simulated playback with queue management
+- **Shuffle Mode**: Randomizes queue while preserving current track
+- **Queue Management**: Add, remove, and reorder tracks
+- **Search**: Debounced search across tracks, albums, and artists
+- **React Context**: State management using useReducer pattern
 
-```
-spotify-mern-app/
-├── backend/                 # NestJS API
-│   ├── src/
-│   │   ├── shared/          # Config, guards, pipes, interceptors
-│   │   ├── features/        # Feature modules (auth, tracks, playlists, etc.)
-│   │   └── seed/            # Database seeding
-│   └── package.json
-│
-├── frontend/                # Next.js App
-│   ├── src/
-│   │   ├── app/             # App Router pages
-│   │   └── shared/          # Components, contexts, hooks, services
-│   └── package.json
-│
-├── docs/                    # Documentation
-│   ├── spotify-clone-prd.md
-│   ├── spotify-clone-features-summary.md
-│   └── implementation-plan.md
-│
-└── README.md
-```
-
-## Quick Start
-
-### Prerequisites
+## Prerequisites
 
 - Node.js 20+
 - MongoDB (local or Atlas)
-- npm or pnpm
+- npm
 
-### Development Setup
+## Quick Start
 
-1. **Clone and install:**
-   ```bash
-   git clone <repo-url>
-   cd spotify-mern-app
-   ```
+### 1. Install Dependencies
 
-2. **Start the backend:**
-   ```bash
-   cd backend
-   npm install
-   cp .env.example .env
-   npm run start:dev
-   ```
+```bash
+npm install
+```
 
-3. **Start the frontend:**
-   ```bash
-   cd frontend
-   npm install
-   cp .env.example .env.local
-   npm run dev
-   ```
+This installs dependencies for both frontend and backend using npm workspaces.
 
-4. **Access the application:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-   - Swagger Docs: http://localhost:5000/api/docs
+### 2. Start the Application
 
-## Tech Stack
+```bash
+npm start
+```
 
-### Frontend
-| Technology | Purpose |
-|------------|---------|
-| Next.js 15+ | React framework with App Router |
-| React 19 | UI library |
-| Tailwind CSS | Styling |
-| Shadcn UI | Component library |
-| Zod | Form validation |
-| Lucide React | Icons |
+This starts both servers concurrently:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **Swagger Docs**: http://localhost:5000/api/docs
 
-### Backend
-| Technology | Purpose |
-|------------|---------|
-| NestJS | Node.js framework |
-| MongoDB | Database |
-| Mongoose | ODM (NOT Prisma) |
-| Passport JWT | Authentication |
-| class-validator | DTO validation |
-| node-cache | In-memory caching |
+### 3. Run Tests
 
-### Forbidden Technologies
-- Prisma, TypeORM (use Mongoose)
-- Axios (use native Fetch)
-- Zustand, Redux (use React Context)
+```bash
+npm test                    # Run all tests (frontend + backend)
+npm run test:frontend       # Run only frontend tests (24 tests)
+npm run test:backend        # Run only backend tests (7 tests)
+```
 
-## Key Features
+## Your Task
 
-| Feature | Description |
-|---------|-------------|
-| Music Player | Simulated playback with queue management |
-| Playlists | Create, edit, reorder tracks |
-| Search | Autocomplete across tracks, albums, artists |
-| Discover Weekly | Personalized recommendations |
-| Analytics | Listening stats and streaks |
-| Trending | Time-weighted leaderboard |
-| Library | Like tracks/albums, follow artists |
+Find and fix all **4 bugs** in the frontend codebase. Each bug has dedicated tests that currently fail. Your goal is to make all **24 frontend tests pass**.
+
+### Bug Summary
+
+| Bug | Category | Location | Points |
+|-----|----------|----------|--------|
+| Bug B | Shuffle Toggle | PlayerContext.tsx | 30 |
+| Bug F | Queue Index | PlayerContext.tsx | 25 |
+| Bug G | Timer Cleanup | PlayerContext.tsx | 25 |
+| Bug D | Search Debounce | search/page.tsx | 20 |
+
+For detailed bug descriptions, see [PROBLEM_STATEMENT.md](./PROBLEM_STATEMENT.md).
+
+### What's Working vs What's Broken
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Playing tracks | Working | Tracks play correctly |
+| Pausing/Resuming | Working | Playback controls work |
+| Next/Previous | Working | Navigation works correctly |
+| Shuffle toggle | **BROKEN** | Current track changes unexpectedly |
+| Remove from queue | **BROKEN** | Player jumps to wrong track |
+| Timer/Progress | **BROKEN** | Multiple timers or memory issues |
+| Search | **BROKEN** | Searches on every keystroke |
+
+## Project Structure
+
+```
+spotify-mern-app/
+├── backend/                      # NestJS API
+│   ├── src/
+│   │   ├── shared/               # Config, guards, pipes
+│   │   ├── features/             # Feature modules
+│   │   │   ├── auth/
+│   │   │   ├── tracks/
+│   │   │   ├── albums/
+│   │   │   ├── artists/
+│   │   │   ├── playlists/
+│   │   │   └── search/
+│   │   └── seed/                 # Database seeding
+│   └── package.json
+│
+├── frontend/                     # Next.js App
+│   ├── src/
+│   │   ├── app/                  # App Router pages
+│   │   │   └── search/page.tsx   # Bug D: Debounce
+│   │   └── shared/
+│   │       ├── contexts/
+│   │       │   ├── PlayerContext.tsx    # Bugs B, F, G
+│   │       │   └── __tests__/
+│   │       │       ├── playerReducer.test.ts
+│   │       │       └── PlayerContext.test.tsx
+│   │       └── hooks/
+│   │           ├── useDebounce.ts
+│   │           └── __tests__/
+│   │               └── useDebounce.test.ts  # Bug D tests
+│   └── package.json
+│
+├── PROBLEM_STATEMENT.md          # Detailed bug descriptions
+├── ARCHITECTURE.md               # Architecture diagrams
+├── hackerrank.yml                # HackerRank configuration
+└── README.md
+```
+
+## Testing
+
+### Frontend Tests (24 tests)
+
+Located in `frontend/src/shared/`:
+
+| Test File | Tests | Bug Coverage |
+|-----------|-------|--------------|
+| `playerReducer.test.ts` | 14 | Bugs B, F, G |
+| `useDebounce.test.ts` | 3 | Bug D |
+| `PlayerContext.test.tsx` | 4 | Bug G (interval) |
+| `TrackCard.test.tsx` | 3 | Component tests |
+
+### Running Specific Tests
+
+```bash
+# Run all frontend tests
+npm run test:frontend
+
+# Run specific test file
+npx jest frontend/src/shared/contexts/__tests__/playerReducer.test.ts
+npx jest frontend/src/shared/hooks/__tests__/useDebounce.test.ts
+```
 
 ## API Endpoints
 
@@ -129,27 +157,43 @@ spotify-mern-app/
 - `POST /api/v1/playlists` - Create playlist
 - `POST /api/v1/playlists/:id/tracks` - Add track
 
-### Advanced
-- `GET /api/v1/discover-weekly` - Recommendations
-- `GET /api/v1/analytics/stats` - User stats
-- `GET /api/v1/trending` - Trending tracks
+## Tech Stack
 
-## Development Scripts
+### Frontend
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Next.js | 15.1+ | React framework with App Router |
+| React | 19.0 | UI library |
+| TypeScript | 5.7+ | Type safety |
+| Tailwind CSS | 3.4+ | Styling |
+| Shadcn UI | - | Component library |
 
-**Backend:**
-```bash
-npm run start:dev      # Development server
-npm run build          # Production build
-npm run seed           # Seed database
-npm run test           # Run tests
-```
+### Backend
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| NestJS | 10+ | Node.js framework |
+| MongoDB | - | Database |
+| Mongoose | 8+ | ODM |
+| Passport JWT | - | Authentication |
 
-**Frontend:**
-```bash
-npm run dev            # Development server
-npm run build          # Production build
-npm run lint           # ESLint
-npm run test           # Jest tests
+### Constraints (Do NOT Use)
+- Redux, Zustand (use React Context only)
+- Axios (use native Fetch)
+- Prisma, TypeORM (use Mongoose)
+
+## PlayerContext State Structure
+
+```typescript
+interface PlayerState {
+  currentTrack: Track | null;     // Currently playing track
+  queue: Track[];                 // List of tracks to play
+  originalQueue: Track[];         // Original order before shuffle
+  queueIndex: number;             // Index of current track in queue
+  isPlaying: boolean;             // Whether playback is active
+  elapsedSeconds: number;         // Current position in track
+  shuffleEnabled: boolean;        // Whether shuffle is on
+  repeatMode: 'off' | 'one' | 'all';  // Repeat setting
+}
 ```
 
 ## Environment Variables
@@ -168,11 +212,35 @@ JWT_EXPIRATION=7d
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
+## Success Criteria
+
+1. **All 24 frontend tests must pass**
+2. **Application must compile** - No TypeScript or build errors
+3. **Application must run** - Both frontend and backend start without errors
+4. **No new bugs introduced** - Fixes should be targeted, not rewrites
+
 ## Documentation
 
-- [PRD](./docs/spotify-clone-prd.md) - Product requirements
-- [Features](./docs/spotify-clone-features-summary.md) - Feature summary
-- [Implementation Plan](./docs/implementation-plan.md) - Development phases
+- [PROBLEM_STATEMENT.md](./PROBLEM_STATEMENT.md) - Detailed bug descriptions (start here!)
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture with diagrams
+
+## HackerRank Integration
+
+This project is configured for HackerRank assessment:
+
+- `hackerrank.yml`: Defines test commands and scoring
+- Jest JSON output format for test results
+- Read-only test files to prevent tampering
+
+### Scoring
+
+| Bug | Points |
+|-----|--------|
+| Bug B: Shuffle Loses Track | 30 |
+| Bug F: Queue Index Error | 25 |
+| Bug G: Timer Cleanup | 25 |
+| Bug D: Missing Debounce | 20 |
+| **Total** | **100** |
 
 ---
 
