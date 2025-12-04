@@ -1,0 +1,27 @@
+version: 1.0
+configuration:
+  has_webserver: true
+  scoring:
+    command: "npm test"
+    files:
+      - junit.xml
+  readonly_paths:
+    - backend/src/features/auth/__tests__/auth.controller.test.ts
+    - backend/src/features/movie-details/__tests__/movie-details.controller.test.ts
+    - backend/src/features/movies/__tests__/movies.controller.test.ts
+    - backend/src/features/watchlist/__tests__/watchlist.controller.test.ts
+    - frontend/src/app/(features)/auth/context/__tests__/AuthContext.test.tsx
+    - frontend/src/app/(features)/auth/services/__tests__/auth.service.test.ts
+    - frontend/src/app/(features)/movies/components/__tests__/MovieCard.test.tsx
+    - frontend/src/app/(features)/movies/components/__tests__/MovieFilters.test.tsx
+    - frontend/src/app/(features)/watchlist/services/__tests__/watchlist.service.test.ts
+    - frontend/src/shared/components/__tests__/Navigation.test.tsx
+    - frontend/jest.config.js
+    - scripts/merge-junit.js
+  ide_config:
+    default_open_files:
+      - README.md
+    project_menu:
+      run: npm start
+      install: npm install
+      test: npm test

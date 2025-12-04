@@ -1,51 +1,53 @@
-# Hackify - Full Stack Music Application
+# Hackify - Spotify Clone
 
-A modern, full-stack music streaming application inspired by Spotify, built with React, TypeScript, NestJS, and MongoDB.
+A full-stack music streaming application inspired by Spotify, built with the MNN Stack (MongoDB + Next.js + NestJS).
 
-## 🎵 Overview
+## Overview
 
-Hackify is a complete music streaming platform featuring:
+Hackify is a Spotify-like music streaming platform for HackerRank debugging challenges featuring:
 
-- **Frontend**: React-based Spotify clone with modern UI/UX
-- **Backend**: Robust NestJS API with MongoDB integration
-- **Features**: Song search, playlist management, user profiles, and music playback
+- **Frontend**: Next.js 15+ with App Router, Tailwind CSS, Shadcn UI
+- **Backend**: NestJS with MongoDB/Mongoose
+- **Features**: Music player, playlists, search, discover weekly, analytics, trending
 
-## 🏗️ Architecture
+## Architecture
 
 ```
-hackify-repo/
-├── frontend/          # React + TypeScript client
+spotify-mern-app/
+├── backend/                 # NestJS API
 │   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Page components
-│   │   ├── hooks/         # Custom React hooks
-│   │   └── services/      # API services
-│   └── README.md          # Frontend documentation
+│   │   ├── shared/          # Config, guards, pipes, interceptors
+│   │   ├── features/        # Feature modules (auth, tracks, playlists, etc.)
+│   │   └── seed/            # Database seeding
+│   └── package.json
 │
-├── backend/           # NestJS + MongoDB API
+├── frontend/                # Next.js App
 │   ├── src/
-│   │   ├── search/        # Song search functionality
-│   │   ├── liked-songs/   # Playlist management
-│   │   ├── users/         # User management
-│   │   └── prisma/        # Database service
-│   └── README.md          # Backend documentation
+│   │   ├── app/             # App Router pages
+│   │   └── shared/          # Components, contexts, hooks, services
+│   └── package.json
 │
-└── README.md          # This file
+├── docs/                    # Documentation
+│   ├── spotify-clone-prd.md
+│   ├── spotify-clone-features-summary.md
+│   └── implementation-plan.md
+│
+└── README.md
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- Docker & Docker Compose (recommended)
-- npm or yarn
+- Node.js 20+
+- MongoDB (local or Atlas)
+- npm or pnpm
 
 ### Development Setup
 
-1. **Clone the repository:**
+1. **Clone and install:**
    ```bash
-   git clone <your-repo-url>
+   git clone <repo-url>
    cd spotify-mern-app
    ```
 
@@ -53,82 +55,125 @@ hackify-repo/
    ```bash
    cd backend
    npm install
-   npm run docker:up
-   npm run docker:db:seed
+   cp .env.example .env
+   npm run start:dev
    ```
 
 3. **Start the frontend:**
    ```bash
-   cd ../frontend
+   cd frontend
    npm install
+   cp .env.example .env.local
    npm run dev
    ```
 
 4. **Access the application:**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3000
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
+   - Swagger Docs: http://localhost:5000/api/docs
 
-## 📚 Documentation
-
-For detailed setup instructions, API documentation, and development guides, please refer to:
-
-- **[Frontend Documentation](./frontend/README.md)** - React app setup, components, and features
-- **[Backend Documentation](./backend/README.md)** - API setup, endpoints, and database configuration
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
-- **React 19** - Latest React with hooks
-- **TypeScript** - Type safety and better DX
-- **CSS Modules** - Scoped styling
-- **Vite** - Fast build tool
-- **Lucide React** - Beautiful icons
+| Technology | Purpose |
+|------------|---------|
+| Next.js 15+ | React framework with App Router |
+| React 19 | UI library |
+| Tailwind CSS | Styling |
+| Shadcn UI | Component library |
+| Zod | Form validation |
+| Lucide React | Icons |
 
 ### Backend
-- **NestJS** - Scalable Node.js framework
-- **MongoDB** - NoSQL database
-- **Prisma** - Type-safe database ORM
-- **Docker** - Containerization
-- **TypeScript** - Full type safety
+| Technology | Purpose |
+|------------|---------|
+| NestJS | Node.js framework |
+| MongoDB | Database |
+| Mongoose | ODM (NOT Prisma) |
+| Passport JWT | Authentication |
+| class-validator | DTO validation |
+| node-cache | In-memory caching |
 
-## 🎯 Key Features
+### Forbidden Technologies
+- Prisma, TypeORM (use Mongoose)
+- Axios (use native Fetch)
+- Zustand, Redux (use React Context)
 
-- **Song Search**: Advanced search with filtering and pagination
-- **Playlist Management**: Like/unlike songs, manage user playlists
-- **User Profiles**: Create and manage user accounts
-- **Music Player**: Full-featured player with controls
-- **Responsive Design**: Works on desktop and mobile
-- **Real-time Updates**: Live playlist updates
-- **Error Handling**: Comprehensive error boundaries and validation
+## Key Features
 
-## 🔧 Development
+| Feature | Description |
+|---------|-------------|
+| Music Player | Simulated playback with queue management |
+| Playlists | Create, edit, reorder tracks |
+| Search | Autocomplete across tracks, albums, artists |
+| Discover Weekly | Personalized recommendations |
+| Analytics | Listening stats and streaks |
+| Trending | Time-weighted leaderboard |
+| Library | Like tracks/albums, follow artists |
 
-### Available Scripts
+## API Endpoints
+
+### Authentication
+- `POST /api/v1/auth/register` - Create account
+- `POST /api/v1/auth/login` - Login
+- `GET /api/v1/auth/me` - Current user
+
+### Catalog
+- `GET /api/v1/tracks` - List tracks
+- `GET /api/v1/artists` - List artists
+- `GET /api/v1/albums` - List albums
+- `GET /api/v1/search?q=` - Unified search
+
+### Playlists
+- `GET /api/v1/playlists` - User playlists
+- `POST /api/v1/playlists` - Create playlist
+- `POST /api/v1/playlists/:id/tracks` - Add track
+
+### Advanced
+- `GET /api/v1/discover-weekly` - Recommendations
+- `GET /api/v1/analytics/stats` - User stats
+- `GET /api/v1/trending` - Trending tracks
+
+## Development Scripts
 
 **Backend:**
 ```bash
-npm run docker:up          # Start all services
-npm run docker:down        # Stop all services
-npm run start:dev          # Development server
-npm run prisma:studio      # Database GUI
+npm run start:dev      # Development server
+npm run build          # Production build
+npm run seed           # Seed database
+npm run test           # Run tests
 ```
 
 **Frontend:**
 ```bash
-npm run dev                # Development server
-npm run build              # Production build
-npm run preview            # Preview build
-npm run lint               # Run linter
+npm run dev            # Development server
+npm run build          # Production build
+npm run lint           # ESLint
+npm run test           # Jest tests
 ```
 
-## 📝 API Endpoints
+## Environment Variables
 
-- `GET /search` - Search songs
-- `GET /users/:id` - Get user profile
-- `POST /liked` - Like a song
-- `DELETE /liked` - Remove liked song
-- `GET /liked/:userId` - Get user's liked songs
+### Backend (.env)
+```env
+NODE_ENV=development
+APP_PORT=5000
+MONGODB_URI=mongodb://root:Root123@localhost:27017/spotify_clone?authSource=admin
+JWT_SECRET=your-secret-key
+JWT_EXPIRATION=7d
+```
+
+### Frontend (.env.local)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+## Documentation
+
+- [PRD](./docs/spotify-clone-prd.md) - Product requirements
+- [Features](./docs/spotify-clone-features-summary.md) - Feature summary
+- [Implementation Plan](./docs/implementation-plan.md) - Development phases
 
 ---
 
-For detailed documentation and setup instructions, please refer to the individual README files in the `frontend/` and `backend/` directories.
+Built for HackerRank debugging challenge.
