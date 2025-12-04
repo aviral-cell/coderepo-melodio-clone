@@ -1,2 +1,3 @@
 # Exclude a specific file from the download zip
 **CLAUDE.md export-ignore
+**/docs/ export-ignore

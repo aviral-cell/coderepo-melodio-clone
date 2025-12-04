@@ -7,4 +7,5 @@ else
   echo "mongod started"
 fi
 
-cp .env.example .env
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env

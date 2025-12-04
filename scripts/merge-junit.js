@@ -7,8 +7,8 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
-const BACKEND_JUNIT = path.join(ROOT_DIR, "backend", "junit.xml");
-const FRONTEND_JUNIT = path.join(ROOT_DIR, "frontend", "junit.xml");
+const BACKEND_JUNIT = path.join(ROOT_DIR, "backend", "test-results", "junit.xml");
+const FRONTEND_JUNIT = path.join(ROOT_DIR, "frontend", "test-results", "junit.xml");
 const OUTPUT_FILE = path.join(ROOT_DIR, "junit.xml");
 
 /**

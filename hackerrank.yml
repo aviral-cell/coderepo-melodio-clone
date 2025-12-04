@@ -6,17 +6,22 @@ configuration:
     files:
       - junit.xml
   readonly_paths:
-    - backend/src/features/auth/__tests__/auth.controller.test.ts
-    - backend/src/features/movie-details/__tests__/movie-details.controller.test.ts
-    - backend/src/features/movies/__tests__/movies.controller.test.ts
-    - backend/src/features/watchlist/__tests__/watchlist.controller.test.ts
-    - frontend/src/app/(features)/auth/context/__tests__/AuthContext.test.tsx
-    - frontend/src/app/(features)/auth/services/__tests__/auth.service.test.ts
-    - frontend/src/app/(features)/movies/components/__tests__/MovieCard.test.tsx
-    - frontend/src/app/(features)/movies/components/__tests__/MovieFilters.test.tsx
-    - frontend/src/app/(features)/watchlist/services/__tests__/watchlist.service.test.ts
-    - frontend/src/shared/components/__tests__/Navigation.test.tsx
+    # Backend test files
+    - backend/src/features/users/__tests__/users.service.spec.ts
+    - backend/src/features/artists/__tests__/artists.service.spec.ts
+    - backend/src/features/albums/__tests__/albums.service.spec.ts
+    - backend/src/features/auth/__tests__/auth.service.spec.ts
+    - backend/src/features/tracks/__tests__/tracks.service.spec.ts
+    - backend/src/features/search/__tests__/search.service.spec.ts
+    - backend/src/features/playlists/__tests__/playlists.service.spec.ts
+    # Frontend test files
+    - frontend/src/shared/contexts/__tests__/playerReducer.test.ts
+    - frontend/src/shared/hooks/__tests__/useDebounce.test.ts
+    - frontend/src/shared/components/common/__tests__/TrackCard.test.tsx
+    - frontend/src/shared/contexts/__tests__/PlayerContext.test.tsx
+    # Configuration files
     - frontend/jest.config.js
+    - frontend/jest.setup.ts
     - scripts/merge-junit.js
   ide_config:
     default_open_files:
