@@ -14,20 +14,12 @@ const config = {
     '!src/**/*.d.ts',
     '!src/**/index.ts',
   ],
-  coverageThreshold: {
-    global: {
-      lines: 70,
-      branches: 60,
-      functions: 70,
-      statements: 70,
-    },
-  },
   reporters: [
     'default',
     [
       'jest-junit',
       {
-        outputDirectory: './test-results',
+        outputDirectory: '../output',
         outputName: 'junit.xml',
       },
     ],

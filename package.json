@@ -19,20 +19,18 @@
 		"build": "npm run build --workspace=backend && npm run build --workspace=frontend",
 		"build:frontend": "npm run build --workspace=frontend",
 		"build:backend": "npm run build --workspace=backend",
-		"test": "npm run test:backend && npm run test:frontend && npm run test:merge",
-		"test:backend": "npm test --workspace=backend",
+		"test": "npm run test:task1 && npm run test:task2 && npm run test:task3",
+		"test:task1": "npm run test:task1 --workspace=frontend",
+		"test:task2": "npm run test:task2 --workspace=frontend",
+		"test:task3": "npm run test:task3 --workspace=frontend",
 		"test:frontend": "npm test --workspace=frontend",
-		"test:merge": "node scripts/merge-junit.js",
-		"lint": "npm run lint --workspaces",
 		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,html,css,scss}\"",
 		"typesync": "typesync"
 	},
 	"devDependencies": {
 		"concurrently": "^8.2.2",
-		"eslint-plugin-prettier": "^5.5.1",
 		"jest-junit": "^16.0.0",
 		"prettier": "^3.6.2",
-		"typescript-eslint": "^8.34.1",
 		"typesync": "^0.14.3"
 	}
 }

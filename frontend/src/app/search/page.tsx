@@ -40,7 +40,6 @@ function SearchPageContent() {
   const [query, setQuery] = useState(urlQuery);
   const debouncedQuery = useDebounce(query, 300);
 
-  // Sync query with URL params
   useEffect(() => {
     setQuery(urlQuery);
   }, [urlQuery]);
@@ -105,10 +104,8 @@ function SearchPageContent() {
       <main className="ml-64 pb-24">
         <TopBar initialQuery={urlQuery} />
         <div className="p-8">
-          {/* Search Results / Browse */}
           {isSearching ? (
             <div className="space-y-8">
-              {/* Tracks skeleton */}
               <section>
                 <Skeleton className="mb-4 h-6 w-24" />
                 <div className="space-y-2">
@@ -130,7 +127,6 @@ function SearchPageContent() {
             </div>
           ) : debouncedQuery && results ? (
             <div className="space-y-8">
-              {/* Tracks Section */}
               {results.tracks.length > 0 && (
                 <section>
                   <h2 className="mb-4 text-xl font-bold text-white">Tracks</h2>
@@ -222,7 +218,6 @@ function SearchPageContent() {
                 </section>
               )}
 
-              {/* Albums Section */}
               {results.albums.length > 0 && (
                 <section>
                   <h2 className="mb-4 text-xl font-bold text-white">Albums</h2>
@@ -266,7 +261,6 @@ function SearchPageContent() {
                 </section>
               )}
 
-              {/* Artists Section */}
               {results.artists.length > 0 && (
                 <section>
                   <h2 className="mb-4 text-xl font-bold text-white">Artists</h2>
@@ -303,7 +297,6 @@ function SearchPageContent() {
                 </section>
               )}
 
-              {/* No results */}
               {results.tracks.length === 0 &&
                 results.albums.length === 0 &&
                 results.artists.length === 0 && (
@@ -318,7 +311,6 @@ function SearchPageContent() {
                 )}
             </div>
           ) : (
-            // Browse categories when no search
             <div>
               <h2 className="mb-4 text-xl font-bold text-white">Browse All</h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">

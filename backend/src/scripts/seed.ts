@@ -18,10 +18,8 @@ dotenv.config();
 import * as bcrypt from 'bcryptjs';
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
-// MongoDB connection string
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/hackify_app";
 
-// User Schema (standalone for seed script)
 interface IUser extends Document {
   email: string;
   username: string;
@@ -43,7 +41,6 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true },
 );
 
-// Artist Schema (standalone for seed script)
 interface IArtist extends Document {
   name: string;
   bio?: string;
@@ -65,7 +62,6 @@ const ArtistSchema = new Schema<IArtist>(
   { timestamps: true },
 );
 
-// Album Schema (standalone for seed script)
 interface IAlbum extends Document {
   title: string;
   artistId: Types.ObjectId;
@@ -87,7 +83,6 @@ const AlbumSchema = new Schema<IAlbum>(
   { timestamps: true },
 );
 
-// Track Schema (standalone for seed script)
 interface ITrack extends Document {
   title: string;
   artistId: Types.ObjectId;
@@ -113,13 +108,11 @@ const TrackSchema = new Schema<ITrack>(
   { timestamps: true },
 );
 
-// Create models
 const User = mongoose.model<IUser>('User', UserSchema);
 const Artist = mongoose.model<IArtist>('Artist', ArtistSchema);
 const Album = mongoose.model<IAlbum>('Album', AlbumSchema);
 const Track = mongoose.model<ITrack>('Track', TrackSchema);
 
-// Seed data definitions
 interface ArtistSeedData {
   name: string;
   genre: string;
@@ -138,18 +131,15 @@ interface TrackSeedData {
   durationInSeconds: number;
 }
 
-// Helper function to generate random duration between 180-300 seconds
 function randomDuration(): number {
   return Math.floor(Math.random() * (300 - 180 + 1)) + 180;
 }
 
-// Helper function to generate placeholder image URL
 function getImageUrl(seed: string, size = 300): string {
   const encodedSeed = encodeURIComponent(seed.toLowerCase().replace(/\s+/g, '-'));
   return `https://picsum.photos/seed/${encodedSeed}/${size}/${size}`;
 }
 
-// Artist seed data with albums and tracks
 const artistsSeedData: ArtistSeedData[] = [
   {
     name: 'The Amplifiers',
@@ -278,16 +268,15 @@ const artistsSeedData: ArtistSeedData[] = [
   },
 ];
 
-// Test users data
 const testUsers = [
   {
-    email: 'test@example.com',
+    email: 'test@hackify.com',
     password: 'password123',
     username: 'testuser',
     displayName: 'Test User',
   },
   {
-    email: 'demo@example.com',
+    email: 'demo@hackify.com',
     password: 'password123',
     username: 'demouser',
     displayName: 'Demo User',
@@ -319,7 +308,6 @@ async function seedArtistsAlbumsAndTracks(): Promise<{
   console.log('Creating artists, albums, and tracks...');
 
   for (const artistData of artistsSeedData) {
-    // Create artist
     const artist = await Artist.create({
       name: artistData.name,
       bio: artistData.bio,
@@ -330,7 +318,6 @@ async function seedArtistsAlbumsAndTracks(): Promise<{
     artistCount++;
     console.log(`  Created artist: ${artist.name}`);
 
-    // Create albums for this artist
     for (const albumData of artistData.albums) {
       const album = await Album.create({
         title: albumData.title,
@@ -342,7 +329,6 @@ async function seedArtistsAlbumsAndTracks(): Promise<{
       albumCount++;
       console.log(`    Created album: ${album.title}`);
 
-      // Create tracks for this album
       for (let i = 0; i < albumData.tracks.length; i++) {
         const trackData = albumData.tracks[i];
         await Track.create({
@@ -393,17 +379,13 @@ async function seed(): Promise<void> {
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    // Clear existing data
     await clearDatabase();
 
-    // Seed artists, albums, and tracks
     const { artistCount, albumCount, trackCount } =
       await seedArtistsAlbumsAndTracks();
 
-    // Seed users
     const userCount = await seedUsers();
 
-    // Summary
     console.log('\n========================================');
     console.log('Seeding completed successfully!');
     console.log('========================================');
@@ -413,8 +395,8 @@ async function seed(): Promise<void> {
     console.log(`Users created: ${userCount}`);
     console.log('========================================');
     console.log('\nTest Users:');
-    console.log('  Email: test@example.com | Password: password123');
-    console.log('  Email: demo@example.com | Password: password123');
+    console.log('  Email: test@hackify.com | Password: password123');
+    console.log('  Email: demo@hackify.com | Password: password123');
     console.log('========================================\n');
   } catch (error) {
     console.error('Seeding failed:', error);

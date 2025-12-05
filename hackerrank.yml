@@ -2,9 +2,9 @@ version: 1.0
 configuration:
   has_webserver: true
   scoring:
-    command: rm -rf backend/test-results frontend/test-results junit.xml && npm test
+    command: npm test
     files:
-      - junit.xml
+      - output/junit.xml
   readonly_paths:
     # Backend test files
     - backend/src/features/users/__tests__/users.service.spec.ts
