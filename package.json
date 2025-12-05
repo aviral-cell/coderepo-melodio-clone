@@ -1,7 +1,7 @@
 {
-	"name": "menn-stack-boilerplate",
+	"name": "hackify-music-player",
 	"version": "1.0.0",
-	"description": "MENN Stack (MongoDB + Express + Next.js + Node.js) boilerplate with TypeScript",
+	"description": "Hackify - Music Player State Management Challenge (HackerRank Assessment)",
 	"private": true,
 	"engines": {
 		"node": ">=20.0.0",
@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"install:all": "npm install",
-		"start": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+		"start": "npm run seed --workspace=backend && concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
 		"dev:frontend": "npm run dev --workspace=frontend",
 		"dev:backend": "npm run dev --workspace=backend",
 		"build": "npm run build --workspace=backend && npm run build --workspace=frontend",

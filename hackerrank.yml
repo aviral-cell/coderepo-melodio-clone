@@ -2,7 +2,7 @@ version: 1.0
 configuration:
   has_webserver: true
   scoring:
-    command: "npm test"
+    command: rm -rf backend/test-results frontend/test-results junit.xml && npm test
     files:
       - junit.xml
   readonly_paths:
@@ -25,8 +25,8 @@ configuration:
     - scripts/merge-junit.js
   ide_config:
     default_open_files:
-      - README.md
+      - PROBLEM_STATEMENT.md
     project_menu:
-      run: npm start
+      run: bash setup.sh && npm start
       install: npm install
-      test: npm test
+      test: rm -rf backend/test-results frontend/test-results junit.xml && npm test

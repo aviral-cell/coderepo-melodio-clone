@@ -4,17 +4,13 @@ import { ApiResponse, ApiErrorResponse } from '../types/api.types';
  * Get API base URL - supports dynamic URL detection for HackerRank environments
  */
 const getApiBaseUrl = (): string => {
-  if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
-  }
-
-  // For HackerRank or preview deployments with dynamic URLs
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (envUrl) return envUrl;
-
-  // Fallback: derive from current host (replace frontend port with backend port)
-  const { protocol, hostname } = window.location;
-  return `${protocol}//${hostname}:5000/api/v1`;
+	// Server-side: use env var
+	if (typeof window === "undefined") {
+		return process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+	}
+	// Client-side: derive from current URL (port 3000 → 5000)
+	const { protocol, host } = window.location;
+	return `${protocol}//${host.replace("3000", "5000")}/api/v1`;
 };
 
 const API_BASE_URL = getApiBaseUrl();

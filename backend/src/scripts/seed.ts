@@ -12,12 +12,14 @@
  * - 2 test users with known credentials
  */
 
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import * as bcrypt from 'bcryptjs';
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
 // MongoDB connection string
-const MONGODB_URI =
-  'mongodb://root:Root123@localhost:27017/spotify_clone?authSource=admin';
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/hackify_app";
 
 // User Schema (standalone for seed script)
 interface IUser extends Document {
@@ -387,7 +389,6 @@ async function seedUsers(): Promise<number> {
 async function seed(): Promise<void> {
   try {
     console.log('Connecting to MongoDB...');
-    console.log(`URI: ${MONGODB_URI.replace(/\/\/.*@/, '//<credentials>@')}`);
 
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
