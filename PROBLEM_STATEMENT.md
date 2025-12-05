@@ -1,10 +1,10 @@
-# Code Review Assessment: Music Player State Management
+# Hackify Music Player - Bug Fixing Challenge
 
 ## Overview
 
 You are provided with **Hackify**, a Spotify-inspired music streaming application built using Next.js 15 (frontend) and NestJS (backend) with MongoDB. The application features a music player with queue management, shuffle, repeat, and search functionality.
 
-The application compiles and runs successfully. However, it contains **4 intentional bugs** in the frontend that you must identify and fix through code review. These bugs affect the music player's state management and user experience.
+The application compiles and runs successfully. However, it contains **4 bugs** in the frontend that you must identify and fix through code review. These bugs affect the music player's state management and user experience.
 
 ---
 
@@ -55,8 +55,6 @@ Below is a detailed description of each bug. Read carefully to understand what i
 
 ### Shuffle Loses Current Track
 
-**Category:** State Management (HIGH)
-
 **What Users Experience:**
 Imagine you're listening to your favorite song "Track C" at the 2-minute mark. You decide to enable shuffle so the next songs are randomized. But instead of continuing "Track C", suddenly a completely different song starts playing from the beginning. Your listening experience is interrupted.
 
@@ -77,8 +75,6 @@ When shuffle is toggled, the player doesn't preserve which track is currently pl
 ---
 
 ### Queue Index Not Adjusted When Removing Tracks
-
-**Category:** State Management (HIGH)
 
 **What Users Experience:**
 You're listening to "Track C" (the 3rd song in your queue). You decide to remove "Track A" (the 1st song) because you don't want to hear it. After removing it, instead of continuing "Track C", the player suddenly jumps to "Track D"!
@@ -108,8 +104,6 @@ Should be: Index = 1 (to still point to C)
 
 ### Timer Interval Not Cleaned Up
 
-**Category:** Memory Management (MEDIUM)
-
 **What Users Experience:**
 You notice the progress bar moving too fast, or the elapsed time counter jumping by 2-3 seconds instead of 1. If you pause and resume multiple times, the timer seems to speed up even more!
 
@@ -128,8 +122,6 @@ The useEffect that creates the playback interval timer doesn't properly clean up
 ---
 
 ### Search Not Debounced
-
-**Category:** Performance (MEDIUM)
 
 **What Users Experience:**
 When you type "hello" in the search box, you see the loading spinner flash 5 times - once for each letter typed. The results keep changing rapidly as each intermediate search completes. The application feels sluggish and the server is overwhelmed with requests.
