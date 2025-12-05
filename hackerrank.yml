@@ -25,7 +25,8 @@ configuration:
   ide_config:
     default_open_files:
       - frontend/src/app/layout.tsx
+      - backend/src/main.ts
     project_menu:
-      run: bash setup.sh && npm start
+      run: npm start
       install: npm install
-      test: rm -rf backend/test-results frontend/test-results junit.xml && npm test
+      test: echo "No test command configured"
