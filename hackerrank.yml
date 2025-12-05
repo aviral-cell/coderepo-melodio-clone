@@ -14,18 +14,17 @@ configuration:
     - backend/src/features/tracks/__tests__/tracks.service.spec.ts
     - backend/src/features/search/__tests__/search.service.spec.ts
     - backend/src/features/playlists/__tests__/playlists.service.spec.ts
-    # Frontend test files
-    - frontend/src/shared/contexts/__tests__/playerReducer.test.ts
-    - frontend/src/shared/hooks/__tests__/useDebounce.test.ts
-    - frontend/src/shared/components/common/__tests__/TrackCard.test.tsx
-    - frontend/src/shared/contexts/__tests__/PlayerContext.test.tsx
+    # Frontend test files (12 tests covering 3 bugs)
+    - frontend/__tests__/task1/useDebounce.test.ts
+    - frontend/__tests__/task2/playerReducer.test.ts
+    - frontend/__tests__/task3/PlayerContext.test.tsx
     # Configuration files
     - frontend/jest.config.js
     - frontend/jest.setup.ts
     - scripts/merge-junit.js
   ide_config:
     default_open_files:
-      - PROBLEM_STATEMENT.md
+      - frontend/src/app/layout.tsx
     project_menu:
       run: bash setup.sh && npm start
       install: npm install

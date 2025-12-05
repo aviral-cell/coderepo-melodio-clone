@@ -270,16 +270,16 @@ const artistsSeedData: ArtistSeedData[] = [
 
 const testUsers = [
   {
-    email: 'test@hackify.com',
+    email: 'alex.morgan@hackify.com',
     password: 'password123',
-    username: 'testuser',
-    displayName: 'Test User',
+    username: 'alexmorgan',
+    displayName: 'Alex Morgan',
   },
   {
-    email: 'demo@hackify.com',
+    email: 'jordan.casey@hackify.com',
     password: 'password123',
-    username: 'demouser',
-    displayName: 'Demo User',
+    username: 'jordancasey',
+    displayName: 'Jordan Casey',
   },
 ];
 
