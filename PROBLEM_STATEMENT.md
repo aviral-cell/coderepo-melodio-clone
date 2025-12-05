@@ -27,12 +27,6 @@ The application compiles and runs successfully. However, it contains **4 intenti
 | Remove from Queue | Remove a track | Queue updates correctly, current track continues |
 | Search | Find music | Results appear after user stops typing (debounced) |
 
-### Application URLs
-
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Swagger Docs**: http://localhost:5000/api/docs
-
 ---
 
 ## Your Task
@@ -59,7 +53,7 @@ Below is a detailed description of each bug. Read carefully to understand what i
 
 ---
 
-### Bug B: Shuffle Loses Current Track
+### Shuffle Loses Current Track
 
 **Category:** State Management (HIGH)
 
@@ -75,8 +69,6 @@ When shuffle is toggled, the player doesn't preserve which track is currently pl
 - Remaining tracks get shuffled behind the current track
 - Disabling shuffle: Current track continues, queue returns to original order
 
-**Location:** `frontend/src/shared/contexts/PlayerContext.tsx` - TOGGLE_SHUFFLE case
-
 **Associated Tests:**
 - `should preserve currentTrack when enabling shuffle`
 - `should preserve elapsed time when enabling shuffle`
@@ -84,7 +76,7 @@ When shuffle is toggled, the player doesn't preserve which track is currently pl
 
 ---
 
-### Bug F: Queue Index Not Adjusted When Removing Tracks
+### Queue Index Not Adjusted When Removing Tracks
 
 **Category:** State Management (HIGH)
 
@@ -107,8 +99,6 @@ Should be: Index = 1 (to still point to C)
 - If removed track is AFTER current: Index stays the same
 - If removed track IS the current: Advance to next track
 
-**Location:** `frontend/src/shared/contexts/PlayerContext.tsx` - REMOVE_FROM_QUEUE case
-
 **Associated Tests:**
 - `should decrement queueIndex when a track BEFORE the current is removed`
 - `should NOT change queueIndex when a track AFTER the current is removed`
@@ -116,7 +106,7 @@ Should be: Index = 1 (to still point to C)
 
 ---
 
-### Bug G: Timer Interval Not Cleaned Up
+### Timer Interval Not Cleaned Up
 
 **Category:** Memory Management (MEDIUM)
 
@@ -126,16 +116,10 @@ You notice the progress bar moving too fast, or the elapsed time counter jumping
 **The Problem:**
 The useEffect that creates the playback interval timer doesn't properly clean up the previous interval when dependencies change. This results in multiple intervals running simultaneously, each incrementing the elapsed time.
 
-**Why This Happens:**
-In React, when a useEffect dependency changes, React runs the cleanup function before running the effect again. If the cleanup function doesn't clear the interval, old intervals keep running alongside new ones.
-
 **What Should Happen:**
 - Only ONE interval should ever be active at a time
 - When isPlaying changes to false, the interval should be cleared
 - When the component unmounts, the interval should be cleared
-- The cleanup function in useEffect must return `clearInterval(interval)`
-
-**Location:** `frontend/src/shared/contexts/PlayerContext.tsx` - useEffect for timer
 
 **Associated Tests:**
 - Tests in `PlayerContext.test.tsx` verify interval cleanup
@@ -143,7 +127,7 @@ In React, when a useEffect dependency changes, React runs the cleanup function b
 
 ---
 
-### Bug D: Search Not Debounced
+### Search Not Debounced
 
 **Category:** Performance (MEDIUM)
 
@@ -169,8 +153,6 @@ Types: o    -> Searches for "hello"
 - Only the final value ("hello") should trigger an API call
 - Intermediate values should be ignored
 
-**Location:** `frontend/src/app/search/page.tsx` - should use `useDebounce(query, 300)`
-
 **Associated Tests:**
 - `should NOT update value immediately when input changes`
 - `should reset timer when value changes rapidly`
@@ -193,19 +175,19 @@ Types: o    -> Searches for "hello"
 frontend/src/
 ├── app/
 │   └── search/
-│       └── page.tsx                 # Bug D: Search debouncing
+│       └── page.tsx                 # Search debouncing
 │
 └── shared/
     ├── contexts/
-    │   ├── PlayerContext.tsx        # Bugs B, F, G: Player state
+    │   ├── PlayerContext.tsx        # Player state
     │   └── __tests__/
-    │       ├── playerReducer.test.ts    # Tests for B, F
-    │       └── PlayerContext.test.tsx   # Tests for G
+    │       ├── playerReducer.test.ts
+    │       └── PlayerContext.test.tsx
     │
     └── hooks/
         ├── useDebounce.ts           # Debounce hook (working)
         └── __tests__/
-            └── useDebounce.test.ts  # Tests for D
+            └── useDebounce.test.ts
 ```
 
 ---
@@ -239,44 +221,17 @@ npx jest frontend/src/shared/contexts/__tests__/playerReducer.test.ts
 
 | Bug | Category | Points |
 |-----|----------|--------|
-| Bug B: Shuffle Loses Track | State Management | 30 |
-| Bug F: Queue Index Error | State Management | 25 |
-| Bug G: Timer Cleanup | Memory Management | 25 |
-| Bug D: Missing Debounce | Performance | 20 |
+| Shuffle Loses Track | State Management | 30 |
+| Queue Index Error | State Management | 25 |
+| Timer Cleanup | Memory Management | 25 |
+| Missing Debounce | Performance | 20 |
 | **Total** | | **100** |
 
 ---
 
 ## Tips
 
-1. **Read the test comments** - They explain exactly what behavior is expected
-2. **Focus on the specific location mentioned** - Each bug is isolated to one area
-3. **Understand the "What Should Happen" section** - It describes the correct implementation
-4. **Run tests frequently** - Verify your fixes as you go with `npm run test:frontend`
-5. **Don't over-engineer** - Simple, targeted fixes are better than complex rewrites
-6. **Check the console** - React will warn about memory leaks from uncleared intervals
-
----
-
-## Technical Notes
-
-### PlayerContext State Structure
-```typescript
-interface PlayerState {
-  currentTrack: Track | null;  // Currently playing track
-  queue: Track[];              // List of tracks to play
-  originalQueue: Track[];      // Original order before shuffle
-  queueIndex: number;          // Index of current track in queue
-  isPlaying: boolean;          // Whether playback is active
-  elapsedSeconds: number;      // Current position in track
-  shuffleEnabled: boolean;     // Whether shuffle is on
-  repeatMode: 'off' | 'one' | 'all';  // Repeat setting
-}
-```
-
-### Key Reducer Actions
-- `TOGGLE_SHUFFLE`: Enable/disable shuffle mode
-- `REMOVE_FROM_QUEUE`: Remove track at specified index
-- `TICK`: Increment elapsed time by 1 second
+1. **Run tests frequently** - Verify your fixes as you go with `npm run test:frontend`
+2. **Don't over-engineer** - Simple, targeted fixes are better than complex rewrites
 
 Good luck!
