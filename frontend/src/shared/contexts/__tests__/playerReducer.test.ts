@@ -22,26 +22,23 @@ const createMockTrack = (id: string, title: string): TrackWithPopulated => ({
 describe('playerReducer', () => {
   /**
    * ============================================================================
-   * BUG B: SHUFFLE TOGGLE - Current Track Preservation
+   * SHUFFLE TOGGLE - Current Track Preservation
    * ============================================================================
    *
-   * EXPECTED BEHAVIOR:
-   * When shuffle is enabled/disabled, the currently playing track should NOT change.
-   * The user should continue hearing the same song at the same position.
+   * SCENARIO:
+   * User is listening to "Track C" at the 2-minute mark. They click the shuffle
+   * button to randomize upcoming songs.
    *
-   * WHAT THE BUG LOOKS LIKE:
-   * - User is listening to "Track C" at 45 seconds
-   * - User clicks shuffle button
-   * - Instead of continuing "Track C", a different track starts playing
+   * BUG BEHAVIOR:
+   * Instead of continuing "Track C", a different track starts playing from
+   * the beginning. The user's listening experience is interrupted.
    *
-   * WHERE TO LOOK: PlayerContext.tsx -> TOGGLE_SHUFFLE case in playerReducer
-   *
-   * HINT: When enabling shuffle, the current track should be moved to the
-   * front of the shuffled queue. When disabling, find the current track's
-   * position in the original queue.
+   * EXPECTATION:
+   * The currently playing track should continue at the same position. Only
+   * the remaining tracks in the queue should be shuffled.
    * ============================================================================
    */
-  describe('TOGGLE_SHUFFLE - Bug B: Shuffle should preserve current track', () => {
+  describe('TOGGLE_SHUFFLE - Shuffle should preserve current track', () => {
     it('should preserve currentTrack when enabling shuffle - the same track should continue playing', () => {
       // SCENARIO: User has a queue [A, B, C, D, E] with Track C currently playing
       const tracks = [
@@ -138,27 +135,24 @@ describe('playerReducer', () => {
 
   /**
    * ============================================================================
-   * BUG F: QUEUE INDEX ADJUSTMENT - Track Removal Index Handling
+   * QUEUE INDEX ADJUSTMENT - Track Removal Index Handling
    * ============================================================================
    *
-   * EXPECTED BEHAVIOR:
-   * When a track is removed from the queue BEFORE the currently playing track,
-   * the queueIndex must be decremented to continue pointing to the same track.
+   * SCENARIO:
+   * Queue is [A, B, C, D, E] with Track C playing (index 2). User removes
+   * Track A (index 0) from the queue.
    *
-   * WHAT THE BUG LOOKS LIKE:
-   * - Queue: [A, B, C, D, E] with C playing (index 2)
-   * - User removes Track A (index 0)
-   * - Queue becomes [B, C, D, E]
-   * - Bug: queueIndex stays at 2, which now points to Track D instead of Track C
-   * - Result: Next track plays incorrectly, or player jumps to wrong track
+   * BUG BEHAVIOR:
+   * After removal, queue becomes [B, C, D, E] but queueIndex stays at 2,
+   * which now points to Track D instead of Track C. The player jumps to
+   * the wrong track.
    *
-   * WHERE TO LOOK: PlayerContext.tsx -> REMOVE_FROM_QUEUE case in playerReducer
-   *
-   * HINT: Check if the removed track's index is less than queueIndex.
-   * If so, decrement queueIndex by 1.
+   * EXPECTATION:
+   * When a track BEFORE the current is removed, queueIndex should decrement
+   * to continue pointing to the same track.
    * ============================================================================
    */
-  describe('REMOVE_FROM_QUEUE - Bug F: Queue index adjustment', () => {
+  describe('REMOVE_FROM_QUEUE - Queue index adjustment', () => {
     it('should decrement queueIndex when a track BEFORE the current is removed', () => {
       // SCENARIO: Queue [A, B, C, D, E], Track C is playing (index 2)
       // User removes Track A (index 0) from the queue
@@ -260,21 +254,23 @@ describe('playerReducer', () => {
 
   /**
    * ============================================================================
-   * BUG G: TIMER BEHAVIOR - Playback Time Tracking
+   * TIMER BEHAVIOR - Playback Time Tracking
    * ============================================================================
    *
-   * EXPECTED BEHAVIOR:
-   * The TICK action should increment elapsedSeconds by exactly 1 each second
-   * when the player is playing. It should handle track transitions correctly.
+   * SCENARIO:
+   * User plays a track and the progress bar updates every second. They pause
+   * and resume multiple times during playback.
    *
-   * NOTE: Bug G is actually about interval cleanup in useEffect, which is
-   * tested separately. These tests verify the TICK reducer logic works correctly.
+   * BUG BEHAVIOR:
+   * The progress bar moves too fast, jumping 2-3 seconds at a time. After
+   * multiple pause/resume cycles, the timer speeds up even more.
    *
-   * WHERE TO LOOK: PlayerContext.tsx -> TICK case in playerReducer and
-   *                PlayerProvider useEffect for interval management
+   * EXPECTATION:
+   * Elapsed time should increment by exactly 1 second per tick. Only one
+   * timer interval should be active at any time.
    * ============================================================================
    */
-  describe('TICK - Bug G: Timer behavior', () => {
+  describe('TICK - Timer behavior', () => {
     it('should increment elapsed time by exactly 1 second each tick when playing', () => {
       const track = createMockTrack('track-a', 'Track A');
       const state: PlayerState = {

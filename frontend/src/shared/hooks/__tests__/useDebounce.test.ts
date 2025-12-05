@@ -4,27 +4,22 @@ import { useDebounce } from '../useDebounce';
 
 /**
  * ============================================================================
- * BUG D: DEBOUNCE HOOK - Search Input Optimization
+ * DEBOUNCE HOOK - Search Input Optimization
  * ============================================================================
  *
- * EXPECTED BEHAVIOR:
- * The useDebounce hook should delay updating the returned value until the
- * specified delay has passed since the last change. This prevents excessive
- * API calls when users are typing in a search box.
+ * SCENARIO:
+ * User types "hello" in a search box. The search should wait for the user to
+ * stop typing before making an API call.
  *
- * WHAT THE BUG LOOKS LIKE:
- * - User types "hello" in search box
- * - Instead of waiting for the user to stop typing, each keystroke triggers
- *   a search API call: "h", "he", "hel", "hell", "hello"
- * - This causes 5 API calls instead of 1, overwhelming the server
+ * BUG BEHAVIOR:
+ * Each keystroke triggers a search API call: "h", "he", "hel", "hell", "hello".
+ * This causes 5 API calls instead of 1, overwhelming the server and causing
+ * the loading spinner to flash repeatedly.
  *
- * WHERE TO LOOK: Search page (search/page.tsx) should use useDebounce for
- * the search query. If it directly uses the query without debouncing,
- * searches will fire on every keystroke.
- *
- * HINT: The search page should call:
- *   const debouncedQuery = useDebounce(query, 300);
- * And use debouncedQuery (not query) for the API call.
+ * EXPECTATION:
+ * The debounced value should only update after the specified delay has passed
+ * since the last change. Only the final value ("hello") should trigger an
+ * API call.
  * ============================================================================
  */
 describe('useDebounce', () => {

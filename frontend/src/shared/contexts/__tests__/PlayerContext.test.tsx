@@ -6,29 +6,20 @@ import { TrackWithPopulated } from '../../types/track.types';
 
 /**
  * ============================================================================
- * BUG G: TIMER INTERVAL CLEANUP - Memory Management
+ * TIMER INTERVAL CLEANUP - Memory Management
  * ============================================================================
  *
- * EXPECTED BEHAVIOR:
- * When playback is paused or the component unmounts, the timer interval should
- * be cleared. This prevents memory leaks and ensures elapsed time increments
- * correctly (once per second, not multiple times).
+ * SCENARIO:
+ * User plays a track, pauses, and resumes multiple times. The progress bar
+ * should update once per second.
  *
- * WHAT THE BUG LOOKS LIKE:
- * - Progress bar moves too fast (jumping 2-3 seconds at a time)
- * - Pausing and resuming multiple times makes the timer speed up
- * - React warns about memory leaks from uncleared intervals
+ * BUG BEHAVIOR:
+ * Progress bar moves too fast (jumping 2-3 seconds at a time). Each pause/resume
+ * cycle makes the timer speed up even more. React may warn about memory leaks.
  *
- * WHERE TO LOOK: PlayerContext.tsx -> useEffect that creates the interval
- *
- * HINT: The useEffect should return a cleanup function that calls clearInterval.
- * Example:
- *   useEffect(() => {
- *     if (isPlaying) {
- *       const interval = setInterval(() => dispatch({ type: 'TICK' }), 1000);
- *       return () => clearInterval(interval);  // <-- This is missing!
- *     }
- *   }, [isPlaying, currentTrack]);
+ * EXPECTATION:
+ * The timer interval should be properly cleaned up when pausing or unmounting.
+ * Only ONE interval should ever be active at a time.
  * ============================================================================
  */
 
@@ -124,31 +115,12 @@ describe('PlayerContext', () => {
   });
 
   /**
-   * ============================================================================
-   * BUG G TEST: Timer should only increment once per second, not multiple times
-   * ============================================================================
-   *
    * This test verifies that the playback timer interval is properly cleaned up
    * when pausing. If the interval is NOT cleaned up, multiple intervals will
    * run simultaneously after pause/resume cycles, causing elapsed time to
    * increment faster than it should.
-   *
-   * SCENARIO:
-   * 1. Play a track -> start 1 interval
-   * 2. Wait 2 seconds -> elapsed should be 2
-   * 3. Pause -> interval should be CLEARED
-   * 4. Resume -> start NEW interval (should be only 1 running)
-   * 5. Wait 2 more seconds -> elapsed should be 4
-   *
-   * BUG BEHAVIOR:
-   * - Without cleanup, pausing doesn't clear the old interval
-   * - Resuming starts a NEW interval while old one still runs
-   * - After pause/resume, TWO intervals tick simultaneously
-   * - Elapsed time increments by 2 every second instead of 1!
-   * - After 2 more seconds, elapsed would be 6 instead of 4
-   * ============================================================================
    */
-  it('should cleanup interval when pausing - Bug G: elapsed time should increment correctly after pause/resume', async () => {
+  it('should cleanup interval when pausing - elapsed time should increment correctly after pause/resume', async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
     render(
