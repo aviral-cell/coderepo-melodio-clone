@@ -112,7 +112,7 @@ export default function GenrePage() {
 
             {/* Tracks Grid */}
             {isLoading ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {Array.from({ length: 10 }).map((_, index) => (
                   <div key={index} className="rounded-md bg-spotify-dark-gray p-4">
                     <Skeleton className="mb-4 aspect-square w-full rounded-md" />
@@ -122,7 +122,7 @@ export default function GenrePage() {
                 ))}
               </div>
             ) : tracks.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {tracks.map((track) => (
                   <TrackCard key={track._id} track={track} />
                 ))}
@@ -139,7 +139,7 @@ export default function GenrePage() {
             <h1 className="mb-6 text-3xl font-bold text-white">Browse by Genre</h1>
 
             {/* Genre Cards Grid */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
               {genres.map((genre) => (
                 <button
                   key={genre.slug}

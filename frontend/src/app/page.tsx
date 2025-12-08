@@ -124,7 +124,7 @@ export default function HomePage() {
           <section className="mb-8">
             <h2 className="mb-4 text-xl font-bold text-white">Recommended for you</h2>
             {isLoadingTracks ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <div key={index} className="rounded-md bg-spotify-dark-gray p-4">
                     <Skeleton className="mb-4 aspect-square w-full rounded-md" />
@@ -134,7 +134,7 @@ export default function HomePage() {
                 ))}
               </div>
             ) : recommendedTracks.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {recommendedTracks.map((track) => (
                   <TrackCard key={track._id} track={track} />
                 ))}
@@ -150,7 +150,7 @@ export default function HomePage() {
           {recentTracks.length > 0 && (
             <section className="mb-8">
               <h2 className="mb-4 text-xl font-bold text-white">Recently played</h2>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {recentTracks.slice(0, 5).map((track) => (
                   <TrackCard key={track._id} track={track} />
                 ))}
@@ -162,7 +162,7 @@ export default function HomePage() {
           <section className="mb-8">
             <h2 className="mb-4 text-xl font-bold text-white">Browse Albums</h2>
             {isLoadingAlbums ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <div key={index} className="rounded-md bg-spotify-dark-gray p-4">
                     <Skeleton className="mb-4 aspect-square w-full rounded-md" />
@@ -172,7 +172,7 @@ export default function HomePage() {
                 ))}
               </div>
             ) : albums.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {albums.map((album) => (
                   <AlbumCard key={album._id} album={album} />
                 ))}
@@ -188,7 +188,7 @@ export default function HomePage() {
           <section className="mb-8">
             <h2 className="mb-4 text-xl font-bold text-white">Browse Tracks</h2>
             {isLoadingTracks ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {Array.from({ length: 10 }).map((_, index) => (
                   <div key={index} className="rounded-md bg-spotify-dark-gray p-4">
                     <Skeleton className="mb-4 aspect-square w-full rounded-md" />
@@ -198,7 +198,7 @@ export default function HomePage() {
                 ))}
               </div>
             ) : tracks.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {tracks.map((track) => (
                   <TrackCard key={track._id} track={track} />
                 ))}
@@ -214,7 +214,7 @@ export default function HomePage() {
           <section className="mb-8">
             <h2 className="mb-4 text-xl font-bold text-white">Your Playlists</h2>
             {isLoadingPlaylists ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <div key={index} className="rounded-md bg-spotify-dark-gray p-4">
                     <Skeleton className="mb-4 aspect-square w-full rounded-md" />
@@ -224,7 +224,7 @@ export default function HomePage() {
                 ))}
               </div>
             ) : playlists.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {playlists.map((playlist) => (
                   <PlaylistCard key={playlist._id} playlist={playlist} />
                 ))}
