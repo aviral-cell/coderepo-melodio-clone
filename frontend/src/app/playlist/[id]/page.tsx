@@ -23,7 +23,6 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
@@ -54,6 +53,7 @@ import { EmptyState } from '@/shared/components/common/EmptyState';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { usePlayer } from '@/shared/contexts/PlayerContext';
 import { useToast } from '@/shared/hooks/useToast';
+import { usePlaylistOperations } from '@/shared/hooks/usePlaylistOperations';
 import { playlistsService } from '@/shared/services/playlists.service';
 import { PlaylistWithTracks } from '@/shared/types/playlist.types';
 import { TrackWithPopulated } from '@/shared/types/track.types';
@@ -235,6 +235,14 @@ export default function PlaylistPage() {
     }),
   );
 
+  const { reorderTracks, removeTrack } = usePlaylistOperations({
+    playlistId,
+    playlist,
+    setPlaylist,
+    onError: (message) => toast({ variant: 'destructive', title: 'Error', description: message }),
+    onSuccess: (message) => toast({ title: 'Success', description: message }),
+  });
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/login');
@@ -280,61 +288,18 @@ export default function PlaylistPage() {
     }
   };
 
-  const handleRemoveTrack = async (trackId: string) => {
-    if (!playlist) return;
-
-    try {
-      await playlistsService.removeTrack(playlistId, trackId);
-      setPlaylist((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          trackIds: prev.trackIds.filter((t) => t._id !== trackId),
-        };
-      });
-      toast({
-        title: 'Track removed',
-        description: 'The track has been removed from this playlist',
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to remove track',
-        description: error instanceof Error ? error.message : 'Please try again',
-      });
-    }
+  const handleRemoveTrack = (trackId: string) => {
+    removeTrack(trackId);
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (!over || !playlist || active.id === over.id) return;
 
     const oldIndex = playlist.trackIds.findIndex((t) => t._id === active.id);
     const newIndex = playlist.trackIds.findIndex((t) => t._id === over.id);
 
-    const newTracks = arrayMove(playlist.trackIds, oldIndex, newIndex);
-
-    // Optimistically update UI
-    setPlaylist((prev) => {
-      if (!prev) return prev;
-      return { ...prev, trackIds: newTracks };
-    });
-
-    try {
-      await playlistsService.reorderTracks(
-        playlistId,
-        newTracks.map((t) => t._id),
-      );
-    } catch (error) {
-      // Revert on error
-      fetchPlaylist();
-      toast({
-        variant: 'destructive',
-        title: 'Failed to reorder tracks',
-        description: error instanceof Error ? error.message : 'Please try again',
-      });
-    }
+    reorderTracks(oldIndex, newIndex);
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {

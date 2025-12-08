@@ -28,3 +28,19 @@ export interface UpdatePlaylistInput {
   coverImageUrl?: string;
   isPublic?: boolean;
 }
+
+// Hook types for usePlaylistOperations
+export interface UsePlaylistOperationsProps {
+  playlistId: string;
+  playlist: PlaylistWithTracks | null;
+  setPlaylist: React.Dispatch<React.SetStateAction<PlaylistWithTracks | null>>;
+  onError?: (message: string) => void;
+  onSuccess?: (message: string) => void;
+}
+
+export interface UsePlaylistOperationsReturn {
+  reorderTracks: (oldIndex: number, newIndex: number) => Promise<void>;
+  removeTrack: (trackId: string) => Promise<void>;
+  isReordering: boolean;
+  isRemoving: boolean;
+}
