@@ -19,7 +19,7 @@
 		"build": "npm run build --workspace=backend && npm run build --workspace=frontend",
 		"build:frontend": "npm run build --workspace=frontend",
 		"build:backend": "npm run build --workspace=backend",
-		"test": "npm run test:task1 && npm run test:task2 && npm run test:task3 && npm run test:task4",
+		"test": "npm-run-all -c test:task1 test:task2 test:task3 test:task4",
 		"test:task1": "npm run test:task1 --workspace=frontend",
 		"test:task2": "npm run test:task2 --workspace=frontend",
 		"test:task3": "npm run test:task3 --workspace=frontend",
@@ -31,6 +31,7 @@
 	"devDependencies": {
 		"concurrently": "^8.2.2",
 		"jest-junit": "^16.0.0",
+		"npm-run-all": "^4.1.5",
 		"prettier": "^3.6.2",
 		"typesync": "^0.14.3"
 	}

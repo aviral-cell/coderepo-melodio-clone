@@ -9,7 +9,7 @@ configuration:
       - output/task3.xml
       - output/task4.xml
   readonly_paths:
-    # Frontend test files (37 tests covering 4 tasks)
+    # Frontend test files (36 tests covering 4 tasks)
     - frontend/__tests__/task1/usePlaylistOperations.test.ts
     - frontend/__tests__/task2/playerReducer.test.ts
     - frontend/__tests__/task3/useRecentlyPlayed.test.ts
