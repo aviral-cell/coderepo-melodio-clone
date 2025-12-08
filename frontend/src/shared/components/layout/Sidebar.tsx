@@ -68,7 +68,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        <nav className="px-3">
+        <nav className="px-3 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -93,7 +93,11 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="mt-6 flex-1 overflow-hidden px-3">
+        {/* Library section - hidden on mobile when collapsed */}
+        <div className={cn(
+          'mt-6 flex-1 overflow-hidden px-3',
+          isCollapsed && 'hidden md:block'
+        )}>
           <div className={cn(
             'flex items-center px-3 py-2',
             isCollapsed ? 'justify-center' : 'justify-between',

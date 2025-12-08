@@ -92,9 +92,9 @@ export function TopBar({ initialQuery = '' }: TopBarProps) {
   const userInitial = user?.displayName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U';
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between bg-spotify-black/95 px-6 backdrop-blur-sm">
-      {/* Left spacer */}
-      <div className="w-32" />
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between bg-spotify-black/95 px-3 md:px-6 backdrop-blur-sm">
+      {/* Left spacer - hidden on mobile */}
+      <div className="hidden md:block md:w-32" />
 
       {/* Center: Search Bar */}
       <form onSubmit={handleSearch} className="flex-1 max-w-xl">
@@ -116,8 +116,8 @@ export function TopBar({ initialQuery = '' }: TopBarProps) {
         </div>
       </form>
 
-      {/* Right: User Profile */}
-      <div className="flex w-32 items-center justify-end">
+      {/* Right: User Profile - flexible on mobile */}
+      <div className="flex w-auto md:w-32 items-center justify-end ml-2 md:ml-0">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
