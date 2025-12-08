@@ -6,10 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { useToast } from '@/shared/hooks/useToast';
 import { LoadingSpinner } from '@/shared/components/common/LoadingSpinner';
-import { Sidebar } from '@/shared/components/layout/Sidebar';
-import { TopBar } from '@/shared/components/layout/TopBar';
-import { PlayerBar } from '@/shared/components/layout/PlayerBar';
-import { QueuePanel } from '@/shared/components/layout/QueuePanel';
+import { MainLayout } from '@/shared/components/layout/MainLayout';
 import { TrackCard } from '@/shared/components/common/TrackCard';
 import { PlaylistCard } from '@/shared/components/common/PlaylistCard';
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -119,12 +116,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-spotify-black">
-      <Sidebar />
-      <main className="ml-64 pb-24">
-        <TopBar />
-        <div className="p-8">
-          <h1 className="mb-6 text-3xl font-bold text-white">{getGreeting()}</h1>
+    <MainLayout>
+      <div className="p-8">
+        <h1 className="mb-6 text-3xl font-bold text-white">{getGreeting()}</h1>
 
           {/* Recommended for you Section */}
           <section className="mb-8">
@@ -242,9 +236,6 @@ export default function HomePage() {
             )}
           </section>
         </div>
-      </main>
-      <PlayerBar />
-      <QueuePanel />
-    </div>
+    </MainLayout>
   );
 }

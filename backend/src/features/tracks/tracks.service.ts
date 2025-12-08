@@ -59,11 +59,12 @@ export class TracksService {
     if (!query) return [];
 
     const normalizedQuery = query.toLowerCase();
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     return this.trackModel
       .find({
         $or: [
-          { $text: { $search: query } },
+          { title: { $regex: `^${escapedQuery}`, $options: 'i' } },
           { genre: normalizedQuery },
         ],
       })

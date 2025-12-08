@@ -49,10 +49,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { Sidebar } from '@/shared/components/layout/Sidebar';
-import { TopBar } from '@/shared/components/layout/TopBar';
-import { PlayerBar } from '@/shared/components/layout/PlayerBar';
-import { QueuePanel } from '@/shared/components/layout/QueuePanel';
+import { MainLayout } from '@/shared/components/layout/MainLayout';
 import { EmptyState } from '@/shared/components/common/EmptyState';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { usePlayer } from '@/shared/contexts/PlayerContext';
@@ -405,57 +402,53 @@ export default function PlaylistPage() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen bg-spotify-black">
-        <Sidebar />
-        <main className="ml-64 pb-24">
-          {/* Header skeleton */}
-          <div className="bg-gradient-to-b from-purple-800 to-spotify-dark-gray p-8">
-            <div className="flex items-end gap-6">
-              <Skeleton className="h-56 w-56 rounded" />
-              <div className="flex-1">
-                <Skeleton className="mb-2 h-4 w-20" />
-                <Skeleton className="mb-6 h-16 w-64" />
-                <Skeleton className="h-4 w-48" />
-              </div>
+      <MainLayout showTopBar={false}>
+        {/* Header skeleton */}
+        <div className="bg-gradient-to-b from-purple-800 to-spotify-dark-gray p-8">
+          <div className="flex items-end gap-6">
+            <Skeleton className="h-56 w-56 rounded" />
+            <div className="flex-1">
+              <Skeleton className="mb-2 h-4 w-20" />
+              <Skeleton className="mb-6 h-16 w-64" />
+              <Skeleton className="h-4 w-48" />
             </div>
           </div>
-          {/* Controls skeleton */}
-          <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-8 py-6">
-            <Skeleton className="h-14 w-14 rounded-full" />
+        </div>
+        {/* Controls skeleton */}
+        <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-8 py-6">
+          <Skeleton className="h-14 w-14 rounded-full" />
+        </div>
+        {/* Tracks skeleton */}
+        <div className="px-8">
+          <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-spotify-light-gray px-4 pb-2">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-4" />
           </div>
-          {/* Tracks skeleton */}
-          <div className="px-8">
-            <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-spotify-light-gray px-4 pb-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 px-4 py-2"
+            >
               <Skeleton className="h-4 w-4" />
               <Skeleton className="h-4 w-4" />
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-4 w-4" />
-              <Skeleton className="h-4 w-4" />
-            </div>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 px-4 py-2"
-              >
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-4 w-4" />
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded" />
-                  <div>
-                    <Skeleton className="mb-1 h-4 w-32" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded" />
+                <div>
+                  <Skeleton className="mb-1 h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
                 </div>
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-10" />
-                <Skeleton className="h-4 w-4" />
               </div>
-            ))}
-          </div>
-        </main>
-        <PlayerBar />
-      </div>
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-10" />
+              <Skeleton className="h-4 w-4" />
+            </div>
+          ))}
+        </div>
+      </MainLayout>
     );
   }
 
@@ -465,16 +458,14 @@ export default function PlaylistPage() {
 
   if (!playlist) {
     return (
-      <div className="min-h-screen bg-spotify-black">
-        <Sidebar />
-        <main className="ml-64 flex items-center justify-center pb-24">
+      <MainLayout>
+        <div className="flex items-center justify-center p-8">
           <EmptyState
             title="Playlist not found"
             description="This playlist doesn't exist or you don't have access to it"
           />
-        </main>
-        <PlayerBar />
-      </div>
+        </div>
+      </MainLayout>
     );
   }
 
@@ -488,12 +479,9 @@ export default function PlaylistPage() {
     playlist.trackIds.some((t) => t._id === state.currentTrack?._id);
 
   return (
-    <div className="min-h-screen bg-spotify-black">
-      <Sidebar />
-      <main className="ml-64 pb-24">
-        <TopBar />
-        {/* Playlist Header */}
-        <div className="bg-gradient-to-b from-purple-800 to-spotify-dark-gray p-8">
+    <MainLayout>
+      {/* Playlist Header */}
+      <div className="bg-gradient-to-b from-purple-800 to-spotify-dark-gray p-8">
           <div className="flex items-end gap-6">
             <div className="relative h-56 w-56 overflow-hidden rounded shadow-2xl">
               {playlist.coverImageUrl ? (
@@ -618,9 +606,6 @@ export default function PlaylistPage() {
             />
           )}
         </div>
-      </main>
-      <PlayerBar />
-      <QueuePanel />
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -704,6 +689,6 @@ export default function PlaylistPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </MainLayout>
   );
 }

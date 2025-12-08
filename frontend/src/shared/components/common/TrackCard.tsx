@@ -34,6 +34,7 @@ export function TrackCard({ track, className, onAddToPlaylist }: TrackCardProps)
     typeof track.albumId === 'object' ? track.albumId.coverImageUrl : undefined;
 
   const handlePlayClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (isCurrentTrack) {
       togglePlayPause();

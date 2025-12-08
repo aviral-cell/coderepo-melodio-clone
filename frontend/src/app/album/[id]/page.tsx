@@ -9,10 +9,7 @@ import { Play, Pause, Music, Clock3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { Sidebar } from '@/shared/components/layout/Sidebar';
-import { TopBar } from '@/shared/components/layout/TopBar';
-import { PlayerBar } from '@/shared/components/layout/PlayerBar';
-import { QueuePanel } from '@/shared/components/layout/QueuePanel';
+import { MainLayout } from '@/shared/components/layout/MainLayout';
 import { EmptyState } from '@/shared/components/common/EmptyState';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { usePlayer } from '@/shared/contexts/PlayerContext';
@@ -82,23 +79,18 @@ export default function AlbumPage() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen bg-spotify-black">
-        <Sidebar />
-        <main className="ml-64 pb-24">
-          <TopBar />
-          <div className="bg-gradient-to-b from-amber-800 to-spotify-dark-gray p-8">
-            <div className="flex items-end gap-6">
-              <Skeleton className="h-56 w-56 rounded" />
-              <div className="flex-1">
-                <Skeleton className="mb-2 h-4 w-16" />
-                <Skeleton className="mb-6 h-16 w-64" />
-                <Skeleton className="h-4 w-48" />
-              </div>
+      <MainLayout>
+        <div className="bg-gradient-to-b from-amber-800 to-spotify-dark-gray p-8">
+          <div className="flex items-end gap-6">
+            <Skeleton className="h-56 w-56 rounded" />
+            <div className="flex-1">
+              <Skeleton className="mb-2 h-4 w-16" />
+              <Skeleton className="mb-6 h-16 w-64" />
+              <Skeleton className="h-4 w-48" />
             </div>
           </div>
-        </main>
-        <PlayerBar />
-      </div>
+        </div>
+      </MainLayout>
     );
   }
 
@@ -108,17 +100,14 @@ export default function AlbumPage() {
 
   if (!album) {
     return (
-      <div className="min-h-screen bg-spotify-black">
-        <Sidebar />
-        <main className="ml-64 flex items-center justify-center pb-24">
-          <TopBar />
+      <MainLayout>
+        <div className="flex items-center justify-center p-8">
           <EmptyState
             title="Album not found"
             description="This album doesn't exist or has been removed"
           />
-        </main>
-        <PlayerBar />
-      </div>
+        </div>
+      </MainLayout>
     );
   }
 
@@ -132,12 +121,9 @@ export default function AlbumPage() {
     state.isPlaying && tracks.some((t) => t._id === state.currentTrack?._id);
 
   return (
-    <div className="min-h-screen bg-spotify-black">
-      <Sidebar />
-      <main className="ml-64 pb-24">
-        <TopBar />
-        {/* Album Header */}
-        <div className="bg-gradient-to-b from-amber-800 to-spotify-dark-gray p-8">
+    <MainLayout>
+      {/* Album Header */}
+      <div className="bg-gradient-to-b from-amber-800 to-spotify-dark-gray p-8">
           <div className="flex items-end gap-6">
             <div className="relative h-56 w-56 overflow-hidden rounded shadow-2xl">
               {album.coverImageUrl ? (
@@ -280,9 +266,6 @@ export default function AlbumPage() {
             />
           )}
         </div>
-      </main>
-      <PlayerBar />
-      <QueuePanel />
-    </div>
+    </MainLayout>
   );
 }

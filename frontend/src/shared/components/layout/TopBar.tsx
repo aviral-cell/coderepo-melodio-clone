@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, LogOut, User } from 'lucide-react';
 
 import { Input } from '@/shared/components/ui/input';
@@ -14,8 +14,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
+import { SearchDropdown } from '@/shared/components/common/SearchDropdown';
 import { useAuth } from '@/shared/contexts/AuthContext';
-import { useDebounce } from '@/shared/hooks/useDebounce';
+import { usePlayer } from '@/shared/contexts/PlayerContext';
+import { TrackWithPopulated } from '@/shared/types/track.types';
 
 interface TopBarProps {
   initialQuery?: string;
@@ -23,31 +25,64 @@ interface TopBarProps {
 
 export function TopBar({ initialQuery = '' }: TopBarProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { playTrack } = usePlayer();
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const debouncedQuery = useDebounce(searchQuery, 300);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Navigate to search page when debounced query changes
+  // Open dropdown when query has content
   useEffect(() => {
-    if (debouncedQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(debouncedQuery.trim())}`);
-    } else if (pathname === '/search' && !debouncedQuery.trim()) {
-      // If on search page and query is cleared, stay on search page
-      router.push('/search');
-    }
-  }, [debouncedQuery, router, pathname]);
+    setIsDropdownOpen(searchQuery.trim().length > 0);
+  }, [searchQuery]);
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      // Immediate navigation on Enter key
-      if (searchQuery.trim()) {
-        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  // Click outside detection
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
       }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Escape key handler
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
+
+  const handleSearch = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    // Do not navigate anywhere - just prevent default
+  }, []);
+
+  const handleTrackSelect = useCallback(
+    (track: TrackWithPopulated) => {
+      playTrack(track);
+      setIsDropdownOpen(false);
     },
-    [searchQuery, router],
+    [playTrack],
   );
+
+  const handleCloseDropdown = useCallback(() => {
+    setIsDropdownOpen(false);
+  }, []);
 
   const handleLogout = useCallback(async () => {
     await logout();
@@ -63,7 +98,7 @@ export function TopBar({ initialQuery = '' }: TopBarProps) {
 
       {/* Center: Search Bar */}
       <form onSubmit={handleSearch} className="flex-1 max-w-xl">
-        <div className="relative">
+        <div ref={searchContainerRef} className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-spotify-text-subdued" />
           <Input
             type="text"
@@ -71,6 +106,12 @@ export function TopBar({ initialQuery = '' }: TopBarProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-full border-0 bg-spotify-dark-gray py-2 pl-10 pr-4 text-sm text-white placeholder:text-spotify-text-subdued focus:ring-2 focus:ring-white"
+          />
+          <SearchDropdown
+            query={searchQuery}
+            isOpen={isDropdownOpen}
+            onClose={handleCloseDropdown}
+            onTrackSelect={handleTrackSelect}
           />
         </div>
       </form>
@@ -87,7 +128,7 @@ export function TopBar({ initialQuery = '' }: TopBarProps) {
                 {userInitial}
               </div>
               <span className="hidden text-sm text-white sm:inline">
-                {user?.username || 'User'}
+                {user?.displayName?.split(' ')[0] || 'User'}
               </span>
             </Button>
           </DropdownMenuTrigger>

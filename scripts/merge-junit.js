@@ -1,15 +1,25 @@
 /**
- * Merge JUnit XML files from backend and frontend into a single root-level junit.xml
- * This script is used for HackerRank scoring which expects a single junit.xml at root
+ * Merge JUnit XML files from task-specific tests into a single junit.xml
+ * This script is used for HackerRank scoring which expects a single junit.xml
+ *
+ * Reads: output/task1.xml, output/task2.xml, output/task3.xml
+ * Outputs: output/junit.xml
  */
 
 const fs = require("fs");
 const path = require("path");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
-const BACKEND_JUNIT = path.join(ROOT_DIR, "backend", "test-results", "junit.xml");
-const FRONTEND_JUNIT = path.join(ROOT_DIR, "frontend", "test-results", "junit.xml");
-const OUTPUT_FILE = path.join(ROOT_DIR, "junit.xml");
+const OUTPUT_DIR = path.join(ROOT_DIR, "output");
+
+// Task-specific XML files
+const TASK_FILES = [
+	{ name: "Task 1 - Debounce", file: path.join(OUTPUT_DIR, "task1.xml") },
+	{ name: "Task 2 - Shuffle", file: path.join(OUTPUT_DIR, "task2.xml") },
+	{ name: "Task 3 - Interval", file: path.join(OUTPUT_DIR, "task3.xml") },
+];
+
+const OUTPUT_FILE = path.join(OUTPUT_DIR, "junit.xml");
 
 /**
  * Parse test suite data from JUnit XML content
@@ -20,8 +30,7 @@ function parseJUnitXML(content) {
 	const testSuites = [];
 
 	// Extract individual testsuites
-	const testSuiteRegex =
-		/<testsuite[^>]*>([\s\S]*?)<\/testsuite>/g;
+	const testSuiteRegex = /<testsuite[^>]*>([\s\S]*?)<\/testsuite>/g;
 	let match;
 
 	while ((match = testSuiteRegex.exec(content)) !== null) {
@@ -30,7 +39,7 @@ function parseJUnitXML(content) {
 
 	// Extract totals from testsuites root element
 	const totalsMatch = content.match(
-		/<testsuites[^>]*name="([^"]*)"[^>]*tests="(\d+)"[^>]*failures="(\d+)"[^>]*errors="(\d+)"[^>]*time="([^"]*)"[^>]*>/
+		/<testsuites[^>]*name="([^"]*)"[^>]*tests="(\d+)"[^>]*failures="(\d+)"[^>]*errors="(\d+)"[^>]*time="([^"]*)"/
 	);
 
 	return {
@@ -44,34 +53,45 @@ function parseJUnitXML(content) {
 }
 
 /**
+ * Ensure output directory exists
+ */
+function ensureOutputDir() {
+	if (!fs.existsSync(OUTPUT_DIR)) {
+		fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+		console.log(`Created output directory: ${OUTPUT_DIR}`);
+	}
+}
+
+/**
  * Merge multiple JUnit XML results into a single file
  */
 function mergeJUnitFiles() {
+	ensureOutputDir();
+
 	const results = [];
 
-	// Read backend junit.xml if exists
-	if (fs.existsSync(BACKEND_JUNIT)) {
-		const backendContent = fs.readFileSync(BACKEND_JUNIT, "utf-8");
-		const backendData = parseJUnitXML(backendContent);
-		results.push(backendData);
-		console.log(`Backend: ${backendData.tests} tests, ${backendData.failures} failures`);
-	} else {
-		console.warn("Backend junit.xml not found");
-	}
-
-	// Read frontend junit.xml if exists
-	if (fs.existsSync(FRONTEND_JUNIT)) {
-		const frontendContent = fs.readFileSync(FRONTEND_JUNIT, "utf-8");
-		const frontendData = parseJUnitXML(frontendContent);
-		results.push(frontendData);
-		console.log(`Frontend: ${frontendData.tests} tests, ${frontendData.failures} failures`);
-	} else {
-		console.warn("Frontend junit.xml not found");
+	// Read each task's junit.xml if it exists
+	for (const task of TASK_FILES) {
+		if (fs.existsSync(task.file)) {
+			const content = fs.readFileSync(task.file, "utf-8");
+			const data = parseJUnitXML(content);
+			results.push(data);
+			console.log(`${task.name}: ${data.tests} tests, ${data.failures} failures`);
+		} else {
+			console.warn(`${task.name}: junit.xml not found at ${task.file}`);
+		}
 	}
 
 	if (results.length === 0) {
 		console.error("No JUnit XML files found to merge");
-		process.exit(1);
+		// Create empty junit.xml for HackerRank
+		const emptyXML = `<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Jest Tests" tests="0" failures="0" errors="0" time="0">
+</testsuites>
+`;
+		fs.writeFileSync(OUTPUT_FILE, emptyXML, "utf-8");
+		console.log(`Created empty junit.xml at: ${OUTPUT_FILE}`);
+		process.exit(0);
 	}
 
 	// Aggregate totals
@@ -101,10 +121,9 @@ ${allTestSuites.join("\n")}
 	console.log(`\nMerged junit.xml created at: ${OUTPUT_FILE}`);
 	console.log(`Total: ${totals.tests} tests, ${totals.failures} failures, ${totals.errors} errors`);
 
-	// Exit with error code if there are failures
-	if (totals.failures > 0 || totals.errors > 0) {
-		process.exit(1);
-	}
+	// Always exit with 0 - let HackerRank evaluate based on test results
+	// The scoring is based on junit.xml content, not exit code
+	process.exit(0);
 }
 
 mergeJUnitFiles();

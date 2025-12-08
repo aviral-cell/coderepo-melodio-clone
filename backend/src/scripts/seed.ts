@@ -395,8 +395,8 @@ async function seed(): Promise<void> {
     console.log(`Users created: ${userCount}`);
     console.log('========================================');
     console.log('\nTest Users:');
-    console.log('  Email: test@hackify.com | Password: password123');
-    console.log('  Email: demo@hackify.com | Password: password123');
+    console.log('  Email: alex.morgan@hackify.com | Password: password123');
+    console.log('  Email: jordan.casey@hackify.com | Password: password123');
     console.log('========================================\n');
   } catch (error) {
     console.error('Seeding failed:', error);

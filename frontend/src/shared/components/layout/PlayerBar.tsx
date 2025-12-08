@@ -61,9 +61,9 @@ export function PlayerBar() {
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-40 h-[90px] border-t border-spotify-light-gray bg-spotify-dark-gray px-4">
-      <div className="flex h-full items-center justify-between">
-        {/* Left: Track Info */}
-        <div className="flex w-[30%] items-center gap-4">
+      <div className="flex h-full items-center justify-center sm:justify-between">
+        {/* Left: Track Info - hidden on mobile */}
+        <div className="hidden w-[30%] items-center gap-4 sm:flex">
           {currentTrack && (
             <>
               <div className="relative h-14 w-14 overflow-hidden rounded">
@@ -90,8 +90,8 @@ export function PlayerBar() {
           )}
         </div>
 
-        {/* Center: Player Controls */}
-        <div className="flex w-[40%] flex-col items-center gap-2">
+        {/* Center: Player Controls - full width on mobile, 40% on desktop */}
+        <div className="flex w-full flex-col items-center gap-2 sm:w-[40%]">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -174,8 +174,8 @@ export function PlayerBar() {
           </div>
         </div>
 
-        {/* Right: Volume & Queue */}
-        <div className="flex w-[30%] items-center justify-end gap-4">
+        {/* Right: Volume & Queue - hidden on mobile */}
+        <div className="hidden w-[30%] items-center justify-end gap-4 sm:flex">
           <Button
             variant="ghost"
             size="icon"
