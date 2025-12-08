@@ -11,6 +11,7 @@
     "test:task1": "cross-env JEST_JUNIT_OUTPUT_FILE=../output/task1.xml jest --testPathPattern='__tests__/task1'",
     "test:task2": "cross-env JEST_JUNIT_OUTPUT_FILE=../output/task2.xml jest --testPathPattern='__tests__/task2'",
     "test:task3": "cross-env JEST_JUNIT_OUTPUT_FILE=../output/task3.xml jest --testPathPattern='__tests__/task3'",
+    "test:task4": "cross-env JEST_JUNIT_OUTPUT_FILE=../output/task4.xml jest --testPathPattern='__tests__/task4'",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
