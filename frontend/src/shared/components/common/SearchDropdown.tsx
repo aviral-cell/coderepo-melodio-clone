@@ -1,12 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Music, Loader2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { searchService } from '@/shared/services/search.service';
-import { useDebounce } from '@/shared/hooks/useDebounce';
+import { useSearch } from '@/shared/hooks/useSearch';
 import { formatTime } from '@/shared/utils/formatters';
 import { TrackWithPopulated } from '@/shared/types/track.types';
 
@@ -23,36 +21,7 @@ export function SearchDropdown({
   onClose,
   onTrackSelect,
 }: SearchDropdownProps) {
-  const [tracks, setTracks] = useState<TrackWithPopulated[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const debouncedQuery = useDebounce(query, 300);
-
-  useEffect(() => {
-    if (!debouncedQuery.trim()) {
-      setTracks([]);
-      setError(null);
-      return;
-    }
-
-    const fetchResults = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const results = await searchService.search(debouncedQuery);
-        setTracks(results.tracks);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Search failed');
-        setTracks([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchResults();
-  }, [debouncedQuery]);
+  const { tracks, isLoading, error } = useSearch(query);
 
   const handleTrackClick = (track: TrackWithPopulated) => {
     onTrackSelect(track);
