@@ -2,12 +2,7 @@ version: 1.0
 configuration:
   has_webserver: true
   readonly_paths:
-    # Frontend test files (36 tests covering 4 tasks)
-    - frontend/__tests__/task1/usePlaylistOperations.test.ts
-    - frontend/__tests__/task2/playerReducer.test.ts
-    - frontend/__tests__/task3/useRecentlyPlayed.test.ts
-    - frontend/__tests__/task4/useSearch.test.ts
-    # Configuration files
+    - frontend/__tests__/*
     - frontend/jest.config.js
     - frontend/jest.setup.ts
   ide_config:

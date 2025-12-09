@@ -1,4 +1,5 @@
 # Exclude a specific file from the download zip
 **CLAUDE.md export-ignore
 **ARCHITECTURE.md export-ignore
+**README.md export-ignore
 **/docs/ export-ignore

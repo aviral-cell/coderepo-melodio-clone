@@ -176,5 +176,4 @@ spotify.txt
 **/.playwright-mcp
 
 **/junit.xml
-output/task*.xml
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,node
