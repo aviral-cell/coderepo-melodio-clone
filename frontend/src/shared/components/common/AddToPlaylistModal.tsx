@@ -105,14 +105,14 @@ export function AddToPlaylistModal({
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-md rounded-lg bg-spotify-dark-gray p-6 shadow-xl">
+      <div className="relative z-10 w-full max-w-md rounded-lg bg-hackify-dark-gray p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">Add to playlist</h2>
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="text-spotify-text-subdued hover:text-white"
+            className="text-hackify-text-subdued hover:text-white"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -126,13 +126,13 @@ export function AddToPlaylistModal({
               value={newPlaylistName}
               onChange={(e) => setNewPlaylistName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCreatePlaylist()}
-              className="bg-spotify-light-gray"
+              className="bg-hackify-light-gray"
               autoFocus
             />
             <Button
               onClick={handleCreatePlaylist}
               disabled={!newPlaylistName.trim() || isCreating}
-              className="bg-spotify-green hover:bg-spotify-green-dark"
+              className="bg-hackify-green hover:bg-hackify-green-dark"
             >
               {isCreating ? '...' : 'Create'}
             </Button>
@@ -140,10 +140,10 @@ export function AddToPlaylistModal({
         ) : (
           <button
             onClick={() => setShowNewPlaylistInput(true)}
-            className="mb-4 flex w-full items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-spotify-light-gray"
+            className="mb-4 flex w-full items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-hackify-light-gray"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded bg-spotify-light-gray">
-              <Plus className="h-6 w-6 text-spotify-text-subdued" />
+            <div className="flex h-12 w-12 items-center justify-center rounded bg-hackify-light-gray">
+              <Plus className="h-6 w-6 text-hackify-text-subdued" />
             </div>
             <span className="font-medium text-white">New playlist</span>
           </button>
@@ -152,11 +152,11 @@ export function AddToPlaylistModal({
         {/* Playlist List */}
         <div className="max-h-64 overflow-y-auto">
           {isLoading ? (
-            <div className="py-8 text-center text-spotify-text-subdued">
+            <div className="py-8 text-center text-hackify-text-subdued">
               Loading playlists...
             </div>
           ) : playlists.length === 0 ? (
-            <div className="py-8 text-center text-spotify-text-subdued">
+            <div className="py-8 text-center text-hackify-text-subdued">
               No playlists yet. Create one above!
             </div>
           ) : (
@@ -165,14 +165,14 @@ export function AddToPlaylistModal({
                 <button
                   key={playlist._id}
                   onClick={() => handleAddToPlaylist(playlist._id, playlist.name)}
-                  className="flex w-full items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-spotify-light-gray"
+                  className="flex w-full items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-hackify-light-gray"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded bg-spotify-light-gray">
-                    <Music className="h-5 w-5 text-spotify-text-subdued" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded bg-hackify-light-gray">
+                    <Music className="h-5 w-5 text-hackify-text-subdued" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-white">{playlist.name}</p>
-                    <p className="text-sm text-spotify-text-subdued">
+                    <p className="text-sm text-hackify-text-subdued">
                       {playlist.trackIds?.length || 0} tracks
                     </p>
                   </div>

@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-This document describes the architecture of Hackify, a Spotify-inspired music streaming application.
+This document describes the architecture of Hackify, a Hackify-inspired music streaming application.
 
 ## Table of Contents
 

@@ -80,7 +80,7 @@ export default function AlbumPage() {
   if (authLoading || isLoading) {
     return (
       <MainLayout>
-        <div className="bg-gradient-to-b from-amber-800 to-spotify-dark-gray p-8">
+        <div className="bg-gradient-to-b from-amber-800 to-hackify-dark-gray p-8">
           <div className="flex items-end gap-6">
             <Skeleton className="h-56 w-56 rounded" />
             <div className="flex-1">
@@ -123,7 +123,7 @@ export default function AlbumPage() {
   return (
     <MainLayout>
       {/* Album Header */}
-      <div className="bg-gradient-to-b from-amber-800 to-spotify-dark-gray p-8">
+      <div className="bg-gradient-to-b from-amber-800 to-hackify-dark-gray p-8">
           <div className="flex items-end gap-6">
             <div className="relative h-56 w-56 overflow-hidden rounded shadow-2xl">
               {album.coverImageUrl ? (
@@ -135,8 +135,8 @@ export default function AlbumPage() {
                   sizes="224px"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-spotify-light-gray">
-                  <Music className="h-20 w-20 text-spotify-text-subdued" />
+                <div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+                  <Music className="h-20 w-20 text-hackify-text-subdued" />
                 </div>
               )}
             </div>
@@ -145,10 +145,10 @@ export default function AlbumPage() {
               <h1 className="mb-4 text-5xl font-bold text-white">{album.title}</h1>
               <div className="flex items-center gap-2 text-sm">
                 <span className="font-semibold text-white">{artistName}</span>
-                <span className="text-spotify-text-subdued">-</span>
-                <span className="text-spotify-text-subdued">{releaseYear}</span>
-                <span className="text-spotify-text-subdued">-</span>
-                <span className="text-spotify-text-subdued">
+                <span className="text-hackify-text-subdued">-</span>
+                <span className="text-hackify-text-subdued">{releaseYear}</span>
+                <span className="text-hackify-text-subdued">-</span>
+                <span className="text-hackify-text-subdued">
                   {tracks.length} {tracks.length === 1 ? 'song' : 'songs'},{' '}
                   {formatDuration(totalDuration)}
                 </span>
@@ -158,10 +158,10 @@ export default function AlbumPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-8 py-6">
+        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-8 py-6">
           <Button
             size="lg"
-            className="h-14 w-14 rounded-full bg-spotify-green hover:scale-105 hover:bg-spotify-green-dark"
+            className="h-14 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
             onClick={handlePlayAll}
             disabled={tracks.length === 0}
             aria-label={isAlbumPlaying ? 'Pause' : 'Play all'}
@@ -179,7 +179,7 @@ export default function AlbumPage() {
           {tracks.length > 0 ? (
             <>
               {/* Header */}
-              <div className="mb-4 grid grid-cols-[16px_4fr_1fr] gap-4 border-b border-spotify-light-gray px-4 pb-2 text-spotify-text-subdued">
+              <div className="mb-4 grid grid-cols-[16px_4fr_1fr] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued">
                 <span className="text-sm">#</span>
                 <span className="text-sm">Title</span>
                 <span className="flex justify-end">
@@ -196,8 +196,8 @@ export default function AlbumPage() {
                   <div
                     key={track._id}
                     className={cn(
-                      'group grid cursor-pointer grid-cols-[16px_4fr_1fr] items-center gap-4 rounded-md px-4 py-2 transition-colors hover:bg-spotify-light-gray',
-                      isCurrentTrack && 'bg-spotify-light-gray/50',
+                      'group grid cursor-pointer grid-cols-[16px_4fr_1fr] items-center gap-4 rounded-md px-4 py-2 transition-colors hover:bg-hackify-light-gray',
+                      isCurrentTrack && 'bg-hackify-light-gray/50',
                     )}
                     onClick={() => handleTrackPlay(track, index)}
                     role="button"
@@ -214,14 +214,14 @@ export default function AlbumPage() {
                       <span
                         className={cn(
                           'text-sm group-hover:hidden',
-                          isCurrentTrack ? 'text-spotify-green' : 'text-spotify-text-subdued',
+                          isCurrentTrack ? 'text-hackify-green' : 'text-hackify-text-subdued',
                         )}
                       >
                         {isCurrentTrack && isPlaying ? (
                           <span className="flex items-center gap-0.5">
-                            <span className="h-2 w-0.5 animate-pulse bg-spotify-green" />
-                            <span className="h-3 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.2s' }} />
-                            <span className="h-1.5 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.4s' }} />
+                            <span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
+                            <span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.2s' }} />
+                            <span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.4s' }} />
                           </span>
                         ) : (
                           track.trackNumber
@@ -242,17 +242,17 @@ export default function AlbumPage() {
                         href={`/track/${track._id}`}
                         className={cn(
                           'block truncate text-sm font-medium hover:underline',
-                          isCurrentTrack ? 'text-spotify-green' : 'text-white',
+                          isCurrentTrack ? 'text-hackify-green' : 'text-white',
                         )}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {track.title}
                       </Link>
-                      <p className="truncate text-xs text-spotify-text-subdued">{artistName}</p>
+                      <p className="truncate text-xs text-hackify-text-subdued">{artistName}</p>
                     </div>
 
                     {/* Duration */}
-                    <span className="text-right text-sm text-spotify-text-subdued">
+                    <span className="text-right text-sm text-hackify-text-subdued">
                       {formatTime(track.durationInSeconds)}
                     </span>
                   </div>

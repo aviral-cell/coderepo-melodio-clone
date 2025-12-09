@@ -51,7 +51,7 @@ export function TrackCard({ track, className, onAddToPlaylist }: TrackCardProps)
     <Link
       href={`/track/${track._id}`}
       className={cn(
-        'group relative block cursor-pointer rounded-md bg-spotify-dark-gray p-4 transition-colors hover:bg-spotify-light-gray',
+        'group relative block cursor-pointer rounded-md bg-hackify-dark-gray p-4 transition-colors hover:bg-hackify-light-gray',
         className,
       )}
     >
@@ -66,8 +66,8 @@ export function TrackCard({ track, className, onAddToPlaylist }: TrackCardProps)
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-spotify-light-gray">
-            <Play className="h-12 w-12 text-spotify-text-subdued" />
+          <div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+            <Play className="h-12 w-12 text-hackify-text-subdued" />
           </div>
         )}
 
@@ -75,7 +75,7 @@ export function TrackCard({ track, className, onAddToPlaylist }: TrackCardProps)
         <Button
           size="icon"
           className={cn(
-            'absolute bottom-2 right-2 h-12 w-12 rounded-full bg-spotify-green shadow-xl transition-all hover:scale-105 hover:bg-spotify-green-dark',
+            'absolute bottom-2 right-2 h-12 w-12 rounded-full bg-hackify-green shadow-xl transition-all hover:scale-105 hover:bg-hackify-green-dark',
             isPlaying
               ? 'translate-y-0 opacity-100'
               : 'translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100',
@@ -93,7 +93,7 @@ export function TrackCard({ track, className, onAddToPlaylist }: TrackCardProps)
       {/* Track Info */}
       <div className="min-w-0">
         <h3 className="truncate text-base font-semibold text-white">{track.title}</h3>
-        <p className="truncate text-sm text-spotify-text-subdued">{artistName}</p>
+        <p className="truncate text-sm text-hackify-text-subdued">{artistName}</p>
       </div>
 
       {/* More Options */}

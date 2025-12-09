@@ -1,6 +1,6 @@
-# Spotify Clone — Feature Summary
+# Hackify Clone — Feature Summary
 
-**Purpose:** HackerRank debugging challenge  
+**Purpose:** HackerRank debugging challenge
 **Total Features:** 7 (3 frontend + 4 full-stack)
 
 ---

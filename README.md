@@ -1,10 +1,10 @@
 # Hackify - Music Player State Management Challenge
 
-A full-stack music streaming application inspired by Spotify, built with the MNN Stack (MongoDB + Next.js + NestJS). Built as a HackerRank assessment to evaluate React state management and debugging skills.
+A full-stack music streaming application inspired by Hackify, built with the MNN Stack (MongoDB + Next.js + NestJS). Built as a HackerRank assessment to evaluate React state management and debugging skills.
 
 ## Overview
 
-This project implements a Spotify-like music player with queue management, shuffle, repeat, and search functionality. The application compiles and runs successfully, but contains **4 intentional bugs** in the frontend that you must identify and fix.
+This project implements a Hackify-like music player with queue management, shuffle, repeat, and search functionality. The application compiles and runs successfully, but contains **4 intentional bugs** in the frontend that you must identify and fix.
 
 ### Key Features
 
@@ -79,7 +79,7 @@ For detailed bug descriptions, see [PROBLEM_STATEMENT.md](./PROBLEM_STATEMENT.md
 ## Project Structure
 
 ```
-spotify-mern-app/
+hackify-mern-app/
 ├── backend/                      # NestJS API
 │   ├── src/
 │   │   ├── shared/               # Config, guards, pipes
@@ -202,7 +202,7 @@ interface PlayerState {
 ```env
 NODE_ENV=development
 APP_PORT=5000
-MONGODB_URI=mongodb://root:Root123@localhost:27017/spotify_clone?authSource=admin
+MONGODB_URI=mongodb://root:Root123@localhost:27017/hackify_clone?authSource=admin
 JWT_SECRET=your-secret-key
 JWT_EXPIRATION=7d
 ```

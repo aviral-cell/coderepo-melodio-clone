@@ -2,7 +2,7 @@
 
 ## Overview
 
-You are provided with **Hackify**, a Spotify-inspired music streaming application built using Next.js 15 (frontend) and NestJS (backend) with MongoDB. The application features a music player with queue management, shuffle, repeat, and search functionality.
+You are provided with **Hackify**, a Hackify-inspired music streaming application built using Next.js 15 (frontend) and NestJS (backend) with MongoDB. The application features a music player with queue management, shuffle, repeat, and search functionality.
 
 The application compiles and runs successfully. However, it contains **3 bugs** in the frontend that you must identify and fix through code review. These bugs affect the music player's state management and user experience.
 

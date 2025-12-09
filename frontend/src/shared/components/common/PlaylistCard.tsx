@@ -20,7 +20,7 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
     <Link
       href={`/playlist/${playlist._id}`}
       className={cn(
-        'group relative block cursor-pointer rounded-md bg-spotify-dark-gray p-4 transition-colors hover:bg-spotify-light-gray',
+        'group relative block cursor-pointer rounded-md bg-hackify-dark-gray p-4 transition-colors hover:bg-hackify-light-gray',
         className,
       )}
     >
@@ -43,7 +43,7 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
         {/* Play Button Overlay */}
         <Button
           size="icon"
-          className="absolute bottom-2 right-2 h-12 w-12 translate-y-2 rounded-full bg-spotify-green opacity-0 shadow-xl transition-all hover:scale-105 hover:bg-spotify-green-dark group-hover:translate-y-0 group-hover:opacity-100"
+          className="absolute bottom-2 right-2 h-12 w-12 translate-y-2 rounded-full bg-hackify-green opacity-0 shadow-xl transition-all hover:scale-105 hover:bg-hackify-green-dark group-hover:translate-y-0 group-hover:opacity-100"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -57,7 +57,7 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
       {/* Playlist Info */}
       <div className="min-w-0">
         <h3 className="truncate text-base font-semibold text-white">{playlist.name}</h3>
-        <p className="truncate text-sm text-spotify-text-subdued">
+        <p className="truncate text-sm text-hackify-text-subdued">
           {trackCount} {trackCount === 1 ? 'track' : 'tracks'}
         </p>
       </div>

@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useRecentlyPlayed } from '../../src/shared/hooks/useRecentlyPlayed';
 import { TrackWithPopulated } from '../../src/shared/types/track.types';
 
-const STORAGE_KEY = 'spotify_clone_recently_played';
+const STORAGE_KEY = 'hackify_clone_recently_played';
 const MAX_RECENT_TRACKS = 10;
 
 // Mock localStorage

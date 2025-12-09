@@ -106,15 +106,15 @@ function SortableTrackRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] items-center gap-4 rounded-md px-4 py-2 transition-colors hover:bg-spotify-light-gray',
-        isCurrentTrack && 'bg-spotify-light-gray/50',
+        'group grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] items-center gap-4 rounded-md px-4 py-2 transition-colors hover:bg-hackify-light-gray',
+        isCurrentTrack && 'bg-hackify-light-gray/50',
       )}
     >
       {/* Drag Handle */}
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab text-spotify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+        className="cursor-grab text-hackify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
         aria-label="Drag to reorder"
       >
         <GripVertical className="h-4 w-4" />
@@ -125,14 +125,14 @@ function SortableTrackRow({
         <span
           className={cn(
             'text-sm group-hover:hidden',
-            isCurrentTrack ? 'text-spotify-green' : 'text-spotify-text-subdued',
+            isCurrentTrack ? 'text-hackify-green' : 'text-hackify-text-subdued',
           )}
         >
           {isCurrentTrack && isPlaying ? (
             <span className="flex items-center gap-0.5">
-              <span className="h-2 w-0.5 animate-pulse bg-spotify-green" />
-              <span className="h-3 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.2s' }} />
-              <span className="h-1.5 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.4s' }} />
+              <span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
+              <span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.2s' }} />
+              <span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.4s' }} />
             </span>
           ) : (
             index + 1
@@ -163,8 +163,8 @@ function SortableTrackRow({
               sizes="40px"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-spotify-light-gray">
-              <Music className="h-4 w-4 text-spotify-text-subdued" />
+            <div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+              <Music className="h-4 w-4 text-hackify-text-subdued" />
             </div>
           )}
         </div>
@@ -172,20 +172,20 @@ function SortableTrackRow({
           <p
             className={cn(
               'truncate text-sm font-medium',
-              isCurrentTrack ? 'text-spotify-green' : 'text-white',
+              isCurrentTrack ? 'text-hackify-green' : 'text-white',
             )}
           >
             {track.title}
           </p>
-          <p className="truncate text-xs text-spotify-text-subdued">{artistName}</p>
+          <p className="truncate text-xs text-hackify-text-subdued">{artistName}</p>
         </div>
       </div>
 
       {/* Album */}
-      <span className="truncate text-sm text-spotify-text-subdued">{albumTitle}</span>
+      <span className="truncate text-sm text-hackify-text-subdued">{albumTitle}</span>
 
       {/* Duration */}
-      <span className="text-sm text-spotify-text-subdued">
+      <span className="text-sm text-hackify-text-subdued">
         {formatTime(track.durationInSeconds)}
       </span>
 
@@ -197,7 +197,7 @@ function SortableTrackRow({
             size="icon"
             className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
           >
-            <MoreHorizontal className="h-4 w-4 text-spotify-text-subdued" />
+            <MoreHorizontal className="h-4 w-4 text-hackify-text-subdued" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -369,7 +369,7 @@ export default function PlaylistPage() {
     return (
       <MainLayout showTopBar={false}>
         {/* Header skeleton */}
-        <div className="bg-gradient-to-b from-purple-800 to-spotify-dark-gray p-8">
+        <div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-8">
           <div className="flex items-end gap-6">
             <Skeleton className="h-56 w-56 rounded" />
             <div className="flex-1">
@@ -380,12 +380,12 @@ export default function PlaylistPage() {
           </div>
         </div>
         {/* Controls skeleton */}
-        <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-8 py-6">
+        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-8 py-6">
           <Skeleton className="h-14 w-14 rounded-full" />
         </div>
         {/* Tracks skeleton */}
         <div className="px-8">
-          <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-spotify-light-gray px-4 pb-2">
+          <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2">
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-4 w-20" />
@@ -446,7 +446,7 @@ export default function PlaylistPage() {
   return (
     <MainLayout>
       {/* Playlist Header */}
-      <div className="bg-gradient-to-b from-purple-800 to-spotify-dark-gray p-8">
+      <div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-8">
           <div className="flex items-end gap-6">
             <div className="relative h-56 w-56 overflow-hidden rounded shadow-2xl">
               {playlist.coverImageUrl ? (
@@ -467,11 +467,11 @@ export default function PlaylistPage() {
               <p className="text-sm font-medium text-white">Playlist</p>
               <h1 className="mb-6 text-6xl font-bold text-white">{playlist.name}</h1>
               {playlist.description && (
-                <p className="mb-2 text-sm text-spotify-text-subdued">
+                <p className="mb-2 text-sm text-hackify-text-subdued">
                   {playlist.description}
                 </p>
               )}
-              <p className="text-sm text-spotify-text-subdued">
+              <p className="text-sm text-hackify-text-subdued">
                 {playlist.trackIds.length}{' '}
                 {playlist.trackIds.length === 1 ? 'track' : 'tracks'}
                 {totalDuration > 0 && ` - ${formatDuration(totalDuration)}`}
@@ -481,11 +481,11 @@ export default function PlaylistPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-8 py-6">
+        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-8 py-6">
           <div className="flex items-center gap-6">
             <Button
               size="lg"
-              className="h-14 w-14 rounded-full bg-spotify-green hover:scale-105 hover:bg-spotify-green-dark"
+              className="h-14 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
               onClick={handlePlayAll}
               disabled={playlist.trackIds.length === 0}
               aria-label={isPlaylistPlaying ? 'Pause' : 'Play all'}
@@ -502,7 +502,7 @@ export default function PlaylistPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 text-spotify-text-subdued hover:text-white"
+                  className="h-10 w-10 text-hackify-text-subdued hover:text-white"
                 >
                   <MoreHorizontal className="h-6 w-6" />
                 </Button>
@@ -529,7 +529,7 @@ export default function PlaylistPage() {
           {playlist.trackIds.length > 0 ? (
             <>
               {/* Header */}
-              <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-spotify-light-gray px-4 pb-2 text-spotify-text-subdued">
+              <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued">
                 <span />
                 <span className="text-sm">#</span>
                 <span className="text-sm">Title</span>
@@ -574,7 +574,7 @@ export default function PlaylistPage() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="border-spotify-light-gray bg-spotify-dark-gray sm:max-w-md">
+        <DialogContent className="border-hackify-light-gray bg-hackify-dark-gray sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">Edit Playlist</DialogTitle>
             <DialogDescription>
@@ -592,7 +592,7 @@ export default function PlaylistPage() {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="bg-spotify-light-gray"
+                  className="bg-hackify-light-gray"
                 />
               </div>
               <div className="space-y-2">
@@ -604,7 +604,7 @@ export default function PlaylistPage() {
                   type="text"
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="bg-spotify-light-gray"
+                  className="bg-hackify-light-gray"
                 />
               </div>
             </div>
@@ -627,7 +627,7 @@ export default function PlaylistPage() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="border-spotify-light-gray bg-spotify-dark-gray sm:max-w-md">
+        <DialogContent className="border-hackify-light-gray bg-hackify-dark-gray sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">Delete Playlist</DialogTitle>
             <DialogDescription>

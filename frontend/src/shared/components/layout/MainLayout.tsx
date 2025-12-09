@@ -19,7 +19,7 @@ export function MainLayout({ children, initialSearchQuery, showTopBar = true }: 
   const { isCollapsed } = useSidebar();
 
   return (
-    <div className="min-h-screen bg-spotify-black">
+    <div className="min-h-screen bg-hackify-black">
       <Sidebar />
       <main
         className={cn(

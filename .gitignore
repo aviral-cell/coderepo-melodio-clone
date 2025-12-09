@@ -172,7 +172,7 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
-spotify.txt
+hackify.txt
 **/.playwright-mcp
 
 **/junit.xml

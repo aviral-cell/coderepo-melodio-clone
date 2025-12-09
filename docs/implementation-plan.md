@@ -1,10 +1,10 @@
-# Spotify Clone - Implementation Plan
+# Hackify Clone - Implementation Plan
 
 ## Document Information
 
 | Field | Value |
 |-------|-------|
-| Project | Spotify Clone for HackerRank Debugging Challenge |
+| Project | Hackify Clone for HackerRank Debugging Challenge |
 | Stack | MNN (MongoDB + Next.js + NestJS) |
 | Version | 1.0 |
 | Status | Ready for Development |
@@ -30,12 +30,12 @@
 ### 1.1 Root Structure
 
 ```
-spotify-mern-app/
+hackify-mern-app/
 ├── backend/                    # NestJS API
 ├── frontend/                   # Next.js App
 ├── docs/                       # Documentation
-│   ├── spotify-clone-prd.md
-│   ├── spotify-clone-features-summary.md
+│   ├── hackify-clone-prd.md
+│   ├── hackify-clone-features-summary.md
 │   └── implementation-plan.md
 ├── .gitignore
 └── README.md
@@ -453,7 +453,7 @@ frontend/
 | `src/app/layout.tsx` | Root layout with fonts, metadata |
 | `src/app/globals.css` | Tailwind imports + CSS variables for dark theme |
 | `src/app/providers.tsx` | Wrap app in context providers |
-| `tailwind.config.ts` | Dark theme configuration, Spotify colors |
+| `tailwind.config.ts` | Dark theme configuration, Hackify colors |
 | `components.json` | Shadcn configuration pointing to shared/components/ui |
 | `src/lib/utils.ts` | cn() utility for Shadcn |
 | `src/shared/services/api.service.ts` | Base fetch wrapper with error handling |
@@ -829,7 +829,7 @@ score = SUM(1 / (1 + daysAgo * 0.1)) for each play
 
 ### Phase 8: Layout and Navigation (Day 18)
 
-**Goal**: Complete Spotify-like layout.
+**Goal**: Complete Hackify-like layout.
 
 #### Frontend Tasks
 
@@ -1784,7 +1784,7 @@ APP_PORT=5000
 APP_PREFIX=/api
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/spotify-clone
+MONGODB_URI=mongodb://localhost:27017/hackify-clone
 
 # Auth
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
@@ -1803,17 +1803,17 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 
 ---
 
-## Appendix B: Spotify Color Palette
+## Appendix B: Hackify Color Palette
 
 ```css
 :root {
-  --spotify-green: #1db954;
-  --spotify-green-hover: #1ed760;
-  --spotify-black: #121212;
-  --spotify-dark-gray: #181818;
-  --spotify-gray: #282828;
-  --spotify-light-gray: #b3b3b3;
-  --spotify-white: #ffffff;
+  --hackify-green: #1db954;
+  --hackify-green-hover: #1ed760;
+  --hackify-black: #121212;
+  --hackify-dark-gray: #181818;
+  --hackify-gray: #282828;
+  --hackify-light-gray: #b3b3b3;
+  --hackify-white: #ffffff;
 }
 ```
 

@@ -78,7 +78,7 @@ export default function GenrePage() {
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-spotify-black">
+      <div className="flex min-h-screen items-center justify-center bg-hackify-black">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -99,7 +99,7 @@ export default function GenrePage() {
             <div className="mb-6">
               <Button
                 variant="ghost"
-                className="mb-4 text-spotify-text-subdued hover:text-white"
+                className="mb-4 text-hackify-text-subdued hover:text-white"
                 onClick={handleBackClick}
               >
                 <ChevronLeft className="mr-2 h-4 w-4" />
@@ -114,7 +114,7 @@ export default function GenrePage() {
             {isLoading ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
                 {Array.from({ length: 10 }).map((_, index) => (
-                  <div key={index} className="rounded-md bg-spotify-dark-gray p-4">
+                  <div key={index} className="rounded-md bg-hackify-dark-gray p-4">
                     <Skeleton className="mb-4 aspect-square w-full rounded-md" />
                     <Skeleton className="mb-2 h-4 w-3/4" />
                     <Skeleton className="h-3 w-1/2" />
@@ -128,7 +128,7 @@ export default function GenrePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-spotify-text-subdued">
+              <p className="text-hackify-text-subdued">
                 No tracks found for this genre.
               </p>
             )}

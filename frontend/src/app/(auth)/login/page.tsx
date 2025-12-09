@@ -38,7 +38,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full max-w-md border-spotify-light-gray bg-spotify-dark-gray">
+    <Card className="w-full max-w-md border-hackify-light-gray bg-hackify-dark-gray">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl text-white">Log in to Hackify</CardTitle>
         <CardDescription>Enter your credentials to continue</CardDescription>
@@ -56,7 +56,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-spotify-light-gray"
+              className="bg-hackify-light-gray"
             />
           </div>
 
@@ -71,7 +71,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="bg-spotify-light-gray"
+              className="bg-hackify-light-gray"
             />
           </div>
 
@@ -81,7 +81,7 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <span className="text-sm text-spotify-text-subdued">
+          <span className="text-sm text-hackify-text-subdued">
             Don&apos;t have an account?{' '}
           </span>
           <Link

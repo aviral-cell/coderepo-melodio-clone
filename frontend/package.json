@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "Spotify Clone Frontend - Next.js + React",
+  "description": "Hackify Clone Frontend - Next.js + React",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",

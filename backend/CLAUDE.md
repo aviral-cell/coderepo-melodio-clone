@@ -146,7 +146,7 @@ All endpoints are prefixed with `/api/v1/`
 ```env
 NODE_ENV=development
 APP_PORT=5000
-MONGODB_URI=mongodb://root:Root123@localhost:27017/spotify_clone?authSource=admin
+MONGODB_URI=mongodb://root:Root123@localhost:27017/hackify_clone?authSource=admin
 JWT_SECRET=your-secret-key
 JWT_EXPIRATION=7d
 ```

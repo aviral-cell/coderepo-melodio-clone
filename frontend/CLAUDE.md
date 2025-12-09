@@ -254,11 +254,11 @@ describe('TrackCard', () => {
 ```javascript
 // tailwind.config.ts
 colors: {
-  'spotify-green': '#1DB954',
-  'spotify-black': '#121212',
-  'spotify-dark-gray': '#181818',
-  'spotify-light-gray': '#282828',
-  'spotify-text-subdued': '#B3B3B3',
+  'hackify-green': '#1DB954',
+  'hackify-black': '#121212',
+  'hackify-dark-gray': '#181818',
+  'hackify-light-gray': '#282828',
+  'hackify-text-subdued': '#B3B3B3',
 }
 ```
 

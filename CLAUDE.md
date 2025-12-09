@@ -1,4 +1,4 @@
-# Hackify - Spotify Clone (HackerRank Challenge)
+# Hackify - Hackify Clone (HackerRank Challenge)
 
 ## Overview
 
@@ -19,7 +19,7 @@ A full-stack music streaming application built with the MNN Stack (MongoDB + Nex
 ## Project Structure
 
 ```
-spotify-mern-app/
+hackify-mern-app/
 ├── backend/                  # NestJS API (see backend/CLAUDE.md)
 │   ├── src/
 │   │   ├── features/         # Feature modules
@@ -33,8 +33,8 @@ spotify-mern-app/
 │   └── package.json
 │
 ├── docs/                     # Documentation
-│   ├── spotify-clone-prd.md
-│   ├── spotify-clone-features-summary.md
+│   ├── hackify-clone-prd.md
+│   ├── hackify-clone-features-summary.md
 │   └── implementation-plan.md
 │
 ├── scripts/
@@ -99,7 +99,7 @@ npm test             # Run tests
 ```env
 NODE_ENV=development
 APP_PORT=5000
-MONGODB_URI=mongodb://root:Root123@localhost:27017/spotify_clone?authSource=admin
+MONGODB_URI=mongodb://root:Root123@localhost:27017/hackify_clone?authSource=admin
 JWT_SECRET=your-secret-key
 JWT_EXPIRATION=7d
 ```
@@ -187,5 +187,5 @@ Per project constraints, do NOT use:
 
 - Backend details: See `backend/CLAUDE.md`
 - Frontend details: See `frontend/CLAUDE.md`
-- Product Requirements: See `docs/spotify-clone-prd.md`
-- Feature Summary: See `docs/spotify-clone-features-summary.md`
+- Product Requirements: See `docs/hackify-clone-prd.md`
+- Feature Summary: See `docs/hackify-clone-features-summary.md`

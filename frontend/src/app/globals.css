@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  /* Spotify Theme Colors */
-  --spotify-green: #1DB954;
-  --spotify-green-dark: #1ed760;
-  --spotify-black: #121212;
-  --spotify-dark-gray: #181818;
-  --spotify-light-gray: #282828;
-  --spotify-text: #ffffff;
-  --spotify-text-subdued: #b3b3b3;
+  /* Hackify Theme Colors */
+  --hackify-green: #1DB954;
+  --hackify-green-dark: #1ed760;
+  --hackify-black: #121212;
+  --hackify-dark-gray: #181818;
+  --hackify-light-gray: #282828;
+  --hackify-text: #ffffff;
+  --hackify-text-subdued: #b3b3b3;
 
   /* Shadcn UI Variables - Dark Theme */
   --background: 0 0% 7%;
@@ -88,7 +88,7 @@ body {
 }
 
 /* Smooth transitions for interactive elements */
-.transition-spotify {
+.transition-hackify {
   transition: all 0.2s ease-in-out;
 }
 

@@ -1,10 +1,10 @@
-# Spotify Clone — Technical Product Requirements Document
+# Hackify Clone — Technical Product Requirements Document
 
 ## Document Information
 
 | Field | Value |
 |-------|-------|
-| Project | Spotify Clone for HackerRank Debugging Challenge |
+| Project | Hackify Clone for HackerRank Debugging Challenge |
 | Version | 1.0 |
 | Status | Approved for Development |
 
@@ -14,7 +14,7 @@
 
 ### 1.1 Purpose
 
-Build a Spotify-like music streaming application that will serve as a debugging challenge on the HackerRank platform. The application will have two branches:
+Build a Hackify-like music streaming application that will serve as a debugging challenge on the HackerRank platform. The application will have two branches:
 
 - **solution branch**: Fully working, bug-free implementation
 - **question branch**: Same application with intentionally injected bugs for candidates to fix
@@ -68,7 +68,7 @@ Since actual audio cannot play, the player operates as follows:
 The project should be a monorepo with the following structure:
 
 ```
-spotify-clone/
+hackify-clone/
 ├── apps/
 │   ├── api/          # NestJS backend
 │   └── web/          # Next.js frontend

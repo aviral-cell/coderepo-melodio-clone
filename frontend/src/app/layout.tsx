@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Hackify',
-  description: 'A Spotify-inspired music streaming application',
+  description: 'A Hackify-inspired music streaming application',
 };
 
 export default function RootLayout({

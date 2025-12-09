@@ -9,8 +9,8 @@ import { TransformInterceptor } from './shared/interceptors/transform.intercepto
 
 function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('Spotify Clone API')
-    .setDescription('REST API for Spotify Clone application')
+    .setTitle('Hackify Clone API')
+    .setDescription('REST API for Hackify Clone application')
     .setVersion('1.0')
     .addBearerAuth(
       {

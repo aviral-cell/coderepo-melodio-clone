@@ -71,14 +71,14 @@ function SortableQueueItem({
       style={style}
       className={cn(
         'group flex items-center gap-3 rounded-md p-2 transition-colors',
-        isCurrentTrack ? 'bg-spotify-light-gray' : 'hover:bg-spotify-light-gray/50',
+        isCurrentTrack ? 'bg-hackify-light-gray' : 'hover:bg-hackify-light-gray/50',
       )}
     >
       {/* Drag Handle */}
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab text-spotify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+        className="cursor-grab text-hackify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
         aria-label="Drag to reorder"
       >
         <GripVertical className="h-4 w-4" />
@@ -98,17 +98,17 @@ function SortableQueueItem({
             sizes="40px"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-spotify-light-gray">
-            <Music className="h-4 w-4 text-spotify-text-subdued" />
+          <div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+            <Music className="h-4 w-4 text-hackify-text-subdued" />
           </div>
         )}
         {isCurrentTrack && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
             {isPlaying ? (
               <span className="flex items-center gap-0.5">
-                <span className="h-2 w-0.5 animate-pulse bg-spotify-green" />
-                <span className="h-3 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.2s' }} />
-                <span className="h-1.5 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.4s' }} />
+                <span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
+                <span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.2s' }} />
+                <span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.4s' }} />
               </span>
             ) : (
               <Pause className="h-4 w-4 text-white" fill="white" />
@@ -126,15 +126,15 @@ function SortableQueueItem({
         <p
           className={cn(
             'truncate text-sm font-medium',
-            isCurrentTrack ? 'text-spotify-green' : 'text-white',
+            isCurrentTrack ? 'text-hackify-green' : 'text-white',
           )}
         >
           {track.title}
         </p>
-        <p className="truncate text-xs text-spotify-text-subdued">{artistName}</p>
+        <p className="truncate text-xs text-hackify-text-subdued">{artistName}</p>
       </div>
 
-      <span className="text-xs text-spotify-text-subdued">
+      <span className="text-xs text-hackify-text-subdued">
         {formatTime(track.durationInSeconds)}
       </span>
 
@@ -147,7 +147,7 @@ function SortableQueueItem({
           onClick={onRemove}
           aria-label="Remove from queue"
         >
-          <Trash2 className="h-4 w-4 text-spotify-text-subdued hover:text-red-400" />
+          <Trash2 className="h-4 w-4 text-hackify-text-subdued hover:text-red-400" />
         </Button>
       )}
     </div>
@@ -206,14 +206,14 @@ export function QueuePanel() {
   }
 
   return (
-    <div className="fixed bottom-[90px] right-0 z-50 flex h-[calc(100vh-90px)] w-80 flex-col border-l border-spotify-light-gray bg-spotify-dark-gray">
+    <div className="fixed bottom-[90px] right-0 z-50 flex h-[calc(100vh-90px)] w-80 flex-col border-l border-hackify-light-gray bg-hackify-dark-gray">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-spotify-light-gray p-4">
+      <div className="flex items-center justify-between border-b border-hackify-light-gray p-4">
         <h2 className="text-lg font-bold text-white">Queue</h2>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-spotify-text-subdued hover:text-white"
+          className="h-8 w-8 text-hackify-text-subdued hover:text-white"
           onClick={toggleQueue}
           aria-label="Close queue"
         >
@@ -229,7 +229,7 @@ export function QueuePanel() {
               <h3 className="mb-2 text-sm font-semibold text-white">Now Playing</h3>
               <div
                 className={cn(
-                  'group flex items-center gap-3 rounded-md bg-spotify-light-gray p-2',
+                  'group flex items-center gap-3 rounded-md bg-hackify-light-gray p-2',
                 )}
               >
                 <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
@@ -243,16 +243,16 @@ export function QueuePanel() {
                       sizes="40px"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-spotify-light-gray">
-                      <Music className="h-4 w-4 text-spotify-text-subdued" />
+                    <div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+                      <Music className="h-4 w-4 text-hackify-text-subdued" />
                     </div>
                   )}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                     {isPlaying ? (
                       <span className="flex items-center gap-0.5">
-                        <span className="h-2 w-0.5 animate-pulse bg-spotify-green" />
-                        <span className="h-3 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.2s' }} />
-                        <span className="h-1.5 w-0.5 animate-pulse bg-spotify-green" style={{ animationDelay: '0.4s' }} />
+                        <span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
+                        <span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.2s' }} />
+                        <span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: '0.4s' }} />
                       </span>
                     ) : (
                       <Pause className="h-4 w-4 text-white" fill="white" />
@@ -260,10 +260,10 @@ export function QueuePanel() {
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-spotify-green">
+                  <p className="truncate text-sm font-medium text-hackify-green">
                     {currentTrack.title}
                   </p>
-                  <p className="truncate text-xs text-spotify-text-subdued">
+                  <p className="truncate text-xs text-hackify-text-subdued">
                     {typeof currentTrack.artistId === 'object'
                       ? currentTrack.artistId.name
                       : 'Unknown Artist'}
@@ -283,7 +283,7 @@ export function QueuePanel() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-auto px-2 py-1 text-xs text-spotify-text-subdued hover:text-white"
+                  className="h-auto px-2 py-1 text-xs text-hackify-text-subdued hover:text-white"
                   onClick={clearQueue}
                 >
                   Clear
@@ -321,9 +321,9 @@ export function QueuePanel() {
           {/* Empty state */}
           {!currentTrack && queue.length === 0 && (
             <div className="py-8 text-center">
-              <Music className="mx-auto mb-4 h-12 w-12 text-spotify-text-subdued" />
+              <Music className="mx-auto mb-4 h-12 w-12 text-hackify-text-subdued" />
               <p className="text-sm font-semibold text-white">Your queue is empty</p>
-              <p className="mt-1 text-xs text-spotify-text-subdued">
+              <p className="mt-1 text-xs text-hackify-text-subdued">
                 Add tracks to start playing
               </p>
             </div>

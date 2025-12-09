@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { TrackWithPopulated } from '../types/track.types';
 
-const STORAGE_KEY = 'spotify_clone_recently_played';
+const STORAGE_KEY = 'hackify_clone_recently_played';
 const MAX_RECENT_TRACKS = 10;
 
 export function useRecentlyPlayed() {

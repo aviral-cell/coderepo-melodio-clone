@@ -85,7 +85,7 @@ export default function TrackPage() {
   if (authLoading || isLoading) {
     return (
       <MainLayout>
-        <div className="bg-gradient-to-b from-teal-800 to-spotify-dark-gray p-4 sm:p-8">
+        <div className="bg-gradient-to-b from-teal-800 to-hackify-dark-gray p-4 sm:p-8">
           <div className="flex flex-col items-center sm:flex-row sm:items-end gap-4 sm:gap-6">
             <Skeleton className="h-40 w-40 sm:h-56 sm:w-56 rounded" />
             <div className="flex-1">
@@ -134,7 +134,7 @@ export default function TrackPage() {
   return (
     <MainLayout>
       {/* Track Header */}
-      <div className="bg-gradient-to-b from-teal-800 to-spotify-dark-gray p-4 sm:p-8">
+      <div className="bg-gradient-to-b from-teal-800 to-hackify-dark-gray p-4 sm:p-8">
           <div className="flex flex-col items-center sm:flex-row sm:items-end gap-4 sm:gap-6">
             <div className="relative h-40 w-40 sm:h-56 sm:w-56 overflow-hidden rounded shadow-2xl">
               {albumCover ? (
@@ -146,8 +146,8 @@ export default function TrackPage() {
                   sizes="224px"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-spotify-light-gray">
-                  <Music className="h-20 w-20 text-spotify-text-subdued" />
+                <div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+                  <Music className="h-20 w-20 text-hackify-text-subdued" />
                 </div>
               )}
             </div>
@@ -165,19 +165,19 @@ export default function TrackPage() {
                 ) : (
                   <span className="font-semibold text-white">{artistName}</span>
                 )}
-                <span className="text-spotify-text-subdued">-</span>
+                <span className="text-hackify-text-subdued">-</span>
                 {albumId ? (
                   <Link
                     href={`/album/${albumId}`}
-                    className="text-spotify-text-subdued hover:text-white hover:underline"
+                    className="text-hackify-text-subdued hover:text-white hover:underline"
                   >
                     {albumTitle}
                   </Link>
                 ) : (
-                  <span className="text-spotify-text-subdued">{albumTitle}</span>
+                  <span className="text-hackify-text-subdued">{albumTitle}</span>
                 )}
               </div>
-              <div className="mt-2 flex items-center gap-4 text-sm text-spotify-text-subdued">
+              <div className="mt-2 flex items-center gap-4 text-sm text-hackify-text-subdued">
                 <span className="capitalize">{track.genre}</span>
                 <span className="flex items-center gap-1">
                   <Clock3 className="h-4 w-4" />
@@ -190,11 +190,11 @@ export default function TrackPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-4 py-4 sm:px-8 sm:py-6">
+        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-4 py-4 sm:px-8 sm:py-6">
           <div className="flex items-center gap-4 justify-center sm:justify-start">
             <Button
               size="lg"
-              className="h-14 w-14 rounded-full bg-spotify-green hover:scale-105 hover:bg-spotify-green-dark"
+              className="h-14 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
               onClick={handlePlay}
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
@@ -209,7 +209,7 @@ export default function TrackPage() {
             <Button
               size="icon"
               variant="ghost"
-              className="h-10 w-10 rounded-full text-spotify-text-subdued hover:text-white hover:scale-105"
+              className="h-10 w-10 rounded-full text-hackify-text-subdued hover:text-white hover:scale-105"
               onClick={() => setIsPlaylistModalOpen(true)}
               aria-label="Add to playlist"
             >
@@ -222,7 +222,7 @@ export default function TrackPage() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-10 w-10 rounded-full text-spotify-text-subdued hover:text-white hover:scale-105"
+                  className="h-10 w-10 rounded-full text-hackify-text-subdued hover:text-white hover:scale-105"
                   aria-label="More options"
                 >
                   <MoreHorizontal className="h-6 w-6" />
@@ -230,18 +230,18 @@ export default function TrackPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="w-48 border-spotify-light-gray bg-spotify-dark-gray"
+                className="w-48 border-hackify-light-gray bg-hackify-dark-gray"
               >
                 <DropdownMenuItem
                   onClick={handleAddToQueue}
-                  className="cursor-pointer text-white hover:bg-spotify-light-gray focus:bg-spotify-light-gray focus:text-white"
+                  className="cursor-pointer text-white hover:bg-hackify-light-gray focus:bg-hackify-light-gray focus:text-white"
                 >
                   <ListPlus className="mr-2 h-4 w-4" />
                   Add to queue
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setIsPlaylistModalOpen(true)}
-                  className="cursor-pointer text-white hover:bg-spotify-light-gray focus:bg-spotify-light-gray focus:text-white"
+                  className="cursor-pointer text-white hover:bg-hackify-light-gray focus:bg-hackify-light-gray focus:text-white"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Add to playlist
@@ -253,23 +253,23 @@ export default function TrackPage() {
 
         {/* Additional Info */}
         <div className="px-4 py-4 sm:px-8">
-          <div className="rounded-lg bg-spotify-dark-gray p-6">
+          <div className="rounded-lg bg-hackify-dark-gray p-6">
             <h2 className="mb-4 text-lg font-bold text-white">About this track</h2>
             <dl className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
               <div>
-                <dt className="text-spotify-text-subdued">Artist</dt>
+                <dt className="text-hackify-text-subdued">Artist</dt>
                 <dd className="mt-1 font-medium text-white">{artistName}</dd>
               </div>
               <div>
-                <dt className="text-spotify-text-subdued">Album</dt>
+                <dt className="text-hackify-text-subdued">Album</dt>
                 <dd className="mt-1 font-medium text-white">{albumTitle}</dd>
               </div>
               <div>
-                <dt className="text-spotify-text-subdued">Genre</dt>
+                <dt className="text-hackify-text-subdued">Genre</dt>
                 <dd className="mt-1 font-medium capitalize text-white">{track.genre}</dd>
               </div>
               <div>
-                <dt className="text-spotify-text-subdued">Track #</dt>
+                <dt className="text-hackify-text-subdued">Track #</dt>
                 <dd className="mt-1 font-medium text-white">{track.trackNumber}</dd>
               </div>
             </dl>

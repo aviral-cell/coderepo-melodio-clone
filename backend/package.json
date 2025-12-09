@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Spotify Clone Backend API - NestJS + MongoDB",
+  "description": "Hackify Clone Backend API - NestJS + MongoDB",
   "private": true,
   "license": "MIT",
   "scripts": {

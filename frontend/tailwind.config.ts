@@ -11,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        spotify: {
+        hackify: {
           green: '#1DB954',
           'green-dark': '#1ed760',
           black: '#121212',
