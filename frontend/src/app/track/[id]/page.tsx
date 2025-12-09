@@ -85,9 +85,9 @@ export default function TrackPage() {
   if (authLoading || isLoading) {
     return (
       <MainLayout>
-        <div className="bg-gradient-to-b from-teal-800 to-spotify-dark-gray p-8">
-          <div className="flex items-end gap-6">
-            <Skeleton className="h-56 w-56 rounded" />
+        <div className="bg-gradient-to-b from-teal-800 to-spotify-dark-gray p-4 sm:p-8">
+          <div className="flex flex-col items-center sm:flex-row sm:items-end gap-4 sm:gap-6">
+            <Skeleton className="h-40 w-40 sm:h-56 sm:w-56 rounded" />
             <div className="flex-1">
               <Skeleton className="mb-2 h-4 w-16" />
               <Skeleton className="mb-6 h-16 w-64" />
@@ -134,9 +134,9 @@ export default function TrackPage() {
   return (
     <MainLayout>
       {/* Track Header */}
-      <div className="bg-gradient-to-b from-teal-800 to-spotify-dark-gray p-8">
-          <div className="flex items-end gap-6">
-            <div className="relative h-56 w-56 overflow-hidden rounded shadow-2xl">
+      <div className="bg-gradient-to-b from-teal-800 to-spotify-dark-gray p-4 sm:p-8">
+          <div className="flex flex-col items-center sm:flex-row sm:items-end gap-4 sm:gap-6">
+            <div className="relative h-40 w-40 sm:h-56 sm:w-56 overflow-hidden rounded shadow-2xl">
               {albumCover ? (
                 <Image
                   src={albumCover}
@@ -151,9 +151,9 @@ export default function TrackPage() {
                 </div>
               )}
             </div>
-            <div>
+            <div className="text-center sm:text-left">
               <p className="text-sm font-medium text-white">Song</p>
-              <h1 className="mb-4 text-5xl font-bold text-white">{track.title}</h1>
+              <h1 className="mb-4 text-2xl sm:text-5xl font-bold text-white">{track.title}</h1>
               <div className="flex items-center gap-2 text-sm">
                 {artistId ? (
                   <Link
@@ -190,8 +190,8 @@ export default function TrackPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-8 py-6">
-          <div className="flex items-center gap-4">
+        <div className="bg-gradient-to-b from-spotify-dark-gray/60 to-spotify-black px-4 py-4 sm:px-8 sm:py-6">
+          <div className="flex items-center gap-4 justify-center sm:justify-start">
             <Button
               size="lg"
               className="h-14 w-14 rounded-full bg-spotify-green hover:scale-105 hover:bg-spotify-green-dark"
@@ -252,7 +252,7 @@ export default function TrackPage() {
         </div>
 
         {/* Additional Info */}
-        <div className="px-8 py-4">
+        <div className="px-4 py-4 sm:px-8">
           <div className="rounded-lg bg-spotify-dark-gray p-6">
             <h2 className="mb-4 text-lg font-bold text-white">About this track</h2>
             <dl className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">

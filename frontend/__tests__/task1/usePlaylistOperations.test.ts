@@ -2,12 +2,15 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { usePlaylistOperations } from '@/shared/hooks/usePlaylistOperations';
 import { playlistsService } from '@/shared/services/playlists.service';
-import { PlaylistWithTracks } from '@/shared/types/playlist.types';
+import { apiService } from '@/shared/services/api.service';
+import { PlaylistWithTracks, Playlist } from '@/shared/types/playlist.types';
 import { TrackWithPopulated } from '@/shared/types/track.types';
 
 jest.mock('@/shared/services/playlists.service');
+jest.mock('@/shared/services/api.service');
 
 const mockPlaylistsService = playlistsService as jest.Mocked<typeof playlistsService>;
+const mockApiService = apiService as jest.Mocked<typeof apiService>;
 
 // Factory function to create mock track
 function createMockTrack(overrides: Partial<TrackWithPopulated> = {}): TrackWithPopulated {
@@ -385,6 +388,132 @@ describe('usePlaylistOperations', () => {
       // Verify error callback was called
       expect(mockOnError).toHaveBeenCalledWith('Failed to remove track');
       expect(mockOnSuccess).not.toHaveBeenCalled();
+    });
+  });
+});
+
+/**
+ * API Service Level Tests
+ * Tests the playlistsService methods that make actual API calls
+ */
+describe('playlistsService API', () => {
+  // Import the actual service implementation for API tests
+  const actualPlaylistsService = jest.requireActual('@/shared/services/playlists.service').playlistsService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('reorderTracks', () => {
+    it('should call apiService.patch with correct endpoint and trackIds', async () => {
+      const playlistId = 'playlist-123';
+      const trackIds = ['track-1', 'track-2', 'track-3'];
+      const mockResponse: Playlist = {
+        _id: playlistId,
+        name: 'Test Playlist',
+        description: 'Test description',
+        ownerId: 'user-1',
+        trackIds: [],
+        isPublic: true,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      };
+
+      mockApiService.patch.mockResolvedValueOnce(mockResponse);
+
+      const result = await actualPlaylistsService.reorderTracks(playlistId, trackIds);
+
+      expect(mockApiService.patch).toHaveBeenCalledWith(
+        `/playlists/${playlistId}/reorder`,
+        { trackIds }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should propagate API errors correctly', async () => {
+      const playlistId = 'playlist-123';
+      const trackIds = ['track-1', 'track-2'];
+      const error = new Error('Network error');
+
+      mockApiService.patch.mockRejectedValueOnce(error);
+
+      await expect(actualPlaylistsService.reorderTracks(playlistId, trackIds))
+        .rejects.toThrow('Network error');
+    });
+  });
+
+  describe('addTrack', () => {
+    it('should call apiService.post with correct endpoint and trackId', async () => {
+      const playlistId = 'playlist-123';
+      const trackId = 'track-456';
+      const mockResponse: Playlist = {
+        _id: playlistId,
+        name: 'Test Playlist',
+        description: 'Test description',
+        ownerId: 'user-1',
+        trackIds: [],
+        isPublic: true,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      };
+
+      mockApiService.post.mockResolvedValueOnce(mockResponse);
+
+      const result = await actualPlaylistsService.addTrack(playlistId, trackId);
+
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        `/playlists/${playlistId}/tracks`,
+        { trackId }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should propagate API errors correctly', async () => {
+      const playlistId = 'playlist-123';
+      const trackId = 'track-456';
+      const error = new Error('Playlist not found');
+
+      mockApiService.post.mockRejectedValueOnce(error);
+
+      await expect(actualPlaylistsService.addTrack(playlistId, trackId))
+        .rejects.toThrow('Playlist not found');
+    });
+  });
+
+  describe('removeTrack', () => {
+    it('should call apiService.delete with correct endpoint', async () => {
+      const playlistId = 'playlist-123';
+      const trackId = 'track-456';
+      const mockResponse: Playlist = {
+        _id: playlistId,
+        name: 'Test Playlist',
+        description: 'Test description',
+        ownerId: 'user-1',
+        trackIds: [],
+        isPublic: true,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      };
+
+      mockApiService.delete.mockResolvedValueOnce(mockResponse);
+
+      const result = await actualPlaylistsService.removeTrack(playlistId, trackId);
+
+      expect(mockApiService.delete).toHaveBeenCalledWith(
+        `/playlists/${playlistId}/tracks/${trackId}`
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should propagate API errors correctly', async () => {
+      const playlistId = 'playlist-123';
+      const trackId = 'track-456';
+      const error = new Error('Forbidden');
+
+      mockApiService.delete.mockRejectedValueOnce(error);
+
+      await expect(actualPlaylistsService.removeTrack(playlistId, trackId))
+        .rejects.toThrow('Forbidden');
     });
   });
 });
