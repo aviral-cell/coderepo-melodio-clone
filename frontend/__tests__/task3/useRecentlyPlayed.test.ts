@@ -1,3 +1,22 @@
+/**
+ * @file useRecentlyPlayed.test.ts
+ * @description Unit tests for the useRecentlyPlayed custom hook.
+ *
+ * This hook manages the "Recently Played" track history, persisting data to
+ * localStorage and maintaining a maximum of 10 tracks with deduplication.
+ *
+ * @module __tests__/task3/useRecentlyPlayed.test
+ *
+ * Test Coverage:
+ * - addToRecentlyPlayed: Adding new tracks, deduplication, max limit enforcement
+ * - Initial load: Loading from localStorage, handling empty/corrupted data
+ * - Persistence: localStorage synchronization on state changes
+ *
+ * Storage Format:
+ * - Key: 'hackify_clone_recently_played'
+ * - Value: JSON array of TrackWithPopulated objects (max 10)
+ * - Most recent track is always at index 0
+ */
 import { renderHook, act } from '@testing-library/react';
 import { useRecentlyPlayed } from '../../src/shared/hooks/useRecentlyPlayed';
 import { TrackWithPopulated } from '../../src/shared/types/track.types';
@@ -42,13 +61,29 @@ function createMockTrack(overrides: Partial<TrackWithPopulated> = {}): TrackWith
   };
 }
 
+/**
+ * Test Suite: useRecentlyPlayed Hook
+ *
+ * Tests the hook that manages recently played track history.
+ * Uses mocked localStorage to verify persistence behavior.
+ */
 describe('useRecentlyPlayed', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
   });
 
+  /**
+   * addToRecentlyPlayed Tests
+   *
+   * Tests the function that adds tracks to the recently played list.
+   * Key behaviors:
+   * - New tracks added to the beginning (most recent first)
+   * - Duplicate tracks are moved to the front (no duplicates in list)
+   * - Maximum of 10 tracks maintained (oldest removed when limit exceeded)
+   */
   describe('addToRecentlyPlayed', () => {
+    // Verifies that a new track is inserted at the front of the list
     it('should add new track to beginning of list', () => {
       // Arrange
       const { result } = renderHook(() => useRecentlyPlayed());
@@ -65,6 +100,7 @@ describe('useRecentlyPlayed', () => {
       expect(result.current.recentTracks[0].title).toBe('New Track');
     });
 
+    // Verifies that re-playing an existing track moves it to the front without creating duplicates
     it('should move existing track to front (deduplication - no duplicates)', () => {
       // Arrange
       const existingTrack = createMockTrack({ _id: 'track-1', title: 'Track One' });
@@ -105,6 +141,7 @@ describe('useRecentlyPlayed', () => {
       ]);
     });
 
+    // Verifies that the list never exceeds 10 tracks, removing oldest entries
     it('should enforce MAX_RECENT_TRACKS limit (10)', () => {
       // Arrange
       const { result } = renderHook(() => useRecentlyPlayed());
@@ -144,6 +181,7 @@ describe('useRecentlyPlayed', () => {
       ]);
     });
 
+    // Verifies that changes are saved to localStorage after each track addition
     it('should persist to localStorage when adding track', () => {
       // Arrange
       const { result } = renderHook(() => useRecentlyPlayed());
@@ -167,7 +205,14 @@ describe('useRecentlyPlayed', () => {
     });
   });
 
+  /**
+   * Initial Load Tests
+   *
+   * Tests the hook's initialization behavior when loading from localStorage.
+   * Verifies graceful handling of empty, valid, and corrupted stored data.
+   */
   describe('initial load', () => {
+    // Verifies that previously saved tracks are loaded when the hook mounts
     it('should load existing tracks from localStorage on mount', () => {
       // Arrange
       const storedTracks = [
@@ -186,6 +231,7 @@ describe('useRecentlyPlayed', () => {
       expect(result.current.recentTracks[1]._id).toBe('stored-2');
     });
 
+    // Verifies that the hook initializes with an empty array when localStorage has no data
     it('should handle empty localStorage gracefully', () => {
       // Arrange
       localStorageMock.getItem.mockReturnValue(null);
@@ -198,6 +244,7 @@ describe('useRecentlyPlayed', () => {
       expect(result.current.recentTracks).toEqual([]);
     });
 
+    // Verifies that JSON parse errors are caught and the hook falls back to empty state
     it('should handle corrupted localStorage data gracefully', () => {
       // Arrange - Invalid JSON that will cause JSON.parse to throw
       localStorageMock.getItem.mockReturnValue('{ invalid json }');

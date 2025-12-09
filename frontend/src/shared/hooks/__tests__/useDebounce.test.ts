@@ -1,6 +1,32 @@
+/**
+ * @file useDebounce.test.ts
+ * @description Unit tests for the useDebounce custom hook.
+ *
+ * The useDebounce hook delays updating a value until a specified time has passed
+ * since the last change. This is commonly used for search inputs to avoid making
+ * API calls on every keystroke.
+ *
+ * @module shared/hooks/__tests__/useDebounce.test
+ *
+ * Test Coverage:
+ * - Initial value return behavior
+ * - Debouncing mechanism with delayed updates
+ * - Timer reset on rapid value changes
+ * - Default delay (300ms) behavior
+ * - Support for various data types (string, number, object, array, null, undefined)
+ * - Delay parameter changes
+ * - Cleanup on unmount
+ * - Edge cases (empty strings)
+ */
 import { renderHook, act } from '@testing-library/react';
 import { useDebounce } from '../useDebounce';
 
+/**
+ * Test Suite: useDebounce Hook
+ *
+ * Tests the debouncing functionality that delays value propagation.
+ * Uses Jest fake timers to control time progression for deterministic testing.
+ */
 describe('useDebounce', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -10,12 +36,14 @@ describe('useDebounce', () => {
     jest.useRealTimers();
   });
 
+  // Verifies that the hook returns the initial value without waiting for the debounce delay
   it('should return the initial value immediately', () => {
     const { result } = renderHook(() => useDebounce('initial', 300));
 
     expect(result.current).toBe('initial');
   });
 
+  // Verifies that value changes are delayed by the specified debounce time
   it('should debounce value changes', () => {
     const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
       initialProps: { value: 'initial', delay: 300 },
@@ -37,6 +65,7 @@ describe('useDebounce', () => {
     expect(result.current).toBe('updated');
   });
 
+  // Verifies that rapid consecutive changes only result in the final value being set
   it('should reset the timer on rapid value changes', () => {
     const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
       initialProps: { value: 'initial', delay: 300 },
@@ -71,6 +100,7 @@ describe('useDebounce', () => {
     expect(result.current).toBe('change3');
   });
 
+  // Verifies that the hook uses 300ms as the default delay when none is specified
   it('should use default delay of 300ms', () => {
     const { result, rerender } = renderHook(({ value }) => useDebounce(value), {
       initialProps: { value: 'initial' },
@@ -91,6 +121,7 @@ describe('useDebounce', () => {
     expect(result.current).toBe('updated');
   });
 
+  // Verifies that the hook correctly handles numbers, objects, and arrays
   it('should work with different data types', () => {
     // Number
     const { result: numberResult, rerender: rerenderNumber } = renderHook(
@@ -129,6 +160,7 @@ describe('useDebounce', () => {
     expect(arrayResult.current).toEqual([4, 5, 6]);
   });
 
+  // Verifies that the hook handles null and undefined values without errors
   it('should work with null and undefined values', () => {
     const { result, rerender } = renderHook(
       ({ value }) => useDebounce<string | null | undefined>(value, 100),
@@ -148,6 +180,7 @@ describe('useDebounce', () => {
     expect(result.current).toBeUndefined();
   });
 
+  // Verifies that changing the delay parameter resets the debounce timer
   it('should handle delay changes', () => {
     const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
       initialProps: { value: 'initial', delay: 200 },
@@ -170,6 +203,7 @@ describe('useDebounce', () => {
     expect(result.current).toBe('updated');
   });
 
+  // Verifies that pending timeouts are cleared when the component unmounts to prevent memory leaks
   it('should clean up timeout on unmount', () => {
     const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
@@ -186,6 +220,7 @@ describe('useDebounce', () => {
     clearTimeoutSpy.mockRestore();
   });
 
+  // Verifies that the hook correctly debounces to an empty string value
   it('should handle empty string', () => {
     const { result, rerender } = renderHook(({ value }) => useDebounce(value, 100), {
       initialProps: { value: 'search term' },

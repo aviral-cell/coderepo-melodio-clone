@@ -1,9 +1,28 @@
+/**
+ * @file useSearch.test.ts
+ * @description Unit tests for the useSearch custom hook.
+ *
+ * This hook provides search functionality with debouncing to reduce API calls.
+ * It manages loading states, error handling, and result caching.
+ *
+ * @module __tests__/task4/useSearch.test
+ *
+ * Test Coverage:
+ * - Empty query handling: No API calls for empty/whitespace queries
+ * - Debouncing: Integration with useDebounce hook (300ms delay)
+ * - Search execution: Loading states and result handling
+ * - Error handling: API error propagation and generic error messages
+ *
+ * Dependencies:
+ * - searchService: API service for search requests
+ * - useDebounce: Hook that delays value changes (mocked for testing)
+ */
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useSearch } from '@/shared/hooks/useSearch';
 import { searchService } from '@/shared/services/search.service';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
-// Mock the search service
+// Mock the search service to avoid actual API calls
 jest.mock('@/shared/services/search.service', () => ({
   searchService: {
     search: jest.fn(),
@@ -11,6 +30,7 @@ jest.mock('@/shared/services/search.service', () => ({
 }));
 
 // Mock useDebounce to return the value immediately for testing
+// This allows testing search behavior without waiting for debounce delays
 jest.mock('@/shared/hooks/useDebounce', () => ({
   useDebounce: jest.fn((value: string) => value),
 }));
@@ -46,13 +66,26 @@ const mockTrack = {
   updatedAt: new Date().toISOString(),
 };
 
+/**
+ * Test Suite: useSearch Hook
+ *
+ * Tests the search functionality including debouncing, API calls, and error handling.
+ * Uses mocked services for deterministic testing without network dependencies.
+ */
 describe('useSearch', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseDebounce.mockImplementation((value: string) => value);
   });
 
+  /**
+   * Empty Query Handling Tests
+   *
+   * Tests that the hook correctly handles empty, null, or whitespace queries
+   * without making unnecessary API calls.
+   */
   describe('empty query handling', () => {
+    // Verifies that empty queries return empty results without API calls
     it('should return empty tracks array when query is empty', () => {
       const { result } = renderHook(() => useSearch(''));
 
@@ -61,12 +94,14 @@ describe('useSearch', () => {
       expect(result.current.error).toBeNull();
     });
 
+    // Verifies that the API is not called for empty string queries
     it('should not call search service when query is empty', () => {
       renderHook(() => useSearch(''));
 
       expect(mockSearchService.search).not.toHaveBeenCalled();
     });
 
+    // Verifies that whitespace-only queries are treated as empty
     it('should not call search service when query is only whitespace', () => {
       renderHook(() => useSearch('   '));
 
@@ -74,13 +109,21 @@ describe('useSearch', () => {
     });
   });
 
+  /**
+   * Debouncing Tests
+   *
+   * Tests the integration with useDebounce hook.
+   * Verifies that search uses the debounced value, not the raw input.
+   */
   describe('debouncing', () => {
+    // Verifies that useDebounce is called with the correct delay parameter
     it('should use useDebounce hook with 300ms delay', () => {
       renderHook(() => useSearch('test query'));
 
       expect(mockUseDebounce).toHaveBeenCalledWith('test query', 300);
     });
 
+    // Verifies that the debounced value (not raw input) is used for API calls
     it('should use debounced value for search', async () => {
       mockUseDebounce.mockImplementation(() => 'debounced');
       mockSearchService.search.mockResolvedValue({ tracks: [mockTrack] });
@@ -93,7 +136,14 @@ describe('useSearch', () => {
     });
   });
 
+  /**
+   * Search Execution Tests
+   *
+   * Tests the actual search process including loading states,
+   * API calls, and result handling.
+   */
   describe('search execution', () => {
+    // Verifies that isLoading reflects the pending state during API calls
     it('should set isLoading to true while fetching', async () => {
       let resolveSearch: (value: { tracks: typeof mockTrack[] }) => void;
       const searchPromise = new Promise<{ tracks: typeof mockTrack[] }>((resolve) => {
@@ -116,6 +166,7 @@ describe('useSearch', () => {
       });
     });
 
+    // Verifies that search results are correctly mapped to the tracks state
     it('should return tracks from search service', async () => {
       mockSearchService.search.mockResolvedValue({ tracks: [mockTrack] });
 
@@ -126,6 +177,7 @@ describe('useSearch', () => {
       });
     });
 
+    // Verifies that the search service is called with the correct query string
     it('should call search service with the query', async () => {
       mockSearchService.search.mockResolvedValue({ tracks: [] });
 
@@ -137,7 +189,14 @@ describe('useSearch', () => {
     });
   });
 
+  /**
+   * Error Handling Tests
+   *
+   * Tests error scenarios including API failures, network errors,
+   * and error state clearing.
+   */
   describe('error handling', () => {
+    // Verifies that Error objects have their message extracted
     it('should set error when search fails', async () => {
       mockSearchService.search.mockRejectedValue(new Error('Network error'));
 
@@ -149,6 +208,7 @@ describe('useSearch', () => {
       });
     });
 
+    // Verifies that non-Error exceptions get a generic error message
     it('should set generic error message for non-Error exceptions', async () => {
       mockSearchService.search.mockRejectedValue('Something went wrong');
 
@@ -159,6 +219,7 @@ describe('useSearch', () => {
       });
     });
 
+    // Verifies that error state is cleared when the user clears the search input
     it('should clear error when query becomes empty', async () => {
       mockSearchService.search.mockRejectedValue(new Error('Network error'));
 

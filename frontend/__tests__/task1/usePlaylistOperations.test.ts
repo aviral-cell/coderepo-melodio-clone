@@ -1,3 +1,21 @@
+/**
+ * @file usePlaylistOperations.test.ts
+ * @description Unit tests for the usePlaylistOperations custom hook.
+ *
+ * This hook manages playlist track operations including reordering and removing tracks.
+ * It implements the optimistic update pattern for responsive UI, with automatic rollback
+ * on API failures.
+ *
+ * @module __tests__/task1/usePlaylistOperations.test
+ *
+ * Test Coverage:
+ * - reorderTracks: Drag-and-drop track reordering with array splice operations
+ * - removeTrack: Track deletion from playlist
+ * - Optimistic updates: Immediate UI feedback before API confirmation
+ * - Rollback behavior: Automatic state restoration on API errors
+ * - Loading states: isReordering and isRemoving flags
+ * - API service integration: playlistsService method calls
+ */
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { usePlaylistOperations } from '@/shared/hooks/usePlaylistOperations';
@@ -57,6 +75,12 @@ function createMockPlaylist(
   };
 }
 
+/**
+ * Test Suite: usePlaylistOperations Hook
+ *
+ * Tests the custom hook that manages playlist track operations.
+ * Uses mocked services to verify optimistic updates, API calls, and rollback behavior.
+ */
 describe('usePlaylistOperations', () => {
   const mockSetPlaylist = jest.fn();
   const mockOnError = jest.fn();
@@ -66,7 +90,14 @@ describe('usePlaylistOperations', () => {
     jest.clearAllMocks();
   });
 
+  /**
+   * reorderTracks Tests
+   *
+   * Tests the drag-and-drop track reordering functionality.
+   * Verifies correct array manipulation, optimistic updates, and rollback on failure.
+   */
   describe('reorderTracks', () => {
+    // Verifies moving the first track to the last position: [1,2,3] -> [2,3,1]
     it('should reorder tracks from index 0 to index 2 (move first to last)', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -107,6 +138,7 @@ describe('usePlaylistOperations', () => {
       expect(mockOnError).not.toHaveBeenCalled();
     });
 
+    // Verifies moving the last track to the first position: [1,2,3] -> [3,1,2]
     it('should reorder tracks from index 2 to index 0 (move last to first)', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -145,6 +177,7 @@ describe('usePlaylistOperations', () => {
       expect(mockOnSuccess).toHaveBeenCalledWith('Tracks reordered successfully');
     });
 
+    // Verifies that UI is updated immediately before the API call completes
     it('should perform optimistic update before API resolves', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -195,6 +228,7 @@ describe('usePlaylistOperations', () => {
       expect(result.current.isReordering).toBe(false);
     });
 
+    // Verifies that state is restored when API call fails (optimistic update rollback)
     it('should rollback to original order on API failure', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -234,6 +268,7 @@ describe('usePlaylistOperations', () => {
       expect(mockOnSuccess).not.toHaveBeenCalled();
     });
 
+    // Verifies that no-op reorders (same position) are handled efficiently
     it('should NOT call setPlaylist when oldIndex equals newIndex', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -265,7 +300,14 @@ describe('usePlaylistOperations', () => {
     });
   });
 
+  /**
+   * removeTrack Tests
+   *
+   * Tests the track removal functionality from playlists.
+   * Verifies correct array filtering, optimistic updates, and rollback on failure.
+   */
   describe('removeTrack', () => {
+    // Verifies successful track removal with proper state update and API call
     it('should remove track by trackId', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -302,6 +344,7 @@ describe('usePlaylistOperations', () => {
       expect(mockOnError).not.toHaveBeenCalled();
     });
 
+    // Verifies that UI is updated immediately before the API call completes
     it('should perform optimistic update before API resolves', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -352,6 +395,7 @@ describe('usePlaylistOperations', () => {
       expect(result.current.isRemoving).toBe(false);
     });
 
+    // Verifies that removed track is restored when API call fails
     it('should rollback on API failure', async () => {
       const track1 = createMockTrack({ _id: 'track-1', title: 'Track 1' });
       const track2 = createMockTrack({ _id: 'track-2', title: 'Track 2' });
@@ -393,8 +437,15 @@ describe('usePlaylistOperations', () => {
 });
 
 /**
- * API Service Level Tests
- * Tests the playlistsService methods that make actual API calls
+ * Test Suite: playlistsService API
+ *
+ * Tests the API service layer methods that handle HTTP requests.
+ * Uses mocked apiService to verify correct endpoint construction and error propagation.
+ *
+ * @description Tests cover:
+ * - reorderTracks: PATCH /playlists/:id/reorder with trackIds array
+ * - addTrack: POST /playlists/:id/tracks with trackId
+ * - removeTrack: DELETE /playlists/:id/tracks/:trackId
  */
 describe('playlistsService API', () => {
   // Import the actual service implementation for API tests
@@ -404,7 +455,13 @@ describe('playlistsService API', () => {
     jest.clearAllMocks();
   });
 
+  /**
+   * reorderTracks API Tests
+   *
+   * Verifies correct PATCH request to /playlists/:id/reorder endpoint.
+   */
   describe('reorderTracks', () => {
+    // Verifies that the service constructs the correct API call
     it('should call apiService.patch with correct endpoint and trackIds', async () => {
       const playlistId = 'playlist-123';
       const trackIds = ['track-1', 'track-2', 'track-3'];
@@ -430,6 +487,7 @@ describe('playlistsService API', () => {
       expect(result).toEqual(mockResponse);
     });
 
+    // Verifies that API errors are properly propagated to callers
     it('should propagate API errors correctly', async () => {
       const playlistId = 'playlist-123';
       const trackIds = ['track-1', 'track-2'];
@@ -442,7 +500,13 @@ describe('playlistsService API', () => {
     });
   });
 
+  /**
+   * addTrack API Tests
+   *
+   * Verifies correct POST request to /playlists/:id/tracks endpoint.
+   */
   describe('addTrack', () => {
+    // Verifies that the service constructs the correct API call
     it('should call apiService.post with correct endpoint and trackId', async () => {
       const playlistId = 'playlist-123';
       const trackId = 'track-456';
@@ -468,6 +532,7 @@ describe('playlistsService API', () => {
       expect(result).toEqual(mockResponse);
     });
 
+    // Verifies that API errors are properly propagated to callers
     it('should propagate API errors correctly', async () => {
       const playlistId = 'playlist-123';
       const trackId = 'track-456';
@@ -480,7 +545,13 @@ describe('playlistsService API', () => {
     });
   });
 
+  /**
+   * removeTrack API Tests
+   *
+   * Verifies correct DELETE request to /playlists/:id/tracks/:trackId endpoint.
+   */
   describe('removeTrack', () => {
+    // Verifies that the service constructs the correct API call
     it('should call apiService.delete with correct endpoint', async () => {
       const playlistId = 'playlist-123';
       const trackId = 'track-456';
@@ -505,6 +576,7 @@ describe('playlistsService API', () => {
       expect(result).toEqual(mockResponse);
     });
 
+    // Verifies that API errors are properly propagated to callers
     it('should propagate API errors correctly', async () => {
       const playlistId = 'playlist-123';
       const trackId = 'track-456';
