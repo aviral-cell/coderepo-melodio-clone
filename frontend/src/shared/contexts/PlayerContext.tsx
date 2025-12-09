@@ -12,6 +12,7 @@ import React, {
 import { PlayerState, PlayerAction } from '../types/player.types';
 import { TrackWithPopulated } from '../types/track.types';
 import { playerReducer, initialState } from './playerReducer';
+import { shuffleArray } from '../utils/playerUtils';
 
 export { playerReducer, initialState };
 
@@ -101,7 +102,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     [],
   );
   const clearQueue = useCallback(() => dispatch({ type: 'CLEAR_QUEUE' }), []);
-  const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE' }), []);
+  const toggleShuffle = useCallback(() => {
+    if (!state.shuffleEnabled && state.currentTrack && state.queue.length > 1) {
+      const otherTracks = state.queue.filter((t) => t._id !== state.currentTrack!._id);
+      const shuffledOthers = shuffleArray(otherTracks);
+      const shuffledQueue = [state.currentTrack, ...shuffledOthers];
+      dispatch({ type: 'TOGGLE_SHUFFLE', payload: { shuffledQueue } });
+    } else {
+      dispatch({ type: 'TOGGLE_SHUFFLE' });
+    }
+  }, [state.shuffleEnabled, state.currentTrack, state.queue]);
   const toggleRepeat = useCallback(() => dispatch({ type: 'TOGGLE_REPEAT' }), []);
   const setVolume = useCallback(
     (volume: number) => dispatch({ type: 'SET_VOLUME', payload: volume }),

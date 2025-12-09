@@ -27,7 +27,7 @@ export type PlayerAction =
   | { type: 'REMOVE_FROM_QUEUE'; payload: number }
   | { type: 'REORDER_QUEUE'; payload: { from: number; to: number } }
   | { type: 'CLEAR_QUEUE' }
-  | { type: 'TOGGLE_SHUFFLE' }
+  | { type: 'TOGGLE_SHUFFLE'; payload?: { shuffledQueue: TrackWithPopulated[] } }
   | { type: 'TOGGLE_REPEAT' }
   | { type: 'SET_VOLUME'; payload: number }
   | { type: 'TICK' }

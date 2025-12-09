@@ -174,10 +174,14 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
         if (!currentTrack || state.queue.length <= 1) {
           return { ...state, shuffleEnabled: true, originalQueue: [...state.queue] };
         }
-
-        const otherTracks = state.queue.filter((t) => t._id !== currentTrack._id);
-        const shuffledOthers = shuffleArray(otherTracks);
-        const newQueue = [currentTrack, ...shuffledOthers];
+        let newQueue: typeof state.queue;
+        if (action.payload?.shuffledQueue) {
+          newQueue = action.payload.shuffledQueue;
+        } else {
+          const otherTracks = state.queue.filter((t) => t._id !== currentTrack._id);
+          const shuffledOthers = shuffleArray(otherTracks);
+          newQueue = [currentTrack, ...shuffledOthers];
+        }
 
         return {
           ...state,
