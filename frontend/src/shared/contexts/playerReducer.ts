@@ -49,6 +49,8 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
         currentTrack: tracks[startIndex] || null,
         isPlaying: true,
         elapsedSeconds: 0,
+        shuffleEnabled: false,
+        originalQueue: [],
       };
     }
 
