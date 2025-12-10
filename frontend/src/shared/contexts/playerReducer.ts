@@ -168,6 +168,8 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
         ...state,
         queue: state.currentTrack ? [state.currentTrack] : [],
         queueIndex: 0,
+        shuffleEnabled: false,
+        originalQueue: [],
       };
 
     case 'TOGGLE_SHUFFLE': {
