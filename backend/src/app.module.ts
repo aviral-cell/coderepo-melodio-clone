@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { DatabaseModule } from './shared/database/database.module';
 import { AuthModule } from './features/auth/auth.module';
@@ -15,6 +17,10 @@ import { SearchModule } from './features/search/search.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      exclude: ['/api/(.*)'],
     }),
     DatabaseModule,
     AuthModule,
