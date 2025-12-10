@@ -31,8 +31,8 @@ frontend/
 │   │   │   ├── login/page.tsx
 │   │   │   └── register/page.tsx
 │   │   ├── album/[id]/page.tsx   # Album detail
+│   │   ├── genre/page.tsx        # Genre browsing
 │   │   ├── playlist/[id]/page.tsx# Playlist detail
-│   │   ├── search/page.tsx       # Search results
 │   │   └── track/[id]/page.tsx   # Track detail
 │   │
 │   ├── lib/

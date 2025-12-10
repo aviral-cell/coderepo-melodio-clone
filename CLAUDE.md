@@ -1,4 +1,4 @@
-# Hackify - Hackify Clone (HackerRank Challenge)
+# Hackify - Music Streaming App (HackerRank Challenge)
 
 ## Overview
 
@@ -19,7 +19,7 @@ A full-stack music streaming application built with the MNN Stack (MongoDB + Nex
 ## Project Structure
 
 ```
-hackify-mern-app/
+spotify-mern-app/
 ├── backend/                  # NestJS API (see backend/CLAUDE.md)
 │   ├── src/
 │   │   ├── features/         # Feature modules
@@ -33,8 +33,8 @@ hackify-mern-app/
 │   └── package.json
 │
 ├── docs/                     # Documentation
-│   ├── hackify-clone-prd.md
-│   ├── hackify-clone-features-summary.md
+│   ├── spotify-clone-prd.md
+│   ├── spotify-clone-features-summary.md
 │   └── implementation-plan.md
 │
 ├── scripts/
@@ -148,7 +148,7 @@ The `hackerrank.yml` defines:
 | Feature | Location | Description |
 |---------|----------|-------------|
 | Music Player | `frontend/src/shared/contexts/PlayerContext.tsx` | Simulated playback with queue, shuffle, repeat |
-| Search | `frontend/src/app/search/page.tsx` | Debounced search across tracks/albums/artists |
+| Search | `frontend/src/shared/hooks/useSearch.ts` | Debounced search across tracks/albums/artists |
 | Playlists | `backend/src/features/playlists/` | CRUD operations, track reordering |
 | Authentication | `backend/src/features/auth/` | JWT-based login/register |
 
@@ -187,5 +187,5 @@ Per project constraints, do NOT use:
 
 - Backend details: See `backend/CLAUDE.md`
 - Frontend details: See `frontend/CLAUDE.md`
-- Product Requirements: See `docs/hackify-clone-prd.md`
-- Feature Summary: See `docs/hackify-clone-features-summary.md`
+- Product Requirements: See `docs/spotify-clone-prd.md`
+- Feature Summary: See `docs/spotify-clone-features-summary.md`
