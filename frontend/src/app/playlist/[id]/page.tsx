@@ -106,15 +106,15 @@ function SortableTrackRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] items-center gap-4 rounded-md px-4 py-2 transition-colors hover:bg-hackify-light-gray',
+        'group grid grid-cols-[16px_1fr_auto_40px] sm:grid-cols-[16px_16px_4fr_3fr_1fr_40px] items-center gap-2 sm:gap-4 rounded-md px-2 sm:px-4 py-2 transition-colors hover:bg-hackify-light-gray',
         isCurrentTrack && 'bg-hackify-light-gray/50',
       )}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - hidden on mobile */}
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab text-hackify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+        className="hidden sm:block cursor-grab text-hackify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
         aria-label="Drag to reorder"
       >
         <GripVertical className="h-4 w-4" />
@@ -181,8 +181,8 @@ function SortableTrackRow({
         </div>
       </div>
 
-      {/* Album */}
-      <span className="truncate text-sm text-hackify-text-subdued">{albumTitle}</span>
+      {/* Album - hidden on mobile */}
+      <span className="hidden sm:block truncate text-sm text-hackify-text-subdued">{albumTitle}</span>
 
       {/* Duration */}
       <span className="text-sm text-hackify-text-subdued">
@@ -195,7 +195,7 @@ function SortableTrackRow({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+            className="h-8 w-8 sm:opacity-0 transition-opacity sm:group-hover:opacity-100"
           >
             <MoreHorizontal className="h-4 w-4 text-hackify-text-subdued" />
           </Button>
@@ -369,23 +369,26 @@ export default function PlaylistPage() {
     return (
       <MainLayout showTopBar={false}>
         {/* Header skeleton */}
-        <div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-8">
-          <div className="flex items-end gap-6">
-            <Skeleton className="h-56 w-56 rounded" />
-            <div className="flex-1">
-              <Skeleton className="mb-2 h-4 w-20" />
-              <Skeleton className="mb-6 h-16 w-64" />
-              <Skeleton className="h-4 w-48" />
+        <div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-4 sm:p-8">
+          <div className="flex flex-col items-center sm:flex-row sm:items-end gap-4 sm:gap-6">
+            <Skeleton className="h-40 w-40 sm:h-56 sm:w-56 rounded" />
+            <div className="flex-1 text-center sm:text-left">
+              <Skeleton className="mb-2 h-4 w-20 mx-auto sm:mx-0" />
+              <Skeleton className="mb-4 sm:mb-6 h-8 sm:h-16 w-48 sm:w-64 mx-auto sm:mx-0" />
+              <Skeleton className="h-4 w-48 mx-auto sm:mx-0" />
             </div>
           </div>
         </div>
         {/* Controls skeleton */}
-        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-8 py-6">
-          <Skeleton className="h-14 w-14 rounded-full" />
+        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-4 py-4 sm:px-8 sm:py-6">
+          <div className="flex justify-center sm:justify-start">
+            <Skeleton className="h-14 w-14 rounded-full" />
+          </div>
         </div>
         {/* Tracks skeleton */}
-        <div className="px-8">
-          <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2">
+        <div className="px-4 sm:px-8">
+          {/* Header skeleton - hidden on mobile */}
+          <div className="mb-4 hidden sm:grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2">
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-4 w-20" />
@@ -396,18 +399,18 @@ export default function PlaylistPage() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 px-4 py-2"
+              className="grid grid-cols-[16px_1fr_auto_40px] sm:grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-2 sm:gap-4 px-2 sm:px-4 py-2"
             >
               <Skeleton className="h-4 w-4" />
-              <Skeleton className="h-4 w-4" />
+              <Skeleton className="hidden sm:block h-4 w-4" />
               <div className="flex items-center gap-3">
                 <Skeleton className="h-10 w-10 rounded" />
                 <div>
-                  <Skeleton className="mb-1 h-4 w-32" />
-                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="mb-1 h-4 w-24 sm:w-32" />
+                  <Skeleton className="h-3 w-16 sm:w-24" />
                 </div>
               </div>
-              <Skeleton className="h-4 w-24" />
+              <Skeleton className="hidden sm:block h-4 w-24" />
               <Skeleton className="h-4 w-10" />
               <Skeleton className="h-4 w-4" />
             </div>
@@ -446,16 +449,16 @@ export default function PlaylistPage() {
   return (
     <MainLayout>
       {/* Playlist Header */}
-      <div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-8">
-          <div className="flex items-end gap-6">
-            <div className="relative h-56 w-56 overflow-hidden rounded shadow-2xl">
+      <div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-4 sm:p-8">
+          <div className="flex flex-col items-center sm:flex-row sm:items-end gap-4 sm:gap-6">
+            <div className="relative h-40 w-40 sm:h-56 sm:w-56 overflow-hidden rounded shadow-2xl">
               {playlist.coverImageUrl ? (
                 <Image
                   src={playlist.coverImageUrl}
                   alt={playlist.name}
                   fill
                   className="object-cover"
-                  sizes="224px"
+                  sizes="(max-width: 640px) 160px, 224px"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-700 to-blue-500">
@@ -463,9 +466,9 @@ export default function PlaylistPage() {
                 </div>
               )}
             </div>
-            <div>
+            <div className="text-center sm:text-left">
               <p className="text-sm font-medium text-white">Playlist</p>
-              <h1 className="mb-6 text-6xl font-bold text-white">{playlist.name}</h1>
+              <h1 className="mb-4 sm:mb-6 text-2xl sm:text-6xl font-bold text-white">{playlist.name}</h1>
               {playlist.description && (
                 <p className="mb-2 text-sm text-hackify-text-subdued">
                   {playlist.description}
@@ -481,8 +484,8 @@ export default function PlaylistPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-8 py-6">
-          <div className="flex items-center gap-6">
+        <div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-4 py-4 sm:px-8 sm:py-6">
+          <div className="flex items-center gap-4 sm:gap-6 justify-center sm:justify-start">
             <Button
               size="lg"
               className="h-14 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
@@ -525,11 +528,11 @@ export default function PlaylistPage() {
         </div>
 
         {/* Track List */}
-        <div className="px-8">
+        <div className="px-4 sm:px-8">
           {playlist.trackIds.length > 0 ? (
             <>
-              {/* Header */}
-              <div className="mb-4 grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued">
+              {/* Header - hidden on mobile */}
+              <div className="mb-4 hidden sm:grid grid-cols-[16px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued">
                 <span />
                 <span className="text-sm">#</span>
                 <span className="text-sm">Title</span>
