@@ -25,6 +25,9 @@ export class Track {
 
   @Prop({ default: 0, min: 0 })
   playCount: number;
+
+  @Prop()
+  coverImageUrl?: string;
 }
 
 export const TrackSchema = SchemaFactory.createForClass(Track);

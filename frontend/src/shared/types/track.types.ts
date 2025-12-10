@@ -10,6 +10,7 @@ export interface Track {
   trackNumber: number;
   genre: string;
   playCount: number;
+  coverImageUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

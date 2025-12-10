@@ -8,8 +8,9 @@
  * Creates:
  * - 5 artists (one per genre: rock, pop, jazz, electronic, hip-hop)
  * - 10 albums (2 per artist)
- * - 30 tracks (3 per album, durations between 180-300 seconds)
+ * - 50 tracks (5 per album, durations between 180-300 seconds)
  * - 2 test users with known credentials
+ * - 1 test playlist with 6 tracks
  */
 
 import * as dotenv from 'dotenv';
@@ -91,6 +92,7 @@ interface ITrack extends Document {
   trackNumber: number;
   genre: string;
   playCount: number;
+  coverImageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -104,6 +106,30 @@ const TrackSchema = new Schema<ITrack>(
     trackNumber: { type: Number, required: true, min: 1 },
     genre: { type: String, required: true, trim: true, lowercase: true },
     playCount: { type: Number, default: 0, min: 0 },
+    coverImageUrl: { type: String },
+  },
+  { timestamps: true },
+);
+
+interface IPlaylist extends Document {
+  name: string;
+  description?: string;
+  ownerId: Types.ObjectId;
+  trackIds: Types.ObjectId[];
+  coverImageUrl?: string;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const PlaylistSchema = new Schema<IPlaylist>(
+  {
+    name: { type: String, required: true, trim: true },
+    description: { type: String, trim: true },
+    ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    trackIds: { type: [Schema.Types.ObjectId], ref: 'Track', default: [] },
+    coverImageUrl: { type: String },
+    isPublic: { type: Boolean, default: true },
   },
   { timestamps: true },
 );
@@ -112,6 +138,7 @@ const User = mongoose.model<IUser>('User', UserSchema);
 const Artist = mongoose.model<IArtist>('Artist', ArtistSchema);
 const Album = mongoose.model<IAlbum>('Album', AlbumSchema);
 const Track = mongoose.model<ITrack>('Track', TrackSchema);
+const Playlist = mongoose.model<IPlaylist>('Playlist', PlaylistSchema);
 
 interface ArtistSeedData {
   name: string;
@@ -153,6 +180,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Thunder Road', durationInSeconds: randomDuration() },
           { title: 'Lightning Strike', durationInSeconds: randomDuration() },
           { title: 'Storm Chaser', durationInSeconds: randomDuration() },
+          { title: 'Electric Rain', durationInSeconds: randomDuration() },
+          { title: 'Voltage Drop', durationInSeconds: randomDuration() },
         ],
       },
       {
@@ -162,6 +191,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'High Voltage', durationInSeconds: randomDuration() },
           { title: 'Power Surge', durationInSeconds: randomDuration() },
           { title: 'Circuit Breaker', durationInSeconds: randomDuration() },
+          { title: 'Amp It Up', durationInSeconds: randomDuration() },
+          { title: 'Wired', durationInSeconds: randomDuration() },
         ],
       },
     ],
@@ -178,6 +209,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Dancing in the Moonlight', durationInSeconds: randomDuration() },
           { title: 'Summer Nights', durationInSeconds: randomDuration() },
           { title: 'Heartbeat', durationInSeconds: randomDuration() },
+          { title: 'Cosmic Love', durationInSeconds: randomDuration() },
+          { title: 'Stargazer', durationInSeconds: randomDuration() },
         ],
       },
       {
@@ -187,6 +220,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Radiant', durationInSeconds: randomDuration() },
           { title: 'Shine On', durationInSeconds: randomDuration() },
           { title: 'Golden Hour', durationInSeconds: randomDuration() },
+          { title: 'Luminous', durationInSeconds: randomDuration() },
+          { title: 'Firefly', durationInSeconds: randomDuration() },
         ],
       },
     ],
@@ -203,6 +238,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Blue Velvet', durationInSeconds: randomDuration() },
           { title: 'Smooth Operator', durationInSeconds: randomDuration() },
           { title: 'Late Night Jazz', durationInSeconds: randomDuration() },
+          { title: 'Moonlit Serenade', durationInSeconds: randomDuration() },
+          { title: 'Twilight Groove', durationInSeconds: randomDuration() },
         ],
       },
       {
@@ -212,6 +249,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Soulful Sax', durationInSeconds: randomDuration() },
           { title: 'Bebop Blues', durationInSeconds: randomDuration() },
           { title: 'Swing Time', durationInSeconds: randomDuration() },
+          { title: 'Jazz Fusion', durationInSeconds: randomDuration() },
+          { title: 'Cool Breeze', durationInSeconds: randomDuration() },
         ],
       },
     ],
@@ -228,6 +267,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Neon City', durationInSeconds: randomDuration() },
           { title: 'Cyber Drive', durationInSeconds: randomDuration() },
           { title: 'Binary Sunset', durationInSeconds: randomDuration() },
+          { title: 'Data Stream', durationInSeconds: randomDuration() },
+          { title: 'Pixel Dreams', durationInSeconds: randomDuration() },
         ],
       },
       {
@@ -237,6 +278,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Arcade Nights', durationInSeconds: randomDuration() },
           { title: 'VHS Memories', durationInSeconds: randomDuration() },
           { title: 'Laser Grid', durationInSeconds: randomDuration() },
+          { title: 'Synth Runner', durationInSeconds: randomDuration() },
+          { title: 'Chrome Future', durationInSeconds: randomDuration() },
         ],
       },
     ],
@@ -253,6 +296,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Block Party', durationInSeconds: randomDuration() },
           { title: 'Concrete Jungle', durationInSeconds: randomDuration() },
           { title: 'Street Dreams', durationInSeconds: randomDuration() },
+          { title: 'Hood Anthem', durationInSeconds: randomDuration() },
+          { title: 'Night Rider', durationInSeconds: randomDuration() },
         ],
       },
       {
@@ -262,6 +307,8 @@ const artistsSeedData: ArtistSeedData[] = [
           { title: 'Grind Time', durationInSeconds: randomDuration() },
           { title: 'Stack Paper', durationInSeconds: randomDuration() },
           { title: 'Rise Up', durationInSeconds: randomDuration() },
+          { title: 'Money Moves', durationInSeconds: randomDuration() },
+          { title: 'Boss Level', durationInSeconds: randomDuration() },
         ],
       },
     ],
@@ -291,6 +338,7 @@ async function clearDatabase(): Promise<void> {
     Artist.deleteMany({}),
     Album.deleteMany({}),
     Track.deleteMany({}),
+    Playlist.deleteMany({}),
   ]);
 
   console.log('Existing data cleared.');
@@ -339,6 +387,7 @@ async function seedArtistsAlbumsAndTracks(): Promise<{
           trackNumber: i + 1,
           genre: artistData.genre,
           playCount: Math.floor(Math.random() * 10000),
+          coverImageUrl: getImageUrl(`track-${trackData.title}`),
         });
         trackCount++;
       }
@@ -372,6 +421,38 @@ async function seedUsers(): Promise<number> {
   return userCount;
 }
 
+async function seedPlaylists(): Promise<number> {
+  console.log('Creating playlists...');
+
+  // Get the first test user (alex.morgan)
+  const owner = await User.findOne({ email: 'alex.morgan@hackify.com' });
+  if (!owner) {
+    console.log('  Warning: No user found for playlist ownership');
+    return 0;
+  }
+
+  // Get 6 tracks from different albums for variety
+  const tracks = await Track.find({}).limit(6);
+  if (tracks.length < 6) {
+    console.log(`  Warning: Only ${tracks.length} tracks found`);
+  }
+
+  const trackIds = tracks.map((track) => track._id as Types.ObjectId);
+
+  const playlist = await Playlist.create({
+    name: 'Playlist 1',
+    description: 'A curated mix of various tracks',
+    ownerId: owner._id,
+    trackIds,
+    coverImageUrl: getImageUrl('playlist-1'),
+    isPublic: true,
+  });
+
+  console.log(`  Created playlist: ${playlist.name} (${trackIds.length} tracks)`);
+
+  return 1;
+}
+
 async function seed(): Promise<void> {
   try {
     console.log('Connecting to MongoDB...');
@@ -386,6 +467,8 @@ async function seed(): Promise<void> {
 
     const userCount = await seedUsers();
 
+    const playlistCount = await seedPlaylists();
+
     console.log('\n========================================');
     console.log('Seeding completed successfully!');
     console.log('========================================');
@@ -393,6 +476,7 @@ async function seed(): Promise<void> {
     console.log(`Albums created: ${albumCount}`);
     console.log(`Tracks created: ${trackCount}`);
     console.log(`Users created: ${userCount}`);
+    console.log(`Playlists created: ${playlistCount}`);
     console.log('========================================');
     console.log('\nTest Users:');
     console.log('  Email: alex.morgan@hackify.com | Password: password123');
