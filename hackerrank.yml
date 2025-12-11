@@ -2,14 +2,15 @@ version: 1.0
 configuration:
   has_webserver: true
   readonly_paths:
-    - frontend/__tests__/*
+    - __tests__/*
     - frontend/jest.config.js
     - frontend/jest.setup.ts
+    - backend/jest.config.js
   ide_config:
     default_open_files:
-      - frontend/src/app/layout.tsx
-      - backend/src/main.ts
+      - frontend/src/main.tsx
+      - backend/src/server.ts
     project_menu:
       run: npm start
       install: npm install
-      test: echo "No test command configured"
+      test: npm test

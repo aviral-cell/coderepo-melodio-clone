@@ -1,0 +1,119 @@
+import { Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { AuthenticatedRequest, JwtPayload } from "../types/index.js";
+import { sendError } from "../utils/index.js";
+
+/**
+ * JWT Authentication Middleware
+ *
+ * Validates the JWT token from the Authorization header and attaches
+ * the decoded user information to the request object.
+ *
+ * Expected header format: Authorization: Bearer <token>
+ */
+export function authMiddleware(
+	req: AuthenticatedRequest,
+	res: Response,
+	next: NextFunction,
+): void {
+	try {
+		const authHeader = req.headers.authorization;
+
+		if (!authHeader) {
+			sendError(res, "Authorization header is required", 401);
+			return;
+		}
+
+		const parts = authHeader.split(" ");
+		if (parts.length !== 2 || parts[0] !== "Bearer") {
+			sendError(res, "Invalid authorization header format", 401);
+			return;
+		}
+
+		const token = parts[1];
+		if (!token) {
+			sendError(res, "Token is required", 401);
+			return;
+		}
+
+		const jwtSecret = process.env["JWT_SECRET"];
+		if (!jwtSecret) {
+			console.error("JWT_SECRET is not configured");
+			sendError(res, "Server configuration error", 500);
+			return;
+		}
+
+		const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
+
+		req.user = {
+			userId: decoded.userId,
+			email: decoded.email,
+		};
+
+		next();
+	} catch (error) {
+		if (error instanceof jwt.TokenExpiredError) {
+			sendError(res, "Token has expired", 401);
+			return;
+		}
+
+		if (error instanceof jwt.JsonWebTokenError) {
+			sendError(res, "Invalid token", 401);
+			return;
+		}
+
+		console.error("Auth middleware error:", error);
+		sendError(res, "Authentication failed", 401);
+	}
+}
+
+/**
+ * Optional Authentication Middleware
+ *
+ * Similar to authMiddleware but does not reject requests without tokens.
+ * Useful for routes that work differently for authenticated vs anonymous users.
+ */
+export function optionalAuthMiddleware(
+	req: AuthenticatedRequest,
+	res: Response,
+	next: NextFunction,
+): void {
+	try {
+		const authHeader = req.headers.authorization;
+
+		if (!authHeader) {
+			next();
+			return;
+		}
+
+		const parts = authHeader.split(" ");
+		if (parts.length !== 2 || parts[0] !== "Bearer") {
+			next();
+			return;
+		}
+
+		const token = parts[1];
+		if (!token) {
+			next();
+			return;
+		}
+
+		const jwtSecret = process.env["JWT_SECRET"];
+		if (!jwtSecret) {
+			next();
+			return;
+		}
+
+		const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
+
+		req.user = {
+			userId: decoded.userId,
+			email: decoded.email,
+		};
+
+		next();
+	} catch {
+		// Silently continue without auth for optional middleware
+		next();
+	}
+}

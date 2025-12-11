@@ -1,1862 +1,856 @@
-# Melodio Clone - Implementation Plan
+# MERN Stack Implementation Plan
 
-## Document Information
+## Overview
 
-| Field | Value |
-|-------|-------|
-| Project | Melodio Clone for HackerRank Debugging Challenge |
-| Stack | MNN (MongoDB + Next.js + NestJS) |
-| Version | 1.0 |
-| Status | Ready for Development |
+This document outlines the step-by-step implementation plan for migrating the music streaming application from MENN (MongoDB + Express via NestJS + Next.js) to MERN (MongoDB + Express + React + Node.js) stack.
 
----
+**Target Ports:**
+- Frontend (React + Vite): `4000`
+- Backend (Express + Node.js): `6000`
 
-## Table of Contents
-
-1. [Project Structure](#1-project-structure)
-2. [Technology Stack Summary](#2-technology-stack-summary)
-3. [Phase Breakdown](#3-phase-breakdown)
-4. [Database Schemas](#4-database-schemas)
-5. [API Endpoints](#5-api-endpoints)
-6. [Frontend Components](#6-frontend-components)
-7. [State Management](#7-state-management)
-8. [Implementation Order](#8-implementation-order)
-9. [Testing Strategy](#9-testing-strategy)
+**Agent Delegation:**
+| Agent | Responsibility |
+|-------|----------------|
+| `arch--MERN-stack` | Architecture planning, project setup, orchestration |
+| `be--nodejs-mongo-dev` | Express routes, controllers, services, middleware, Mongoose models |
+| `fe--react-dev` | React components, hooks, contexts, routing (React Router v7) |
+| `be--ts-unit-test-scripter` | Backend unit tests (Jest + Supertest) |
+| `fe--unit-test-scripter` | Frontend unit tests (Jest + React Testing Library) |
 
 ---
 
-## 1. Project Structure
+## TDD Workflow
 
-### 1.1 Root Structure
+**Test-Driven Development is mandatory.** For each feature implementation:
 
+1. **Test Agent writes tests FIRST** based on scenarios in TDD-SCENARIOS.md
+2. **Tests should fail initially** (no implementation yet)
+3. **Dev Agent implements feature** to make tests pass
+4. **Dev Agent identifies edge cases** not covered in MENN codebase and adds them
+5. **Run tests** to verify 100% pass rate
+6. **Refactor if needed** while keeping tests green
+
+**TDD Sequence per Feature:**
 ```
-melodio-mern-app/
-├── backend/                    # NestJS API
-├── frontend/                   # Next.js App
-├── docs/                       # Documentation
-│   ├── melodio-clone-prd.md
-│   ├── melodio-clone-features-summary.md
-│   └── implementation-plan.md
-├── .gitignore
-└── README.md
-```
-
-### 1.2 Backend Structure (NestJS - Feature-Based)
-
-```
-backend/
-├── src/
-│   ├── shared/
-│   │   ├── config/
-│   │   │   ├── app-config.module.ts
-│   │   │   ├── app-config.service.ts
-│   │   │   └── env.validation.ts
-│   │   ├── database/
-│   │   │   └── database.module.ts
-│   │   ├── filters/
-│   │   │   └── global-exception.filter.ts
-│   │   ├── guards/
-│   │   │   └── jwt-auth.guard.ts
-│   │   ├── interceptors/
-│   │   │   ├── logging.interceptor.ts
-│   │   │   └── transform.interceptor.ts
-│   │   ├── pipes/
-│   │   │   ├── validation.pipe.ts
-│   │   │   └── parse-object-id.pipe.ts
-│   │   ├── decorators/
-│   │   │   └── current-user.decorator.ts
-│   │   ├── cache/
-│   │   │   └── cache.service.ts
-│   │   ├── swagger/
-│   │   │   └── swagger.service.ts
-│   │   └── types/
-│   │       ├── index.ts
-│   │       └── api-response.type.ts
-│   │
-│   ├── features/
-│   │   ├── auth/
-│   │   │   ├── auth.module.ts
-│   │   │   ├── auth.controller.ts
-│   │   │   ├── auth.service.ts
-│   │   │   ├── strategies/
-│   │   │   │   └── jwt.strategy.ts
-│   │   │   ├── dto/
-│   │   │   │   ├── register.dto.ts
-│   │   │   │   └── login.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── auth.service.spec.ts
-│   │   │
-│   │   ├── users/
-│   │   │   ├── users.module.ts
-│   │   │   ├── users.controller.ts
-│   │   │   ├── users.service.ts
-│   │   │   ├── schemas/
-│   │   │   │   └── user.schema.ts
-│   │   │   ├── dto/
-│   │   │   │   └── update-user.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── users.service.spec.ts
-│   │   │
-│   │   ├── tracks/
-│   │   │   ├── tracks.module.ts
-│   │   │   ├── tracks.controller.ts
-│   │   │   ├── tracks.service.ts
-│   │   │   ├── schemas/
-│   │   │   │   └── track.schema.ts
-│   │   │   ├── dto/
-│   │   │   │   └── track-query.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── tracks.service.spec.ts
-│   │   │
-│   │   ├── artists/
-│   │   │   ├── artists.module.ts
-│   │   │   ├── artists.controller.ts
-│   │   │   ├── artists.service.ts
-│   │   │   ├── schemas/
-│   │   │   │   └── artist.schema.ts
-│   │   │   ├── dto/
-│   │   │   │   └── artist-query.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── artists.service.spec.ts
-│   │   │
-│   │   ├── albums/
-│   │   │   ├── albums.module.ts
-│   │   │   ├── albums.controller.ts
-│   │   │   ├── albums.service.ts
-│   │   │   ├── schemas/
-│   │   │   │   └── album.schema.ts
-│   │   │   ├── dto/
-│   │   │   │   └── album-query.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── albums.service.spec.ts
-│   │   │
-│   │   ├── playlists/
-│   │   │   ├── playlists.module.ts
-│   │   │   ├── playlists.controller.ts
-│   │   │   ├── playlists.service.ts
-│   │   │   ├── schemas/
-│   │   │   │   └── playlist.schema.ts
-│   │   │   ├── dto/
-│   │   │   │   ├── create-playlist.dto.ts
-│   │   │   │   ├── update-playlist.dto.ts
-│   │   │   │   └── reorder-tracks.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── playlists.service.spec.ts
-│   │   │
-│   │   ├── library/
-│   │   │   ├── library.module.ts
-│   │   │   ├── library.controller.ts
-│   │   │   ├── library.service.ts
-│   │   │   ├── schemas/
-│   │   │   │   ├── liked-track.schema.ts
-│   │   │   │   ├── liked-album.schema.ts
-│   │   │   │   └── followed-artist.schema.ts
-│   │   │   └── __tests__/
-│   │   │       └── library.service.spec.ts
-│   │   │
-│   │   ├── listening-history/
-│   │   │   ├── listening-history.module.ts
-│   │   │   ├── listening-history.controller.ts
-│   │   │   ├── listening-history.service.ts
-│   │   │   ├── schemas/
-│   │   │   │   └── listening-history.schema.ts
-│   │   │   ├── dto/
-│   │   │   │   └── log-play.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── listening-history.service.spec.ts
-│   │   │
-│   │   ├── search/
-│   │   │   ├── search.module.ts
-│   │   │   ├── search.controller.ts
-│   │   │   ├── search.service.ts
-│   │   │   ├── dto/
-│   │   │   │   └── search-query.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── search.service.spec.ts
-│   │   │
-│   │   ├── discover-weekly/
-│   │   │   ├── discover-weekly.module.ts
-│   │   │   ├── discover-weekly.controller.ts
-│   │   │   ├── discover-weekly.service.ts
-│   │   │   └── __tests__/
-│   │   │       └── discover-weekly.service.spec.ts
-│   │   │
-│   │   ├── analytics/
-│   │   │   ├── analytics.module.ts
-│   │   │   ├── analytics.controller.ts
-│   │   │   ├── analytics.service.ts
-│   │   │   └── __tests__/
-│   │   │       └── analytics.service.spec.ts
-│   │   │
-│   │   ├── recommendations/
-│   │   │   ├── recommendations.module.ts
-│   │   │   ├── recommendations.controller.ts
-│   │   │   ├── recommendations.service.ts
-│   │   │   ├── dto/
-│   │   │   │   └── queue-recommendations.dto.ts
-│   │   │   └── __tests__/
-│   │   │       └── recommendations.service.spec.ts
-│   │   │
-│   │   └── trending/
-│   │       ├── trending.module.ts
-│   │       ├── trending.controller.ts
-│   │       ├── trending.service.ts
-│   │       └── __tests__/
-│   │           └── trending.service.spec.ts
-│   │
-│   ├── seed/
-│   │   ├── seed.module.ts
-│   │   ├── seed.service.ts
-│   │   ├── data/
-│   │   │   ├── artists.data.ts
-│   │   │   ├── albums.data.ts
-│   │   │   ├── tracks.data.ts
-│   │   │   └── users.data.ts
-│   │   └── seed.command.ts
-│   │
-│   ├── app.module.ts
-│   └── main.ts
-│
-├── test/
-│   ├── jest-e2e.json
-│   └── app.e2e-spec.ts
-│
-├── .env.example
-├── .eslintrc.js
-├── .prettierrc
-├── nest-cli.json
-├── jest.config.js
-├── tsconfig.json
-├── tsconfig.build.json
-└── package.json
-```
-
-### 1.3 Frontend Structure (Next.js App Router)
-
-```
-frontend/
-├── src/
-│   ├── app/
-│   │   ├── (auth)/
-│   │   │   ├── login/
-│   │   │   │   └── page.tsx
-│   │   │   ├── register/
-│   │   │   │   └── page.tsx
-│   │   │   └── layout.tsx
-│   │   │
-│   │   ├── (main)/
-│   │   │   ├── layout.tsx              # Main layout with sidebar + player
-│   │   │   ├── page.tsx                # Home page
-│   │   │   ├── search/
-│   │   │   │   └── page.tsx
-│   │   │   ├── library/
-│   │   │   │   └── page.tsx
-│   │   │   ├── playlist/
-│   │   │   │   └── [id]/
-│   │   │   │       └── page.tsx
-│   │   │   ├── album/
-│   │   │   │   └── [id]/
-│   │   │   │       └── page.tsx
-│   │   │   ├── artist/
-│   │   │   │   └── [id]/
-│   │   │   │       └── page.tsx
-│   │   │   ├── discover-weekly/
-│   │   │   │   └── page.tsx
-│   │   │   ├── stats/
-│   │   │   │   └── page.tsx
-│   │   │   └── trending/
-│   │   │       └── page.tsx
-│   │   │
-│   │   ├── layout.tsx                  # Root layout
-│   │   ├── globals.css
-│   │   └── providers.tsx               # Context providers wrapper
-│   │
-│   ├── shared/
-│   │   ├── components/
-│   │   │   ├── ui/                     # Shadcn UI components
-│   │   │   │   ├── button.tsx
-│   │   │   │   ├── input.tsx
-│   │   │   │   ├── card.tsx
-│   │   │   │   ├── dialog.tsx
-│   │   │   │   ├── dropdown-menu.tsx
-│   │   │   │   ├── slider.tsx
-│   │   │   │   ├── toast.tsx
-│   │   │   │   ├── toaster.tsx
-│   │   │   │   ├── skeleton.tsx
-│   │   │   │   └── scroll-area.tsx
-│   │   │   │
-│   │   │   ├── layout/
-│   │   │   │   ├── Sidebar.tsx
-│   │   │   │   ├── TopNav.tsx
-│   │   │   │   ├── PlayerBar.tsx
-│   │   │   │   └── QueueSidebar.tsx
-│   │   │   │
-│   │   │   ├── track/
-│   │   │   │   ├── TrackRow.tsx
-│   │   │   │   ├── TrackList.tsx
-│   │   │   │   └── TrackCard.tsx
-│   │   │   │
-│   │   │   ├── playlist/
-│   │   │   │   ├── PlaylistCard.tsx
-│   │   │   │   ├── CreatePlaylistDialog.tsx
-│   │   │   │   └── AddToPlaylistMenu.tsx
-│   │   │   │
-│   │   │   ├── album/
-│   │   │   │   └── AlbumCard.tsx
-│   │   │   │
-│   │   │   ├── artist/
-│   │   │   │   └── ArtistCard.tsx
-│   │   │   │
-│   │   │   ├── search/
-│   │   │   │   ├── SearchBar.tsx
-│   │   │   │   └── SearchResults.tsx
-│   │   │   │
-│   │   │   └── common/
-│   │   │       ├── LoadingSpinner.tsx
-│   │   │       ├── ErrorMessage.tsx
-│   │   │       └── EmptyState.tsx
-│   │   │
-│   │   ├── contexts/
-│   │   │   ├── AuthContext.tsx
-│   │   │   └── PlayerContext.tsx
-│   │   │
-│   │   ├── hooks/
-│   │   │   ├── useAuth.ts
-│   │   │   ├── usePlayer.ts
-│   │   │   ├── useDebounce.ts
-│   │   │   └── useLocalStorage.ts
-│   │   │
-│   │   ├── services/
-│   │   │   ├── api.service.ts          # Base fetch wrapper
-│   │   │   ├── auth.service.ts
-│   │   │   ├── tracks.service.ts
-│   │   │   ├── artists.service.ts
-│   │   │   ├── albums.service.ts
-│   │   │   ├── playlists.service.ts
-│   │   │   ├── library.service.ts
-│   │   │   ├── search.service.ts
-│   │   │   ├── analytics.service.ts
-│   │   │   └── recommendations.service.ts
-│   │   │
-│   │   ├── types/
-│   │   │   ├── index.ts
-│   │   │   ├── track.types.ts
-│   │   │   ├── artist.types.ts
-│   │   │   ├── album.types.ts
-│   │   │   ├── playlist.types.ts
-│   │   │   ├── user.types.ts
-│   │   │   ├── player.types.ts
-│   │   │   └── api.types.ts
-│   │   │
-│   │   └── utils/
-│   │       ├── formatters.ts           # Time, date formatters
-│   │       └── validators.ts           # Zod schemas
-│   │
-│   └── lib/
-│       └── utils.ts                    # Shadcn cn() utility
-│
-├── public/
-│   ├── icons/
-│   └── images/
-│
-├── __tests__/
-│   ├── components/
-│   │   ├── TrackRow.test.tsx
-│   │   ├── PlayerBar.test.tsx
-│   │   └── SearchBar.test.tsx
-│   └── hooks/
-│       └── usePlayer.test.ts
-│
-├── .env.example
-├── .env.local
-├── .eslintrc.json
-├── components.json                     # Shadcn config
-├── jest.config.js
-├── jest.setup.ts
-├── next.config.ts
-├── postcss.config.js
-├── tailwind.config.ts
-├── tsconfig.json
-└── package.json
+Test Agent → Write failing tests → Dev Agent → Implement → Tests pass → Edge cases → Done
 ```
 
 ---
 
-## 2. Technology Stack Summary
+## Test Folder Structure
 
-### 2.1 Backend
-
-| Component | Technology | Notes |
-|-----------|------------|-------|
-| Runtime | Node.js (LTS) | v20+ |
-| Framework | NestJS v10+ | Feature-based modules |
-| Database | MongoDB | Atlas or local |
-| ODM | Mongoose v8+ | NOT Prisma/TypeORM |
-| Validation | class-validator | DTOs |
-| Auth | JWT (passport-jwt) | 7-day expiration |
-| Caching | node-cache | In-memory, 5-min TTL |
-| API Docs | Swagger (@nestjs/swagger) | Auto-generated |
-
-### 2.2 Frontend
-
-| Component | Technology | Notes |
-|-----------|------------|-------|
-| Framework | Next.js 15/16 | App Router |
-| React | React 19 | Server + Client components |
-| Styling | Tailwind CSS v4 | Dark theme |
-| UI Library | Shadcn UI | Custom path: shared/components/ui |
-| State | React Context + useReducer | NO Zustand |
-| HTTP | Native Fetch API | NO Axios |
-| Validation | Zod | Form validation |
-| Icons | Lucide React | Consistent iconography |
-
-### 2.3 Forbidden Technologies
-
-| Category | Forbidden | Use Instead |
-|----------|-----------|-------------|
-| ORM | Prisma, TypeORM | Mongoose |
-| HTTP Client | Axios, TanStack Query | Native Fetch |
-| State | Redux, Zustand, Jotai | Context + useReducer |
-| Database | PostgreSQL, MySQL | MongoDB |
-| Auth | OAuth, SSO | Simple JWT |
-
----
-
-## 3. Phase Breakdown
-
-### Phase 1: Project Foundation (Days 1-2)
-
-**Goal**: Set up both projects with core infrastructure.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `package.json` | Dependencies: @nestjs/core, @nestjs/mongoose, mongoose, class-validator, passport-jwt, bcrypt, node-cache |
-| `src/main.ts` | Bootstrap with validation pipe, CORS, versioning, Swagger |
-| `src/app.module.ts` | Root module importing all feature modules |
-| `src/shared/config/*` | Environment validation and config service |
-| `src/shared/database/database.module.ts` | MongoDB connection via MongooseModule.forRootAsync |
-| `src/shared/filters/global-exception.filter.ts` | Unified error response format |
-| `src/shared/pipes/validation.pipe.ts` | Global DTO validation |
-| `src/shared/pipes/parse-object-id.pipe.ts` | MongoDB ObjectId validation |
-| `src/shared/interceptors/transform.interceptor.ts` | Response wrapper { success, data } |
-| `src/shared/swagger/swagger.service.ts` | Swagger setup with bearer auth |
-| `src/shared/types/api-response.type.ts` | TypeScript interfaces for responses |
-| `.env.example` | Template for environment variables |
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `package.json` | Dependencies: next, react, tailwindcss, shadcn components, zod, lucide-react |
-| `src/app/layout.tsx` | Root layout with fonts, metadata |
-| `src/app/globals.css` | Tailwind imports + CSS variables for dark theme |
-| `src/app/providers.tsx` | Wrap app in context providers |
-| `tailwind.config.ts` | Dark theme configuration, Melodio colors |
-| `components.json` | Shadcn configuration pointing to shared/components/ui |
-| `src/lib/utils.ts` | cn() utility for Shadcn |
-| `src/shared/services/api.service.ts` | Base fetch wrapper with error handling |
-| `src/shared/types/api.types.ts` | API response types |
-| `next.config.ts` | API rewrites, image domains |
-
-#### Deliverables
-- [ ] Backend starts on port 5000, shows Swagger UI
-- [ ] Frontend starts on port 3000, shows placeholder page
-- [ ] MongoDB connection established
-- [ ] Environment variables documented
-
----
-
-### Phase 2: Authentication (Days 3-4)
-
-**Goal**: JWT-based authentication with user registration/login.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/features/users/schemas/user.schema.ts` | User mongoose schema with indexes |
-| `src/features/users/users.module.ts` | Users module |
-| `src/features/users/users.service.ts` | User CRUD operations |
-| `src/features/auth/auth.module.ts` | Auth module with JWT config |
-| `src/features/auth/auth.controller.ts` | /auth/register, /auth/login, /auth/me |
-| `src/features/auth/auth.service.ts` | Registration, login logic with bcrypt |
-| `src/features/auth/strategies/jwt.strategy.ts` | Passport JWT strategy |
-| `src/features/auth/dto/register.dto.ts` | Registration validation |
-| `src/features/auth/dto/login.dto.ts` | Login validation |
-| `src/shared/guards/jwt-auth.guard.ts` | JWT authentication guard |
-| `src/shared/decorators/current-user.decorator.ts` | Extract user from request |
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/contexts/AuthContext.tsx` | Auth state: user, token, isAuthenticated |
-| `src/shared/hooks/useAuth.ts` | Hook to access auth context |
-| `src/shared/services/auth.service.ts` | Login, register, me API calls |
-| `src/app/(auth)/layout.tsx` | Centered layout for auth pages |
-| `src/app/(auth)/login/page.tsx` | Login form with validation |
-| `src/app/(auth)/register/page.tsx` | Registration form |
-| `src/shared/utils/validators.ts` | Zod schemas for auth forms |
-
-#### Deliverables
-- [ ] User can register with username, email, password, displayName
-- [ ] User can login and receive JWT
-- [ ] Protected routes redirect to login
-- [ ] Token stored in localStorage and sent with requests
-
----
-
-### Phase 3: Core Catalog (Days 5-7)
-
-**Goal**: Tracks, Artists, Albums with search functionality.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/features/tracks/schemas/track.schema.ts` | Track schema with text index on title |
-| `src/features/tracks/tracks.module.ts` | Tracks module |
-| `src/features/tracks/tracks.controller.ts` | GET /tracks, GET /tracks/:id, POST /tracks/:id/play |
-| `src/features/tracks/tracks.service.ts` | Track queries with pagination |
-| `src/features/artists/schemas/artist.schema.ts` | Artist schema with text index on name |
-| `src/features/artists/artists.module.ts` | Artists module |
-| `src/features/artists/artists.controller.ts` | GET /artists, GET /artists/:id, GET /artists/:id/tracks |
-| `src/features/artists/artists.service.ts` | Artist queries |
-| `src/features/albums/schemas/album.schema.ts` | Album schema with text index on title |
-| `src/features/albums/albums.module.ts` | Albums module |
-| `src/features/albums/albums.controller.ts` | GET /albums, GET /albums/:id |
-| `src/features/albums/albums.service.ts` | Album queries with track population |
-| `src/features/search/search.module.ts` | Search module |
-| `src/features/search/search.controller.ts` | GET /search?q={query} |
-| `src/features/search/search.service.ts` | Unified search across collections |
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/types/track.types.ts` | Track interface |
-| `src/shared/types/artist.types.ts` | Artist interface |
-| `src/shared/types/album.types.ts` | Album interface |
-| `src/shared/services/tracks.service.ts` | Track API calls |
-| `src/shared/services/artists.service.ts` | Artist API calls |
-| `src/shared/services/albums.service.ts` | Album API calls |
-| `src/shared/services/search.service.ts` | Search API calls |
-| `src/shared/components/track/TrackRow.tsx` | Track row with play, like, add to queue |
-| `src/shared/components/track/TrackList.tsx` | List of track rows |
-| `src/shared/components/album/AlbumCard.tsx` | Album grid card |
-| `src/shared/components/artist/ArtistCard.tsx` | Artist grid card |
-| `src/shared/components/search/SearchBar.tsx` | Debounced search input |
-| `src/shared/components/search/SearchResults.tsx` | Categorized dropdown results |
-| `src/shared/hooks/useDebounce.ts` | Debounce hook (300ms) |
-| `src/app/(main)/search/page.tsx` | Search page |
-| `src/app/(main)/album/[id]/page.tsx` | Album detail page |
-| `src/app/(main)/artist/[id]/page.tsx` | Artist detail page |
-
-#### Deliverables
-- [ ] Browse all tracks with pagination
-- [ ] View track, album, artist details
-- [ ] Search across tracks, albums, artists
-- [ ] Debounced search autocomplete
-
----
-
-### Phase 4: Music Player (Days 8-10)
-
-**Goal**: Simulated music player with queue management.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/features/listening-history/schemas/listening-history.schema.ts` | History schema with indexes |
-| `src/features/listening-history/listening-history.module.ts` | Module |
-| `src/features/listening-history/listening-history.controller.ts` | POST /tracks/:id/play |
-| `src/features/listening-history/listening-history.service.ts` | Log play, complete play |
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/types/player.types.ts` | PlayerState, PlayerAction types |
-| `src/shared/contexts/PlayerContext.tsx` | Player state with useReducer |
-| `src/shared/hooks/usePlayer.ts` | Hook to access player context |
-| `src/shared/components/layout/PlayerBar.tsx` | Bottom player bar |
-| `src/shared/components/layout/QueueSidebar.tsx` | Right slide-out queue |
-| `src/shared/utils/formatters.ts` | formatTime (M:SS), formatDuration |
-
-**PlayerContext State:**
-```typescript
-interface PlayerState {
-  currentTrack: Track | null;
-  queue: Track[];
-  queueIndex: number;
-  isPlaying: boolean;
-  elapsedSeconds: number;
-  shuffleEnabled: boolean;
-  repeatMode: 'off' | 'all' | 'one';
-  volume: number;
-  isQueueOpen: boolean;
-}
-
-type PlayerAction =
-  | { type: 'PLAY_TRACK'; payload: Track }
-  | { type: 'PLAY_TRACKS'; payload: { tracks: Track[]; startIndex: number } }
-  | { type: 'PAUSE' }
-  | { type: 'RESUME' }
-  | { type: 'NEXT' }
-  | { type: 'PREVIOUS' }
-  | { type: 'SEEK'; payload: number }
-  | { type: 'ADD_TO_QUEUE'; payload: Track }
-  | { type: 'REMOVE_FROM_QUEUE'; payload: number }
-  | { type: 'REORDER_QUEUE'; payload: { from: number; to: number } }
-  | { type: 'CLEAR_QUEUE' }
-  | { type: 'TOGGLE_SHUFFLE' }
-  | { type: 'TOGGLE_REPEAT' }
-  | { type: 'SET_VOLUME'; payload: number }
-  | { type: 'TICK' }
-  | { type: 'TOGGLE_QUEUE' };
+```
+spotify-mern-app/
+├── __tests__/                    # Task-specific tests (HackerRank graded)
+│   ├── task1/                    # Playlist operations (frontend)
+│   │   └── usePlaylistOperations.test.ts
+│   ├── task2/                    # Player controls (frontend)
+│   │   └── playerReducer.test.ts
+│   └── task3/                    # Search (frontend + backend)
+│       ├── useSearch.test.ts     # Frontend search hook
+│       └── search.service.test.ts # Backend search API
+├── backend/
+│   └── __tests__/
+│       └── others/               # Non-task backend tests
+│           ├── auth.service.test.ts
+│           ├── tracks.service.test.ts
+│           ├── albums.service.test.ts
+│           ├── artists.service.test.ts
+│           └── playlists.service.test.ts
+├── frontend/
+│   └── __tests__/
+│       └── others/               # Non-task frontend tests
+│           ├── auth.context.test.ts
+│           ├── useDebounce.test.ts
+│           ├── useRecentlyPlayed.test.ts
+│           └── formatters.test.ts
 ```
 
-**Player Bar Features:**
-- Track info (cover, title, artist)
-- Play/Pause button
-- Previous/Next buttons
-- Progress bar (clickable, draggable)
-- Time display (elapsed / total)
-- Volume slider
-- Shuffle toggle
-- Repeat toggle (off/all/one icons)
-- Queue toggle button
-
-**Queue Sidebar Features:**
-- Current track highlighted
-- Drag-and-drop reorder
-- Remove track button
-- Clear queue button
-
-#### Deliverables
-- [ ] Click track to play (timer-based simulation)
-- [ ] Play/Pause/Next/Previous controls
-- [ ] Clickable progress bar with seek
-- [ ] Queue management (add, remove, reorder)
-- [ ] Shuffle and repeat modes
-- [ ] Listening history logged to backend
-
----
-
-### Phase 5: Playlists (Days 11-12)
-
-**Goal**: Full playlist CRUD with drag-and-drop track reordering.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/features/playlists/schemas/playlist.schema.ts` | Playlist schema |
-| `src/features/playlists/playlists.module.ts` | Module |
-| `src/features/playlists/playlists.controller.ts` | Full CRUD + track management |
-| `src/features/playlists/playlists.service.ts` | Playlist operations |
-| `src/features/playlists/dto/create-playlist.dto.ts` | Create DTO |
-| `src/features/playlists/dto/update-playlist.dto.ts` | Update DTO |
-| `src/features/playlists/dto/reorder-tracks.dto.ts` | Reorder DTO |
-
-**Endpoints:**
-- `GET /playlists` - User's playlists
-- `GET /playlists/:id` - Single playlist with tracks
-- `POST /playlists` - Create playlist
-- `PATCH /playlists/:id` - Update name/description
-- `DELETE /playlists/:id` - Delete playlist
-- `POST /playlists/:id/tracks` - Add track
-- `DELETE /playlists/:id/tracks/:trackId` - Remove track
-- `PATCH /playlists/:id/reorder` - Reorder tracks
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/types/playlist.types.ts` | Playlist interface |
-| `src/shared/services/playlists.service.ts` | Playlist API calls |
-| `src/shared/components/playlist/PlaylistCard.tsx` | Playlist grid card |
-| `src/shared/components/playlist/CreatePlaylistDialog.tsx` | Create playlist modal |
-| `src/shared/components/playlist/AddToPlaylistMenu.tsx` | Submenu for adding tracks |
-| `src/app/(main)/playlist/[id]/page.tsx` | Playlist detail with drag-and-drop |
-
-**Optimistic Updates:**
-- Add track immediately to UI, revert on error
-- Remove track immediately, revert on error
-- Reorder immediately, revert on error
-
-#### Deliverables
-- [ ] Create playlist with name and description
-- [ ] Add tracks to playlist from track row menu
-- [ ] Remove tracks from playlist
-- [ ] Drag-and-drop reorder tracks
-- [ ] Edit playlist name/description inline
-- [ ] Delete playlist with confirmation
-
----
-
-### Phase 6: Library (Likes/Follows) (Days 13-14)
-
-**Goal**: Like tracks/albums, follow artists.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/features/library/schemas/liked-track.schema.ts` | Schema with unique index |
-| `src/features/library/schemas/liked-album.schema.ts` | Schema with unique index |
-| `src/features/library/schemas/followed-artist.schema.ts` | Schema with unique index |
-| `src/features/library/library.module.ts` | Module |
-| `src/features/library/library.controller.ts` | All library endpoints |
-| `src/features/library/library.service.ts` | Like/unlike, follow/unfollow |
-
-**Endpoints:**
-- `GET /library/tracks` - Liked tracks
-- `POST /library/tracks/:trackId` - Like track
-- `DELETE /library/tracks/:trackId` - Unlike track
-- `GET /library/tracks/:trackId/status` - Check if liked
-- `GET /library/albums` - Liked albums
-- `POST /library/albums/:albumId` - Like album
-- `DELETE /library/albums/:albumId` - Unlike album
-- `GET /library/artists` - Followed artists
-- `POST /library/artists/:artistId` - Follow artist
-- `DELETE /library/artists/:artistId` - Unfollow artist
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/services/library.service.ts` | Library API calls |
-| `src/app/(main)/library/page.tsx` | Library page with tabs |
-
-**Library Page Tabs:**
-- Liked Tracks
-- Liked Albums
-- Followed Artists
-
-**Heart Icon Behavior:**
-- Filled heart = liked
-- Click toggles like status
-- Optimistic update
-
-#### Deliverables
-- [ ] Like/unlike tracks from any track row
-- [ ] Like/unlike albums from album page
-- [ ] Follow/unfollow artists from artist page
-- [ ] Library page shows all liked content
-- [ ] Heart icon state synced with backend
-
----
-
-### Phase 7: Advanced Features (Days 15-17)
-
-**Goal**: Discover Weekly, Analytics, Queue Recommendations, Trending.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/cache/cache.service.ts` | node-cache wrapper |
-| `src/features/discover-weekly/discover-weekly.module.ts` | Module |
-| `src/features/discover-weekly/discover-weekly.controller.ts` | GET /discover-weekly |
-| `src/features/discover-weekly/discover-weekly.service.ts` | Recommendation algorithm |
-| `src/features/analytics/analytics.module.ts` | Module |
-| `src/features/analytics/analytics.controller.ts` | GET /analytics/stats |
-| `src/features/analytics/analytics.service.ts` | Stats aggregation |
-| `src/features/recommendations/recommendations.module.ts` | Module |
-| `src/features/recommendations/recommendations.controller.ts` | GET /recommendations/queue |
-| `src/features/recommendations/recommendations.service.ts` | Smart queue algorithm |
-| `src/features/trending/trending.module.ts` | Module |
-| `src/features/trending/trending.controller.ts` | GET /trending |
-| `src/features/trending/trending.service.ts` | Time-decayed scoring |
-
-**Discover Weekly Algorithm:**
-1. Get user's listening history (last 30 days)
-2. Count plays per genre -> top 5 genres
-3. Count plays per artist -> top 5 artists
-4. Find tracks matching genres OR artists
-5. Exclude already-played tracks
-6. Return 30 random tracks from matches
-
-**Analytics Stats:**
-- `topArtists`: Top 5 by play count
-- `topGenres`: Top 5 by play count
-- `totalListeningTimeMinutes`: Sum of listen durations
-- `listeningByDayOfWeek`: { 0: count, 1: count, ... }
-- `currentStreak`: Consecutive days
-- `longestStreak`: Best streak ever
-
-**Queue Recommendations Algorithm:**
-1. Same album next track (Priority 1)
-2. Same artist, different album (Priority 2, up to 2 tracks)
-3. Same genre, different artist (Priority 3, up to 2 tracks)
-4. Popular tracks fallback (Priority 4)
-5. Return exactly 5 tracks
-
-**Trending Score Formula:**
-```
-score = SUM(1 / (1 + daysAgo * 0.1)) for each play
-```
-- Cached for 5 minutes
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/services/analytics.service.ts` | Analytics API |
-| `src/shared/services/recommendations.service.ts` | Recommendations API |
-| `src/app/(main)/discover-weekly/page.tsx` | Discover Weekly page |
-| `src/app/(main)/stats/page.tsx` | Analytics dashboard |
-| `src/app/(main)/trending/page.tsx` | Trending leaderboard |
-
-**Stats Page Components:**
-- Total listening time card
-- Current/longest streak cards
-- Top artists list (with images)
-- Top genres list
-- Day of week bar chart
-
-#### Deliverables
-- [ ] Discover Weekly page with 30 personalized tracks
-- [ ] Analytics dashboard with all stats
-- [ ] Queue recommendations shown in player
-- [ ] Trending page with top 20 tracks
-
----
-
-### Phase 8: Layout and Navigation (Day 18)
-
-**Goal**: Complete Melodio-like layout.
-
-#### Frontend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/shared/components/layout/Sidebar.tsx` | Left navigation sidebar |
-| `src/shared/components/layout/TopNav.tsx` | Top navigation bar |
-| `src/app/(main)/layout.tsx` | Main layout composition |
-| `src/app/(main)/page.tsx` | Home page with sections |
-
-**Sidebar Contents:**
-- Logo
-- Home link
-- Search link
-- Your Library link
-- Discover Weekly link
-- Your Stats link
-- Trending link
-- Divider
-- Create Playlist button
-- User's playlists list
-
-**Top Nav Contents:**
-- Back/Forward navigation
-- Search bar (in header)
-- User menu (profile, logout)
-
-**Home Page Sections:**
-- Recently Played (if history exists)
-- Trending Tracks
-- Discover Weekly (teaser)
-- Browse by Genre
-- New Releases (albums)
-
-#### Deliverables
-- [ ] Fixed left sidebar
-- [ ] Fixed bottom player bar
-- [ ] Scrollable main content
-- [ ] Responsive design (desktop-first)
-
----
-
-### Phase 9: Seed Data (Day 19)
-
-**Goal**: Populate database with realistic test data.
-
-#### Backend Tasks
-
-| File | Purpose |
-|------|---------|
-| `src/seed/data/artists.data.ts` | 20 artist objects |
-| `src/seed/data/albums.data.ts` | 40 album objects |
-| `src/seed/data/tracks.data.ts` | 200 track objects |
-| `src/seed/data/users.data.ts` | 5 user objects |
-| `src/seed/seed.service.ts` | Seed orchestration |
-| `src/seed/seed.command.ts` | CLI command |
-
-**Seed Data Requirements:**
-- 20 artists across 5 genres (rock, pop, jazz, electronic, hip-hop)
-- 40 albums (2 per artist average)
-- 200 tracks (5 per album average, 120-300 seconds)
-- 5 users with passwords
-- 10 playlists (2 per user)
-- 1000+ listening history entries (spread over 60 days)
-- Some users with clear genre preferences
-- Some users with minimal history
-
-**Artist Data Example:**
-```typescript
-export const artistsData = [
-  {
-    name: 'The Rolling Stones',
-    bio: 'Legendary rock band formed in London',
-    imageUrl: 'https://picsum.photos/seed/artist1/300',
-    genres: ['rock', 'blues'],
-    followerCount: 15000,
-  },
-  // ... 19 more
-];
-```
-
-#### Deliverables
-- [ ] `npm run seed` command works
-- [ ] All collections populated
-- [ ] Listening history varies by user
-- [ ] Test account: `testuser@example.com` / `password123`
-
----
-
-### Phase 10: Polish and Testing (Days 20-21)
-
-**Goal**: Bug fixes, edge cases, and test coverage.
-
-#### Backend Testing
-
-| Test File | Coverage |
-|-----------|----------|
-| `auth.service.spec.ts` | Register, login, validation |
-| `tracks.service.spec.ts` | CRUD, pagination, search |
-| `playlists.service.spec.ts` | CRUD, track management |
-| `analytics.service.spec.ts` | Stats calculation |
-| `trending.service.spec.ts` | Score calculation, caching |
-
-#### Frontend Testing
-
-| Test File | Coverage |
-|-----------|----------|
-| `TrackRow.test.tsx` | Render, play, like, add to queue |
-| `PlayerBar.test.tsx` | Controls, progress, state |
-| `SearchBar.test.tsx` | Debounce, results display |
-| `usePlayer.test.ts` | All player actions |
-
-#### Edge Cases to Handle
-- Empty queue
-- Single track queue
-- New user (no history)
-- User played all tracks in catalog
-- Network errors
-- Token expiration
-
-#### Deliverables
-- [ ] 80%+ backend test coverage
-- [ ] Critical frontend components tested
-- [ ] All edge cases handled
-- [ ] Error states display correctly
-- [ ] Loading states throughout
-
----
-
-## 4. Database Schemas
-
-### 4.1 User Schema
-
-```typescript
-// src/features/users/schemas/user.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-
-export type UserDocument = HydratedDocument<User>;
-
-@Schema({ timestamps: true })
-export class User {
-  @Prop({ required: true, unique: true, trim: true, lowercase: true })
-  email: string;
-
-  @Prop({ required: true, unique: true, trim: true })
-  username: string;
-
-  @Prop({ required: true })
-  passwordHash: string;
-
-  @Prop({ required: true, trim: true })
-  displayName: string;
-
-  @Prop()
-  avatarUrl?: string;
-}
-
-export const UserSchema = SchemaFactory.createForClass(User);
-
-UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index({ username: 1 }, { unique: true });
-```
-
-### 4.2 Track Schema
-
-```typescript
-// src/features/tracks/schemas/track.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type TrackDocument = HydratedDocument<Track>;
-
-@Schema({ timestamps: true })
-export class Track {
-  @Prop({ required: true, trim: true })
-  title: string;
-
-  @Prop({ type: Types.ObjectId, ref: 'Artist', required: true })
-  artistId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Album', required: true })
-  albumId: Types.ObjectId;
-
-  @Prop({ required: true, min: 1 })
-  durationInSeconds: number;
-
-  @Prop({ required: true, min: 1 })
-  trackNumber: number;
-
-  @Prop({ required: true, trim: true, lowercase: true })
-  genre: string;
-
-  @Prop({ default: 0, min: 0 })
-  playCount: number;
-}
-
-export const TrackSchema = SchemaFactory.createForClass(Track);
-
-TrackSchema.index({ artistId: 1 });
-TrackSchema.index({ albumId: 1 });
-TrackSchema.index({ genre: 1 });
-TrackSchema.index({ title: 'text' });
-TrackSchema.index({ playCount: -1 });
-```
-
-### 4.3 Artist Schema
-
-```typescript
-// src/features/artists/schemas/artist.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-
-export type ArtistDocument = HydratedDocument<Artist>;
-
-@Schema({ timestamps: true })
-export class Artist {
-  @Prop({ required: true, trim: true })
-  name: string;
-
-  @Prop({ trim: true })
-  bio?: string;
-
-  @Prop()
-  imageUrl?: string;
-
-  @Prop({ type: [String], required: true, default: [] })
-  genres: string[];
-
-  @Prop({ default: 0, min: 0 })
-  followerCount: number;
-}
-
-export const ArtistSchema = SchemaFactory.createForClass(Artist);
-
-ArtistSchema.index({ name: 'text' });
-ArtistSchema.index({ followerCount: -1 });
-```
-
-### 4.4 Album Schema
-
-```typescript
-// src/features/albums/schemas/album.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type AlbumDocument = HydratedDocument<Album>;
-
-@Schema({ timestamps: true })
-export class Album {
-  @Prop({ required: true, trim: true })
-  title: string;
-
-  @Prop({ type: Types.ObjectId, ref: 'Artist', required: true })
-  artistId: Types.ObjectId;
-
-  @Prop({ required: true })
-  releaseDate: Date;
-
-  @Prop()
-  coverImageUrl?: string;
-
-  @Prop({ required: true, min: 1 })
-  totalTracks: number;
-}
-
-export const AlbumSchema = SchemaFactory.createForClass(Album);
-
-AlbumSchema.index({ artistId: 1 });
-AlbumSchema.index({ title: 'text' });
-AlbumSchema.index({ releaseDate: -1 });
-```
-
-### 4.5 Playlist Schema
-
-```typescript
-// src/features/playlists/schemas/playlist.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type PlaylistDocument = HydratedDocument<Playlist>;
-
-@Schema({ timestamps: true })
-export class Playlist {
-  @Prop({ required: true, trim: true })
-  name: string;
-
-  @Prop({ trim: true })
-  description?: string;
-
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  ownerId: Types.ObjectId;
-
-  @Prop({ type: [Types.ObjectId], ref: 'Track', default: [] })
-  trackIds: Types.ObjectId[];
-
-  @Prop()
-  coverImageUrl?: string;
-
-  @Prop({ default: true })
-  isPublic: boolean;
-}
-
-export const PlaylistSchema = SchemaFactory.createForClass(Playlist);
-
-PlaylistSchema.index({ ownerId: 1 });
-```
-
-### 4.6 ListeningHistory Schema
-
-```typescript
-// src/features/listening-history/schemas/listening-history.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type ListeningHistoryDocument = HydratedDocument<ListeningHistory>;
-
-@Schema({ timestamps: false })
-export class ListeningHistory {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Track', required: true })
-  trackId: Types.ObjectId;
-
-  @Prop({ required: true })
-  playedAt: Date;
-
-  @Prop()
-  completedAt?: Date;
-
-  @Prop({ required: true, min: 0 })
-  listenDurationSeconds: number;
-}
-
-export const ListeningHistorySchema = SchemaFactory.createForClass(ListeningHistory);
-
-ListeningHistorySchema.index({ userId: 1, playedAt: -1 });
-ListeningHistorySchema.index({ trackId: 1 });
-ListeningHistorySchema.index({ playedAt: -1 });
-```
-
-### 4.7 LikedTrack Schema
-
-```typescript
-// src/features/library/schemas/liked-track.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type LikedTrackDocument = HydratedDocument<LikedTrack>;
-
-@Schema({ timestamps: false })
-export class LikedTrack {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Track', required: true })
-  trackId: Types.ObjectId;
-
-  @Prop({ required: true })
-  likedAt: Date;
-}
-
-export const LikedTrackSchema = SchemaFactory.createForClass(LikedTrack);
-
-LikedTrackSchema.index({ userId: 1, trackId: 1 }, { unique: true });
-LikedTrackSchema.index({ userId: 1 });
-```
-
-### 4.8 LikedAlbum Schema
-
-```typescript
-// src/features/library/schemas/liked-album.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type LikedAlbumDocument = HydratedDocument<LikedAlbum>;
-
-@Schema({ timestamps: false })
-export class LikedAlbum {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Album', required: true })
-  albumId: Types.ObjectId;
-
-  @Prop({ required: true })
-  likedAt: Date;
-}
-
-export const LikedAlbumSchema = SchemaFactory.createForClass(LikedAlbum);
-
-LikedAlbumSchema.index({ userId: 1, albumId: 1 }, { unique: true });
-LikedAlbumSchema.index({ userId: 1 });
-```
-
-### 4.9 FollowedArtist Schema
-
-```typescript
-// src/features/library/schemas/followed-artist.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type FollowedArtistDocument = HydratedDocument<FollowedArtist>;
-
-@Schema({ timestamps: false })
-export class FollowedArtist {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Artist', required: true })
-  artistId: Types.ObjectId;
-
-  @Prop({ required: true })
-  followedAt: Date;
-}
-
-export const FollowedArtistSchema = SchemaFactory.createForClass(FollowedArtist);
-
-FollowedArtistSchema.index({ userId: 1, artistId: 1 }, { unique: true });
-FollowedArtistSchema.index({ userId: 1 });
+**Test Commands:**
+```bash
+npm run test:task1    # Runs __tests__/task1/**
+npm run test:task2    # Runs __tests__/task2/**
+npm run test:task3    # Runs __tests__/task3/**
+npm run test          # Runs all tests (tasks + others)
 ```
 
 ---
 
-## 5. API Endpoints
+## Phase 1: Project Scaffolding
 
-### 5.1 Authentication
+### 1.0 Full Project Architecture Setup
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/v1/auth/register` | Create new user | No |
-| POST | `/api/v1/auth/login` | Login and get JWT | No |
-| GET | `/api/v1/auth/me` | Get current user profile | Yes |
+**Agent:** `arch--MERN-stack`
 
-### 5.2 Tracks
+**Purpose:** Initialize the complete MERN monorepo structure with feature-based architecture, shared configurations, and cross-cutting concerns.
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/tracks` | List tracks with pagination | Yes |
-| GET | `/api/v1/tracks/:id` | Get single track | Yes |
-| GET | `/api/v1/tracks/search` | Search tracks by title | Yes |
-| POST | `/api/v1/tracks/:id/play` | Log play event | Yes |
+**Tasks:**
+1. Initialize monorepo structure:
+   ```
+   spotify-mern-app/
+   ├── __tests__/                # Task-specific tests (HackerRank graded)
+   │   ├── task1/                # Playlist operations (frontend)
+   │   ├── task2/                # Player controls (frontend)
+   │   └── task3/                # Search (frontend + backend)
+   ├── backend/
+   │   ├── src/
+   │   │   ├── features/         # Feature modules (auth, tracks, albums, etc.)
+   │   │   ├── shared/           # Shared utilities, middleware, types
+   │   │   ├── scripts/          # Seed scripts
+   │   │   ├── app.ts            # Express app configuration
+   │   │   └── server.ts         # Server entry point
+   │   ├── __tests__/
+   │   │   └── others/           # Non-task backend tests
+   │   ├── .env.example
+   │   ├── jest.config.js
+   │   ├── tsconfig.json
+   │   └── package.json
+   ├── frontend/
+   │   ├── src/
+   │   │   ├── app/              # App shell, routes
+   │   │   ├── pages/            # Page components
+   │   │   ├── shared/           # Shared code
+   │   │   │   ├── components/   # Reusable components
+   │   │   │   ├── contexts/     # React contexts
+   │   │   │   ├── hooks/        # Custom hooks
+   │   │   │   ├── services/     # API services
+   │   │   │   ├── types/        # TypeScript types
+   │   │   │   └── utils/        # Utilities
+   │   │   ├── lib/              # Third-party config
+   │   │   └── main.tsx          # Entry point
+   │   ├── __tests__/
+   │   │   └── others/           # Non-task frontend tests
+   │   ├── public/               # Static assets (local images)
+   │   ├── index.html
+   │   ├── vite.config.ts
+   │   ├── tailwind.config.ts
+   │   ├── jest.config.js
+   │   ├── tsconfig.json
+   │   └── package.json
+   ├── output/                   # Test output XML files
+   │   └── .gitkeep
+   ├── hackerrank.yml            # HackerRank configuration
+   ├── package.json              # Root package.json (workspaces)
+   ├── jest.config.js            # Root Jest config (for task tests)
+   └── setup.sh                  # Setup script
+   ```
 
-**Query Parameters for GET /tracks:**
-- `page` (default: 1)
-- `limit` (default: 20, max: 50)
-- `genre` (optional)
-- `artistId` (optional)
-- `albumId` (optional)
+2. Configure root `package.json` with workspace scripts:
+   - `npm run dev` - Start both backend and frontend
+   - `npm run dev:backend` - Start backend only (port 6000)
+   - `npm run dev:frontend` - Start frontend only (port 4000)
+   - `npm run seed` - Seed database
+   - `npm run test` - Run all tests
+   - `npm run test:task1` - Run task1 tests
+   - `npm run test:task2` - Run task2 tests
+   - `npm run test:task3` - Run task3 tests
 
-### 5.3 Artists
+3. Configure `hackerrank.yml`:
+   - `readonly_paths` for test files
+   - Task-specific test commands
+   - Output directory configuration
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/artists` | List artists with pagination | Yes |
-| GET | `/api/v1/artists/:id` | Get single artist | Yes |
-| GET | `/api/v1/artists/:id/tracks` | Get artist's tracks | Yes |
-| GET | `/api/v1/artists/:id/albums` | Get artist's albums | Yes |
-| GET | `/api/v1/artists/search` | Search artists by name | Yes |
+4. Setup shared TypeScript types (can be referenced by both backend/frontend)
 
-### 5.4 Albums
+5. Backend base setup:
+   - Express app with JSON parser, CORS, error handling
+   - MongoDB connection module
+   - JWT auth middleware skeleton
+   - Landing page: "API server is running"
+   - Dependencies: express, cors, helmet, morgan, mongoose, bcryptjs, jsonwebtoken, express-validator, dotenv
+   - Dev deps: typescript, ts-node-dev, jest, supertest, @types/*
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/albums` | List albums with pagination | Yes |
-| GET | `/api/v1/albums/:id` | Get album with tracks | Yes |
-| GET | `/api/v1/albums/search` | Search albums by title | Yes |
+6. Frontend base setup:
+   - Vite + React + TypeScript
+   - React Router v7 with route structure
+   - Tailwind CSS with dark theme (#1DB954 accent)
+   - shadcn/ui component configuration
+   - API service base with auth headers
+   - Dependencies: react, react-dom, react-router-dom, tailwindcss, @radix-ui/*, lucide-react
+   - Dev deps: jest, @testing-library/react, @types/*
 
-### 5.5 Playlists
+7. Environment configuration:
+   - Backend `.env.example`: MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN, PORT=6000
+   - Frontend `.env.example`: VITE_API_URL=http://localhost:6000/api
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/playlists` | Get user's playlists | Yes |
-| GET | `/api/v1/playlists/:id` | Get playlist with tracks | Yes |
-| POST | `/api/v1/playlists` | Create playlist | Yes |
-| PATCH | `/api/v1/playlists/:id` | Update playlist | Yes |
-| DELETE | `/api/v1/playlists/:id` | Delete playlist | Yes |
-| POST | `/api/v1/playlists/:id/tracks` | Add track to playlist | Yes |
-| DELETE | `/api/v1/playlists/:id/tracks/:trackId` | Remove track | Yes |
-| PATCH | `/api/v1/playlists/:id/reorder` | Reorder tracks | Yes |
+8. MongoDB Connection:
+   ```
+   mongodb://root:Root123@localhost:27017/melodio_app?authSource=admin
+   ```
 
-### 5.6 Library
+**Acceptance Criteria:**
+- `npm run dev` from root starts both servers (backend:6000, frontend:4000)
+- Backend GET `/` returns "API server is running"
+- Frontend loads with React Router working
+- MongoDB connection ready
+- TypeScript compiles without errors in both projects
+- Test commands configured and ready
+- `hackerrank.yml` properly configured
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/library/tracks` | Get liked tracks | Yes |
-| POST | `/api/v1/library/tracks/:trackId` | Like track | Yes |
-| DELETE | `/api/v1/library/tracks/:trackId` | Unlike track | Yes |
-| GET | `/api/v1/library/tracks/:trackId/status` | Check if liked | Yes |
-| GET | `/api/v1/library/albums` | Get liked albums | Yes |
-| POST | `/api/v1/library/albums/:albumId` | Like album | Yes |
-| DELETE | `/api/v1/library/albums/:albumId` | Unlike album | Yes |
-| GET | `/api/v1/library/artists` | Get followed artists | Yes |
-| POST | `/api/v1/library/artists/:artistId` | Follow artist | Yes |
-| DELETE | `/api/v1/library/artists/:artistId` | Unfollow artist | Yes |
-
-### 5.7 Search
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/search` | Unified search | Yes |
-
-**Query Parameters:**
-- `q` (required): Search query
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "tracks": [...],    // Max 5
-    "albums": [...],    // Max 5
-    "artists": [...]    // Max 5
-  }
-}
-```
-
-### 5.8 Discover Weekly
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/discover-weekly` | Get personalized recommendations | Yes |
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "tracks": [...]  // 30 tracks
-  }
-}
-```
-
-### 5.9 Analytics
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/analytics/stats` | Get user listening stats | Yes |
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "topArtists": [...],
-    "topGenres": [...],
-    "totalListeningTimeMinutes": 1234,
-    "listeningByDayOfWeek": { "0": 10, "1": 15, ... },
-    "currentStreak": 5,
-    "longestStreak": 12
-  }
-}
-```
-
-### 5.10 Queue Recommendations
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/recommendations/queue` | Get smart queue suggestions | Yes |
-
-**Query Parameters:**
-- `trackId` (required): Currently playing track
-- `excludeTrackIds` (optional): Comma-separated IDs to exclude
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "tracks": [...]  // Exactly 5 tracks
-  }
-}
-```
-
-### 5.11 Trending
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/trending` | Get trending leaderboard | Yes |
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "tracks": [
-      { "rank": 1, "trendingScore": 245.5, ...trackData },
-      // ... 19 more
-    ],
-    "cachedAt": "2024-01-15T10:30:00Z"
-  }
-}
-```
+**⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 2.**
 
 ---
 
-## 6. Frontend Components
+## Phase 2: Backend Feature Implementation
 
-### 6.1 Component Hierarchy
+**TDD Workflow for EACH feature:**
+1. `be--ts-unit-test-scripter` writes tests FIRST (tests fail)
+2. `be--nodejs-mongo-dev` implements feature (tests pass)
+3. Identify edge cases not in MENN codebase, add tests + implementation
+4. Verify 100% pass rate
 
-```
-App
-├── Providers (Auth + Player)
-│   ├── (auth) Layout
-│   │   ├── LoginPage
-│   │   └── RegisterPage
-│   │
-│   └── (main) Layout
-│       ├── Sidebar
-│       │   ├── Logo
-│       │   ├── NavLinks
-│       │   ├── CreatePlaylistButton
-│       │   └── PlaylistList
-│       │
-│       ├── TopNav
-│       │   ├── NavigationButtons
-│       │   ├── SearchBar
-│       │   └── UserMenu
-│       │
-│       ├── MainContent (scrollable)
-│       │   ├── HomePage
-│       │   │   ├── RecentlyPlayed
-│       │   │   ├── TrendingSection
-│       │   │   └── BrowseGenres
-│       │   │
-│       │   ├── SearchPage
-│       │   │   └── SearchResults
-│       │   │
-│       │   ├── LibraryPage
-│       │   │   ├── LikedTracks
-│       │   │   ├── LikedAlbums
-│       │   │   └── FollowedArtists
-│       │   │
-│       │   ├── PlaylistPage
-│       │   │   ├── PlaylistHeader
-│       │   │   └── TrackList (draggable)
-│       │   │
-│       │   ├── AlbumPage
-│       │   │   ├── AlbumHeader
-│       │   │   └── TrackList
-│       │   │
-│       │   ├── ArtistPage
-│       │   │   ├── ArtistHeader
-│       │   │   ├── TopTracks
-│       │   │   └── Discography
-│       │   │
-│       │   ├── DiscoverWeeklyPage
-│       │   │   └── TrackList
-│       │   │
-│       │   ├── StatsPage
-│       │   │   ├── StatsCards
-│       │   │   ├── TopArtists
-│       │   │   ├── TopGenres
-│       │   │   └── DayOfWeekChart
-│       │   │
-│       │   └── TrendingPage
-│       │       └── LeaderboardList
-│       │
-│       ├── PlayerBar
-│       │   ├── NowPlaying
-│       │   ├── PlayerControls
-│       │   ├── ProgressBar
-│       │   └── VolumeControl
-│       │
-│       └── QueueSidebar (conditional)
-│           ├── CurrentTrack
-│           ├── UpNext
-│           └── QueueList
-```
+### 2.1 User Model & Auth Feature
 
-### 6.2 Key Component Specifications
+**Test Location:** `backend/__tests__/others/auth.service.test.ts`
+**Test Scenarios:** Section 1 (Authentication Service Tests)
 
-#### TrackRow
-- Props: `track`, `index`, `showAlbum`, `onPlay`, `isPlaying`, `isLiked`
-- Features: Play on click, hover reveal, like toggle, add to queue, add to playlist
+**Step 1 - Write Tests:** `be--ts-unit-test-scripter`
+- Write failing tests for all scenarios in Section 1
+- Tests should cover: register, login, getMe, validation errors, edge cases
 
-#### PlayerBar
-- Fixed height: 90px
-- Three sections: Left (track info), Center (controls), Right (volume/queue)
-- Progress bar: clickable, shows tooltip on hover
+**Step 2 - Implement:** `be--nodejs-mongo-dev`
+- Create User Mongoose schema
+- Create auth routes: POST `/api/auth/register`, POST `/api/auth/login`, GET `/api/auth/me`
+- Create auth middleware (JWT verification)
+- Create auth service: register, login, getMe
+- Create validation middleware for DTOs
 
-#### Sidebar
-- Fixed width: 280px
-- Scrollable playlist section
-- Active link highlighting
+**Step 3 - Verify:** Run tests, ensure 100% pass rate
 
-#### SearchBar
-- Debounce: 300ms
-- Dropdown: max-height with scroll
-- Sections: Tracks, Albums, Artists
+**Files to Create:**
+- `backend/src/features/users/user.model.ts`
+- `backend/src/features/auth/auth.routes.ts`
+- `backend/src/features/auth/auth.controller.ts`
+- `backend/src/features/auth/auth.service.ts`
+- `backend/src/shared/middleware/auth.middleware.ts`
+- `backend/__tests__/others/auth.service.test.ts`
 
-### 6.3 Shadcn UI Components Required
+---
+
+### 2.2 Artist Feature
+
+**Test Location:** `backend/__tests__/others/artists.service.test.ts`
+**Test Scenarios:** Section 4 (Artists Service Tests)
+
+**Step 1 - Write Tests:** `be--ts-unit-test-scripter`
+- Write failing tests for all scenarios in Section 4
+- Tests should cover: findAll, findById, search, follower count operations
+
+**Step 2 - Implement:** `be--nodejs-mongo-dev`
+- Create Artist Mongoose schema with text index on name
+- Create artist routes: GET `/api/artists`, GET `/api/artists/search`, GET `/api/artists/:id`
+- Create artist service: findAll, findById, search, incrementFollowerCount, decrementFollowerCount
+
+**Step 3 - Verify:** Run tests, ensure 100% pass rate
+
+**Files to Create:**
+- `backend/src/features/artists/artist.model.ts`
+- `backend/src/features/artists/artist.routes.ts`
+- `backend/src/features/artists/artist.controller.ts`
+- `backend/src/features/artists/artist.service.ts`
+- `backend/__tests__/others/artists.service.test.ts`
+
+---
+
+### 2.3 Album Feature
+
+**Test Location:** `backend/__tests__/others/albums.service.test.ts`
+**Test Scenarios:** Section 3 (Albums Service Tests)
+
+**Step 1 - Write Tests:** `be--ts-unit-test-scripter`
+- Write failing tests for all scenarios in Section 3
+- Tests should cover: findAll, findById, search, findByArtistId, population
+
+**Step 2 - Implement:** `be--nodejs-mongo-dev`
+- Create Album Mongoose schema with text index on title
+- Create album routes: GET `/api/albums`, GET `/api/albums/search`, GET `/api/albums/:id`
+- Create album service: findAll, findById, search, findByArtistId
+
+**Step 3 - Verify:** Run tests, ensure 100% pass rate
+
+**Files to Create:**
+- `backend/src/features/albums/album.model.ts`
+- `backend/src/features/albums/album.routes.ts`
+- `backend/src/features/albums/album.controller.ts`
+- `backend/src/features/albums/album.service.ts`
+- `backend/__tests__/others/albums.service.test.ts`
+
+---
+
+### 2.4 Track Feature
+
+**Test Location:** `backend/__tests__/others/tracks.service.test.ts`
+**Test Scenarios:** Section 2 (Tracks Service Tests)
+
+**Step 1 - Write Tests:** `be--ts-unit-test-scripter`
+- Write failing tests for all scenarios in Section 2
+- Tests should cover: findAll, findById, search, incrementPlayCount, population
+
+**Step 2 - Implement:** `be--nodejs-mongo-dev`
+- Create Track Mongoose schema with indexes
+- Create track routes: GET `/api/tracks`, GET `/api/tracks/search`, GET `/api/tracks/:id`, POST `/api/tracks/:id/play`
+- Create track service: findAll, findById, search, incrementPlayCount
+
+**Step 3 - Verify:** Run tests, ensure 100% pass rate
+
+**Files to Create:**
+- `backend/src/features/tracks/track.model.ts`
+- `backend/src/features/tracks/track.routes.ts`
+- `backend/src/features/tracks/track.controller.ts`
+- `backend/src/features/tracks/track.service.ts`
+- `backend/__tests__/others/tracks.service.test.ts`
+
+---
+
+### 2.5 Playlist Feature
+
+**Test Location:** `backend/__tests__/others/playlists.service.test.ts`
+**Test Scenarios:** Section 5 (Playlists Service Tests)
+
+**Step 1 - Write Tests:** `be--ts-unit-test-scripter`
+- Write failing tests for all scenarios in Section 5
+- Tests should cover: CRUD, addTrack, removeTrack, reorderTracks, ownership checks
+
+**Step 2 - Implement:** `be--nodejs-mongo-dev`
+- Create Playlist Mongoose schema
+- Create playlist routes: GET `/api/playlists`, GET `/api/playlists/:id`, POST `/api/playlists`, PATCH `/api/playlists/:id`, DELETE `/api/playlists/:id`, POST `/api/playlists/:id/tracks`, DELETE `/api/playlists/:id/tracks/:trackId`, PATCH `/api/playlists/:id/reorder`
+- Create playlist service with ownership checks
+
+**Step 3 - Verify:** Run tests, ensure 100% pass rate
+
+**Files to Create:**
+- `backend/src/features/playlists/playlist.model.ts`
+- `backend/src/features/playlists/playlist.routes.ts`
+- `backend/src/features/playlists/playlist.controller.ts`
+- `backend/src/features/playlists/playlist.service.ts`
+- `backend/__tests__/others/playlists.service.test.ts`
+
+---
+
+### 2.6 Search Feature
+
+**Test Location:** `__tests__/task3/search.service.test.ts` (HackerRank graded)
+**Test Scenarios:** Section 6 (Search Service Tests)
+
+**Step 1 - Write Tests:** `be--ts-unit-test-scripter`
+- Write failing tests for all scenarios in Section 6
+- Tests should cover: tracks-only search, prefix matching, case-insensitive, limit 5
+
+**Step 2 - Implement:** `be--nodejs-mongo-dev`
+- Create search routes: GET `/api/search?q=query`
+- Create search service: tracks-only, prefix-based, limit 5, case-insensitive
+
+**Step 3 - Verify:** Run `npm run test:task3`, ensure 100% pass rate
+
+**Files to Create:**
+- `backend/src/features/search/search.routes.ts`
+- `backend/src/features/search/search.controller.ts`
+- `backend/src/features/search/search.service.ts`
+- `__tests__/task3/search.service.test.ts`
+
+---
+
+### 2.7 Database Seeding
+
+**Agent:** `be--nodejs-mongo-dev`
+
+**Tasks:**
+1. Migrate seed script from MENN codebase
+2. Adapt to Express/Mongoose patterns
+3. Create npm script: `npm run seed`
+
+**Files to Create:**
+- `backend/src/scripts/seed.ts`
+
+**Seed Data:**
+- 5 artists (rock, pop, jazz, electronic, hip-hop)
+- 10 albums (2 per artist)
+- 50 tracks (5 per album, unique image per track)
+- 2 test users (alex.morgan@hackify.com, jordan.casey@hackify.com)
+- 1 test playlist "Playlist 1" with 6 tracks
+
+**⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 3.**
+
+---
+
+## Phase 3: Frontend Feature Implementation
+
+**TDD Workflow for EACH feature:**
+1. `fe--unit-test-scripter` writes tests FIRST (tests fail)
+2. `fe--react-dev` implements feature (tests pass)
+3. Identify edge cases not in MENN codebase, add tests + implementation
+4. Verify 100% pass rate
+
+### 3.1 Core Utilities & Types
+
+**Test Location:** `frontend/__tests__/others/formatters.test.ts`
+**Test Scenarios:** Section 12 (Utility Tests)
+
+**Step 1 - Write Tests:** `fe--unit-test-scripter`
+- Write failing tests for utility functions
+- Tests should cover: formatDuration, formatDate, edge cases (0, negative, large numbers)
+
+**Step 2 - Implement:** `fe--react-dev`
+1. Create TypeScript types matching backend:
+   - User, Artist, Album, Track, Playlist types
+   - API response types
+   - Player state types
+2. Create utility functions:
+   - `cn()` - classname merger
+   - `formatDuration()` - seconds to mm:ss
+   - `formatDate()` - date formatting
+3. Create API service base class
+
+**Step 3 - Verify:** Run tests, ensure 100% pass rate
+
+**Files to Create:**
+- `frontend/src/shared/types/*.ts`
+- `frontend/src/shared/utils/formatters.ts`
+- `frontend/src/lib/utils.ts`
+- `frontend/src/shared/services/api.service.ts`
+- `frontend/__tests__/others/formatters.test.ts`
+
+---
+
+### 3.2 Auth Context & Pages
+
+**Test Location:** `frontend/__tests__/others/auth.context.test.ts`
+**Test Scenarios:** Section 11 (Auth Context Tests)
+
+**Step 1 - Write Tests:** `fe--unit-test-scripter`
+- Write failing tests for AuthContext
+- Tests should cover: login, logout, register, getMe, token persistence, auto-restore session
+
+**Step 2 - Implement:** `fe--react-dev`
+1. Create auth service (login, register, getMe)
+2. Create AuthContext with:
+   - User state
+   - Token management (localStorage)
+   - Login/logout/register methods
+   - Auto-restore session on mount
+3. Create Login page
+4. Create Register page
+5. Create protected route wrapper
+
+**Step 3 - Verify:** Run tests, ensure 100% pass rate
+
+**Files to Create:**
+- `frontend/src/shared/services/auth.service.ts`
+- `frontend/src/shared/contexts/AuthContext.tsx`
+- `frontend/src/pages/auth/LoginPage.tsx`
+- `frontend/src/pages/auth/RegisterPage.tsx`
+- `frontend/src/shared/components/common/ProtectedRoute.tsx`
+- `frontend/__tests__/others/auth.context.test.ts`
+
+---
+
+### 3.3 Player Context & Reducer
+
+**Test Location:** `__tests__/task2/playerReducer.test.ts` (HackerRank graded)
+**Test Scenarios:** Section 7 (Player Reducer Tests)
+
+**Step 1 - Write Tests:** `fe--unit-test-scripter`
+- Write failing tests for all scenarios in Section 7
+- Tests should cover: PLAY_TRACK, PLAY_TRACKS, PAUSE, RESUME, NEXT, PREVIOUS, SEEK, queue operations, TOGGLE_SHUFFLE, TOGGLE_REPEAT, SET_VOLUME, TICK
+
+**Step 2 - Implement:** `fe--react-dev`
+1. Create player types (state, actions)
+2. Create playerReducer with all actions:
+   - PLAY_TRACK, PLAY_TRACKS
+   - PAUSE, RESUME
+   - NEXT, PREVIOUS
+   - SEEK
+   - ADD_TO_QUEUE, REMOVE_FROM_QUEUE, REORDER_QUEUE, CLEAR_QUEUE
+   - TOGGLE_SHUFFLE, TOGGLE_REPEAT
+   - SET_VOLUME
+   - TICK
+   - TOGGLE_QUEUE
+3. Create PlayerContext with:
+   - Reducer state
+   - Action dispatchers
+   - Timer management for TICK
+4. Create playerUtils (shuffleArray)
+
+**Step 3 - Verify:** Run `npm run test:task2`, ensure 100% pass rate
+
+**Files to Create:**
+- `frontend/src/shared/types/player.types.ts`
+- `frontend/src/shared/contexts/playerReducer.ts`
+- `frontend/src/shared/contexts/PlayerContext.tsx`
+- `frontend/src/shared/utils/playerUtils.ts`
+- `__tests__/task2/playerReducer.test.ts`
+
+---
+
+### 3.4 Custom Hooks
+
+**Test Locations:**
+- `__tests__/task1/usePlaylistOperations.test.ts` (HackerRank graded)
+- `__tests__/task3/useSearch.test.ts` (HackerRank graded)
+- `frontend/__tests__/others/useDebounce.test.ts`
+- `frontend/__tests__/others/useRecentlyPlayed.test.ts`
+
+**Test Scenarios:** Sections 8-11
+
+**Step 1 - Write Tests:** `fe--unit-test-scripter`
+- Write failing tests for all hook scenarios
+- Task1: usePlaylistOperations (reorder, add, remove, optimistic updates)
+- Task3: useSearch (debouncing, API calls, loading states)
+- Others: useDebounce, useRecentlyPlayed (localStorage persistence)
+
+**Step 2 - Implement:** `fe--react-dev`
+1. Create useDebounce hook
+2. Create useLocalStorage hook
+3. Create useRecentlyPlayed hook
+4. Create useSearch hook
+5. Create usePlaylistOperations hook
+6. Create useToast hook
+
+**Step 3 - Verify:** Run `npm run test:task1`, `npm run test:task3`, and frontend tests, ensure 100% pass rate
+
+**Files to Create:**
+- `frontend/src/shared/hooks/useDebounce.ts`
+- `frontend/src/shared/hooks/useLocalStorage.ts`
+- `frontend/src/shared/hooks/useRecentlyPlayed.ts`
+- `frontend/src/shared/hooks/useSearch.ts`
+- `frontend/src/shared/hooks/usePlaylistOperations.ts`
+- `frontend/src/shared/hooks/useToast.ts`
+- `__tests__/task1/usePlaylistOperations.test.ts`
+- `__tests__/task3/useSearch.test.ts`
+- `frontend/__tests__/others/useDebounce.test.ts`
+- `frontend/__tests__/others/useRecentlyPlayed.test.ts`
+
+---
+
+### 3.5 Layout Components
+
+**Agent:** `fe--react-dev`
+
+**Note:** Layout components are primarily visual/UI focused. TDD not required for pure presentational components, but integration testing recommended post-implementation.
+
+**Tasks:**
+1. Create MainLayout (app shell)
+2. Create Sidebar (navigation + playlists)
+   - Collapsible functionality
+   - Toggle icon at bottom-right corner
+   - Desktop: expanded by default, Mobile: collapsed by default
+3. Create TopBar (search + user menu)
+   - Display first word of displayName
+4. Create PlayerBar (controls + progress)
+   - Hide volume bar on mobile
+5. Create QueuePanel (queue list with drag-drop)
+6. Create SidebarContext
+
+**Files to Create:**
+- `frontend/src/shared/components/layout/MainLayout.tsx`
+- `frontend/src/shared/components/layout/Sidebar.tsx`
+- `frontend/src/shared/components/layout/TopBar.tsx`
+- `frontend/src/shared/components/layout/PlayerBar.tsx`
+- `frontend/src/shared/components/layout/QueuePanel.tsx`
+- `frontend/src/shared/contexts/SidebarContext.tsx`
+
+---
+
+### 3.6 Common Components
+
+**Agent:** `fe--react-dev`
+
+**Note:** Common components are primarily visual/UI focused. TDD not required for pure presentational components, but integration testing recommended post-implementation.
+
+**Tasks:**
+1. Create TrackCard component
+   - Play/pause button (plays track, no redirect)
+   - Card click (redirects to detail page)
+   - Unique image per track
+2. Create AlbumCard component
+3. Create PlaylistCard component
+4. Create SearchDropdown component
+   - Tracks-only results (max 5)
+   - Keyboard interactions: Enter (immediate), Escape (close), Click outside (close)
+5. Create AddToPlaylistModal component
+6. Create CreatePlaylistDialog component
+7. Create LoadingSpinner, ErrorMessage, EmptyState
+
+**Files to Create:**
+- `frontend/src/shared/components/common/TrackCard.tsx`
+- `frontend/src/shared/components/common/AlbumCard.tsx`
+- `frontend/src/shared/components/common/PlaylistCard.tsx`
+- `frontend/src/shared/components/common/SearchDropdown.tsx`
+- `frontend/src/shared/components/common/AddToPlaylistModal.tsx`
+- `frontend/src/shared/components/common/CreatePlaylistDialog.tsx`
+- `frontend/src/shared/components/common/LoadingSpinner.tsx`
+- `frontend/src/shared/components/common/ErrorMessage.tsx`
+- `frontend/src/shared/components/common/EmptyState.tsx`
+
+---
+
+### 3.7 API Services
+
+**Agent:** `fe--react-dev`
+
+**Note:** API services are thin wrappers around HTTP calls. TDD not strictly required, but ensure all services are used by tested hooks/components.
+
+**Tasks:**
+1. Create tracks service (list, getById, play)
+2. Create albums service (list, getById, search)
+3. Create artists service (list, getById, search)
+4. Create playlists service (CRUD, addTrack, removeTrack, reorder)
+5. Create search service (tracks-only, prefix-based)
+
+**Files to Create:**
+- `frontend/src/shared/services/tracks.service.ts`
+- `frontend/src/shared/services/albums.service.ts`
+- `frontend/src/shared/services/artists.service.ts`
+- `frontend/src/shared/services/playlists.service.ts`
+- `frontend/src/shared/services/search.service.ts`
+
+---
+
+### 3.8 Pages
+
+**Agent:** `fe--react-dev`
+
+**Note:** Pages integrate tested hooks and components. Visual verification via Playwright recommended post-implementation.
+
+**Tasks:**
+1. Create HomePage
+   - Recommended tracks section
+   - Browse albums section
+   - Browse tracks section
+   - User playlists section
+   - 7 track cards per row (desktop)
+2. Create GenrePage
+   - Genre filter chips with images (not solid colors)
+   - Filtered tracks grid
+3. Create AlbumDetailPage
+   - Gradient background
+   - Album info with artist
+   - Track list
+4. Create TrackDetailPage
+   - Gradient background
+   - Track info
+   - Play/queue actions
+5. Create PlaylistDetailPage
+   - Playlist info
+   - Track list with drag-drop reorder
+   - Add/remove track actions
+   - Empty playlist placeholder message
+
+**Files to Create:**
+- `frontend/src/pages/HomePage.tsx`
+- `frontend/src/pages/GenrePage.tsx`
+- `frontend/src/pages/AlbumDetailPage.tsx`
+- `frontend/src/pages/TrackDetailPage.tsx`
+- `frontend/src/pages/PlaylistDetailPage.tsx`
+
+---
+
+### 3.9 UI Components (shadcn/ui)
+
+**Agent:** `fe--react-dev`
+
+**Note:** shadcn/ui components are pre-tested by the library. No additional tests required.
+
+**Tasks:**
+1. Setup shadcn/ui configuration
+2. Add required components:
+   - Button
+   - Card
+   - Dialog
+   - DropdownMenu
+   - Input
+   - ScrollArea
+   - Skeleton
+   - Slider (volume control, progress bar)
+   - Toast/Toaster
+
+**Files to Create:**
+- `frontend/src/shared/components/ui/*.tsx`
+- `frontend/components.json`
+
+**⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 4.**
+
+---
+
+## Phase 4: Integration & Testing
+
+### 4.1 Backend Integration Tests
+
+**Agent:** `be--ts-unit-test-scripter`
+
+**Tasks:**
+1. Write integration tests for all endpoints
+2. Use supertest for HTTP testing
+3. Setup test database (in-memory MongoDB or test DB)
+4. Verify all scenarios from TDD-SCENARIOS.md pass
+
+---
+
+### 4.2 Frontend Integration Tests
+
+**Agent:** `fe--unit-test-scripter`
+
+**Tasks:**
+1. Write component tests with React Testing Library
+2. Write hook tests
+3. Write context tests
+4. Mock API services
+5. Verify all scenarios from TDD-SCENARIOS.md pass
+
+---
+
+### 4.3 E2E Testing (Optional)
+
+**Tool:** Playwright
+
+**Flows to Test:**
+1. User registration and login
+2. Browse and play music
+3. Create and manage playlists
+4. Search functionality
+5. Queue management
+
+**⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 5.**
+
+---
+
+## Phase 5: Final Verification
+
+### 5.1 Playwright Visual Verification
+
+**Tasks:**
+1. Login with test credentials
+2. Verify home page layout matches MENN
+3. Verify player controls work
+4. Verify playlist operations work
+5. Verify search functionality
+6. Compare UI/UX with running MENN app
+
+### 5.2 Checklist
+
+- [ ] All backend endpoints return correct responses
+- [ ] All frontend pages render correctly
+- [ ] Authentication flow works end-to-end
+- [ ] Player controls function as expected
+- [ ] Playlist CRUD operations work
+- [ ] Search returns correct results
+- [ ] Mobile responsiveness (if applicable)
+- [ ] All tests pass (100% pass rate)
+- [ ] Test coverage >= 80%
+
+---
+
+## Execution Order Summary
+
+| Step | Phase | Agent | Deliverable |
+|------|-------|-------|-------------|
+| 1 | 1.0 | `arch--MERN-stack` | Full project scaffolding (monorepo, backend, frontend, configs, hackerrank.yml) |
+| 2 | 2.1 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Auth feature + tests |
+| 3 | 2.2 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Artists feature + tests |
+| 4 | 2.3 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Albums feature + tests |
+| 5 | 2.4 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Tracks feature + tests |
+| 6 | 2.5 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Playlists feature + tests |
+| 7 | 2.6 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Search feature + tests |
+| 8 | 2.7 | `be--nodejs-mongo-dev` | Database seeding |
+| 9 | 3.1 | `fe--react-dev` | Core utilities & types |
+| 10 | 3.2 | `fe--unit-test-scripter` → `fe--react-dev` | Auth context + pages + tests |
+| 11 | 3.3 | `fe--unit-test-scripter` → `fe--react-dev` | Player context + tests |
+| 12 | 3.4 | `fe--unit-test-scripter` → `fe--react-dev` | Custom hooks + tests |
+| 13 | 3.5 | `fe--react-dev` | Layout components |
+| 14 | 3.6 | `fe--react-dev` | Common components |
+| 15 | 3.7 | `fe--react-dev` | API services |
+| 16 | 3.8 | `fe--react-dev` | Pages |
+| 17 | 3.9 | `fe--react-dev` | UI components (shadcn/ui) |
+| 18 | 4.1-4.2 | Test agents | Integration tests |
+| 19 | 5.1-5.2 | Manual/Playwright | Final verification |
+
+---
+
+## Code Quality Rules
+
+### Comment Policy
+
+| Location | Rule |
+|----------|------|
+| Business logic | **NO comments** |
+| Inside functions | **NO comments** |
+| Test files | High-level comments allowed (INTRO/SCENARIO/EXPECTATION) |
+| Configuration | Minimal necessary comments only |
+
+### Asset Management
+
+- All images stored **locally** (no external URLs)
+- Unique image per track
+- Genre cards use images (not solid colors)
+- Album images: American singer/band artwork
+
+### Test Selectors
+
+- Primary selector: `data-testid` attributes
+- Avoid placeholder text selectors
+
+---
+
+## Verification Checklist
+
+### Pre-Verification
 
 ```bash
-npx shadcn@latest add button
-npx shadcn@latest add input
-npx shadcn@latest add card
-npx shadcn@latest add dialog
-npx shadcn@latest add dropdown-menu
-npx shadcn@latest add slider
-npx shadcn@latest add toast
-npx shadcn@latest add skeleton
-npx shadcn@latest add scroll-area
-npx shadcn@latest add separator
-npx shadcn@latest add tabs
-npx shadcn@latest add avatar
+# Kill any existing servers
+npx kill-port 4000 && npx kill-port 6000
+
+# Seed database
+npm run seed
+```
+
+### Final Verification Steps
+
+- [ ] All backend endpoints return correct responses
+- [ ] All frontend pages render correctly
+- [ ] Authentication flow works end-to-end
+- [ ] Player controls function as expected
+- [ ] Playlist CRUD operations work
+- [ ] Search returns tracks only (prefix-matching)
+- [ ] Mobile responsiveness (375px breakpoint)
+- [ ] All tests pass (100% pass rate)
+- [ ] Test coverage >= 80%
+
+### Playwright UI Verification
+
+1. Login with test credentials: `alex.morgan@hackify.com` / `password123`
+2. Verify home page layout
+3. Verify player controls (play, pause, next, previous, shuffle, repeat)
+4. Verify playlist operations (create, add track, reorder, remove, delete)
+5. Verify search functionality (tracks only, prefix matching)
+6. Compare UI/UX with running MENN app
+
+### Post-Verification
+
+```bash
+# Kill dev servers after completion
+npx kill-port 4000 && npx kill-port 6000
 ```
 
 ---
 
-## 7. State Management
+## Notes
 
-### 7.1 AuthContext
+1. **TDD Approach:** For each feature, tests are written FIRST by the test agent, then implementation follows by the dev agent.
 
-```typescript
-// src/shared/contexts/AuthContext.tsx
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
+2. **Reference MENN Codebase:** Agents should reference the MENN codebase at `C:\Users\ArijitSaha\Projects\office\zysk-projects\hackerrank\spotify-app-menn\spotify-mern-app-solution` for exact business logic, API contracts, and component behavior.
 
-interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
-}
-```
+3. **No Over-Engineering:** Stick to the documented features. Don't add extra functionality.
 
-**Persistence:**
-- Token stored in localStorage
-- User fetched on app load via /auth/me
-- Token attached to all API requests
+4. **Consistent Styling:** Match the MENN app's visual design exactly.
 
-### 7.2 PlayerContext
+5. **Error Handling:** Implement proper error handling matching the MENN patterns.
 
-```typescript
-// src/shared/contexts/PlayerContext.tsx
-interface PlayerState {
-  currentTrack: Track | null;
-  queue: Track[];
-  queueIndex: number;
-  isPlaying: boolean;
-  elapsedSeconds: number;
-  shuffleEnabled: boolean;
-  repeatMode: 'off' | 'all' | 'one';
-  volume: number;
-  isQueueOpen: boolean;
-}
+6. **Test Coverage Target:** Minimum 80% coverage.
 
-type PlayerAction =
-  | { type: 'PLAY_TRACK'; payload: Track }
-  | { type: 'PLAY_TRACKS'; payload: { tracks: Track[]; startIndex: number } }
-  | { type: 'PAUSE' }
-  | { type: 'RESUME' }
-  | { type: 'NEXT' }
-  | { type: 'PREVIOUS' }
-  | { type: 'SEEK'; payload: number }
-  | { type: 'ADD_TO_QUEUE'; payload: Track }
-  | { type: 'REMOVE_FROM_QUEUE'; payload: number }
-  | { type: 'REORDER_QUEUE'; payload: { from: number; to: number } }
-  | { type: 'CLEAR_QUEUE' }
-  | { type: 'TOGGLE_SHUFFLE' }
-  | { type: 'TOGGLE_REPEAT' }
-  | { type: 'SET_VOLUME'; payload: number }
-  | { type: 'TICK' }
-  | { type: 'TOGGLE_QUEUE' };
+7. **Test Credentials:** Use `alex.morgan@hackify.com` / `password123` for Playwright verification.
 
-interface PlayerContextType {
-  state: PlayerState;
-  dispatch: React.Dispatch<PlayerAction>;
-  // Convenience methods
-  playTrack: (track: Track) => void;
-  playTracks: (tracks: Track[], startIndex?: number) => void;
-  togglePlayPause: () => void;
-  next: () => void;
-  previous: () => void;
-  seek: (seconds: number) => void;
-  addToQueue: (track: Track) => void;
-  removeFromQueue: (index: number) => void;
-  reorderQueue: (from: number, to: number) => void;
-  clearQueue: () => void;
-  toggleShuffle: () => void;
-  toggleRepeat: () => void;
-  setVolume: (volume: number) => void;
-  toggleQueue: () => void;
-}
-```
-
-**Timer Logic:**
-```typescript
-useEffect(() => {
-  let interval: NodeJS.Timeout;
-
-  if (state.isPlaying && state.currentTrack) {
-    interval = setInterval(() => {
-      dispatch({ type: 'TICK' });
-    }, 1000);
-  }
-
-  return () => clearInterval(interval);
-}, [state.isPlaying, state.currentTrack]);
-```
-
-**TICK Reducer Logic:**
-```typescript
-case 'TICK': {
-  const newElapsed = state.elapsedSeconds + 1;
-
-  if (newElapsed >= state.currentTrack.durationInSeconds) {
-    // Track complete
-    if (state.repeatMode === 'one') {
-      return { ...state, elapsedSeconds: 0 };
-    }
-
-    const nextIndex = state.queueIndex + 1;
-    if (nextIndex >= state.queue.length) {
-      if (state.repeatMode === 'all') {
-        return {
-          ...state,
-          queueIndex: 0,
-          currentTrack: state.queue[0],
-          elapsedSeconds: 0,
-        };
-      }
-      return { ...state, isPlaying: false, elapsedSeconds: 0 };
-    }
-
-    return {
-      ...state,
-      queueIndex: nextIndex,
-      currentTrack: state.queue[nextIndex],
-      elapsedSeconds: 0,
-    };
-  }
-
-  return { ...state, elapsedSeconds: newElapsed };
-}
-```
-
----
-
-## 8. Implementation Order
-
-### 8.1 Dependencies Graph
-
-```
-Phase 1 (Foundation)
-    │
-    ├──► Phase 2 (Auth)
-    │       │
-    │       └──► Phase 3 (Catalog)
-    │               │
-    │               ├──► Phase 4 (Player)
-    │               │       │
-    │               │       └──► Phase 6 (Library) ────┐
-    │               │                                   │
-    │               └──► Phase 5 (Playlists) ──────────┤
-    │                                                   │
-    │                                                   ▼
-    │                                           Phase 7 (Advanced)
-    │                                                   │
-    └──────────────────────────────────────────────────┤
-                                                        ▼
-                                                Phase 8 (Layout)
-                                                        │
-                                                        ▼
-                                                Phase 9 (Seed)
-                                                        │
-                                                        ▼
-                                               Phase 10 (Polish)
-```
-
-### 8.2 Critical Path
-
-1. **Foundation** - Cannot proceed without base infrastructure
-2. **Auth** - All other features require authentication
-3. **Catalog** - Core data models needed for all features
-4. **Player** - Central feature, blocks UX testing
-5. **Playlists + Library** - Can be parallel
-6. **Advanced Features** - Depend on listening history
-7. **Layout** - Polish after core features work
-8. **Seed + Testing** - Final validation
-
-### 8.3 Parallel Tracks
-
-**Track A (Backend-Heavy):**
-- Phase 1 → Phase 2 → Phase 3 → Phase 9
-
-**Track B (Frontend-Heavy):**
-- Phase 1 → Phase 4 → Phase 8 → Phase 10
-
-**Sync Points:**
-- After Phase 2: API ready for frontend auth
-- After Phase 3: API ready for catalog display
-- After Phase 5: API ready for playlist testing
-
----
-
-## 9. Testing Strategy
-
-### 9.1 Backend Testing
-
-**Unit Tests (Jest + @nestjs/testing):**
-- Service methods with mocked repositories
-- DTO validation
-- Guard logic
-- Cache service
-
-**Integration Tests:**
-- Controller endpoints with test database
-- Auth flow
-- Complex queries (analytics, trending)
-
-**Coverage Target:** 80%+ lines
-
-### 9.2 Frontend Testing
-
-**Unit Tests (Jest + React Testing Library):**
-- Component rendering
-- User interactions
-- Hook behavior
-
-**Key Components to Test:**
-- TrackRow (play, like, add actions)
-- PlayerBar (controls, progress)
-- SearchBar (debounce, results)
-- PlayerContext (all actions)
-
-**Coverage Target:** 70%+ for critical paths
-
-### 9.3 E2E Testing (Optional)
-
-**Happy Path Scenarios:**
-1. Register → Login → Browse → Play track
-2. Create playlist → Add tracks → Reorder
-3. Search → Play result → Add to queue
-4. View stats page with data
-
----
-
-## Appendix A: Environment Variables
-
-### Backend (.env)
-
-```env
-# App
-NODE_ENV=development
-APP_PORT=5000
-APP_PREFIX=/api
-
-# Database
-MONGODB_URI=mongodb://localhost:27017/melodio-clone
-
-# Auth
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
-JWT_EXPIRATION=7d
-
-# Cache
-CACHE_TTL=300
-```
-
-### Frontend (.env.local)
-
-```env
-# API
-NEXT_PUBLIC_API_URL=http://localhost:5000
-```
-
----
-
-## Appendix B: Melodio Color Palette
-
-```css
-:root {
-  --melodio-green: #1db954;
-  --melodio-green-hover: #1ed760;
-  --melodio-black: #121212;
-  --melodio-dark-gray: #181818;
-  --melodio-gray: #282828;
-  --melodio-light-gray: #b3b3b3;
-  --melodio-white: #ffffff;
-}
-```
-
----
-
-## Appendix C: API Response Format
-
-**Success Response:**
-```json
-{
-  "success": true,
-  "data": { ... }
-}
-```
-
-**Error Response:**
-```json
-{
-  "success": false,
-  "error": {
-    "statusCode": 400,
-    "message": "Validation failed",
-    "details": ["email must be valid"]
-  }
-}
-```
-
-**Paginated Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "items": [...],
-    "pagination": {
-      "page": 1,
-      "limit": 20,
-      "total": 150,
-      "totalPages": 8
-    }
-  }
-}
-```
-
----
-
-*End of Implementation Plan*
+8. **HackerRank Platform Constraints:**
+   - Audio playback: NOT supported (simulated only)
+   - WebSocket: NOT supported
+   - File upload: NOT supported
+   - Email sending: NOT supported
