@@ -173,6 +173,7 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 hackify.txt
+melodio.txt
 **/.playwright-mcp
 
 **/junit.xml

@@ -1,10 +1,10 @@
-# Hackify Clone - Implementation Plan
+# Melodio Clone - Implementation Plan
 
 ## Document Information
 
 | Field | Value |
 |-------|-------|
-| Project | Hackify Clone for HackerRank Debugging Challenge |
+| Project | Melodio Clone for HackerRank Debugging Challenge |
 | Stack | MNN (MongoDB + Next.js + NestJS) |
 | Version | 1.0 |
 | Status | Ready for Development |
@@ -30,12 +30,12 @@
 ### 1.1 Root Structure
 
 ```
-hackify-mern-app/
+melodio-mern-app/
 ├── backend/                    # NestJS API
 ├── frontend/                   # Next.js App
 ├── docs/                       # Documentation
-│   ├── hackify-clone-prd.md
-│   ├── hackify-clone-features-summary.md
+│   ├── melodio-clone-prd.md
+│   ├── melodio-clone-features-summary.md
 │   └── implementation-plan.md
 ├── .gitignore
 └── README.md
@@ -453,7 +453,7 @@ frontend/
 | `src/app/layout.tsx` | Root layout with fonts, metadata |
 | `src/app/globals.css` | Tailwind imports + CSS variables for dark theme |
 | `src/app/providers.tsx` | Wrap app in context providers |
-| `tailwind.config.ts` | Dark theme configuration, Hackify colors |
+| `tailwind.config.ts` | Dark theme configuration, Melodio colors |
 | `components.json` | Shadcn configuration pointing to shared/components/ui |
 | `src/lib/utils.ts` | cn() utility for Shadcn |
 | `src/shared/services/api.service.ts` | Base fetch wrapper with error handling |
@@ -829,7 +829,7 @@ score = SUM(1 / (1 + daysAgo * 0.1)) for each play
 
 ### Phase 8: Layout and Navigation (Day 18)
 
-**Goal**: Complete Hackify-like layout.
+**Goal**: Complete Melodio-like layout.
 
 #### Frontend Tasks
 
@@ -1784,7 +1784,7 @@ APP_PORT=5000
 APP_PREFIX=/api
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/hackify-clone
+MONGODB_URI=mongodb://localhost:27017/melodio-clone
 
 # Auth
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
@@ -1803,17 +1803,17 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 
 ---
 
-## Appendix B: Hackify Color Palette
+## Appendix B: Melodio Color Palette
 
 ```css
 :root {
-  --hackify-green: #1db954;
-  --hackify-green-hover: #1ed760;
-  --hackify-black: #121212;
-  --hackify-dark-gray: #181818;
-  --hackify-gray: #282828;
-  --hackify-light-gray: #b3b3b3;
-  --hackify-white: #ffffff;
+  --melodio-green: #1db954;
+  --melodio-green-hover: #1ed760;
+  --melodio-black: #121212;
+  --melodio-dark-gray: #181818;
+  --melodio-gray: #282828;
+  --melodio-light-gray: #b3b3b3;
+  --melodio-white: #ffffff;
 }
 ```
 

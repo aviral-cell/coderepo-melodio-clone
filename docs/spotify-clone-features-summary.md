@@ -1,4 +1,4 @@
-# Hackify Clone — Feature Summary
+# Melodio Clone — Feature Summary
 
 **Purpose:** HackerRank debugging challenge
 **Total Features:** 7 (3 frontend + 4 full-stack)

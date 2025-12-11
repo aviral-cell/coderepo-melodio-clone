@@ -1,7 +1,7 @@
 {
-	"name": "hackify-music-player",
+	"name": "melodio-music-player",
 	"version": "1.0.0",
-	"description": "Hackify - Music Player State Management Challenge (HackerRank Assessment)",
+	"description": "Melodio - Music Player State Management Challenge (HackerRank Assessment)",
 	"private": true,
 	"engines": {
 		"node": ">=20.0.0",
@@ -19,11 +19,10 @@
 		"build": "npm run build --workspace=backend && npm run build --workspace=frontend",
 		"build:frontend": "npm run build --workspace=frontend",
 		"build:backend": "npm run build --workspace=backend",
-		"test": "npm-run-all -c test:task1 test:task2 test:task3 test:task4",
+		"test": "npm-run-all -c test:task1 test:task2 test:task3",
 		"test:task1": "npm run test:task1 --workspace=frontend",
 		"test:task2": "npm run test:task2 --workspace=frontend",
 		"test:task3": "npm run test:task3 --workspace=frontend",
-		"test:task4": "npm run test:task4 --workspace=frontend",
 		"test:frontend": "npm test --workspace=frontend",
 		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,html,css,scss}\"",
 		"typesync": "typesync"
