@@ -377,7 +377,7 @@ The seed script creates:
 - `NEXT_PUBLIC_API_URL`: Backend API URL
 
 ### Ports
-- Backend: 5000 (MENN), 6000 (target MERN)
+- Backend: 5000 (MENN), 6001 (target MERN)
 - Frontend: 3000 (MENN), 4000 (target MERN)
 
 ---

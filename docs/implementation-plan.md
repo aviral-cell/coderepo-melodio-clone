@@ -6,7 +6,7 @@ This document outlines the step-by-step implementation plan for migrating the mu
 
 **Target Ports:**
 - Frontend (React + Vite): `4000`
-- Backend (Express + Node.js): `6000`
+- Backend (Express + Node.js): `6001`
 
 **Agent Delegation:**
 | Agent | Responsibility |
@@ -137,7 +137,7 @@ npm run test          # Runs all tests (tasks + others)
 
 2. Configure root `package.json` with workspace scripts:
    - `npm run dev` - Start both backend and frontend
-   - `npm run dev:backend` - Start backend only (port 6000)
+   - `npm run dev:backend` - Start backend only (port 6001)
    - `npm run dev:frontend` - Start frontend only (port 4000)
    - `npm run seed` - Seed database
    - `npm run test` - Run all tests
@@ -170,8 +170,8 @@ npm run test          # Runs all tests (tasks + others)
    - Dev deps: jest, @testing-library/react, @types/*
 
 7. Environment configuration:
-   - Backend `.env.example`: MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN, PORT=6000
-   - Frontend `.env.example`: VITE_API_URL=http://localhost:6000/api
+   - Backend `.env.example`: MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN, PORT=6001
+   - Frontend `.env.example`: VITE_API_URL=http://localhost:6001/api
 
 8. MongoDB Connection:
    ```
@@ -179,7 +179,7 @@ npm run test          # Runs all tests (tasks + others)
    ```
 
 **Acceptance Criteria:**
-- `npm run dev` from root starts both servers (backend:6000, frontend:4000)
+- `npm run dev` from root starts both servers (backend:6001, frontend:4000)
 - Backend GET `/` returns "API server is running"
 - Frontend loads with React Router working
 - MongoDB connection ready
@@ -389,7 +389,7 @@ npm run test          # Runs all tests (tasks + others)
 
 **MERN App (being built):**
 - Frontend: http://localhost:4000
-- Backend: http://localhost:6000
+- Backend: http://localhost:6001
 
 ---
 
@@ -964,7 +964,6 @@ npm run test:task3  # Search functionality
 
 ### Asset Management
 
-- All images stored **locally** (no external URLs)
 - Unique image per track
 - Genre cards use images (not solid colors)
 - Album images: American singer/band artwork
@@ -982,7 +981,7 @@ npm run test:task3  # Search functionality
 
 ```bash
 # Kill any existing servers
-npx kill-port 4000 && npx kill-port 6000
+npx kill-port 4000 && npx kill-port 6001
 
 # Seed database
 npm run seed
@@ -1013,7 +1012,7 @@ npm run seed
 
 ```bash
 # Kill dev servers after completion
-npx kill-port 4000 && npx kill-port 6000
+npx kill-port 4000 && npx kill-port 6001
 ```
 
 ---

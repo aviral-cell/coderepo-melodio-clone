@@ -52,7 +52,7 @@ export function loadConfig(isTest = false): Config {
 		mongodbUri: finalMongodbUri,
 		jwtSecret: getRequiredEnv("JWT_SECRET"),
 		jwtExpiresIn: getOptionalEnv("JWT_EXPIRES_IN", "7d"),
-		port: parseInt(getOptionalEnv("PORT", "6000"), 10),
+		port: parseInt(getOptionalEnv("PORT", "6001"), 10),
 		nodeEnv: isTest ? "test" : getOptionalEnv("NODE_ENV", "development"),
 		corsOrigin: getOptionalEnv("CORS_ORIGIN", "http://localhost:4000"),
 	};

@@ -183,14 +183,14 @@ export default function TrackDetailPage(): JSX.Element {
 				<div className="flex items-center justify-center gap-4 sm:justify-start">
 					<Button
 						size="lg"
-						className="h-14 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
+						className="h-16 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
 						onClick={handlePlay}
 						aria-label={isPlaying ? "Pause" : "Play"}
 					>
 						{isPlaying ? (
-							<Pause className="h-5 w-5 fill-black text-black" fill="black" />
+							<Pause className="h-8 w-8 fill-black text-black" fill="black" />
 						) : (
-							<Play className="h-5 w-5 fill-black text-black ml-0.5" fill="black" />
+							<Play className="h-8 w-8 fill-black text-black ml-0.5" fill="black" />
 						)}
 					</Button>
 

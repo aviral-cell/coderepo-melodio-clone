@@ -64,7 +64,7 @@ module.exports = {
 			"jest-junit",
 			{
 				outputDirectory: "output",
-				outputName: "junit.xml",
+				outputName: process.env.JEST_JUNIT_OUTPUT_NAME || "junit.xml",
 			},
 		],
 	],

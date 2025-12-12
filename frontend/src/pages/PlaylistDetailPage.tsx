@@ -2,6 +2,23 @@ import { useEffect, useState, useCallback } from "react";
 import type { JSX } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+	type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
 	Play,
 	Pause,
 	Clock3,
@@ -9,6 +26,7 @@ import {
 	Trash2,
 	Edit2,
 	Music,
+	GripVertical,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -33,17 +51,166 @@ import { EmptyState } from "@/shared/components/common/EmptyState";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
 import { usePlaylistRefresh } from "@/shared/contexts/PlaylistContext";
 import { useToast } from "@/shared/hooks/useToast";
+import { usePlaylistOperations } from "@/shared/hooks/usePlaylistOperations";
 import { playlistsService, type PlaylistWithTracks } from "@/shared/services/playlist.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 import { formatDuration } from "@/shared/utils";
 
-/**
- * Format seconds to mm:ss format
- */
-function formatTime(seconds: number): string {
-	const minutes = Math.floor(seconds / 60);
-	const remainingSeconds = seconds % 60;
-	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+interface SortableTrackItemProps {
+	track: TrackWithPopulated;
+	index: number;
+	isCurrentTrack: boolean;
+	isPlaying: boolean;
+	onPlay: () => void;
+	onRemove: () => void;
+}
+
+function SortableTrackItem({
+	track,
+	index,
+	isCurrentTrack,
+	isPlaying,
+	onPlay,
+	onRemove,
+}: SortableTrackItemProps) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: track._id });
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	};
+
+	const artistName =
+		typeof track.artistId === "object" ? track.artistId.name : "Unknown Artist";
+	const albumTitle =
+		typeof track.albumId === "object" ? track.albumId.title : "Unknown Album";
+	const albumCover =
+		typeof track.albumId === "object" ? track.albumId.coverImageUrl : undefined;
+
+	const formatTime = (seconds: number): string => {
+		const minutes = Math.floor(seconds / 60);
+		const remainingSeconds = seconds % 60;
+		return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+	};
+
+	return (
+		<div
+			ref={setNodeRef}
+			style={style}
+			className={cn(
+				"group grid grid-cols-[24px_16px_1fr_auto_40px] items-center gap-2 rounded-md px-2 py-2 transition-colors hover:bg-hackify-light-gray sm:grid-cols-[24px_16px_4fr_3fr_1fr_40px] sm:gap-4 sm:px-4",
+				isCurrentTrack && "bg-hackify-light-gray/50",
+				isDragging && "bg-hackify-light-gray z-50"
+			)}
+		>
+			{/* Drag Handle */}
+			<button
+				className="cursor-grab touch-none text-hackify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+				{...attributes}
+				{...listeners}
+				aria-label="Drag to reorder"
+			>
+				<GripVertical className="h-4 w-4" />
+			</button>
+
+			{/* Track Number / Play Button */}
+			<div className="flex items-center justify-center">
+				<span
+					className={cn(
+						"text-sm group-hover:hidden",
+						isCurrentTrack ? "text-hackify-green" : "text-hackify-text-subdued"
+					)}
+				>
+					{isCurrentTrack && isPlaying ? (
+						<span className="flex items-center gap-0.5">
+							<span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
+							<span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.2s" }} />
+							<span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.4s" }} />
+						</span>
+					) : (
+						index + 1
+					)}
+				</span>
+				<button
+					onClick={onPlay}
+					className="hidden group-hover:block"
+					aria-label={isPlaying && isCurrentTrack ? "Pause" : "Play"}
+				>
+					{isPlaying && isCurrentTrack ? (
+						<Pause className="h-4 w-4 text-white" fill="white" />
+					) : (
+						<Play className="h-4 w-4 text-white" fill="white" />
+					)}
+				</button>
+			</div>
+
+			{/* Title and Artist */}
+			<div className="flex min-w-0 items-center gap-3">
+				<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
+					{albumCover ? (
+						<img
+							src={albumCover}
+							alt={track.title}
+							className="h-full w-full object-cover"
+						/>
+					) : (
+						<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+							<Music className="h-4 w-4 text-hackify-text-subdued" />
+						</div>
+					)}
+				</div>
+				<div className="min-w-0">
+					<p
+						className={cn(
+							"truncate text-sm font-medium",
+							isCurrentTrack ? "text-hackify-green" : "text-white"
+						)}
+					>
+						{track.title}
+					</p>
+					<p className="truncate text-xs text-hackify-text-subdued">{artistName}</p>
+				</div>
+			</div>
+
+			{/* Album - hidden on mobile */}
+			<span className="hidden truncate text-sm text-hackify-text-subdued sm:block">{albumTitle}</span>
+
+			{/* Duration */}
+			<span className="text-sm text-hackify-text-subdued">
+				{formatTime(track.durationInSeconds)}
+			</span>
+
+			{/* Actions */}
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="h-8 w-8 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+					>
+						<MoreHorizontal className="h-4 w-4 text-hackify-text-subdued" />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end">
+					<DropdownMenuItem
+						onClick={onRemove}
+						className="text-red-400"
+					>
+						<Trash2 className="mr-2 h-4 w-4" />
+						Remove from playlist
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+		</div>
+	);
 }
 
 /**
@@ -66,6 +233,57 @@ export default function PlaylistDetailPage(): JSX.Element {
 	const [editName, setEditName] = useState("");
 	const [editDescription, setEditDescription] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 8,
+			},
+		}),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	);
+
+	const setTracks = useCallback((newTracks: TrackWithPopulated[]) => {
+		setPlaylist((prev) => {
+			if (!prev) return prev;
+			return {
+				...prev,
+				tracks: newTracks,
+				trackIds: newTracks.map((t) => t._id),
+			};
+		});
+	}, []);
+
+	const { reorderTracks, isReordering } = usePlaylistOperations(
+		playlistId,
+		playlist?.tracks || [],
+		setTracks,
+		(error) => {
+			addToast({
+				type: "error",
+				message: error.message || "Failed to reorder tracks",
+			});
+		}
+	);
+
+	const handleDragEnd = useCallback(
+		(event: DragEndEvent) => {
+			const { active, over } = event;
+
+			if (over && active.id !== over.id && playlist?.tracks) {
+				const oldIndex = playlist.tracks.findIndex((t) => t._id === active.id);
+				const newIndex = playlist.tracks.findIndex((t) => t._id === over.id);
+
+				if (oldIndex !== -1 && newIndex !== -1) {
+					reorderTracks(oldIndex, newIndex);
+					triggerRefresh();
+				}
+			}
+		},
+		[playlist?.tracks, reorderTracks, triggerRefresh]
+	);
 
 	const fetchPlaylist = useCallback(async () => {
 		try {
@@ -290,15 +508,15 @@ export default function PlaylistDetailPage(): JSX.Element {
 				<div className="flex items-center justify-center gap-4 sm:justify-start sm:gap-6">
 					<Button
 						size="lg"
-						className="h-14 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
+						className="h-16 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
 						onClick={handlePlayAll}
 						disabled={tracks.length === 0}
 						aria-label={isPlaylistPlaying ? "Pause" : "Play all"}
 					>
 						{isPlaylistPlaying ? (
-							<Pause className="h-5 w-5 fill-black text-black" fill="black" />
+							<Pause className="h-8 w-8 fill-black text-black" fill="black" />
 						) : (
-							<Play className="h-5 w-5 fill-black text-black ml-0.5" fill="black" />
+							<Play className="h-8 w-8 fill-black text-black ml-0.5" fill="black" />
 						)}
 					</Button>
 
@@ -334,7 +552,8 @@ export default function PlaylistDetailPage(): JSX.Element {
 				{tracks.length > 0 ? (
 					<>
 						{/* Header - hidden on mobile */}
-						<div className="mb-4 hidden grid-cols-[16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued sm:grid">
+						<div className="mb-4 hidden grid-cols-[24px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued sm:grid">
+							<span />
 							<span className="text-sm">#</span>
 							<span className="text-sm">Title</span>
 							<span className="text-sm">Album</span>
@@ -344,117 +563,40 @@ export default function PlaylistDetailPage(): JSX.Element {
 							<span />
 						</div>
 
-						{/* Tracks */}
-						{tracks.map((track, index) => {
-							const isCurrentTrack = state.currentTrack?._id === track._id;
-							const isPlaying = isCurrentTrack && state.isPlaying;
+						{/* Tracks with drag-and-drop */}
+						<DndContext
+							sensors={sensors}
+							collisionDetection={closestCenter}
+							onDragEnd={handleDragEnd}
+						>
+							<SortableContext
+								items={tracks.map((t) => t._id)}
+								strategy={verticalListSortingStrategy}
+							>
+								{tracks.map((track, index) => {
+									const isCurrentTrack = state.currentTrack?._id === track._id;
+									const isPlaying = isCurrentTrack && state.isPlaying;
 
-							const artistName =
-								typeof track.artistId === "object" ? track.artistId.name : "Unknown Artist";
-							const albumTitle =
-								typeof track.albumId === "object" ? track.albumId.title : "Unknown Album";
-							const albumCover =
-								typeof track.albumId === "object" ? track.albumId.coverImageUrl : undefined;
+									return (
+										<SortableTrackItem
+											key={track._id}
+											track={track}
+											index={index}
+											isCurrentTrack={isCurrentTrack}
+											isPlaying={isPlaying}
+											onPlay={() => handleTrackPlay(track, index)}
+											onRemove={() => handleRemoveTrack(track._id)}
+										/>
+									);
+								})}
+							</SortableContext>
+						</DndContext>
 
-							return (
-								<div
-									key={track._id}
-									className={cn(
-										"group grid grid-cols-[16px_1fr_auto_40px] items-center gap-2 rounded-md px-2 py-2 transition-colors hover:bg-hackify-light-gray sm:grid-cols-[16px_4fr_3fr_1fr_40px] sm:gap-4 sm:px-4",
-										isCurrentTrack && "bg-hackify-light-gray/50"
-									)}
-								>
-									{/* Track Number / Play Button */}
-									<div className="flex items-center justify-center">
-										<span
-											className={cn(
-												"text-sm group-hover:hidden",
-												isCurrentTrack ? "text-hackify-green" : "text-hackify-text-subdued"
-											)}
-										>
-											{isCurrentTrack && isPlaying ? (
-												<span className="flex items-center gap-0.5">
-													<span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
-													<span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.2s" }} />
-													<span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.4s" }} />
-												</span>
-											) : (
-												index + 1
-											)}
-										</span>
-										<button
-											onClick={() => handleTrackPlay(track, index)}
-											className="hidden group-hover:block"
-											aria-label={isPlaying && isCurrentTrack ? "Pause" : "Play"}
-										>
-											{isPlaying && isCurrentTrack ? (
-												<Pause className="h-4 w-4 text-white" fill="white" />
-											) : (
-												<Play className="h-4 w-4 text-white" fill="white" />
-											)}
-										</button>
-									</div>
-
-									{/* Title and Artist */}
-									<div className="flex min-w-0 items-center gap-3">
-										<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
-											{albumCover ? (
-												<img
-													src={albumCover}
-													alt={track.title}
-													className="h-full w-full object-cover"
-												/>
-											) : (
-												<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-													<Music className="h-4 w-4 text-hackify-text-subdued" />
-												</div>
-											)}
-										</div>
-										<div className="min-w-0">
-											<p
-												className={cn(
-													"truncate text-sm font-medium",
-													isCurrentTrack ? "text-hackify-green" : "text-white"
-												)}
-											>
-												{track.title}
-											</p>
-											<p className="truncate text-xs text-hackify-text-subdued">{artistName}</p>
-										</div>
-									</div>
-
-									{/* Album - hidden on mobile */}
-									<span className="hidden truncate text-sm text-hackify-text-subdued sm:block">{albumTitle}</span>
-
-									{/* Duration */}
-									<span className="text-sm text-hackify-text-subdued">
-										{formatTime(track.durationInSeconds)}
-									</span>
-
-									{/* Actions */}
-									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<Button
-												variant="ghost"
-												size="icon"
-												className="h-8 w-8 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
-											>
-												<MoreHorizontal className="h-4 w-4 text-hackify-text-subdued" />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end">
-											<DropdownMenuItem
-												onClick={() => handleRemoveTrack(track._id)}
-												className="text-red-400"
-											>
-												<Trash2 className="mr-2 h-4 w-4" />
-												Remove from playlist
-											</DropdownMenuItem>
-										</DropdownMenuContent>
-									</DropdownMenu>
-								</div>
-							);
-						})}
+						{isReordering && (
+							<div className="mt-2 text-center text-sm text-hackify-text-subdued">
+								Saving order...
+							</div>
+						)}
 					</>
 				) : (
 					<EmptyState
