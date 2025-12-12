@@ -9,7 +9,7 @@ module.exports = {
 			testMatch: [
 				"**/__tests__/task1/**/*.test.{ts,tsx}",
 				"**/__tests__/task2/**/*.test.{ts,tsx}",
-				"**/__tests__/task3/useSearch.test.{ts,tsx}",
+				"**/__tests__/task3/**/*.test.{ts,tsx}",
 			],
 			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 			setupFilesAfterEnv: ["<rootDir>/frontend/jest.setup.ts"],
@@ -25,12 +25,9 @@ module.exports = {
 			moduleNameMapper: {
 				"^@/(.*)$": "<rootDir>/frontend/src/$1",
 				"\\.(css|less|scss|sass)$": "identity-obj-proxy",
-				"\\.(jpg|jpeg|png|gif|svg|webp)$":
-					"<rootDir>/frontend/__mocks__/fileMock.js",
+				"\\.(jpg|jpeg|png|gif|svg|webp)$": "<rootDir>/frontend/__mocks__/fileMock.js",
 			},
-			transformIgnorePatterns: [
-				"node_modules/(?!(.*\\.mjs$|@radix-ui|class-variance-authority|clsx|tailwind-merge))",
-			],
+			transformIgnorePatterns: ["node_modules/(?!(.*\\.mjs$|@radix-ui|class-variance-authority|clsx|tailwind-merge))"],
 		},
 		{
 			displayName: "backend",
