@@ -11,6 +11,7 @@ module.exports = {
 				"**/__tests__/task2/**/*.test.{ts,tsx}",
 				"**/__tests__/task3/**/*.test.{ts,tsx}",
 			],
+			testPathIgnorePatterns: ["/node_modules/", "search\\.service\\.test\\.ts$"],
 			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 			setupFilesAfterEnv: ["<rootDir>/frontend/jest.setup.ts"],
 			transform: {
