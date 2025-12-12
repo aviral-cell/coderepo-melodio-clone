@@ -3,11 +3,10 @@ dotenv.config();
 
 import mongoose from "mongoose";
 import { createApp } from "./app.js";
+import { initConfig, getConfig } from "./shared/config/index.js";
 
-const PORT = parseInt(process.env["PORT"] ?? "6000", 10);
-const MONGODB_URI =
-	process.env["MONGODB_URI"] ||
-	"mongodb://root:Root123@localhost:27017/melodio_app?authSource=admin";
+// Initialize configuration - validates all required env vars
+const config = initConfig();
 
 /**
  * Connect to MongoDB database
@@ -15,7 +14,7 @@ const MONGODB_URI =
 async function connectDatabase(): Promise<void> {
 	try {
 		console.log("Connecting to MongoDB...");
-		await mongoose.connect(MONGODB_URI);
+		await mongoose.connect(config.mongodbUri);
 		console.log("MongoDB connected successfully");
 	} catch (error) {
 		console.error("MongoDB connection failed:", error);
@@ -50,15 +49,15 @@ async function startServer(): Promise<void> {
 	const app = createApp();
 
 	// Start listening
-	const server = app.listen(PORT, () => {
-		console.log(`Server running on http://localhost:${PORT}`);
-		console.log(`Environment: ${process.env["NODE_ENV"] || "development"}`);
+	const server = app.listen(config.port, () => {
+		console.log(`Server running on http://localhost:${config.port}`);
+		console.log(`Environment: ${config.nodeEnv}`);
 	});
 
 	// Handle server errors
 	server.on("error", (error: NodeJS.ErrnoException) => {
 		if (error.code === "EADDRINUSE") {
-			console.error(`Port ${PORT} is already in use`);
+			console.error(`Port ${config.port} is already in use`);
 		} else {
 			console.error("Server error:", error);
 		}

@@ -2,6 +2,8 @@
 module.exports = {
 	preset: "ts-jest",
 	testEnvironment: "node",
+	// Run tests sequentially to avoid MongoDB connection/model conflicts
+	maxWorkers: 1,
 	roots: ["<rootDir>/src", "<rootDir>/__tests__"],
 	testMatch: ["**/*.test.ts", "**/*.spec.ts"],
 	moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
@@ -26,11 +28,17 @@ module.exports = {
 			"ts-jest",
 			{
 				useESM: false,
+				tsconfig: {
+					module: "commonjs",
+					moduleResolution: "node",
+				},
 			},
 		],
 	},
 	moduleNameMapper: {
 		"^@/(.*)$": "<rootDir>/src/$1",
+		// Map .js extensions to .ts for ESM-style imports
+		"^(\\.{1,2}/.*)\\.js$": "$1",
 	},
 	clearMocks: true,
 	resetMocks: true,

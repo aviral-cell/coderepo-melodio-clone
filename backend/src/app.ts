@@ -4,6 +4,12 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { errorMiddleware, notFoundHandler } from "./shared/middleware/error.middleware.js";
 import { sanitizeBody } from "./shared/middleware/validation.middleware.js";
+import { authRoutes } from "./features/auth/auth.routes.js";
+import { artistRoutes } from "./features/artists/artists.routes.js";
+import { albumRoutes } from "./features/albums/albums.routes.js";
+import { trackRoutes } from "./features/tracks/tracks.routes.js";
+import { playlistRoutes } from "./features/playlists/playlists.routes.js";
+import { searchRoutes } from "./features/search/search.routes.js";
 
 /**
  * Create and configure the Express application
@@ -65,15 +71,15 @@ export function createApp(): Application {
 	});
 
 	// ============================================
-	// API Routes (to be added in Phase 2+)
+	// API Routes
 	// ============================================
-	// app.use("/api/v1/auth", authRoutes);
+	app.use("/api/auth", authRoutes);
+	app.use("/api/artists", artistRoutes);
+	app.use("/api/albums", albumRoutes);
+	app.use("/api/tracks", trackRoutes);
+	app.use("/api/playlists", playlistRoutes);
+	app.use("/api/search", searchRoutes);
 	// app.use("/api/v1/users", userRoutes);
-	// app.use("/api/v1/artists", artistRoutes);
-	// app.use("/api/v1/albums", albumRoutes);
-	// app.use("/api/v1/tracks", trackRoutes);
-	// app.use("/api/v1/playlists", playlistRoutes);
-	// app.use("/api/v1/search", searchRoutes);
 
 	// 404 handler for unmatched routes
 	app.use(notFoundHandler);

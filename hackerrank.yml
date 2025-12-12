@@ -3,6 +3,8 @@ configuration:
   has_webserver: true
   readonly_paths:
     - __tests__/*
+    - frontend/__tests__/*
+    - backend/__tests__/*
     - frontend/jest.config.js
     - frontend/jest.setup.ts
     - backend/jest.config.js

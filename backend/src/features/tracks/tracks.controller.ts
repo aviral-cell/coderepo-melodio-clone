@@ -1,0 +1,154 @@
+import { Response, NextFunction } from "express";
+import { tracksService } from "./tracks.service.js";
+import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
+import { AuthenticatedRequest } from "../../shared/types/index.js";
+
+// Default pagination values
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 50;
+
+/**
+ * Parse and validate pagination parameters
+ */
+function parsePaginationParams(query: Record<string, unknown>): { page: number; limit: number } {
+	let page = DEFAULT_PAGE;
+	let limit = DEFAULT_LIMIT;
+
+	if (typeof query["page"] === "string") {
+		const parsedPage = parseInt(query["page"], 10);
+		if (!isNaN(parsedPage) && parsedPage >= 1) {
+			page = parsedPage;
+		}
+	}
+
+	if (typeof query["limit"] === "string") {
+		const parsedLimit = parseInt(query["limit"], 10);
+		if (!isNaN(parsedLimit) && parsedLimit >= 1) {
+			limit = Math.min(parsedLimit, MAX_LIMIT);
+		}
+	}
+
+	return { page, limit };
+}
+
+export const tracksController = {
+	/**
+	 * GET /api/tracks
+	 * Get paginated list of tracks sorted by createdAt descending
+	 * Optional filters: genre, artistId, albumId
+	 */
+	async getAll(
+		req: AuthenticatedRequest,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { page, limit } = parsePaginationParams(req.query as Record<string, unknown>);
+
+			// Extract optional filters
+			const genre = req.query["genre"] as string | undefined;
+			const artistId = req.query["artistId"] as string | undefined;
+			const albumId = req.query["albumId"] as string | undefined;
+
+			// Validate artistId format if provided
+			if (artistId && !isValidObjectId(artistId)) {
+				sendError(res, "Invalid artistId format", 400);
+				return;
+			}
+
+			// Validate albumId format if provided
+			if (albumId && !isValidObjectId(albumId)) {
+				sendError(res, "Invalid albumId format", 400);
+				return;
+			}
+
+			const result = await tracksService.findAll(page, limit, genre, artistId, albumId);
+
+			sendSuccess(res, result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	/**
+	 * GET /api/tracks/search
+	 * Search tracks by title prefix or exact genre match
+	 */
+	async search(
+		req: AuthenticatedRequest,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const query = req.query["q"] as string | undefined;
+			const result = await tracksService.search(query || "", 5);
+
+			sendSuccess(res, result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	/**
+	 * GET /api/tracks/:id
+	 * Get a single track by ID
+	 */
+	async getById(
+		req: AuthenticatedRequest,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { id } = req.params;
+
+			// Validate ObjectId format
+			if (!id || !isValidObjectId(id)) {
+				sendError(res, "Invalid track ID format", 400);
+				return;
+			}
+
+			const track = await tracksService.findById(id);
+
+			if (!track) {
+				sendError(res, "Track not found", 404);
+				return;
+			}
+
+			sendSuccess(res, track);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	/**
+	 * POST /api/tracks/:id/play
+	 * Increment play count for a track
+	 */
+	async play(
+		req: AuthenticatedRequest,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { id } = req.params;
+
+			// Validate ObjectId format
+			if (!id || !isValidObjectId(id)) {
+				sendError(res, "Invalid track ID format", 400);
+				return;
+			}
+
+			const track = await tracksService.incrementPlayCount(id);
+
+			if (!track) {
+				sendError(res, "Track not found", 404);
+				return;
+			}
+
+			sendSuccess(res, track);
+		} catch (error) {
+			next(error);
+		}
+	},
+};

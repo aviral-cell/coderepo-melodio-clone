@@ -380,6 +380,18 @@ npm run test          # Runs all tests (tasks + others)
 2. `fe--react-dev` implements feature (tests pass)
 3. Identify edge cases not in MENN codebase, add tests + implementation
 4. Verify 100% pass rate
+5. **Playwright MCP verification** against MENN app (http://localhost:3000)
+
+**MENN Reference App:**
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000
+- Test credentials: `alex.morgan@hackify.com` / `password123`
+
+**MERN App (being built):**
+- Frontend: http://localhost:4000
+- Backend: http://localhost:6000
+
+---
 
 ### 3.1 Core Utilities & Types
 
@@ -409,6 +421,8 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/lib/utils.ts`
 - `frontend/src/shared/services/api.service.ts`
 - `frontend/__tests__/others/formatters.test.ts`
+
+**⏸️ CHECKPOINT 3.1: Stop and await user review before proceeding to 3.2.**
 
 ---
 
@@ -441,6 +455,15 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/pages/auth/RegisterPage.tsx`
 - `frontend/src/shared/components/common/ProtectedRoute.tsx`
 - `frontend/__tests__/others/auth.context.test.ts`
+
+**Playwright Verification:**
+1. Compare Login page layout with MENN (http://localhost:3000/login)
+2. Compare Register page layout with MENN (http://localhost:3000/register)
+3. Test login flow with test credentials
+4. Test register flow with new user
+5. Verify redirect behavior after auth
+
+**⏸️ CHECKPOINT 3.2: Stop and await user review before proceeding to 3.3.**
 
 ---
 
@@ -479,6 +502,16 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/contexts/PlayerContext.tsx`
 - `frontend/src/shared/utils/playerUtils.ts`
 - `__tests__/task2/playerReducer.test.ts`
+
+**Playwright Verification:**
+1. Compare PlayerBar layout with MENN (bottom bar)
+2. Test play/pause button interactions
+3. Test next/previous track navigation
+4. Test shuffle/repeat toggle states
+5. Test volume slider (desktop only)
+6. Test progress bar seek functionality
+
+**⏸️ CHECKPOINT 3.3: Stop and await user review before proceeding to 3.4.**
 
 ---
 
@@ -520,6 +553,14 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/__tests__/others/useDebounce.test.ts`
 - `frontend/__tests__/others/useRecentlyPlayed.test.ts`
 
+**Playwright Verification:**
+1. Test search dropdown behavior (type, results appear)
+2. Test search debouncing (300ms delay)
+3. Test playlist reorder via drag-drop
+4. Test add/remove track from playlist
+
+**⏸️ CHECKPOINT 3.4: Stop and await user review before proceeding to 3.5.**
+
 ---
 
 ### 3.5 Layout Components
@@ -548,6 +589,17 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/components/layout/PlayerBar.tsx`
 - `frontend/src/shared/components/layout/QueuePanel.tsx`
 - `frontend/src/shared/contexts/SidebarContext.tsx`
+
+**Playwright Verification:**
+1. Compare full layout with MENN home page
+2. Test sidebar collapse/expand toggle
+3. Test sidebar navigation links
+4. Test TopBar search input focus
+5. Test user dropdown menu
+6. Test QueuePanel open/close
+7. Compare mobile layout (375px viewport)
+
+**⏸️ CHECKPOINT 3.5: Stop and await user review before proceeding to 3.6.**
 
 ---
 
@@ -582,6 +634,18 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/components/common/ErrorMessage.tsx`
 - `frontend/src/shared/components/common/EmptyState.tsx`
 
+**Playwright Verification:**
+1. Compare TrackCard layout with MENN
+2. Compare AlbumCard layout with MENN
+3. Compare PlaylistCard layout with MENN
+4. Test TrackCard play button (plays track, no redirect)
+5. Test TrackCard click (redirects to detail page)
+6. Test SearchDropdown keyboard interactions (Enter, Escape)
+7. Test AddToPlaylistModal open/close/select
+8. Test CreatePlaylistDialog form submission
+
+**⏸️ CHECKPOINT 3.6: Stop and await user review before proceeding to 3.7.**
+
 ---
 
 ### 3.7 API Services
@@ -603,6 +667,8 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/services/artists.service.ts`
 - `frontend/src/shared/services/playlists.service.ts`
 - `frontend/src/shared/services/search.service.ts`
+
+**⏸️ CHECKPOINT 3.7: Stop and await user review before proceeding to 3.8.**
 
 ---
 
@@ -643,6 +709,17 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/pages/TrackDetailPage.tsx`
 - `frontend/src/pages/PlaylistDetailPage.tsx`
 
+**Playwright Verification:**
+1. Compare HomePage layout with MENN (sections, card grid, 7 cards per row)
+2. Compare GenrePage with MENN (genre chips with images, filtered tracks)
+3. Compare AlbumDetailPage with MENN (gradient, track list)
+4. Compare TrackDetailPage with MENN (gradient, actions)
+5. Compare PlaylistDetailPage with MENN (track list, drag-drop, empty state)
+6. Test navigation between pages
+7. Test mobile responsiveness (375px viewport)
+
+**⏸️ CHECKPOINT 3.8: Stop and await user review before proceeding to 3.9.**
+
 ---
 
 ### 3.9 UI Components (shadcn/ui)
@@ -668,7 +745,25 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/components/ui/*.tsx`
 - `frontend/components.json`
 
-**⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 4.**
+**⏸️ CHECKPOINT 3.9: Stop and await user review before proceeding to Phase 4.**
+
+---
+
+## Phase 3 Execution Summary
+
+| Sub-Phase | Agent Workflow | Playwright Verification | Checkpoint |
+|-----------|----------------|-------------------------|------------|
+| 3.1 | `fe--unit-test-scripter` → `fe--react-dev` | N/A (utilities) | ✅ CHECKPOINT 3.1 |
+| 3.2 | `fe--unit-test-scripter` → `fe--react-dev` | Login/Register pages | ✅ CHECKPOINT 3.2 |
+| 3.3 | `fe--unit-test-scripter` → `fe--react-dev` | PlayerBar controls | ✅ CHECKPOINT 3.3 |
+| 3.4 | `fe--unit-test-scripter` → `fe--react-dev` | Search, Playlist ops | ✅ CHECKPOINT 3.4 |
+| 3.5 | `fe--react-dev` | Full layout comparison | ✅ CHECKPOINT 3.5 |
+| 3.6 | `fe--react-dev` | Cards, Modals, Dialogs | ✅ CHECKPOINT 3.6 |
+| 3.7 | `fe--react-dev` | N/A (services) | ✅ CHECKPOINT 3.7 |
+| 3.8 | `fe--react-dev` | All pages comparison | ✅ CHECKPOINT 3.8 |
+| 3.9 | `fe--react-dev` | N/A (pre-tested) | ✅ CHECKPOINT 3.9 |
+
+**⏸️ PHASE 3 COMPLETE: Stop and await user review before proceeding to Phase 4.**
 
 ---
 
@@ -742,27 +837,27 @@ npm run test          # Runs all tests (tasks + others)
 
 ## Execution Order Summary
 
-| Step | Phase | Agent | Deliverable |
-|------|-------|-------|-------------|
-| 1 | 1.0 | `arch--MERN-stack` | Full project scaffolding (monorepo, backend, frontend, configs, hackerrank.yml) |
-| 2 | 2.1 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Auth feature + tests |
-| 3 | 2.2 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Artists feature + tests |
-| 4 | 2.3 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Albums feature + tests |
-| 5 | 2.4 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Tracks feature + tests |
-| 6 | 2.5 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Playlists feature + tests |
-| 7 | 2.6 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Search feature + tests |
-| 8 | 2.7 | `be--nodejs-mongo-dev` | Database seeding |
-| 9 | 3.1 | `fe--react-dev` | Core utilities & types |
-| 10 | 3.2 | `fe--unit-test-scripter` → `fe--react-dev` | Auth context + pages + tests |
-| 11 | 3.3 | `fe--unit-test-scripter` → `fe--react-dev` | Player context + tests |
-| 12 | 3.4 | `fe--unit-test-scripter` → `fe--react-dev` | Custom hooks + tests |
-| 13 | 3.5 | `fe--react-dev` | Layout components |
-| 14 | 3.6 | `fe--react-dev` | Common components |
-| 15 | 3.7 | `fe--react-dev` | API services |
-| 16 | 3.8 | `fe--react-dev` | Pages |
-| 17 | 3.9 | `fe--react-dev` | UI components (shadcn/ui) |
-| 18 | 4.1-4.2 | Test agents | Integration tests |
-| 19 | 5.1-5.2 | Manual/Playwright | Final verification |
+| Step | Phase | Agent | Deliverable | Checkpoint |
+|------|-------|-------|-------------|------------|
+| 1 | 1.0 | `arch--MERN-stack` | Full project scaffolding | ✅ Phase 1 |
+| 2 | 2.1 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Auth feature + tests | |
+| 3 | 2.2 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Artists feature + tests | |
+| 4 | 2.3 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Albums feature + tests | |
+| 5 | 2.4 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Tracks feature + tests | |
+| 6 | 2.5 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Playlists feature + tests | |
+| 7 | 2.6 | `be--ts-unit-test-scripter` → `be--nodejs-mongo-dev` | Search feature + tests | |
+| 8 | 2.7 | `be--nodejs-mongo-dev` | Database seeding | ✅ Phase 2 |
+| 9 | 3.1 | `fe--unit-test-scripter` → `fe--react-dev` | Core utilities & types | ✅ 3.1 |
+| 10 | 3.2 | `fe--unit-test-scripter` → `fe--react-dev` + Playwright | Auth context + pages + tests | ✅ 3.2 |
+| 11 | 3.3 | `fe--unit-test-scripter` → `fe--react-dev` + Playwright | Player context + tests | ✅ 3.3 |
+| 12 | 3.4 | `fe--unit-test-scripter` → `fe--react-dev` + Playwright | Custom hooks + tests | ✅ 3.4 |
+| 13 | 3.5 | `fe--react-dev` + Playwright | Layout components | ✅ 3.5 |
+| 14 | 3.6 | `fe--react-dev` + Playwright | Common components | ✅ 3.6 |
+| 15 | 3.7 | `fe--react-dev` | API services | ✅ 3.7 |
+| 16 | 3.8 | `fe--react-dev` + Playwright | Pages | ✅ 3.8 |
+| 17 | 3.9 | `fe--react-dev` | UI components (shadcn/ui) | ✅ 3.9 |
+| 18 | 4.1-4.2 | Test agents | Integration tests | ✅ Phase 4 |
+| 19 | 5.1-5.2 | Playwright | Final verification | ✅ Phase 5 |
 
 ---
 

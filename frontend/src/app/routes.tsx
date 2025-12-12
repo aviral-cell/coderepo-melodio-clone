@@ -1,10 +1,10 @@
 import type { JSX } from "react";
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter, Outlet } from "react-router-dom";
+import { Music } from "lucide-react";
+import LoginPage from "@/pages/auth/LoginPage";
+import RegisterPage from "@/pages/auth/RegisterPage";
+import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 
-/**
- * Root layout component
- * Provides consistent layout structure across all pages
- */
 function RootLayout(): JSX.Element {
 	return (
 		<div className="min-h-screen bg-background text-foreground">
@@ -13,9 +13,18 @@ function RootLayout(): JSX.Element {
 	);
 }
 
-/**
- * Home page component (placeholder)
- */
+function AuthLayout(): JSX.Element {
+	return (
+		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-hackify-dark-gray to-hackify-black px-4 py-8">
+			<div className="mb-8 flex items-center gap-2">
+				<Music className="h-10 w-10 text-hackify-green" />
+				<span className="text-3xl font-bold text-white">Hackify</span>
+			</div>
+			<Outlet />
+		</div>
+	);
+}
+
 function HomePage(): JSX.Element {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center p-8">
@@ -29,9 +38,6 @@ function HomePage(): JSX.Element {
 	);
 }
 
-/**
- * Not Found page component
- */
 function NotFoundPage(): JSX.Element {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center p-8">
@@ -41,9 +47,6 @@ function NotFoundPage(): JSX.Element {
 	);
 }
 
-/**
- * Application router configuration
- */
 export const router = createBrowserRouter([
 	{
 		path: "/",
@@ -51,11 +54,28 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				element: <HomePage />,
+				element: (
+					<ProtectedRoute>
+						<HomePage />
+					</ProtectedRoute>
+				),
 			},
 			{
 				path: "*",
 				element: <NotFoundPage />,
+			},
+		],
+	},
+	{
+		element: <AuthLayout />,
+		children: [
+			{
+				path: "/login",
+				element: <LoginPage />,
+			},
+			{
+				path: "/register",
+				element: <RegisterPage />,
 			},
 		],
 	},
