@@ -1,10 +1,17 @@
 import type { JSX } from "react";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { Music } from "lucide-react";
+
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
+import HomePage from "@/pages/HomePage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
+import { MainLayout } from "@/shared/components/layout/MainLayout";
 
+/**
+ * RootLayout - Base layout wrapper for all routes.
+ * Provides consistent background styling.
+ */
 function RootLayout(): JSX.Element {
 	return (
 		<div className="min-h-screen bg-background text-foreground">
@@ -13,6 +20,10 @@ function RootLayout(): JSX.Element {
 	);
 }
 
+/**
+ * AuthLayout - Layout for authentication pages (login/register).
+ * Displays centered content with app branding.
+ */
 function AuthLayout(): JSX.Element {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-hackify-dark-gray to-hackify-black px-4 py-8">
@@ -25,19 +36,23 @@ function AuthLayout(): JSX.Element {
 	);
 }
 
-function HomePage(): JSX.Element {
+/**
+ * AppLayout - Layout for authenticated app pages.
+ * Wraps content with MainLayout (Sidebar, TopBar, PlayerBar, QueuePanel).
+ */
+function AppLayout(): JSX.Element {
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center p-8">
-			<h1 className="mb-4 text-4xl font-bold text-primary">
-				Melodio Music Player
-			</h1>
-			<p className="text-muted-foreground">
-				A modern music streaming application
-			</p>
-		</div>
+		<ProtectedRoute>
+			<MainLayout>
+				<Outlet />
+			</MainLayout>
+		</ProtectedRoute>
 	);
 }
 
+/**
+ * NotFoundPage - 404 error page.
+ */
 function NotFoundPage(): JSX.Element {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center p-8">
@@ -47,25 +62,123 @@ function NotFoundPage(): JSX.Element {
 	);
 }
 
+/**
+ * Placeholder pages for routes not yet implemented.
+ */
+function GenrePage(): JSX.Element {
+	return (
+		<div className="p-6">
+			<h1 className="text-3xl font-bold text-white">Genres</h1>
+			<p className="mt-2 text-hackify-light-gray">Browse by genre</p>
+		</div>
+	);
+}
+
+function PlaylistPage(): JSX.Element {
+	return (
+		<div className="p-6">
+			<h1 className="text-3xl font-bold text-white">Playlist</h1>
+			<p className="mt-2 text-hackify-light-gray">Playlist details</p>
+		</div>
+	);
+}
+
+function AlbumPage(): JSX.Element {
+	return (
+		<div className="p-6">
+			<h1 className="text-3xl font-bold text-white">Album</h1>
+			<p className="mt-2 text-hackify-light-gray">Album details</p>
+		</div>
+	);
+}
+
+function TrackPage(): JSX.Element {
+	return (
+		<div className="p-6">
+			<h1 className="text-3xl font-bold text-white">Track</h1>
+			<p className="mt-2 text-hackify-light-gray">Track details</p>
+		</div>
+	);
+}
+
+function SearchPage(): JSX.Element {
+	return (
+		<div className="p-6">
+			<h1 className="text-3xl font-bold text-white">Search</h1>
+			<p className="mt-2 text-hackify-light-gray">Search for music</p>
+		</div>
+	);
+}
+
+function LibraryPage(): JSX.Element {
+	return (
+		<div className="p-6">
+			<h1 className="text-3xl font-bold text-white">Your Library</h1>
+			<p className="mt-2 text-hackify-light-gray">Your saved music</p>
+		</div>
+	);
+}
+
+/**
+ * Application router configuration.
+ *
+ * Route structure:
+ * - /login, /register -> AuthLayout (no sidebar)
+ * - / (protected) -> MainLayout with Sidebar, TopBar, PlayerBar
+ * - /genre (protected) -> MainLayout
+ * - /playlist/:id (protected) -> MainLayout
+ * - /album/:id (protected) -> MainLayout
+ * - /track/:id (protected) -> MainLayout
+ * - /search (protected) -> MainLayout
+ * - /library (protected) -> MainLayout
+ */
 export const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <RootLayout />,
 		children: [
+			// Protected app routes with MainLayout
 			{
-				index: true,
-				element: (
-					<ProtectedRoute>
-						<HomePage />
-					</ProtectedRoute>
-				),
+				element: <AppLayout />,
+				children: [
+					{
+						index: true,
+						element: <HomePage />,
+					},
+					{
+						path: "genre",
+						element: <GenrePage />,
+					},
+					{
+						path: "playlist/:id",
+						element: <PlaylistPage />,
+					},
+					{
+						path: "album/:id",
+						element: <AlbumPage />,
+					},
+					{
+						path: "track/:id",
+						element: <TrackPage />,
+					},
+					{
+						path: "search",
+						element: <SearchPage />,
+					},
+					{
+						path: "library",
+						element: <LibraryPage />,
+					},
+				],
 			},
+			// 404 fallback
 			{
 				path: "*",
 				element: <NotFoundPage />,
 			},
 		],
 	},
+	// Auth routes (outside RootLayout to have different styling)
 	{
 		element: <AuthLayout />,
 		children: [

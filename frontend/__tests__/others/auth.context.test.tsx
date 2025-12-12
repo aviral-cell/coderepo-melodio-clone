@@ -11,8 +11,7 @@
  * EXPECTATION: Auth state is correctly managed across all operations
  */
 
-import React from "react";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const mockAuthService = {

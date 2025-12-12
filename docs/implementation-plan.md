@@ -949,3 +949,62 @@ npx kill-port 4000 && npx kill-port 6000
    - WebSocket: NOT supported
    - File upload: NOT supported
    - Email sending: NOT supported
+
+---
+
+## Mandatory Guidelines
+
+### 1. Playwright MCP Dual Verification
+For each frontend feature checkpoint:
+- **MENN Reference Verification:** Screenshot/snapshot MENN app pages to understand expected layout/behavior
+- **MERN Implementation Verification:** Screenshot/snapshot MERN app pages to confirm implementation matches MENN
+- Both verifications are **MANDATORY** before marking any checkpoint complete
+
+### 2. Agent Delegation
+- Use subagents as described in this plan for TDD workflow
+- Every feature must have a checkpoint for user review before proceeding
+- Same approach as backend implementation (test → implement → verify → checkpoint)
+
+### 3. Environment Variables (Security)
+**NEVER hardcode sensitive values.** All environment variables must be read from `.env` files:
+- `MONGODB_URI` - Database connection string
+- `JWT_SECRET` - JWT signing secret
+- `JWT_EXPIRES_IN` - Token expiration
+- `PORT` - Server port
+- `VITE_API_URL` - Frontend API base URL
+
+Use `process.env.VAR_NAME` for backend and `import.meta.env.VITE_VAR_NAME` for Vite frontend.
+
+### 4. Test Folder Structure (Updated)
+```
+spotify-mern-app/
+├── __tests__/                    # ALL task-specific tests (HackerRank graded)
+│   ├── task1/                    # Playlist operations (frontend)
+│   │   └── usePlaylistOperations.test.ts
+│   ├── task2/                    # Player controls (frontend)
+│   │   └── playerReducer.test.ts
+│   └── task3/                    # Search (frontend + backend)
+│       ├── useSearch.test.ts     # Frontend search hook
+│       └── search.service.test.ts # Backend search API
+├── backend/
+│   └── __tests__/                # Backend tests (renamed from 'tests')
+│       └── others/               # Non-task backend tests
+│           ├── auth.service.test.ts
+│           ├── tracks.service.test.ts
+│           ├── albums.service.test.ts
+│           ├── artists.service.test.ts
+│           └── playlists.service.test.ts
+├── frontend/
+│   └── __tests__/
+│       └── others/               # Non-task frontend tests
+│           ├── auth.context.test.ts
+│           ├── useDebounce.test.ts
+│           ├── useRecentlyPlayed.test.ts
+│           ├── formatters.test.ts
+│           └── playerReducer.test.ts
+```
+
+**Key Changes:**
+- Backend `tests/` folder renamed to `__tests__/`
+- All task-specific tests (task1, task2, task3) live at root `__tests__/` level
+- Non-task tests remain in `backend/__tests__/others/` and `frontend/__tests__/others/`

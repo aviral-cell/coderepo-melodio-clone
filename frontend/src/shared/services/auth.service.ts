@@ -1,5 +1,5 @@
 import { apiService } from "./api.service";
-import { User, AuthTokens } from "../types";
+import type { User } from "../types";
 
 export interface LoginInput {
 	email: string;

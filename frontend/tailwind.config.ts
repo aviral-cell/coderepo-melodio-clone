@@ -7,18 +7,15 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				// Spotify-inspired color palette
-				spotify: {
+				// Hackify color palette
+				hackify: {
 					green: "#1DB954",
+					"green-dark": "#1ed760",
 					black: "#121212",
-					gray: {
-						100: "#B3B3B3",
-						200: "#A7A7A7",
-						300: "#535353",
-						400: "#404040",
-						500: "#282828",
-						600: "#181818",
-					},
+					"dark-gray": "#181818",
+					"light-gray": "#282828",
+					text: "#ffffff",
+					"text-subdued": "#b3b3b3",
 				},
 				// Shadcn UI theme colors
 				border: "hsl(var(--border))",

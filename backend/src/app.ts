@@ -25,13 +25,11 @@ export function createApp(): Application {
 	);
 
 	// CORS configuration
-	const corsOrigin = process.env["CORS_ORIGIN"] || "http://localhost:4000";
 	app.use(
 		cors({
-			origin: corsOrigin,
+			origin: "*",
 			methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 			allowedHeaders: ["Content-Type", "Authorization"],
-			credentials: true,
 			optionsSuccessStatus: 204,
 		}),
 	);
