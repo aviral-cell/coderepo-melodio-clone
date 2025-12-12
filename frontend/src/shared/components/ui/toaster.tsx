@@ -67,7 +67,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 			)}
 		>
 			<Icon className={cn("h-5 w-5 shrink-0", getIconColor(toast.type))} />
-			<p className="flex-1 text-sm font-medium">{toast.message}</p>
+			<p className="flex-1 min-w-0 text-sm font-medium break-words">{toast.message}</p>
 			<button
 				type="button"
 				onClick={onClose}
