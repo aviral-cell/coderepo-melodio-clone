@@ -11,20 +11,15 @@ import { trackRoutes } from "./features/tracks/tracks.routes.js";
 import { playlistRoutes } from "./features/playlists/playlists.routes.js";
 import { searchRoutes } from "./features/search/search.routes.js";
 
-/**
- * Create and configure the Express application
- */
 export function createApp(): Application {
 	const app: Application = express();
 
-	// Security middleware
 	app.use(
 		helmet({
 			crossOriginResourcePolicy: { policy: "cross-origin" },
 		}),
 	);
 
-	// CORS configuration
 	app.use(
 		cors({
 			origin: "*",
@@ -35,24 +30,19 @@ export function createApp(): Application {
 	);
 	app.options("*", cors());
 
-	// Request logging
 	if (process.env["NODE_ENV"] !== "test") {
 		app.use(morgan("dev"));
 	}
 
-	// Body parsing middleware
 	app.use(express.json({ limit: "10mb" }));
 	app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-	// Sanitize request body
 	app.use(sanitizeBody);
 
-	// Root endpoint - HTML response
 	app.get("/", (_req: Request, res: Response) => {
 		res.send("<h1>API server is running</h1>");
 	});
 
-	// API root endpoint - JSON response
 	app.get("/api", (_req: Request, res: Response) => {
 		res.json({
 			message: "API server is running",
@@ -60,7 +50,6 @@ export function createApp(): Application {
 		});
 	});
 
-	// Health check endpoint
 	app.get("/health", (_req: Request, res: Response) => {
 		res.json({
 			status: "ok",
@@ -68,21 +57,15 @@ export function createApp(): Application {
 		});
 	});
 
-	// ============================================
-	// API Routes
-	// ============================================
 	app.use("/api/auth", authRoutes);
 	app.use("/api/artists", artistRoutes);
 	app.use("/api/albums", albumRoutes);
 	app.use("/api/tracks", trackRoutes);
 	app.use("/api/playlists", playlistRoutes);
 	app.use("/api/search", searchRoutes);
-	// app.use("/api/v1/users", userRoutes);
 
-	// 404 handler for unmatched routes
 	app.use(notFoundHandler);
 
-	// Global error handler
 	app.use(errorMiddleware);
 
 	return app;

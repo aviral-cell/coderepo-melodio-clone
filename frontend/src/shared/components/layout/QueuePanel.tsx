@@ -182,7 +182,6 @@ export function QueuePanel() {
 
 		if (!over || active.id === over.id) return;
 
-		// Extract indices from IDs (format: "queue-trackId-index")
 		const activeIdParts = (active.id as string).split("-");
 		const overIdParts = (over.id as string).split("-");
 

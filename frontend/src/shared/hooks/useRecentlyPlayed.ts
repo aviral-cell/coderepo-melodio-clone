@@ -24,7 +24,6 @@ export function useRecentlyPlayed(): UseRecentlyPlayedReturn {
 		try {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(recentTracks));
 		} catch {
-			// Silently fail if localStorage is unavailable
 		}
 	}, [recentTracks]);
 

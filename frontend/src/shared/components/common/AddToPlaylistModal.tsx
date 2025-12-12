@@ -79,7 +79,6 @@ export function AddToPlaylistModal({
 		try {
 			await playlistsService.addTrack(playlist._id, trackId);
 			setAddedToPlaylistIds((prev) => new Set(prev).add(playlist._id));
-			// Update local playlist count to reflect the added track
 			setPlaylists((prev) =>
 				prev.map((p) =>
 					p._id === playlist._id

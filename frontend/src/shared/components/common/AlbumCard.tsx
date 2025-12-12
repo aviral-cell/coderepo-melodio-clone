@@ -22,9 +22,6 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 		? new Date(album.releaseDate).getFullYear()
 		: null;
 
-	// Support both Album (with artist as object or undefined) and AlbumWithPopulated (with artistId as object)
-	// AlbumWithPopulated has artistId as an object with name property
-	// Album has artistId as string and optionally artist as object
 	const artistName =
 		typeof album.artistId === "object" && album.artistId !== null
 			? (album.artistId as { name: string }).name

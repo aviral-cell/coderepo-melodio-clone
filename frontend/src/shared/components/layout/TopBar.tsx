@@ -29,12 +29,10 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const searchContainerRef = useRef<HTMLDivElement>(null);
 
-	// Open dropdown when query has content
 	useEffect(() => {
 		setIsDropdownOpen(searchQuery.trim().length > 0);
 	}, [searchQuery]);
 
-	// Click outside detection
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
@@ -51,7 +49,6 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 		};
 	}, []);
 
-	// Escape key handler
 	useEffect(() => {
 		const handleEscapeKey = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
@@ -67,7 +64,6 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 
 	const handleSearch = useCallback((e: React.FormEvent) => {
 		e.preventDefault();
-		// Do not navigate anywhere - just prevent default
 	}, []);
 
 	const handleTrackSelect = useCallback(

@@ -47,7 +47,6 @@ export function Sidebar() {
 			const response = await playlistsService.getAll();
 			setPlaylists(response);
 		} catch {
-			// Silently fail - playlists will just be empty
 		} finally {
 			setIsLoading(false);
 		}

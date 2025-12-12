@@ -3,14 +3,10 @@ import { artistsService } from "./artists.service.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
 
-// Default pagination values
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
 
-/**
- * Parse and validate pagination parameters
- */
 function parsePaginationParams(query: Record<string, unknown>): { page: number; limit: number } {
 	let page = DEFAULT_PAGE;
 	let limit = DEFAULT_LIMIT;
@@ -33,10 +29,6 @@ function parsePaginationParams(query: Record<string, unknown>): { page: number; 
 }
 
 export const artistsController = {
-	/**
-	 * GET /api/artists
-	 * Get paginated list of artists sorted by followerCount descending
-	 */
 	async getAll(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -52,10 +44,6 @@ export const artistsController = {
 		}
 	},
 
-	/**
-	 * GET /api/artists/search
-	 * Search artists by name using text search
-	 */
 	async search(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -71,10 +59,6 @@ export const artistsController = {
 		}
 	},
 
-	/**
-	 * GET /api/artists/:id
-	 * Get a single artist by ID
-	 */
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -83,7 +67,6 @@ export const artistsController = {
 		try {
 			const { id } = req.params;
 
-			// Validate ObjectId format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid artist ID format", 400);
 				return;

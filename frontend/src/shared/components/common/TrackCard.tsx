@@ -23,7 +23,6 @@ export function TrackCard({ track, className }: TrackCardProps) {
 	const isCurrentTrack = state.currentTrack?._id === track._id;
 	const isPlaying = isCurrentTrack && state.isPlaying;
 
-	// Handle both frontend types (artistId/albumId) and backend API response (artist/album)
 	const artistName =
 		(track as unknown as { artist?: { name: string } }).artist?.name ||
 		(typeof track.artistId === "object" ? track.artistId?.name : null) ||

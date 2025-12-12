@@ -3,14 +3,10 @@ import { albumsService } from "./albums.service.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
 
-// Default pagination values
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
 
-/**
- * Parse and validate pagination parameters
- */
 function parsePaginationParams(query: Record<string, unknown>): { page: number; limit: number } {
 	let page = DEFAULT_PAGE;
 	let limit = DEFAULT_LIMIT;
@@ -33,11 +29,6 @@ function parsePaginationParams(query: Record<string, unknown>): { page: number; 
 }
 
 export const albumsController = {
-	/**
-	 * GET /api/albums
-	 * Get paginated list of albums sorted by releaseDate descending
-	 * Optional artistId filter query parameter
-	 */
 	async getAll(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -46,10 +37,8 @@ export const albumsController = {
 		try {
 			const { page, limit } = parsePaginationParams(req.query as Record<string, unknown>);
 
-			// Extract optional artistId filter
 			const artistId = req.query["artistId"] as string | undefined;
 
-			// Validate artistId format if provided
 			if (artistId && !isValidObjectId(artistId)) {
 				sendError(res, "Invalid artistId format", 400);
 				return;
@@ -63,10 +52,6 @@ export const albumsController = {
 		}
 	},
 
-	/**
-	 * GET /api/albums/search
-	 * Search albums by title using text search
-	 */
 	async search(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -82,10 +67,6 @@ export const albumsController = {
 		}
 	},
 
-	/**
-	 * GET /api/albums/:id
-	 * Get a single album by ID
-	 */
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -94,7 +75,6 @@ export const albumsController = {
 		try {
 			const { id } = req.params;
 
-			// Validate ObjectId format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid album ID format", 400);
 				return;

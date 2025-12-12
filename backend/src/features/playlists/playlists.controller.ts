@@ -8,10 +8,6 @@ import {
 import { AuthenticatedRequest } from "../../shared/types/index.js";
 
 export const playlistsController = {
-	/**
-	 * GET /api/playlists
-	 * Get all playlists owned by the authenticated user
-	 */
 	async getAll(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -26,11 +22,6 @@ export const playlistsController = {
 		}
 	},
 
-	/**
-	 * GET /api/playlists/:id
-	 * Get a single playlist by ID with populated tracks
-	 * Access control: owner can view any, non-owner can only view public
-	 */
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -40,7 +31,6 @@ export const playlistsController = {
 			const { id } = req.params;
 			const userId = req.user!.userId;
 
-			// Validate ObjectId format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
@@ -64,10 +54,6 @@ export const playlistsController = {
 		}
 	},
 
-	/**
-	 * POST /api/playlists
-	 * Create a new playlist
-	 */
 	async create(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -77,7 +63,6 @@ export const playlistsController = {
 			const userId = req.user!.userId;
 			const { name, description, isPublic, coverImageUrl } = req.body;
 
-			// Validate required field: name
 			if (!name || typeof name !== "string" || name.trim() === "") {
 				sendError(res, "Name is required and cannot be empty", 400);
 				return;
@@ -96,10 +81,6 @@ export const playlistsController = {
 		}
 	},
 
-	/**
-	 * PATCH /api/playlists/:id
-	 * Update a playlist (owner only)
-	 */
 	async update(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -110,7 +91,6 @@ export const playlistsController = {
 			const userId = req.user!.userId;
 			const { name, description, isPublic, coverImageUrl } = req.body;
 
-			// Validate ObjectId format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
@@ -139,10 +119,6 @@ export const playlistsController = {
 		}
 	},
 
-	/**
-	 * DELETE /api/playlists/:id
-	 * Delete a playlist (owner only)
-	 */
 	async delete(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -152,7 +128,6 @@ export const playlistsController = {
 			const { id } = req.params;
 			const userId = req.user!.userId;
 
-			// Validate ObjectId format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
@@ -170,17 +145,12 @@ export const playlistsController = {
 				return;
 			}
 
-			// 204 No Content
 			res.status(204).send();
 		} catch (error) {
 			next(error);
 		}
 	},
 
-	/**
-	 * POST /api/playlists/:id/tracks
-	 * Add a track to a playlist (owner only, idempotent)
-	 */
 	async addTrack(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -191,13 +161,11 @@ export const playlistsController = {
 			const userId = req.user!.userId;
 			const { trackId } = req.body;
 
-			// Validate playlist ID format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			// Validate track ID format
 			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
@@ -226,10 +194,6 @@ export const playlistsController = {
 		}
 	},
 
-	/**
-	 * DELETE /api/playlists/:id/tracks/:trackId
-	 * Remove a track from a playlist (owner only, idempotent)
-	 */
 	async removeTrack(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -239,13 +203,11 @@ export const playlistsController = {
 			const { id, trackId } = req.params;
 			const userId = req.user!.userId;
 
-			// Validate playlist ID format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			// Validate track ID format
 			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
@@ -269,10 +231,6 @@ export const playlistsController = {
 		}
 	},
 
-	/**
-	 * PATCH /api/playlists/:id/reorder
-	 * Reorder tracks in a playlist (owner only)
-	 */
 	async reorderTracks(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -283,19 +241,16 @@ export const playlistsController = {
 			const userId = req.user!.userId;
 			const { trackIds } = req.body;
 
-			// Validate playlist ID format
 			if (!id || !isValidObjectId(id)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			// Validate trackIds array
 			if (!Array.isArray(trackIds)) {
 				sendError(res, "trackIds must be an array", 400);
 				return;
 			}
 
-			// Validate all track IDs in array
 			for (const trackId of trackIds) {
 				if (!isValidObjectId(trackId)) {
 					sendError(res, "Invalid track ID format in array", 400);

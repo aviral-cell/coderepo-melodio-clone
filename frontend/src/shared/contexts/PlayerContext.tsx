@@ -62,7 +62,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 			const updated = [track, ...filtered].slice(0, MAX_RECENT);
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 		} catch {
-			// Silently fail if localStorage is unavailable
 		}
 	}, []);
 
