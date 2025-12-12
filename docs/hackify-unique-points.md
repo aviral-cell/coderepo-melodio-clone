@@ -1,4 +1,4 @@
-# Hackify (Melodio) - Spotify Clone Development Summary
+# Melodio (Melodio) - Spotify Clone Development Summary
 
 > Comprehensive extraction of unique points from development prompts for HackerRank technical assessment platform.
 
@@ -359,9 +359,9 @@ describe('Feature Name', () => {
 
 | Field | Value |
 |-------|-------|
-| Email | `alex.morgan@hackify.com` |
+| Email | `alex.morgan@melodio.com` |
 | Password | `password123` |
-| Domain | `hackify.com` (not `example.com`) |
+| Domain | `melodio.com` (not `example.com`) |
 | Style | Gender-neutral, real-world names |
 
 ### Test Runner

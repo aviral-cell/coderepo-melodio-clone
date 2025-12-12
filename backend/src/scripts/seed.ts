@@ -204,13 +204,13 @@ const artistsSeedData: ArtistSeedData[] = [
 
 const testUsers = [
 	{
-		email: "alex.morgan@hackify.com",
+		email: "alex.morgan@melodio.com",
 		password: "password123",
 		username: "alexmorgan",
 		displayName: "Alex Morgan",
 	},
 	{
-		email: "jordan.casey@hackify.com",
+		email: "jordan.casey@melodio.com",
 		password: "password123",
 		username: "jordancasey",
 		displayName: "Jordan Casey",
@@ -311,7 +311,7 @@ async function seedUsers(): Promise<number> {
 async function seedPlaylists(): Promise<number> {
 	console.log("Creating playlists...");
 
-	const owner = await User.findOne({ email: "alex.morgan@hackify.com" });
+	const owner = await User.findOne({ email: "alex.morgan@melodio.com" });
 	if (!owner) {
 		console.log("  Warning: No user found for playlist ownership");
 		return 0;
@@ -362,8 +362,8 @@ async function seed(): Promise<void> {
 		console.log(`Playlists created: ${playlistCount}`);
 		console.log("========================================");
 		console.log("\nTest Users:");
-		console.log("  Email: alex.morgan@hackify.com | Password: password123");
-		console.log("  Email: jordan.casey@hackify.com | Password: password123");
+		console.log("  Email: alex.morgan@melodio.com | Password: password123");
+		console.log("  Email: jordan.casey@melodio.com | Password: password123");
 		console.log("========================================\n");
 	} catch (error) {
 		console.error("Seeding failed:", error);

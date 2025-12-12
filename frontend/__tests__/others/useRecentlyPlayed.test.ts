@@ -15,7 +15,7 @@ import { renderHook, act } from "@testing-library/react";
 import { useRecentlyPlayed } from "@/shared/hooks/useRecentlyPlayed";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 
-const STORAGE_KEY = "hackify_clone_recently_played";
+const STORAGE_KEY = "melodio_clone_recently_played";
 
 const createMockTrack = (id: string): TrackWithPopulated => ({
 	_id: id,

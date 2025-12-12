@@ -30,23 +30,23 @@ export function SearchDropdown({
 	}
 
 	return (
-		<div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-lg bg-hackify-dark-gray shadow-xl">
+		<div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-lg bg-melodio-dark-gray shadow-xl">
 			{isLoading ? (
 				<div className="flex items-center justify-center py-8">
-					<Loader2 className="h-6 w-6 animate-spin text-hackify-text-subdued" />
+					<Loader2 className="h-6 w-6 animate-spin text-melodio-text-subdued" />
 				</div>
 			) : error ? (
-				<div className="px-4 py-8 text-center text-sm text-hackify-text-subdued">
+				<div className="px-4 py-8 text-center text-sm text-melodio-text-subdued">
 					{error}
 				</div>
 			) : tracks.length === 0 ? (
-				<div className="px-4 py-8 text-center text-sm text-hackify-text-subdued">
+				<div className="px-4 py-8 text-center text-sm text-melodio-text-subdued">
 					No results found
 				</div>
 			) : (
 				<>
-					<div className="border-b border-hackify-light-gray px-4 py-3">
-						<span className="text-xs font-semibold uppercase tracking-wider text-hackify-text-subdued">
+					<div className="border-b border-melodio-light-gray px-4 py-3">
+						<span className="text-xs font-semibold uppercase tracking-wider text-melodio-text-subdued">
 							{tracks.length} {tracks.length === 1 ? "RESULT" : "RESULTS"}
 						</span>
 					</div>
@@ -72,7 +72,7 @@ export function SearchDropdown({
 									onClick={() => handleTrackClick(track)}
 									className={cn(
 										"flex w-full items-center gap-3 px-4 py-2 text-left transition-colors",
-										"hover:bg-hackify-light-gray focus:bg-hackify-light-gray focus:outline-none"
+										"hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:outline-none"
 									)}
 								>
 									<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
@@ -83,8 +83,8 @@ export function SearchDropdown({
 												className="h-full w-full object-cover"
 											/>
 										) : (
-											<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-												<Music className="h-4 w-4 text-hackify-text-subdued" />
+											<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+												<Music className="h-4 w-4 text-melodio-text-subdued" />
 											</div>
 										)}
 									</div>
@@ -92,11 +92,11 @@ export function SearchDropdown({
 										<p className="truncate text-sm font-semibold text-white">
 											{track.title}
 										</p>
-										<p className="truncate text-xs text-hackify-text-subdued">
+										<p className="truncate text-xs text-melodio-text-subdued">
 											{artistName} - {albumTitle}
 										</p>
 									</div>
-									<span className="flex-shrink-0 text-sm text-hackify-text-subdued">
+									<span className="flex-shrink-0 text-sm text-melodio-text-subdued">
 										{formatDuration(track.durationInSeconds)}
 									</span>
 								</button>

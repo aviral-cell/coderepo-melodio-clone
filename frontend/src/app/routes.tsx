@@ -30,10 +30,10 @@ function RootLayout(): JSX.Element {
  */
 function AuthLayout(): JSX.Element {
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-hackify-dark-gray to-hackify-black px-4 py-8">
+		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-melodio-dark-gray to-melodio-black px-4 py-8">
 			<div className="mb-8 flex items-center gap-2">
-				<Music className="h-10 w-10 text-hackify-green" />
-				<span className="text-3xl font-bold text-white">Hackify</span>
+				<Music className="h-10 w-10 text-melodio-green" />
+				<span className="text-3xl font-bold text-white">Melodio</span>
 			</div>
 			<Outlet />
 		</div>
@@ -73,7 +73,7 @@ function SearchPage(): JSX.Element {
 	return (
 		<div className="p-6">
 			<h1 className="text-3xl font-bold text-white">Search</h1>
-			<p className="mt-2 text-hackify-light-gray">Search for music</p>
+			<p className="mt-2 text-melodio-light-gray">Search for music</p>
 		</div>
 	);
 }
@@ -82,7 +82,7 @@ function LibraryPage(): JSX.Element {
 	return (
 		<div className="p-6">
 			<h1 className="text-3xl font-bold text-white">Your Library</h1>
-			<p className="mt-2 text-hackify-light-gray">Your saved music</p>
+			<p className="mt-2 text-melodio-light-gray">Your saved music</p>
 		</div>
 	);
 }

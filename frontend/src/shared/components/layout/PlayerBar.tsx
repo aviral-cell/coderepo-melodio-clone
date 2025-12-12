@@ -64,7 +64,7 @@ export function PlayerBar() {
 			: undefined;
 
 	return (
-		<footer className="fixed bottom-0 left-0 right-0 z-40 h-[90px] border-t border-hackify-light-gray bg-hackify-dark-gray px-4">
+		<footer className="fixed bottom-0 left-0 right-0 z-40 h-[90px] border-t border-melodio-light-gray bg-melodio-dark-gray px-4">
 			<div className="flex h-full items-center justify-center sm:justify-between">
 				{/* Left: Track Info - hidden on mobile */}
 				<div className="hidden w-[30%] items-center gap-4 sm:flex">
@@ -78,8 +78,8 @@ export function PlayerBar() {
 										className="h-full w-full object-cover"
 									/>
 								) : (
-									<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-										<ListMusic className="h-6 w-6 text-hackify-text-subdued" />
+									<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+										<ListMusic className="h-6 w-6 text-melodio-text-subdued" />
 									</div>
 								)}
 							</div>
@@ -87,7 +87,7 @@ export function PlayerBar() {
 								<p className="truncate text-sm text-white">
 									{currentTrack.title}
 								</p>
-								<p className="truncate text-xs text-hackify-text-subdued">
+								<p className="truncate text-xs text-melodio-text-subdued">
 									{artistName}
 								</p>
 							</div>
@@ -104,8 +104,8 @@ export function PlayerBar() {
 							className={cn(
 								"h-8 w-8",
 								shuffleEnabled
-									? "text-hackify-green"
-									: "text-hackify-text-subdued hover:text-white"
+									? "text-melodio-green"
+									: "text-melodio-text-subdued hover:text-white"
 							)}
 							onClick={toggleShuffle}
 						>
@@ -115,7 +115,7 @@ export function PlayerBar() {
 						<Button
 							variant="ghost"
 							size="icon"
-							className="h-8 w-8 text-hackify-text-subdued hover:text-white"
+							className="h-8 w-8 text-melodio-text-subdued hover:text-white"
 							onClick={previous}
 						>
 							<SkipBack className="h-5 w-5" />
@@ -137,7 +137,7 @@ export function PlayerBar() {
 						<Button
 							variant="ghost"
 							size="icon"
-							className="h-8 w-8 text-hackify-text-subdued hover:text-white"
+							className="h-8 w-8 text-melodio-text-subdued hover:text-white"
 							onClick={next}
 						>
 							<SkipForward className="h-5 w-5" />
@@ -149,8 +149,8 @@ export function PlayerBar() {
 							className={cn(
 								"h-8 w-8",
 								repeatMode !== "off"
-									? "text-hackify-green"
-									: "text-hackify-text-subdued hover:text-white"
+									? "text-melodio-green"
+									: "text-melodio-text-subdued hover:text-white"
 							)}
 							onClick={toggleRepeat}
 						>
@@ -164,7 +164,7 @@ export function PlayerBar() {
 
 					{/* Progress Bar */}
 					<div className="flex w-full max-w-[500px] items-center gap-2">
-						<span className="w-10 text-right text-xs text-hackify-text-subdued">
+						<span className="w-10 text-right text-xs text-melodio-text-subdued">
 							{formatDuration(elapsedSeconds)}
 						</span>
 						<Slider
@@ -174,7 +174,7 @@ export function PlayerBar() {
 							className="w-full"
 							onValueChange={handleSeek}
 						/>
-						<span className="w-10 text-xs text-hackify-text-subdued">
+						<span className="w-10 text-xs text-melodio-text-subdued">
 							{currentTrack
 								? formatDuration(currentTrack.durationInSeconds)
 								: "0:00"}
@@ -187,14 +187,14 @@ export function PlayerBar() {
 					<Button
 						variant="ghost"
 						size="icon"
-						className="h-8 w-8 text-hackify-text-subdued hover:text-white"
+						className="h-8 w-8 text-melodio-text-subdued hover:text-white"
 						onClick={toggleQueue}
 					>
 						<ListMusic className="h-4 w-4" />
 					</Button>
 
 					<div className="flex items-center gap-2">
-						<Volume2 className="h-4 w-4 text-hackify-text-subdued" />
+						<Volume2 className="h-4 w-4 text-melodio-text-subdued" />
 						<Slider
 							value={[volume]}
 							max={100}

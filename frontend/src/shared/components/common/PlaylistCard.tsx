@@ -35,7 +35,7 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 			role="button"
 			tabIndex={0}
 			className={cn(
-				"group cursor-pointer rounded-md bg-hackify-dark-gray p-4 transition-all duration-300 hover:bg-hackify-light-gray",
+				"group cursor-pointer rounded-md bg-melodio-dark-gray p-4 transition-all duration-300 hover:bg-melodio-light-gray",
 				className
 			)}
 		>
@@ -48,8 +48,8 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 						className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 					/>
 				) : (
-					<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-hackify-light-gray to-hackify-dark-gray">
-						<ListMusic className="h-12 w-12 text-hackify-text-subdued" />
+					<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-melodio-light-gray to-melodio-dark-gray">
+						<ListMusic className="h-12 w-12 text-melodio-text-subdued" />
 					</div>
 				)}
 			</div>
@@ -59,7 +59,7 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 				<h3 className="truncate text-base font-semibold text-white">
 					{playlist.name}
 				</h3>
-				<p className="mt-1 truncate text-sm text-hackify-text-subdued">
+				<p className="mt-1 truncate text-sm text-melodio-text-subdued">
 					{trackCount} {trackCount === 1 ? "track" : "tracks"}
 				</p>
 			</div>

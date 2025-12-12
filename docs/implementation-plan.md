@@ -366,7 +366,7 @@ npm run test          # Runs all tests (tasks + others)
 - 5 artists (rock, pop, jazz, electronic, hip-hop)
 - 10 albums (2 per artist)
 - 50 tracks (5 per album, unique image per track)
-- 2 test users (alex.morgan@hackify.com, jordan.casey@hackify.com)
+- 2 test users (alex.morgan@melodio.com, jordan.casey@melodio.com)
 - 1 test playlist "Playlist 1" with 6 tracks
 
 **⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 3.**
@@ -385,7 +385,7 @@ npm run test          # Runs all tests (tasks + others)
 **MENN Reference App:**
 - Frontend: http://localhost:3000
 - Backend: http://localhost:5000
-- Test credentials: `alex.morgan@hackify.com` / `password123`
+- Test credentials: `alex.morgan@melodio.com` / `password123`
 
 **MERN App (being built):**
 - Frontend: http://localhost:4000
@@ -1001,7 +1001,7 @@ npm run seed
 
 ### Playwright UI Verification
 
-1. Login with test credentials: `alex.morgan@hackify.com` / `password123`
+1. Login with test credentials: `alex.morgan@melodio.com` / `password123`
 2. Verify home page layout
 3. Verify player controls (play, pause, next, previous, shuffle, repeat)
 4. Verify playlist operations (create, add track, reorder, remove, delete)
@@ -1031,7 +1031,7 @@ npx kill-port 4000 && npx kill-port 6001
 
 6. **Test Coverage Target:** Minimum 80% coverage.
 
-7. **Test Credentials:** Use `alex.morgan@hackify.com` / `password123` for Playwright verification.
+7. **Test Credentials:** Use `alex.morgan@melodio.com` / `password123` for Playwright verification.
 
 8. **HackerRank Platform Constraints:**
    - Audio playback: NOT supported (simulated only)

@@ -36,9 +36,9 @@ export default function LoginPage() {
 	};
 
 	return (
-		<Card className="w-full max-w-md border-hackify-light-gray bg-hackify-dark-gray">
+		<Card className="w-full max-w-md border-melodio-light-gray bg-melodio-dark-gray">
 			<CardHeader className="text-center">
-				<CardTitle className="text-2xl text-white">Log in to Hackify</CardTitle>
+				<CardTitle className="text-2xl text-white">Log in to Melodio</CardTitle>
 				<CardDescription>Enter your credentials to continue</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -60,7 +60,7 @@ export default function LoginPage() {
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
-							className="bg-hackify-light-gray"
+							className="bg-melodio-light-gray"
 						/>
 					</div>
 
@@ -75,7 +75,7 @@ export default function LoginPage() {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
-							className="bg-hackify-light-gray"
+							className="bg-melodio-light-gray"
 						/>
 					</div>
 
@@ -85,14 +85,14 @@ export default function LoginPage() {
 				</form>
 
 				<div className="mt-6 text-center">
-					<span className="text-sm text-hackify-text-subdued">
+					<span className="text-sm text-melodio-text-subdued">
 						Don&apos;t have an account?{" "}
 					</span>
 					<Link
 						to="/register"
 						className="text-sm font-semibold text-white underline-offset-4 hover:underline"
 					>
-						Sign up for Hackify
+						Sign up for Melodio
 					</Link>
 				</div>
 			</CardContent>

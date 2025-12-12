@@ -10,7 +10,7 @@ This document provides a comprehensive breakdown of all features in the Melodio 
 
 | Element | Specification |
 |---------|---------------|
-| App Name | **Melodio** (avoid Spotify/Hackify copyright) |
+| App Name | **Melodio** (avoid Spotify/Melodio copyright) |
 | Logo | Music2 icon with Melodio branding |
 | Primary Color | #1DB954 (Spotify green) |
 | Theme | Dark theme matching Spotify aesthetic |
@@ -82,7 +82,7 @@ This document provides a comprehensive breakdown of all features in the Melodio 
 **Description:** Maintains user session across page refreshes.
 
 **Business Logic:**
-- JWT stored in localStorage (key: `hackify_auth_token`)
+- JWT stored in localStorage (key: `melodio_auth_token`)
 - On app mount, check for existing token
 - If token exists, call `/auth/me` to validate and get user data
 - If token invalid/expired, clear localStorage and show login
@@ -616,7 +616,7 @@ This document provides a comprehensive breakdown of all features in the Melodio 
 **Description:** Client-side history of recently played tracks.
 
 **Business Logic:**
-- Stored in localStorage (key: `hackify_clone_recently_played`)
+- Stored in localStorage (key: `melodio_clone_recently_played`)
 - Maximum 10 tracks
 - Most recent track at index 0
 - Deduplication: Re-playing existing track moves it to front

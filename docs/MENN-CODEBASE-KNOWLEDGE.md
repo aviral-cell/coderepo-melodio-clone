@@ -251,7 +251,7 @@ frontend/
 
 ### useRecentlyPlayed
 - Manages "Recently Played" track history
-- Persists to localStorage (key: `hackify_clone_recently_played`)
+- Persists to localStorage (key: `melodio_clone_recently_played`)
 - Max 10 tracks, most recent first
 - Deduplication: re-played tracks move to front
 
@@ -277,8 +277,8 @@ The seed script creates:
 - **50 Tracks** (5 per album, 180-300 seconds duration)
   - Each track has **unique image**
 - **2 Test Users** (gender-neutral names):
-  - `alex.morgan@hackify.com` / `password123`
-  - `jordan.casey@hackify.com` / `password123`
+  - `alex.morgan@melodio.com` / `password123`
+  - `jordan.casey@melodio.com` / `password123`
 - **1 Default Playlist**: "**Playlist 1**" with 6 tracks
 
 ### User Display Name

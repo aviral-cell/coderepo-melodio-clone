@@ -56,9 +56,9 @@ export default function RegisterPage() {
 	};
 
 	return (
-		<Card className="w-full max-w-md border-hackify-light-gray bg-hackify-dark-gray">
+		<Card className="w-full max-w-md border-melodio-light-gray bg-melodio-dark-gray">
 			<CardHeader className="text-center">
-				<CardTitle className="text-2xl text-white">Sign up for Hackify</CardTitle>
+				<CardTitle className="text-2xl text-white">Sign up for Melodio</CardTitle>
 				<CardDescription>Create your account to start listening</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -81,7 +81,7 @@ export default function RegisterPage() {
 							value={formData.email}
 							onChange={handleChange}
 							required
-							className="bg-hackify-light-gray"
+							className="bg-melodio-light-gray"
 						/>
 					</div>
 
@@ -97,7 +97,7 @@ export default function RegisterPage() {
 							value={formData.username}
 							onChange={handleChange}
 							required
-							className="bg-hackify-light-gray"
+							className="bg-melodio-light-gray"
 						/>
 					</div>
 
@@ -113,7 +113,7 @@ export default function RegisterPage() {
 							value={formData.displayName}
 							onChange={handleChange}
 							required
-							className="bg-hackify-light-gray"
+							className="bg-melodio-light-gray"
 						/>
 					</div>
 
@@ -130,7 +130,7 @@ export default function RegisterPage() {
 							onChange={handleChange}
 							required
 							minLength={8}
-							className="bg-hackify-light-gray"
+							className="bg-melodio-light-gray"
 						/>
 					</div>
 
@@ -147,7 +147,7 @@ export default function RegisterPage() {
 							onChange={handleChange}
 							required
 							minLength={8}
-							className="bg-hackify-light-gray"
+							className="bg-melodio-light-gray"
 						/>
 					</div>
 
@@ -157,7 +157,7 @@ export default function RegisterPage() {
 				</form>
 
 				<div className="mt-6 text-center">
-					<span className="text-sm text-hackify-text-subdued">
+					<span className="text-sm text-melodio-text-subdued">
 						Already have an account?{" "}
 					</span>
 					<Link

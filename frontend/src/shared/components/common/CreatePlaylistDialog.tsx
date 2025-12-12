@@ -81,7 +81,7 @@ export function CreatePlaylistDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={handleClose}>
-			<DialogContent className="border-hackify-light-gray bg-hackify-dark-gray sm:max-w-md">
+			<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle className="text-white">Create Playlist</DialogTitle>
 					<DialogDescription>
@@ -103,7 +103,7 @@ export function CreatePlaylistDialog({
 								placeholder="My Awesome Playlist"
 								value={name}
 								onChange={(e) => setName(e.target.value)}
-								className="bg-hackify-light-gray"
+								className="bg-melodio-light-gray"
 								autoFocus
 							/>
 						</div>
@@ -120,7 +120,7 @@ export function CreatePlaylistDialog({
 								placeholder="Add an optional description"
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
-								className="bg-hackify-light-gray"
+								className="bg-melodio-light-gray"
 							/>
 						</div>
 					</div>

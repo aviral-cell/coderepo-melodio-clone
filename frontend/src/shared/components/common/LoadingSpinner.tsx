@@ -33,12 +33,12 @@ export function LoadingSpinner({
 		>
 			<Loader2
 				className={cn(
-					"animate-spin text-hackify-text-subdued",
+					"animate-spin text-melodio-text-subdued",
 					sizeClasses[size]
 				)}
 			/>
 			{text && (
-				<p className="mt-3 text-sm text-hackify-text-subdued">{text}</p>
+				<p className="mt-3 text-sm text-melodio-text-subdued">{text}</p>
 			)}
 		</div>
 	);

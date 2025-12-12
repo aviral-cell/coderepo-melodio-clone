@@ -77,7 +77,7 @@ export default function AlbumDetailPage(): JSX.Element {
 	if (isLoading) {
 		return (
 			<>
-				<div className="bg-gradient-to-b from-amber-800 to-hackify-dark-gray p-8">
+				<div className="bg-gradient-to-b from-amber-800 to-melodio-dark-gray p-8">
 					<div className="flex items-end gap-6">
 						<Skeleton className="h-56 w-56 rounded" />
 						<div className="flex-1">
@@ -114,7 +114,7 @@ export default function AlbumDetailPage(): JSX.Element {
 	return (
 		<>
 			{/* Album Header */}
-			<div className="bg-gradient-to-b from-amber-800 to-hackify-dark-gray p-8">
+			<div className="bg-gradient-to-b from-amber-800 to-melodio-dark-gray p-8">
 				<div className="flex items-end gap-6">
 					<div className="relative h-56 w-56 overflow-hidden rounded shadow-2xl">
 						{album.coverImageUrl ? (
@@ -124,8 +124,8 @@ export default function AlbumDetailPage(): JSX.Element {
 								className="h-full w-full object-cover"
 							/>
 						) : (
-							<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-								<Music className="h-20 w-20 text-hackify-text-subdued" />
+							<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+								<Music className="h-20 w-20 text-melodio-text-subdued" />
 							</div>
 						)}
 					</div>
@@ -134,10 +134,10 @@ export default function AlbumDetailPage(): JSX.Element {
 						<h1 className="mb-4 text-5xl font-bold text-white">{album.title}</h1>
 						<div className="flex items-center gap-2 text-sm">
 							<span className="font-semibold text-white">{artistName}</span>
-							<span className="text-hackify-text-subdued">-</span>
-							<span className="text-hackify-text-subdued">{releaseYear}</span>
-							<span className="text-hackify-text-subdued">-</span>
-							<span className="text-hackify-text-subdued">
+							<span className="text-melodio-text-subdued">-</span>
+							<span className="text-melodio-text-subdued">{releaseYear}</span>
+							<span className="text-melodio-text-subdued">-</span>
+							<span className="text-melodio-text-subdued">
 								{tracks.length} {tracks.length === 1 ? "song" : "songs"},{" "}
 								{formatDuration(totalDuration)}
 							</span>
@@ -147,10 +147,10 @@ export default function AlbumDetailPage(): JSX.Element {
 			</div>
 
 			{/* Controls */}
-			<div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-8 py-6">
+			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-8 py-6">
 				<Button
 					size="lg"
-					className="h-14 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
+					className="h-14 w-14 rounded-full bg-melodio-green hover:scale-105 hover:bg-melodio-green-dark"
 					onClick={handlePlayAll}
 					disabled={tracks.length === 0}
 					aria-label={isAlbumPlaying ? "Pause" : "Play all"}
@@ -168,7 +168,7 @@ export default function AlbumDetailPage(): JSX.Element {
 				{tracks.length > 0 ? (
 					<>
 						{/* Header */}
-						<div className="mb-4 grid grid-cols-[16px_4fr_1fr] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued">
+						<div className="mb-4 grid grid-cols-[16px_4fr_1fr] gap-4 border-b border-melodio-light-gray px-4 pb-2 text-melodio-text-subdued">
 							<span className="text-sm">#</span>
 							<span className="text-sm">Title</span>
 							<span className="flex justify-end">
@@ -185,8 +185,8 @@ export default function AlbumDetailPage(): JSX.Element {
 								<div
 									key={track._id}
 									className={cn(
-										"group grid cursor-pointer grid-cols-[16px_4fr_1fr] items-center gap-4 rounded-md px-4 py-2 transition-colors hover:bg-hackify-light-gray",
-										isCurrentTrack && "bg-hackify-light-gray/50"
+										"group grid cursor-pointer grid-cols-[16px_4fr_1fr] items-center gap-4 rounded-md px-4 py-2 transition-colors hover:bg-melodio-light-gray",
+										isCurrentTrack && "bg-melodio-light-gray/50"
 									)}
 									onClick={() => handleTrackPlay(track, index)}
 									role="button"
@@ -203,14 +203,14 @@ export default function AlbumDetailPage(): JSX.Element {
 										<span
 											className={cn(
 												"text-sm group-hover:hidden",
-												isCurrentTrack ? "text-hackify-green" : "text-hackify-text-subdued"
+												isCurrentTrack ? "text-melodio-green" : "text-melodio-text-subdued"
 											)}
 										>
 											{isCurrentTrack && isPlaying ? (
 												<span className="flex items-center gap-0.5">
-													<span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
-													<span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.2s" }} />
-													<span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.4s" }} />
+													<span className="h-2 w-0.5 animate-pulse bg-melodio-green" />
+													<span className="h-3 w-0.5 animate-pulse bg-melodio-green" style={{ animationDelay: "0.2s" }} />
+													<span className="h-1.5 w-0.5 animate-pulse bg-melodio-green" style={{ animationDelay: "0.4s" }} />
 												</span>
 											) : (
 												track.trackNumber
@@ -231,17 +231,17 @@ export default function AlbumDetailPage(): JSX.Element {
 											to={`/track/${track._id}`}
 											className={cn(
 												"block truncate text-sm font-medium hover:underline",
-												isCurrentTrack ? "text-hackify-green" : "text-white"
+												isCurrentTrack ? "text-melodio-green" : "text-white"
 											)}
 											onClick={(e) => e.stopPropagation()}
 										>
 											{track.title}
 										</Link>
-										<p className="truncate text-xs text-hackify-text-subdued">{artistName}</p>
+										<p className="truncate text-xs text-melodio-text-subdued">{artistName}</p>
 									</div>
 
 									{/* Duration */}
-									<span className="text-right text-sm text-hackify-text-subdued">
+									<span className="text-right text-sm text-melodio-text-subdued">
 										{formatTime(track.durationInSeconds)}
 									</span>
 								</div>

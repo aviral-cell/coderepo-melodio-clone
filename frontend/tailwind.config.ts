@@ -7,8 +7,8 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				// Hackify color palette
-				hackify: {
+				// Melodio color palette
+				melodio: {
 					green: "#1DB954",
 					"green-dark": "#1ed760",
 					black: "#121212",

@@ -75,7 +75,7 @@ export default function GenrePage(): JSX.Element {
 					<div className="mb-6">
 						<Button
 							variant="ghost"
-							className="mb-4 text-hackify-text-subdued hover:text-white"
+							className="mb-4 text-melodio-text-subdued hover:text-white"
 							onClick={handleBackClick}
 						>
 							<ChevronLeft className="mr-2 h-4 w-4" />
@@ -90,7 +90,7 @@ export default function GenrePage(): JSX.Element {
 					{isLoading ? (
 						<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
 							{Array.from({ length: 10 }).map((_, index) => (
-								<div key={index} className="rounded-md bg-hackify-dark-gray p-4">
+								<div key={index} className="rounded-md bg-melodio-dark-gray p-4">
 									<Skeleton className="mb-4 aspect-square w-full rounded-md" />
 									<Skeleton className="mb-2 h-4 w-3/4" />
 									<Skeleton className="h-3 w-1/2" />
@@ -104,7 +104,7 @@ export default function GenrePage(): JSX.Element {
 							))}
 						</div>
 					) : (
-						<p className="text-hackify-text-subdued">
+						<p className="text-melodio-text-subdued">
 							No tracks found for this genre.
 						</p>
 					)}

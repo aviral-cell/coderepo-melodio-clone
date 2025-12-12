@@ -82,7 +82,7 @@ export default function TrackDetailPage(): JSX.Element {
 	if (isLoading) {
 		return (
 			<>
-				<div className="bg-gradient-to-b from-teal-800 to-hackify-dark-gray p-4 sm:p-8">
+				<div className="bg-gradient-to-b from-teal-800 to-melodio-dark-gray p-4 sm:p-8">
 					<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 						<Skeleton className="h-40 w-40 rounded sm:h-56 sm:w-56" />
 						<div className="flex-1">
@@ -125,7 +125,7 @@ export default function TrackDetailPage(): JSX.Element {
 	return (
 		<>
 			{/* Track Header */}
-			<div className="bg-gradient-to-b from-teal-800 to-hackify-dark-gray p-4 sm:p-8">
+			<div className="bg-gradient-to-b from-teal-800 to-melodio-dark-gray p-4 sm:p-8">
 				<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
 						{albumCover ? (
@@ -135,8 +135,8 @@ export default function TrackDetailPage(): JSX.Element {
 								className="h-full w-full object-cover"
 							/>
 						) : (
-							<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-								<Music className="h-20 w-20 text-hackify-text-subdued" />
+							<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+								<Music className="h-20 w-20 text-melodio-text-subdued" />
 							</div>
 						)}
 					</div>
@@ -154,19 +154,19 @@ export default function TrackDetailPage(): JSX.Element {
 							) : (
 								<span className="font-semibold text-white">{artistName}</span>
 							)}
-							<span className="text-hackify-text-subdued">-</span>
+							<span className="text-melodio-text-subdued">-</span>
 							{albumId ? (
 								<Link
 									to={`/album/${albumId}`}
-									className="text-hackify-text-subdued hover:text-white hover:underline"
+									className="text-melodio-text-subdued hover:text-white hover:underline"
 								>
 									{albumTitle}
 								</Link>
 							) : (
-								<span className="text-hackify-text-subdued">{albumTitle}</span>
+								<span className="text-melodio-text-subdued">{albumTitle}</span>
 							)}
 						</div>
-						<div className="mt-2 flex items-center gap-4 text-sm text-hackify-text-subdued">
+						<div className="mt-2 flex items-center gap-4 text-sm text-melodio-text-subdued">
 							<span className="capitalize">{track.genre}</span>
 							<span className="flex items-center gap-1">
 								<Clock3 className="h-4 w-4" />
@@ -179,11 +179,11 @@ export default function TrackDetailPage(): JSX.Element {
 			</div>
 
 			{/* Controls */}
-			<div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-4 py-4 sm:px-8 sm:py-6">
+			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 				<div className="flex items-center justify-center gap-4 sm:justify-start">
 					<Button
 						size="lg"
-						className="h-16 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
+						className="h-16 w-14 rounded-full bg-melodio-green hover:scale-105 hover:bg-melodio-green-dark"
 						onClick={handlePlay}
 						aria-label={isPlaying ? "Pause" : "Play"}
 					>
@@ -198,7 +198,7 @@ export default function TrackDetailPage(): JSX.Element {
 					<Button
 						size="icon"
 						variant="ghost"
-						className="h-10 w-10 rounded-full text-hackify-text-subdued hover:scale-105 hover:text-white"
+						className="h-10 w-10 rounded-full text-melodio-text-subdued hover:scale-105 hover:text-white"
 						onClick={() => setIsPlaylistModalOpen(true)}
 						aria-label="Add to playlist"
 					>
@@ -211,7 +211,7 @@ export default function TrackDetailPage(): JSX.Element {
 							<Button
 								size="icon"
 								variant="ghost"
-								className="h-10 w-10 rounded-full text-hackify-text-subdued hover:scale-105 hover:text-white"
+								className="h-10 w-10 rounded-full text-melodio-text-subdued hover:scale-105 hover:text-white"
 								aria-label="More options"
 							>
 								<MoreHorizontal className="h-6 w-6" />
@@ -219,18 +219,18 @@ export default function TrackDetailPage(): JSX.Element {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent
 							align="start"
-							className="w-48 border-hackify-light-gray bg-hackify-dark-gray"
+							className="w-48 border-melodio-light-gray bg-melodio-dark-gray"
 						>
 							<DropdownMenuItem
 								onClick={handleAddToQueue}
-								className="cursor-pointer text-white hover:bg-hackify-light-gray focus:bg-hackify-light-gray focus:text-white"
+								className="cursor-pointer text-white hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white"
 							>
 								<ListPlus className="mr-2 h-4 w-4" />
 								Add to queue
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => setIsPlaylistModalOpen(true)}
-								className="cursor-pointer text-white hover:bg-hackify-light-gray focus:bg-hackify-light-gray focus:text-white"
+								className="cursor-pointer text-white hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white"
 							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add to playlist
@@ -242,23 +242,23 @@ export default function TrackDetailPage(): JSX.Element {
 
 			{/* Additional Info */}
 			<div className="px-4 py-4 sm:px-8">
-				<div className="rounded-lg bg-hackify-dark-gray p-6">
+				<div className="rounded-lg bg-melodio-dark-gray p-6">
 					<h2 className="mb-4 text-lg font-bold text-white">About this track</h2>
 					<dl className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
 						<div>
-							<dt className="text-hackify-text-subdued">Artist</dt>
+							<dt className="text-melodio-text-subdued">Artist</dt>
 							<dd className="mt-1 font-medium text-white">{artistName}</dd>
 						</div>
 						<div>
-							<dt className="text-hackify-text-subdued">Album</dt>
+							<dt className="text-melodio-text-subdued">Album</dt>
 							<dd className="mt-1 font-medium text-white">{albumTitle}</dd>
 						</div>
 						<div>
-							<dt className="text-hackify-text-subdued">Genre</dt>
+							<dt className="text-melodio-text-subdued">Genre</dt>
 							<dd className="mt-1 font-medium capitalize text-white">{track.genre}</dd>
 						</div>
 						<div>
-							<dt className="text-hackify-text-subdued">Track #</dt>
+							<dt className="text-melodio-text-subdued">Track #</dt>
 							<dd className="mt-1 font-medium text-white">{track.trackNumber}</dd>
 						</div>
 					</dl>

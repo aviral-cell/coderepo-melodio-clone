@@ -75,9 +75,9 @@ export function Sidebar() {
 							isCollapsed && "justify-center w-full"
 						)}
 					>
-						<Music className="h-8 w-8 text-hackify-green flex-shrink-0" />
+						<Music className="h-8 w-8 text-melodio-green flex-shrink-0" />
 						{!isCollapsed && (
-							<span className="text-xl font-bold text-white">Hackify</span>
+							<span className="text-xl font-bold text-white">Melodio</span>
 						)}
 					</div>
 				</div>
@@ -95,7 +95,7 @@ export function Sidebar() {
 									"flex items-center gap-4 rounded-md px-3 py-3 text-sm font-semibold transition-colors",
 									isActive
 										? "text-white"
-										: "text-hackify-text-subdued hover:text-white",
+										: "text-melodio-text-subdued hover:text-white",
 									isCollapsed && "justify-center px-2"
 								)}
 								title={isCollapsed ? item.label : undefined}
@@ -122,7 +122,7 @@ export function Sidebar() {
 					>
 						<div
 							className={cn(
-								"flex items-center gap-2 text-hackify-text-subdued",
+								"flex items-center gap-2 text-melodio-text-subdued",
 								isCollapsed && "justify-center"
 							)}
 						>
@@ -135,7 +135,7 @@ export function Sidebar() {
 							<Button
 								variant="ghost"
 								size="icon"
-								className="h-8 w-8 text-hackify-text-subdued hover:text-white"
+								className="h-8 w-8 text-melodio-text-subdued hover:text-white"
 								onClick={() => setIsCreateDialogOpen(true)}
 								aria-label="Create playlist"
 							>
@@ -178,21 +178,21 @@ export function Sidebar() {
 											className={cn(
 												"flex items-center gap-3 rounded-md p-2 transition-colors",
 												isActive
-													? "bg-hackify-light-gray"
-													: "hover:bg-hackify-light-gray/50",
+													? "bg-melodio-light-gray"
+													: "hover:bg-melodio-light-gray/50",
 												isCollapsed && "justify-center"
 											)}
 											title={isCollapsed ? playlist.name : undefined}
 										>
-											<div className="flex h-12 w-12 items-center justify-center rounded bg-hackify-light-gray flex-shrink-0">
-												<Music className="h-6 w-6 text-hackify-text-subdued" />
+											<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
+												<Music className="h-6 w-6 text-melodio-text-subdued" />
 											</div>
 											{!isCollapsed && (
 												<div className="min-w-0 flex-1">
 													<p className="truncate text-sm font-medium text-white">
 														{playlist.name}
 													</p>
-													<p className="truncate text-xs text-hackify-text-subdued">
+													<p className="truncate text-xs text-melodio-text-subdued">
 														Playlist - {trackCount}{" "}
 														{trackCount === 1 ? "track" : "tracks"}
 													</p>
@@ -206,7 +206,7 @@ export function Sidebar() {
 									<p className="mb-2 text-sm font-semibold text-white">
 										Create your first playlist
 									</p>
-									<p className="mb-4 text-xs text-hackify-text-subdued">
+									<p className="mb-4 text-xs text-melodio-text-subdued">
 										It&apos;s easy, we&apos;ll help you
 									</p>
 									<Button
@@ -230,7 +230,7 @@ export function Sidebar() {
 						<Button
 							variant="ghost"
 							size="icon"
-							className="h-8 w-8 text-hackify-text-subdued hover:text-white hover:bg-hackify-light-gray"
+							className="h-8 w-8 text-melodio-text-subdued hover:text-white hover:bg-melodio-light-gray"
 							onClick={toggleSidebar}
 							aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
 						>

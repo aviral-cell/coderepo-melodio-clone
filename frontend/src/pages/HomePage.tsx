@@ -97,7 +97,7 @@ export default function HomePage(): JSX.Element {
 				{isLoadingTracks ? (
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
 						{Array.from({ length: 5 }).map((_, index) => (
-							<div key={index} className="rounded-md bg-hackify-dark-gray p-4">
+							<div key={index} className="rounded-md bg-melodio-dark-gray p-4">
 								<Skeleton className="mb-4 aspect-square w-full rounded-md" />
 								<Skeleton className="mb-2 h-4 w-3/4" />
 								<Skeleton className="h-3 w-1/2" />
@@ -111,7 +111,7 @@ export default function HomePage(): JSX.Element {
 						))}
 					</div>
 				) : (
-					<p className="text-hackify-text-subdued">
+					<p className="text-melodio-text-subdued">
 						No recommendations available yet.
 					</p>
 				)}
@@ -135,7 +135,7 @@ export default function HomePage(): JSX.Element {
 				{isLoadingAlbums ? (
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
 						{Array.from({ length: 5 }).map((_, index) => (
-							<div key={index} className="rounded-md bg-hackify-dark-gray p-4">
+							<div key={index} className="rounded-md bg-melodio-dark-gray p-4">
 								<Skeleton className="mb-4 aspect-square w-full rounded-md" />
 								<Skeleton className="mb-2 h-4 w-3/4" />
 								<Skeleton className="h-3 w-1/2" />
@@ -149,7 +149,7 @@ export default function HomePage(): JSX.Element {
 						))}
 					</div>
 				) : (
-					<p className="text-hackify-text-subdued">
+					<p className="text-melodio-text-subdued">
 						No albums available. Check back later!
 					</p>
 				)}
@@ -161,7 +161,7 @@ export default function HomePage(): JSX.Element {
 				{isLoadingTracks ? (
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
 						{Array.from({ length: 10 }).map((_, index) => (
-							<div key={index} className="rounded-md bg-hackify-dark-gray p-4">
+							<div key={index} className="rounded-md bg-melodio-dark-gray p-4">
 								<Skeleton className="mb-4 aspect-square w-full rounded-md" />
 								<Skeleton className="mb-2 h-4 w-3/4" />
 								<Skeleton className="h-3 w-1/2" />
@@ -175,7 +175,7 @@ export default function HomePage(): JSX.Element {
 						))}
 					</div>
 				) : (
-					<p className="text-hackify-text-subdued">
+					<p className="text-melodio-text-subdued">
 						No tracks available. Check back later!
 					</p>
 				)}
@@ -187,7 +187,7 @@ export default function HomePage(): JSX.Element {
 				{isLoadingPlaylists ? (
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
 						{Array.from({ length: 5 }).map((_, index) => (
-							<div key={index} className="rounded-md bg-hackify-dark-gray p-4">
+							<div key={index} className="rounded-md bg-melodio-dark-gray p-4">
 								<Skeleton className="mb-4 aspect-square w-full rounded-md" />
 								<Skeleton className="mb-2 h-4 w-3/4" />
 								<Skeleton className="h-3 w-1/2" />
@@ -201,7 +201,7 @@ export default function HomePage(): JSX.Element {
 						))}
 					</div>
 				) : (
-					<p className="text-hackify-text-subdued">
+					<p className="text-melodio-text-subdued">
 						You don&apos;t have any playlists yet. Create one to get started!
 					</p>
 				)}

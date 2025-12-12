@@ -106,14 +106,14 @@ function SortableTrackItem({
 			ref={setNodeRef}
 			style={style}
 			className={cn(
-				"group grid grid-cols-[24px_16px_1fr_auto_40px] items-center gap-2 rounded-md px-2 py-2 transition-colors hover:bg-hackify-light-gray sm:grid-cols-[24px_16px_4fr_3fr_1fr_40px] sm:gap-4 sm:px-4",
-				isCurrentTrack && "bg-hackify-light-gray/50",
-				isDragging && "bg-hackify-light-gray z-50"
+				"group grid grid-cols-[24px_16px_1fr_auto_40px] items-center gap-2 rounded-md px-2 py-2 transition-colors hover:bg-melodio-light-gray sm:grid-cols-[24px_16px_4fr_3fr_1fr_40px] sm:gap-4 sm:px-4",
+				isCurrentTrack && "bg-melodio-light-gray/50",
+				isDragging && "bg-melodio-light-gray z-50"
 			)}
 		>
 			{/* Drag Handle */}
 			<button
-				className="cursor-grab touch-none text-hackify-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+				className="cursor-grab touch-none text-melodio-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
 				{...attributes}
 				{...listeners}
 				aria-label="Drag to reorder"
@@ -126,14 +126,14 @@ function SortableTrackItem({
 				<span
 					className={cn(
 						"text-sm group-hover:hidden",
-						isCurrentTrack ? "text-hackify-green" : "text-hackify-text-subdued"
+						isCurrentTrack ? "text-melodio-green" : "text-melodio-text-subdued"
 					)}
 				>
 					{isCurrentTrack && isPlaying ? (
 						<span className="flex items-center gap-0.5">
-							<span className="h-2 w-0.5 animate-pulse bg-hackify-green" />
-							<span className="h-3 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.2s" }} />
-							<span className="h-1.5 w-0.5 animate-pulse bg-hackify-green" style={{ animationDelay: "0.4s" }} />
+							<span className="h-2 w-0.5 animate-pulse bg-melodio-green" />
+							<span className="h-3 w-0.5 animate-pulse bg-melodio-green" style={{ animationDelay: "0.2s" }} />
+							<span className="h-1.5 w-0.5 animate-pulse bg-melodio-green" style={{ animationDelay: "0.4s" }} />
 						</span>
 					) : (
 						index + 1
@@ -162,8 +162,8 @@ function SortableTrackItem({
 							className="h-full w-full object-cover"
 						/>
 					) : (
-						<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-							<Music className="h-4 w-4 text-hackify-text-subdued" />
+						<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+							<Music className="h-4 w-4 text-melodio-text-subdued" />
 						</div>
 					)}
 				</div>
@@ -171,20 +171,20 @@ function SortableTrackItem({
 					<p
 						className={cn(
 							"truncate text-sm font-medium",
-							isCurrentTrack ? "text-hackify-green" : "text-white"
+							isCurrentTrack ? "text-melodio-green" : "text-white"
 						)}
 					>
 						{track.title}
 					</p>
-					<p className="truncate text-xs text-hackify-text-subdued">{artistName}</p>
+					<p className="truncate text-xs text-melodio-text-subdued">{artistName}</p>
 				</div>
 			</div>
 
 			{/* Album - hidden on mobile */}
-			<span className="hidden truncate text-sm text-hackify-text-subdued sm:block">{albumTitle}</span>
+			<span className="hidden truncate text-sm text-melodio-text-subdued sm:block">{albumTitle}</span>
 
 			{/* Duration */}
-			<span className="text-sm text-hackify-text-subdued">
+			<span className="text-sm text-melodio-text-subdued">
 				{formatTime(track.durationInSeconds)}
 			</span>
 
@@ -196,7 +196,7 @@ function SortableTrackItem({
 						size="icon"
 						className="h-8 w-8 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
 					>
-						<MoreHorizontal className="h-4 w-4 text-hackify-text-subdued" />
+						<MoreHorizontal className="h-4 w-4 text-melodio-text-subdued" />
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
@@ -410,7 +410,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 		return (
 			<>
 				{/* Header skeleton */}
-				<div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-4 sm:p-8">
+				<div className="bg-gradient-to-b from-purple-800 to-melodio-dark-gray p-4 sm:p-8">
 					<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 						<Skeleton className="h-40 w-40 rounded sm:h-56 sm:w-56" />
 						<div className="flex-1 text-center sm:text-left">
@@ -421,7 +421,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 					</div>
 				</div>
 				{/* Controls skeleton */}
-				<div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-4 py-4 sm:px-8 sm:py-6">
+				<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 					<div className="flex justify-center sm:justify-start">
 						<Skeleton className="h-14 w-14 rounded-full" />
 					</div>
@@ -471,7 +471,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 	return (
 		<>
 			{/* Playlist Header */}
-			<div className="bg-gradient-to-b from-purple-800 to-hackify-dark-gray p-4 sm:p-8">
+			<div className="bg-gradient-to-b from-purple-800 to-melodio-dark-gray p-4 sm:p-8">
 				<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
 						{playlist.coverImageUrl ? (
@@ -490,11 +490,11 @@ export default function PlaylistDetailPage(): JSX.Element {
 						<p className="text-sm font-medium text-white">Playlist</p>
 						<h1 className="mb-4 text-2xl font-bold text-white sm:mb-6 sm:text-6xl">{playlist.name}</h1>
 						{playlist.description && (
-							<p className="mb-2 text-sm text-hackify-text-subdued">
+							<p className="mb-2 text-sm text-melodio-text-subdued">
 								{playlist.description}
 							</p>
 						)}
-						<p className="text-sm text-hackify-text-subdued">
+						<p className="text-sm text-melodio-text-subdued">
 							{tracks.length}{" "}
 							{tracks.length === 1 ? "track" : "tracks"}
 							{totalDuration > 0 && ` - ${formatDuration(totalDuration)}`}
@@ -504,11 +504,11 @@ export default function PlaylistDetailPage(): JSX.Element {
 			</div>
 
 			{/* Controls */}
-			<div className="bg-gradient-to-b from-hackify-dark-gray/60 to-hackify-black px-4 py-4 sm:px-8 sm:py-6">
+			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 				<div className="flex items-center justify-center gap-4 sm:justify-start sm:gap-6">
 					<Button
 						size="lg"
-						className="h-16 w-14 rounded-full bg-hackify-green hover:scale-105 hover:bg-hackify-green-dark"
+						className="h-16 w-14 rounded-full bg-melodio-green hover:scale-105 hover:bg-melodio-green-dark"
 						onClick={handlePlayAll}
 						disabled={tracks.length === 0}
 						aria-label={isPlaylistPlaying ? "Pause" : "Play all"}
@@ -525,7 +525,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 							<Button
 								variant="ghost"
 								size="icon"
-								className="h-10 w-10 text-hackify-text-subdued hover:text-white"
+								className="h-10 w-10 text-melodio-text-subdued hover:text-white"
 							>
 								<MoreHorizontal className="h-6 w-6" />
 							</Button>
@@ -552,7 +552,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 				{tracks.length > 0 ? (
 					<>
 						{/* Header - hidden on mobile */}
-						<div className="mb-4 hidden grid-cols-[24px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-hackify-light-gray px-4 pb-2 text-hackify-text-subdued sm:grid">
+						<div className="mb-4 hidden grid-cols-[24px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-melodio-light-gray px-4 pb-2 text-melodio-text-subdued sm:grid">
 							<span />
 							<span className="text-sm">#</span>
 							<span className="text-sm">Title</span>
@@ -593,7 +593,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 						</DndContext>
 
 						{isReordering && (
-							<div className="mt-2 text-center text-sm text-hackify-text-subdued">
+							<div className="mt-2 text-center text-sm text-melodio-text-subdued">
 								Saving order...
 							</div>
 						)}
@@ -608,7 +608,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 
 			{/* Edit Dialog */}
 			<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-				<DialogContent className="border-hackify-light-gray bg-hackify-dark-gray sm:max-w-md">
+				<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
 					<DialogHeader>
 						<DialogTitle className="text-white">Edit Playlist</DialogTitle>
 						<DialogDescription>
@@ -626,7 +626,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 									type="text"
 									value={editName}
 									onChange={(e) => setEditName(e.target.value)}
-									className="bg-hackify-light-gray"
+									className="bg-melodio-light-gray"
 								/>
 							</div>
 							<div className="space-y-2">
@@ -638,7 +638,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 									type="text"
 									value={editDescription}
 									onChange={(e) => setEditDescription(e.target.value)}
-									className="bg-hackify-light-gray"
+									className="bg-melodio-light-gray"
 								/>
 							</div>
 						</div>
@@ -661,7 +661,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 
 			{/* Delete Confirmation Dialog */}
 			<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-				<DialogContent className="border-hackify-light-gray bg-hackify-dark-gray sm:max-w-md">
+				<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
 					<DialogHeader>
 						<DialogTitle className="text-white">Delete Playlist</DialogTitle>
 						<DialogDescription>

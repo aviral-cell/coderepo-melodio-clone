@@ -29,7 +29,7 @@ export function ErrorMessage({
 			role="alert"
 		>
 			<AlertCircle className="h-10 w-10 text-destructive" />
-			<p className="mt-4 text-sm text-hackify-text-subdued">{message}</p>
+			<p className="mt-4 text-sm text-melodio-text-subdued">{message}</p>
 			{onRetry && (
 				<Button
 					variant="outline"

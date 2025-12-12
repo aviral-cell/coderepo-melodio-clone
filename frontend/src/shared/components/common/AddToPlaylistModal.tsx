@@ -113,7 +113,7 @@ export function AddToPlaylistModal({
 
 	return (
 		<Dialog open={open} onOpenChange={handleClose}>
-			<DialogContent className="border-hackify-light-gray bg-hackify-dark-gray sm:max-w-md">
+			<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle className="text-white">Add to Playlist</DialogTitle>
 					<DialogDescription>
@@ -126,15 +126,15 @@ export function AddToPlaylistModal({
 				<div className="py-4">
 					{isLoading ? (
 						<div className="flex items-center justify-center py-8">
-							<Loader2 className="h-6 w-6 animate-spin text-hackify-text-subdued" />
+							<Loader2 className="h-6 w-6 animate-spin text-melodio-text-subdued" />
 						</div>
 					) : playlists.length === 0 ? (
 						<div className="py-8 text-center">
-							<ListMusic className="mx-auto h-12 w-12 text-hackify-text-subdued" />
-							<p className="mt-4 text-sm text-hackify-text-subdued">
+							<ListMusic className="mx-auto h-12 w-12 text-melodio-text-subdued" />
+							<p className="mt-4 text-sm text-melodio-text-subdued">
 								You don&apos;t have any playlists yet.
 							</p>
-							<p className="mt-1 text-xs text-hackify-text-subdued">
+							<p className="mt-1 text-xs text-melodio-text-subdued">
 								Create a playlist first to add tracks.
 							</p>
 						</div>
@@ -155,9 +155,9 @@ export function AddToPlaylistModal({
 											disabled={isAdding || isAdded}
 											className={cn(
 												"flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors",
-												"hover:bg-hackify-light-gray focus:bg-hackify-light-gray focus:outline-none",
+												"hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:outline-none",
 												"disabled:cursor-not-allowed disabled:opacity-50",
-												isAdded && "bg-hackify-light-gray/50"
+												isAdded && "bg-melodio-light-gray/50"
 											)}
 										>
 											{/* Playlist Cover */}
@@ -169,8 +169,8 @@ export function AddToPlaylistModal({
 														className="h-full w-full object-cover"
 													/>
 												) : (
-													<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-														<ListMusic className="h-4 w-4 text-hackify-text-subdued" />
+													<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+														<ListMusic className="h-4 w-4 text-melodio-text-subdued" />
 													</div>
 												)}
 											</div>
@@ -180,7 +180,7 @@ export function AddToPlaylistModal({
 												<p className="truncate text-sm font-medium text-white">
 													{playlist.name}
 												</p>
-												<p className="truncate text-xs text-hackify-text-subdued">
+												<p className="truncate text-xs text-melodio-text-subdued">
 													{trackCount} {trackCount === 1 ? "track" : "tracks"}
 												</p>
 											</div>
@@ -188,11 +188,11 @@ export function AddToPlaylistModal({
 											{/* Action Icon */}
 											<div className="flex-shrink-0">
 												{isAdding ? (
-													<Loader2 className="h-5 w-5 animate-spin text-hackify-text-subdued" />
+													<Loader2 className="h-5 w-5 animate-spin text-melodio-text-subdued" />
 												) : isAdded ? (
-													<Check className="h-5 w-5 text-hackify-green" />
+													<Check className="h-5 w-5 text-melodio-green" />
 												) : (
-													<Plus className="h-5 w-5 text-hackify-text-subdued" />
+													<Plus className="h-5 w-5 text-melodio-text-subdued" />
 												)}
 											</div>
 										</button>

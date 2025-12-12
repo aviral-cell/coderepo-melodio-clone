@@ -54,7 +54,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
 	const saveToRecentlyPlayed = useCallback((track: TrackWithPopulated) => {
 		try {
-			const STORAGE_KEY = "hackify_clone_recently_played";
+			const STORAGE_KEY = "melodio_clone_recently_played";
 			const MAX_RECENT = 10;
 			const stored = localStorage.getItem(STORAGE_KEY);
 			const recent: TrackWithPopulated[] = stored ? JSON.parse(stored) : [];

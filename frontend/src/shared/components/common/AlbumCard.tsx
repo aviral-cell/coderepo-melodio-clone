@@ -45,7 +45,7 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 			role="button"
 			tabIndex={0}
 			className={cn(
-				"group cursor-pointer rounded-md bg-hackify-dark-gray p-4 transition-all duration-300 hover:bg-hackify-light-gray",
+				"group cursor-pointer rounded-md bg-melodio-dark-gray p-4 transition-all duration-300 hover:bg-melodio-light-gray",
 				className
 			)}
 		>
@@ -58,8 +58,8 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 						className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 					/>
 				) : (
-					<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-						<Disc className="h-12 w-12 text-hackify-text-subdued" />
+					<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+						<Disc className="h-12 w-12 text-melodio-text-subdued" />
 					</div>
 				)}
 			</div>
@@ -69,7 +69,7 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 				<h3 className="truncate text-base font-semibold text-white">
 					{album.title}
 				</h3>
-				<p className="mt-1 truncate text-sm text-hackify-text-subdued">
+				<p className="mt-1 truncate text-sm text-melodio-text-subdued">
 					{releaseYear && <span>{releaseYear}</span>}
 					{releaseYear && artistName && <span> &bull; </span>}
 					{artistName && <span>{artistName}</span>}

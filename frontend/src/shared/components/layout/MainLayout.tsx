@@ -21,7 +21,7 @@ export function MainLayout({
 	const { isCollapsed } = useSidebar();
 
 	return (
-		<div className="min-h-screen bg-hackify-black">
+		<div className="min-h-screen bg-melodio-black">
 			<Sidebar />
 			<main
 				className={cn(

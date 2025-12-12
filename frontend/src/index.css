@@ -5,14 +5,14 @@
 @tailwind utilities;
 
 :root {
-	/* Hackify Theme Colors */
-	--hackify-green: #1DB954;
-	--hackify-green-dark: #1ed760;
-	--hackify-black: #121212;
-	--hackify-dark-gray: #181818;
-	--hackify-light-gray: #282828;
-	--hackify-text: #ffffff;
-	--hackify-text-subdued: #b3b3b3;
+	/* Melodio Theme Colors */
+	--melodio-green: #1DB954;
+	--melodio-green-dark: #1ed760;
+	--melodio-black: #121212;
+	--melodio-dark-gray: #181818;
+	--melodio-light-gray: #282828;
+	--melodio-text: #ffffff;
+	--melodio-text-subdued: #b3b3b3;
 
 	/* Shadcn UI Variables - Dark Theme */
 	--background: 0 0% 7%;
@@ -102,7 +102,7 @@ body {
 }
 
 /* Smooth transitions for interactive elements */
-.transition-hackify {
+.transition-melodio {
 	transition: all 0.2s ease-in-out;
 }
 

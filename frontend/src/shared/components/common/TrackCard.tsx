@@ -56,7 +56,7 @@ export function TrackCard({ track, className }: TrackCardProps) {
 			role="button"
 			tabIndex={0}
 			className={cn(
-				"group relative cursor-pointer rounded-md bg-hackify-dark-gray p-4 transition-all duration-300 hover:bg-hackify-light-gray",
+				"group relative cursor-pointer rounded-md bg-melodio-dark-gray p-4 transition-all duration-300 hover:bg-melodio-light-gray",
 				className
 			)}
 		>
@@ -69,8 +69,8 @@ export function TrackCard({ track, className }: TrackCardProps) {
 						className="h-full w-full object-cover"
 					/>
 				) : (
-					<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
-						<Music className="h-12 w-12 text-hackify-text-subdued" />
+					<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
+						<Music className="h-12 w-12 text-melodio-text-subdued" />
 					</div>
 				)}
 
@@ -80,8 +80,8 @@ export function TrackCard({ track, className }: TrackCardProps) {
 					onClick={handlePlayClick}
 					aria-label={isPlaying ? "Pause" : "Play"}
 					className={cn(
-						"absolute bottom-2 right-2 flex h-12 w-12 items-center justify-center rounded-full bg-hackify-green shadow-xl transition-all duration-300",
-						"hover:scale-105 hover:bg-hackify-green-dark",
+						"absolute bottom-2 right-2 flex h-12 w-12 items-center justify-center rounded-full bg-melodio-green shadow-xl transition-all duration-300",
+						"hover:scale-105 hover:bg-melodio-green-dark",
 						"opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
 						isCurrentTrack && "opacity-100 translate-y-0"
 					)}
@@ -99,10 +99,10 @@ export function TrackCard({ track, className }: TrackCardProps) {
 				<h3 className="truncate text-base font-semibold text-white">
 					{track.title}
 				</h3>
-				<p className="mt-1 truncate text-sm text-hackify-text-subdued">
+				<p className="mt-1 truncate text-sm text-melodio-text-subdued">
 					{artistName}
 				</p>
-				<p className="mt-1 text-xs text-hackify-text-subdued">
+				<p className="mt-1 text-xs text-melodio-text-subdued">
 					{formatDuration(track.durationInSeconds)}
 				</p>
 			</div>
