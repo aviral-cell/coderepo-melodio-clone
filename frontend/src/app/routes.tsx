@@ -5,6 +5,10 @@ import { Music } from "lucide-react";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
 import HomePage from "@/pages/HomePage";
+import GenrePage from "@/pages/GenrePage";
+import AlbumDetailPage from "@/pages/AlbumDetailPage";
+import TrackDetailPage from "@/pages/TrackDetailPage";
+import PlaylistDetailPage from "@/pages/PlaylistDetailPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
@@ -65,42 +69,6 @@ function NotFoundPage(): JSX.Element {
 /**
  * Placeholder pages for routes not yet implemented.
  */
-function GenrePage(): JSX.Element {
-	return (
-		<div className="p-6">
-			<h1 className="text-3xl font-bold text-white">Genres</h1>
-			<p className="mt-2 text-hackify-light-gray">Browse by genre</p>
-		</div>
-	);
-}
-
-function PlaylistPage(): JSX.Element {
-	return (
-		<div className="p-6">
-			<h1 className="text-3xl font-bold text-white">Playlist</h1>
-			<p className="mt-2 text-hackify-light-gray">Playlist details</p>
-		</div>
-	);
-}
-
-function AlbumPage(): JSX.Element {
-	return (
-		<div className="p-6">
-			<h1 className="text-3xl font-bold text-white">Album</h1>
-			<p className="mt-2 text-hackify-light-gray">Album details</p>
-		</div>
-	);
-}
-
-function TrackPage(): JSX.Element {
-	return (
-		<div className="p-6">
-			<h1 className="text-3xl font-bold text-white">Track</h1>
-			<p className="mt-2 text-hackify-light-gray">Track details</p>
-		</div>
-	);
-}
-
 function SearchPage(): JSX.Element {
 	return (
 		<div className="p-6">
@@ -151,15 +119,15 @@ export const router = createBrowserRouter([
 					},
 					{
 						path: "playlist/:id",
-						element: <PlaylistPage />,
+						element: <PlaylistDetailPage />,
 					},
 					{
 						path: "album/:id",
-						element: <AlbumPage />,
+						element: <AlbumDetailPage />,
 					},
 					{
 						path: "track/:id",
-						element: <TrackPage />,
+						element: <TrackDetailPage />,
 					},
 					{
 						path: "search",

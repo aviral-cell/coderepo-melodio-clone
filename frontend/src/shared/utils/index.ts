@@ -12,8 +12,9 @@ export function cn(...inputs: ClassValue[]): string {
  * Format duration from seconds to mm:ss format
  */
 export function formatDuration(seconds: number): string {
-	const minutes = Math.floor(seconds / 60);
-	const remainingSeconds = seconds % 60;
+	const totalSeconds = Math.floor(seconds);
+	const minutes = Math.floor(totalSeconds / 60);
+	const remainingSeconds = totalSeconds % 60;
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
@@ -104,4 +105,89 @@ export function getInitials(name: string): string {
 		.join("")
 		.toUpperCase()
 		.slice(0, 2);
+}
+
+/**
+ * Backend API track response format
+ */
+interface BackendTrackResponse {
+	id: string;
+	title: string;
+	artist: {
+		id: string;
+		name: string;
+		imageUrl?: string;
+	};
+	album: {
+		id: string;
+		title: string;
+		coverImageUrl?: string;
+	};
+	durationInSeconds: number;
+	trackNumber: number;
+	genre: string;
+	playCount: number;
+	coverImageUrl?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+/**
+ * Frontend normalized track format
+ */
+interface NormalizedTrack {
+	_id: string;
+	title: string;
+	artistId: {
+		_id: string;
+		name: string;
+		imageUrl?: string;
+	};
+	albumId: {
+		_id: string;
+		title: string;
+		coverImageUrl?: string;
+	};
+	durationInSeconds: number;
+	trackNumber: number;
+	genre: string;
+	playCount: number;
+	coverImageUrl?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+/**
+ * Normalize a track from backend API response format to frontend format
+ * Converts: id -> _id, artist -> artistId, album -> albumId
+ */
+export function normalizeTrack(track: BackendTrackResponse): NormalizedTrack {
+	return {
+		_id: track.id,
+		title: track.title,
+		artistId: {
+			_id: track.artist.id,
+			name: track.artist.name,
+			imageUrl: track.artist.imageUrl,
+		},
+		albumId: {
+			_id: track.album.id,
+			title: track.album.title,
+			coverImageUrl: track.album.coverImageUrl,
+		},
+		durationInSeconds: track.durationInSeconds,
+		trackNumber: track.trackNumber,
+		genre: track.genre,
+		playCount: track.playCount,
+		coverImageUrl: track.coverImageUrl,
+		createdAt: track.createdAt,
+		updatedAt: track.updatedAt,
+	};
+}
+
+/**
+ * Normalize an array of tracks from backend format
+ */
+export function normalizeTracks(tracks: BackendTrackResponse[]): NormalizedTrack[] {
+	return tracks.map(normalizeTrack);
 }

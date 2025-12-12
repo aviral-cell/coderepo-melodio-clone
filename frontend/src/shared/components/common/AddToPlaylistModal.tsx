@@ -1,0 +1,220 @@
+import { useState, useEffect } from "react";
+import { ListMusic, Plus, Check, Loader2 } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/shared/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/shared/components/ui/dialog";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
+import { usePlaylistRefresh } from "@/shared/contexts/PlaylistContext";
+import { useToast } from "@/shared/hooks/useToast";
+import { playlistsService } from "@/shared/services/playlist.service";
+import type { Playlist } from "@/shared/types";
+
+interface AddToPlaylistModalProps {
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+	trackId: string;
+	trackTitle?: string;
+	onSuccess?: () => void;
+}
+
+/**
+ * Modal for adding a track to a playlist
+ * - Lists user's playlists
+ * - Select playlist to add current track
+ */
+export function AddToPlaylistModal({
+	open,
+	onOpenChange,
+	trackId,
+	trackTitle,
+	onSuccess,
+}: AddToPlaylistModalProps) {
+	const [playlists, setPlaylists] = useState<Playlist[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [addingToPlaylistId, setAddingToPlaylistId] = useState<string | null>(
+		null
+	);
+	const [addedToPlaylistIds, setAddedToPlaylistIds] = useState<Set<string>>(
+		new Set()
+	);
+	const { addToast } = useToast();
+	const { triggerRefresh } = usePlaylistRefresh();
+
+	useEffect(() => {
+		if (open) {
+			fetchPlaylists();
+			setAddedToPlaylistIds(new Set());
+		}
+	}, [open]);
+
+	const fetchPlaylists = async () => {
+		setIsLoading(true);
+		try {
+			const data = await playlistsService.getAll();
+			setPlaylists(data);
+		} catch (error) {
+			addToast({
+				type: "error",
+				message:
+					error instanceof Error ? error.message : "Failed to load playlists",
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleAddToPlaylist = async (playlist: Playlist) => {
+		if (addedToPlaylistIds.has(playlist._id)) {
+			return;
+		}
+
+		setAddingToPlaylistId(playlist._id);
+		try {
+			await playlistsService.addTrack(playlist._id, trackId);
+			setAddedToPlaylistIds((prev) => new Set(prev).add(playlist._id));
+			// Update local playlist count to reflect the added track
+			setPlaylists((prev) =>
+				prev.map((p) =>
+					p._id === playlist._id
+						? { ...p, trackIds: [...(p.trackIds || []), trackId] }
+						: p
+				)
+			);
+			addToast({
+				type: "success",
+				message: `Added to "${playlist.name}"`,
+			});
+			triggerRefresh();
+			onSuccess?.();
+		} catch (error) {
+			addToast({
+				type: "error",
+				message:
+					error instanceof Error
+						? error.message
+						: "Failed to add track to playlist",
+			});
+		} finally {
+			setAddingToPlaylistId(null);
+		}
+	};
+
+	const handleClose = () => {
+		if (!addingToPlaylistId) {
+			onOpenChange(false);
+		}
+	};
+
+	return (
+		<Dialog open={open} onOpenChange={handleClose}>
+			<DialogContent className="border-hackify-light-gray bg-hackify-dark-gray sm:max-w-md">
+				<DialogHeader>
+					<DialogTitle className="text-white">Add to Playlist</DialogTitle>
+					<DialogDescription>
+						{trackTitle
+							? `Add "${trackTitle}" to one of your playlists.`
+							: "Select a playlist to add this track."}
+					</DialogDescription>
+				</DialogHeader>
+
+				<div className="py-4">
+					{isLoading ? (
+						<div className="flex items-center justify-center py-8">
+							<Loader2 className="h-6 w-6 animate-spin text-hackify-text-subdued" />
+						</div>
+					) : playlists.length === 0 ? (
+						<div className="py-8 text-center">
+							<ListMusic className="mx-auto h-12 w-12 text-hackify-text-subdued" />
+							<p className="mt-4 text-sm text-hackify-text-subdued">
+								You don&apos;t have any playlists yet.
+							</p>
+							<p className="mt-1 text-xs text-hackify-text-subdued">
+								Create a playlist first to add tracks.
+							</p>
+						</div>
+					) : (
+						<ScrollArea className="max-h-[300px]">
+							<div className="space-y-1">
+								{playlists.map((playlist) => {
+									const isAdding = addingToPlaylistId === playlist._id;
+									const isAdded = addedToPlaylistIds.has(playlist._id);
+									const trackCount =
+										playlist.trackIds?.length ?? playlist.tracks?.length ?? 0;
+
+									return (
+										<button
+											key={playlist._id}
+											type="button"
+											onClick={() => handleAddToPlaylist(playlist)}
+											disabled={isAdding || isAdded}
+											className={cn(
+												"flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors",
+												"hover:bg-hackify-light-gray focus:bg-hackify-light-gray focus:outline-none",
+												"disabled:cursor-not-allowed disabled:opacity-50",
+												isAdded && "bg-hackify-light-gray/50"
+											)}
+										>
+											{/* Playlist Cover */}
+											<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
+												{playlist.coverImageUrl ? (
+													<img
+														src={playlist.coverImageUrl}
+														alt={playlist.name}
+														className="h-full w-full object-cover"
+													/>
+												) : (
+													<div className="flex h-full w-full items-center justify-center bg-hackify-light-gray">
+														<ListMusic className="h-4 w-4 text-hackify-text-subdued" />
+													</div>
+												)}
+											</div>
+
+											{/* Playlist Info */}
+											<div className="min-w-0 flex-1">
+												<p className="truncate text-sm font-medium text-white">
+													{playlist.name}
+												</p>
+												<p className="truncate text-xs text-hackify-text-subdued">
+													{trackCount} {trackCount === 1 ? "track" : "tracks"}
+												</p>
+											</div>
+
+											{/* Action Icon */}
+											<div className="flex-shrink-0">
+												{isAdding ? (
+													<Loader2 className="h-5 w-5 animate-spin text-hackify-text-subdued" />
+												) : isAdded ? (
+													<Check className="h-5 w-5 text-hackify-green" />
+												) : (
+													<Plus className="h-5 w-5 text-hackify-text-subdued" />
+												)}
+											</div>
+										</button>
+									);
+								})}
+							</div>
+						</ScrollArea>
+					)}
+				</div>
+
+				<div className="flex justify-end">
+					<Button
+						type="button"
+						variant="ghost"
+						onClick={handleClose}
+						disabled={!!addingToPlaylistId}
+					>
+						Done
+					</Button>
+				</div>
+			</DialogContent>
+		</Dialog>
+	);
+}

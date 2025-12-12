@@ -2,8 +2,9 @@ import { ApiResponse } from "../types";
 
 /**
  * Storage key for auth token
+ * Must match the key used in AuthContext
  */
-const AUTH_TOKEN_KEY = "melodio_auth_token";
+const AUTH_TOKEN_KEY = "accessToken";
 
 /**
  * Get the API base URL

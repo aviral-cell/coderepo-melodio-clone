@@ -121,19 +121,18 @@ export function PlayerBar() {
 							<SkipBack className="h-5 w-5" />
 						</Button>
 
-						<Button
-							variant="default"
-							size="icon"
-							className="h-8 w-8 rounded-full bg-white text-black hover:scale-105 hover:bg-white"
+						<button
+							type="button"
+							className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition-transform hover:scale-105 disabled:opacity-50"
 							onClick={togglePlayPause}
 							disabled={!currentTrack}
 						>
 							{isPlaying ? (
-								<Pause className="h-4 w-4" />
+								<Pause className="h-4 w-4" fill="black" />
 							) : (
-								<Play className="h-4 w-4 pl-0.5" />
+								<Play className="h-4 w-4 pl-0.5" fill="black" />
 							)}
-						</Button>
+						</button>
 
 						<Button
 							variant="ghost"

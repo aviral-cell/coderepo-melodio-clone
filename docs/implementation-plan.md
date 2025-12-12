@@ -565,7 +565,7 @@ npm run test          # Runs all tests (tasks + others)
 
 ### 3.5 Layout Components
 
-**Agent:** `fe--react-dev`
+**Implementation Agent:** `fe--react-dev`
 
 **Note:** Layout components are primarily visual/UI focused. TDD not required for pure presentational components, but integration testing recommended post-implementation.
 
@@ -590,6 +590,11 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/components/layout/QueuePanel.tsx`
 - `frontend/src/shared/contexts/SidebarContext.tsx`
 
+**Post-Implementation Testing (Phase 4):**
+- Agent: `fe--unit-test-scripter`
+- Focus: Interaction tests for Sidebar toggle, TopBar user menu, PlayerBar controls
+- Location: `frontend/__tests__/others/layout.test.tsx` (optional)
+
 **Playwright Verification:**
 1. Compare full layout with MENN home page
 2. Test sidebar collapse/expand toggle
@@ -605,7 +610,7 @@ npm run test          # Runs all tests (tasks + others)
 
 ### 3.6 Common Components
 
-**Agent:** `fe--react-dev`
+**Implementation Agent:** `fe--react-dev`
 
 **Note:** Common components are primarily visual/UI focused. TDD not required for pure presentational components, but integration testing recommended post-implementation.
 
@@ -634,6 +639,11 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/components/common/ErrorMessage.tsx`
 - `frontend/src/shared/components/common/EmptyState.tsx`
 
+**Post-Implementation Testing (Phase 4):**
+- Agent: `fe--unit-test-scripter`
+- Focus: TrackCard interaction (play vs click), SearchDropdown keyboard navigation
+- Location: `frontend/__tests__/others/components.test.tsx` (optional)
+
 **Playwright Verification:**
 1. Compare TrackCard layout with MENN
 2. Compare AlbumCard layout with MENN
@@ -650,7 +660,7 @@ npm run test          # Runs all tests (tasks + others)
 
 ### 3.7 API Services
 
-**Agent:** `fe--react-dev`
+**Implementation Agent:** `fe--react-dev`
 
 **Note:** API services are thin wrappers around HTTP calls. TDD not strictly required, but ensure all services are used by tested hooks/components.
 
@@ -668,13 +678,18 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/shared/services/playlists.service.ts`
 - `frontend/src/shared/services/search.service.ts`
 
+**Post-Implementation Testing (Phase 4):**
+- Agent: `fe--unit-test-scripter`
+- Focus: Service API calls, error handling, response transformation
+- Reference: TDD-SCENARIOS.md Section 12 (Playlist Service API Tests)
+
 **⏸️ CHECKPOINT 3.7: Stop and await user review before proceeding to 3.8.**
 
 ---
 
 ### 3.8 Pages
 
-**Agent:** `fe--react-dev`
+**Implementation Agent:** `fe--react-dev`
 
 **Note:** Pages integrate tested hooks and components. Visual verification via Playwright recommended post-implementation.
 
@@ -708,6 +723,11 @@ npm run test          # Runs all tests (tasks + others)
 - `frontend/src/pages/AlbumDetailPage.tsx`
 - `frontend/src/pages/TrackDetailPage.tsx`
 - `frontend/src/pages/PlaylistDetailPage.tsx`
+
+**Post-Implementation Testing (Phase 4):**
+- Agent: `fe--unit-test-scripter`
+- Focus: Page data fetching, error states, empty states
+- Location: `frontend/__tests__/others/pages.test.tsx` (optional)
 
 **Playwright Verification:**
 1. Compare HomePage layout with MENN (sections, card grid, 7 cards per row)
@@ -773,30 +793,95 @@ npm run test          # Runs all tests (tasks + others)
 
 **Agent:** `be--ts-unit-test-scripter`
 
+**Objective:** Ensure all backend APIs work correctly with database.
+
+**Test Files & Scenarios:**
+
+| Test File | TDD-SCENARIOS Section | Scenario Count |
+|-----------|----------------------|----------------|
+| `backend/__tests__/others/auth.service.test.ts` | Section 1 | 15 |
+| `backend/__tests__/others/tracks.service.test.ts` | Section 2 | 15 |
+| `backend/__tests__/others/albums.service.test.ts` | Section 3 | 8 |
+| `backend/__tests__/others/artists.service.test.ts` | Section 4 | 6 |
+| `backend/__tests__/others/playlists.service.test.ts` | Section 5 | 28 |
+| `__tests__/task3/search.service.test.ts` | Section 6 | 4 |
+
 **Tasks:**
-1. Write integration tests for all endpoints
-2. Use supertest for HTTP testing
-3. Setup test database (in-memory MongoDB or test DB)
-4. Verify all scenarios from TDD-SCENARIOS.md pass
+1. Run `npm run test` in backend folder
+2. Verify 100% pass rate for all backend tests
+3. Review any edge cases not covered
+4. Agent `be--ts-unit-test-scripter` adds missing tests if needed
 
 ---
 
-### 4.2 Frontend Integration Tests
+### 4.2 Frontend Unit Tests (HackerRank Tasks)
 
 **Agent:** `fe--unit-test-scripter`
 
-**Tasks:**
-1. Write component tests with React Testing Library
-2. Write hook tests
-3. Write context tests
-4. Mock API services
-5. Verify all scenarios from TDD-SCENARIOS.md pass
+**Objective:** Ensure task-graded tests pass for HackerRank assessment.
+
+**CRITICAL Test Files (HackerRank Graded):**
+
+| Test File | TDD-SCENARIOS Section | Scenario Count |
+|-----------|----------------------|----------------|
+| `__tests__/task1/usePlaylistOperations.test.ts` | Section 8 | 8 |
+| `__tests__/task2/playerReducer.test.ts` | Section 7 | 45+ |
+| `__tests__/task3/useSearch.test.ts` | Section 10 | 8 |
+| `__tests__/task3/search.service.test.ts` | Section 6 | 4 |
+
+**Verification Commands:**
+```bash
+npm run test:task1  # Playlist operations
+npm run test:task2  # Player controls
+npm run test:task3  # Search functionality
+```
 
 ---
 
-### 4.3 E2E Testing (Optional)
+### 4.3 Frontend Unit Tests (Non-Task)
 
-**Tool:** Playwright
+**Agent:** `fe--unit-test-scripter`
+
+**Objective:** Ensure supporting hooks and utilities are properly tested.
+
+**Test Files & Scenarios:**
+
+| Test File | TDD-SCENARIOS Section | Scenario Count |
+|-----------|----------------------|----------------|
+| `frontend/__tests__/others/auth.context.test.tsx` | Section 11 | 8 |
+| `frontend/__tests__/others/useDebounce.test.ts` | Section 11 | 3 |
+| `frontend/__tests__/others/useRecentlyPlayed.test.ts` | Section 9 | 7 |
+| `frontend/__tests__/others/useLocalStorage.test.ts` | Section 13 | 14 |
+| `frontend/__tests__/others/useToast.test.tsx` | Section 14 | 8 |
+| `frontend/__tests__/others/formatters.test.ts` | Section 12 | 4 |
+| `frontend/__tests__/others/playerReducer.test.ts` | Section 7 (dev copy) | 45+ |
+
+**Tasks:**
+1. Run all frontend tests: `cd frontend && npm run test`
+2. Verify 100% pass rate
+3. Agent `fe--unit-test-scripter` adds missing tests if needed
+
+---
+
+### 4.4 Post-Implementation Component Tests (Mandatory)
+
+**Agent:** `fe--unit-test-scripter`
+
+**Objective:** Add interaction tests for key components.
+
+**Suggested Test Files (Create if needed):**
+- `frontend/__tests__/others/layout.test.tsx` - Sidebar toggle, PlayerBar controls
+- `frontend/__tests__/others/components.test.tsx` - TrackCard interactions
+
+**Priority:** HIGH
+
+---
+
+### 4.5 E2E Testing (Playwright)
+
+**Tool:** Playwright MCP
+
+**Objective:** Visual verification and user flow testing.
 
 **Flows to Test:**
 1. User registration and login
@@ -804,6 +889,11 @@ npm run test          # Runs all tests (tasks + others)
 3. Create and manage playlists
 4. Search functionality
 5. Queue management
+
+**Comparison Steps:**
+1. Start MENN app on localhost:3000
+2. Start MERN app on localhost:4000
+3. Compare side-by-side using Playwright screenshots
 
 **⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 5.**
 

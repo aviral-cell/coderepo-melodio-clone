@@ -10,6 +10,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { usePlaylistRefresh } from "@/shared/contexts/PlaylistContext";
 import { useToast } from "@/shared/hooks/useToast";
 import { playlistsService } from "@/shared/services/playlist.service";
 import type { Playlist } from "@/shared/types";
@@ -29,6 +30,7 @@ export function CreatePlaylistDialog({
 	const [description, setDescription] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { addToast } = useToast();
+	const { triggerRefresh } = usePlaylistRefresh();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -54,6 +56,7 @@ export function CreatePlaylistDialog({
 				message: `"${playlist.name}" has been created successfully`,
 			});
 
+			triggerRefresh();
 			setName("");
 			setDescription("");
 			onOpenChange(false);

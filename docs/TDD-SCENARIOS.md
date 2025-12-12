@@ -29,10 +29,13 @@ spotify-mern-app/
 │   ├── artists.service.test.ts
 │   └── playlists.service.test.ts
 ├── frontend/__tests__/others/        # Non-task frontend tests
-│   ├── auth.context.test.ts
+│   ├── auth.context.test.tsx
+│   ├── formatters.test.ts
+│   ├── playerReducer.test.ts         # Duplicate for dev testing
 │   ├── useDebounce.test.ts
+│   ├── useLocalStorage.test.ts
 │   ├── useRecentlyPlayed.test.ts
-│   └── formatters.test.ts
+│   └── useToast.test.tsx
 ```
 
 ### Task to Scenario Mapping
@@ -43,7 +46,7 @@ spotify-mern-app/
 | `__tests__/task2/` | Section 7 (Player Reducer) |
 | `__tests__/task3/` | Section 6 (Search Service) + Section 10 (useSearch) |
 | `backend/__tests__/others/` | Sections 1-5 (Auth, Tracks, Albums, Artists, Playlists) |
-| `frontend/__tests__/others/` | Sections 9, 11 (useRecentlyPlayed, useDebounce) |
+| `frontend/__tests__/others/` | Sections 9, 11-14 (useRecentlyPlayed, useDebounce, Playlist API, useLocalStorage, useToast) |
 
 ### Selector Strategy
 - **Primary selector:** `data-testid` attributes
@@ -1207,20 +1210,180 @@ npm run test         # All tests (tasks + others)
 
 ---
 
+## 13. useLocalStorage Hook Tests
+
+**Test Location:** `frontend/__tests__/others/useLocalStorage.test.ts`
+
+### 13.1 Initial State
+
+#### Scenario: Returns initial value when localStorage is empty
+- **Given:** localStorage has no value for "test-key"
+- **When:** useLocalStorage("test-key", "default") is called
+- **Then:** Returns "default"
+
+#### Scenario: Returns stored value when localStorage has data
+- **Given:** localStorage has "stored-value" for "test-key"
+- **When:** useLocalStorage("test-key", "default") is called
+- **Then:** Returns "stored-value"
+
+#### Scenario: Handles object values from localStorage
+- **Given:** localStorage has serialized object { name: "test", count: 42 }
+- **When:** Hook reads the value
+- **Then:** Returns parsed object with correct properties
+
+#### Scenario: Handles array values from localStorage
+- **Given:** localStorage has serialized array [1, 2, 3]
+- **When:** Hook reads the value
+- **Then:** Returns parsed array
+
+---
+
+### 13.2 setValue
+
+#### Scenario: Updates state and localStorage
+- **Given:** Initial value "initial"
+- **When:** setValue("updated") is called
+- **Then:** State becomes "updated"
+- **And:** localStorage contains "updated"
+
+#### Scenario: Handles function updater
+- **Given:** Initial value 0
+- **When:** setValue((prev) => prev + 1) is called
+- **Then:** State becomes 1
+
+#### Scenario: Handles object updates
+- **Given:** Initial value { count: 0 }
+- **When:** setValue({ count: 10 }) is called
+- **Then:** State and localStorage both contain { count: 10 }
+
+---
+
+### 13.3 Error Handling
+
+#### Scenario: Returns initial value when localStorage has invalid JSON
+- **Given:** localStorage has "invalid-json{" for key
+- **When:** Hook reads the value
+- **Then:** Returns initial value (graceful fallback)
+
+#### Scenario: Handles localStorage getItem throwing
+- **Given:** localStorage.getItem throws QuotaExceeded error
+- **When:** Hook tries to read
+- **Then:** Returns initial value (graceful fallback)
+
+#### Scenario: Handles localStorage setItem throwing
+- **Given:** localStorage.setItem throws QuotaExceeded error
+- **When:** setValue is called
+- **Then:** State still updates (in-memory)
+- **And:** No error thrown to user
+
+---
+
+### 13.4 Cross-tab Synchronization
+
+#### Scenario: Updates state when storage event fires
+- **Given:** Hook has value "initial"
+- **When:** Storage event fires with newValue "from-other-tab"
+- **Then:** State becomes "from-other-tab"
+
+#### Scenario: Ignores storage events for different keys
+- **Given:** Hook uses key "my-key"
+- **When:** Storage event fires for key "other-key"
+- **Then:** State unchanged
+
+#### Scenario: Resets to initial value when storage is cleared
+- **Given:** Hook has stored value
+- **When:** Storage event fires with newValue null
+- **Then:** State resets to initial value
+
+---
+
+### 13.5 Cleanup
+
+#### Scenario: Removes storage event listener on unmount
+- **Given:** Hook is mounted
+- **When:** Component unmounts
+- **Then:** removeEventListener called for "storage" event
+
+---
+
+## 14. useToast Hook Tests
+
+**Test Location:** `frontend/__tests__/others/useToast.test.tsx`
+
+### 14.1 addToast
+
+#### Scenario: Adds a toast to the list
+- **Given:** Empty toast list
+- **When:** addToast({ message: "Test", type: "info" })
+- **Then:** toasts array has 1 item
+- **And:** Toast has correct message and type
+
+#### Scenario: Generates unique IDs for toasts
+- **Given:** Empty toast list
+- **When:** Two toasts are added
+- **Then:** Each toast has unique ID
+
+#### Scenario: Supports different toast types
+- **Given:** Empty toast list
+- **When:** Toasts with types "success", "error", "warning", "info" are added
+- **Then:** Each toast has correct type property
+
+---
+
+### 14.2 removeToast
+
+#### Scenario: Removes a toast by ID
+- **Given:** Toast list has 1 toast with known ID
+- **When:** removeToast(id) is called
+- **Then:** toasts array is empty
+
+#### Scenario: Only removes the specified toast
+- **Given:** Toast list has 3 toasts
+- **When:** removeToast(middleToastId) is called
+- **Then:** toasts array has 2 toasts
+- **And:** Middle toast is not in array
+
+---
+
+### 14.3 Auto-dismiss
+
+#### Scenario: Auto-dismisses toasts after duration
+- **Given:** Toast added with duration 3000ms
+- **When:** 3000ms passes
+- **Then:** Toast is automatically removed
+
+#### Scenario: Uses default duration if not specified
+- **Given:** Toast added without duration
+- **When:** 5000ms (default) passes
+- **Then:** Toast is automatically removed
+
+---
+
+### 14.4 Error Handling
+
+#### Scenario: Throws when used outside ToastProvider
+- **Given:** No ToastProvider wrapper
+- **When:** useToast() is called
+- **Then:** Throws "useToast must be used within a ToastProvider"
+
+---
+
 ## Summary
 
-| Area | Scenario Count |
-|------|----------------|
-| Auth Service | 15 |
-| Tracks Service | 15 |
-| Albums Service | 8 |
-| Artists Service | 6 |
-| Playlists Service | 28 |
-| Search Service | 4 |
-| Player Reducer | 45+ |
-| usePlaylistOperations | 8 |
-| useRecentlyPlayed | 7 |
-| useSearch | 8 |
-| useDebounce | 3 |
-| Playlist Service API | 4 |
-| **Total** | **150+** |
+| Area | Scenario Count | Test Location |
+|------|----------------|---------------|
+| Auth Service | 15 | `backend/__tests__/others/auth.service.test.ts` |
+| Tracks Service | 15 | `backend/__tests__/others/tracks.service.test.ts` |
+| Albums Service | 8 | `backend/__tests__/others/albums.service.test.ts` |
+| Artists Service | 6 | `backend/__tests__/others/artists.service.test.ts` |
+| Playlists Service | 28 | `backend/__tests__/others/playlists.service.test.ts` |
+| Search Service | 4 | `__tests__/task3/search.service.test.ts` |
+| Player Reducer | 45+ | `__tests__/task2/playerReducer.test.ts` |
+| usePlaylistOperations | 8 | `__tests__/task1/usePlaylistOperations.test.ts` |
+| useRecentlyPlayed | 7 | `frontend/__tests__/others/useRecentlyPlayed.test.ts` |
+| useSearch | 8 | `__tests__/task3/useSearch.test.ts` |
+| useDebounce | 3 | `frontend/__tests__/others/useDebounce.test.ts` |
+| Playlist Service API | 4 | `frontend/__tests__/others/` |
+| useLocalStorage | 14 | `frontend/__tests__/others/useLocalStorage.test.ts` |
+| useToast | 8 | `frontend/__tests__/others/useToast.test.tsx` |
+| **Total** | **175+** |

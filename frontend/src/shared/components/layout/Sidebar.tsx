@@ -16,6 +16,7 @@ import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { CreatePlaylistDialog } from "@/shared/components/common/CreatePlaylistDialog";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { usePlaylistRefresh } from "@/shared/contexts/PlaylistContext";
 import { useSidebar } from "@/shared/contexts/SidebarContext";
 import { playlistsService } from "@/shared/services/playlist.service";
 import type { Playlist } from "@/shared/types";
@@ -30,6 +31,7 @@ export function Sidebar() {
 	const pathname = location.pathname;
 	const { isAuthenticated } = useAuth();
 	const { isCollapsed, toggleSidebar } = useSidebar();
+	const { refreshTrigger } = usePlaylistRefresh();
 
 	const [playlists, setPlaylists] = useState<Playlist[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +55,7 @@ export function Sidebar() {
 
 	useEffect(() => {
 		fetchPlaylists();
-	}, [fetchPlaylists]);
+	}, [fetchPlaylists, refreshTrigger]);
 
 	const handlePlaylistCreated = (newPlaylist: Playlist) => {
 		setPlaylists((prev) => [newPlaylist, ...prev]);
@@ -221,8 +223,8 @@ export function Sidebar() {
 					</ScrollArea>
 				</div>
 
-				{/* Collapse button at bottom-right */}
-				<div className="mt-auto p-3">
+				{/* Collapse button at bottom-right - hidden as expand/collapse works without it */}
+				<div className="mt-auto p-3 hidden">
 					<div
 						className={cn("flex", isCollapsed ? "justify-center" : "justify-end")}
 					>
