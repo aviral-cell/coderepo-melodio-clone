@@ -204,5 +204,45 @@ describe("useSearch", () => {
 				expect(result.current.tracks[0]._id).toBe("2");
 			});
 		});
+
+		it("should cancel previous request when query changes rapidly", async () => {
+			let resolveFirst: (value: { tracks: TrackWithPopulated[] }) => void;
+			const firstPromise = new Promise<{ tracks: TrackWithPopulated[] }>(
+				(resolve) => {
+					resolveFirst = resolve;
+				}
+			);
+
+			mockSearchService.search
+				.mockReturnValueOnce(firstPromise)
+				.mockResolvedValueOnce({ tracks: [createMockTrack("new")] });
+
+			const { result, rerender } = renderHook(
+				({ query }) => useSearch(query),
+				{ initialProps: { query: "first" } }
+			);
+
+			// First request is pending
+			await waitFor(() => {
+				expect(result.current.isLoading).toBe(true);
+			});
+
+			// Change query before first request completes
+			mockUseDebounce.mockReturnValue("second");
+			rerender({ query: "second" });
+
+			// Now resolve the first request (after query changed)
+			act(() => {
+				resolveFirst!({ tracks: [createMockTrack("old")] });
+			});
+
+			// Wait for second request to complete
+			await waitFor(() => {
+				expect(result.current.isLoading).toBe(false);
+			});
+
+			// Should have results from second request, not first (cancelled)
+			expect(result.current.tracks[0]._id).toBe("new");
+		});
 	});
 });

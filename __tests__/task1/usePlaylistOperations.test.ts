@@ -159,6 +159,56 @@ describe("usePlaylistOperations", () => {
 				expect(result.current.isReordering).toBe(false);
 			});
 		});
+
+		it("should handle reorder from first to last position", async () => {
+			const trackA = createMockTrack("A");
+			const trackB = createMockTrack("B");
+			const trackC = createMockTrack("C");
+			const trackD = createMockTrack("D");
+			const initialTracks = [trackA, trackB, trackC, trackD];
+
+			const setPlaylist = jest.fn();
+			mockPlaylistService.reorderTracks.mockResolvedValueOnce({});
+
+			const { result } = renderHook(() =>
+				usePlaylistOperations("playlist-123", initialTracks, setPlaylist)
+			);
+
+			await act(async () => {
+				await result.current.reorderTracks(0, 3);
+			});
+
+			expect(setPlaylist).toHaveBeenCalledWith([trackB, trackC, trackD, trackA]);
+			expect(mockPlaylistService.reorderTracks).toHaveBeenCalledWith(
+				"playlist-123",
+				["B", "C", "D", "A"]
+			);
+		});
+
+		it("should handle reorder from last to first position", async () => {
+			const trackA = createMockTrack("A");
+			const trackB = createMockTrack("B");
+			const trackC = createMockTrack("C");
+			const trackD = createMockTrack("D");
+			const initialTracks = [trackA, trackB, trackC, trackD];
+
+			const setPlaylist = jest.fn();
+			mockPlaylistService.reorderTracks.mockResolvedValueOnce({});
+
+			const { result } = renderHook(() =>
+				usePlaylistOperations("playlist-123", initialTracks, setPlaylist)
+			);
+
+			await act(async () => {
+				await result.current.reorderTracks(3, 0);
+			});
+
+			expect(setPlaylist).toHaveBeenCalledWith([trackD, trackA, trackB, trackC]);
+			expect(mockPlaylistService.reorderTracks).toHaveBeenCalledWith(
+				"playlist-123",
+				["D", "A", "B", "C"]
+			);
+		});
 	});
 
 	describe("removeTrack", () => {
@@ -248,6 +298,52 @@ describe("usePlaylistOperations", () => {
 			await waitFor(() => {
 				expect(result.current.isRemoving).toBe(false);
 			});
+		});
+
+		it("should handle removing non-existent track gracefully", async () => {
+			const trackA = createMockTrack("A");
+			const trackB = createMockTrack("B");
+			const initialTracks = [trackA, trackB];
+
+			const setPlaylist = jest.fn();
+			mockPlaylistService.removeTrack.mockResolvedValueOnce({});
+
+			const { result } = renderHook(() =>
+				usePlaylistOperations("playlist-123", initialTracks, setPlaylist)
+			);
+
+			await act(async () => {
+				await result.current.removeTrack("NON_EXISTENT");
+			});
+
+			// Should still call setPlaylist with filtered result (same array since no match)
+			expect(setPlaylist).toHaveBeenCalledWith([trackA, trackB]);
+			expect(mockPlaylistService.removeTrack).toHaveBeenCalledWith(
+				"playlist-123",
+				"NON_EXISTENT"
+			);
+		});
+
+		it("should handle removing the last remaining track", async () => {
+			const trackA = createMockTrack("A");
+			const initialTracks = [trackA];
+
+			const setPlaylist = jest.fn();
+			mockPlaylistService.removeTrack.mockResolvedValueOnce({});
+
+			const { result } = renderHook(() =>
+				usePlaylistOperations("playlist-123", initialTracks, setPlaylist)
+			);
+
+			await act(async () => {
+				await result.current.removeTrack("A");
+			});
+
+			expect(setPlaylist).toHaveBeenCalledWith([]);
+			expect(mockPlaylistService.removeTrack).toHaveBeenCalledWith(
+				"playlist-123",
+				"A"
+			);
 		});
 	});
 });

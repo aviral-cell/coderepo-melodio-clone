@@ -411,6 +411,57 @@ describe("playerReducer", () => {
 			expect(newState.elapsedSeconds).toBe(0);
 			expect(newState.isPlaying).toBe(true);
 		});
+
+		it("should NOT increment elapsedSeconds when paused", () => {
+			const track = createMockTrack("1", "Track 1", 180);
+			const state: PlayerState = {
+				...initialState,
+				currentTrack: track,
+				queue: [track],
+				queueIndex: 0,
+				isPlaying: false,
+				elapsedSeconds: 50,
+			};
+
+			const newState = playerReducer(state, { type: "TICK" });
+
+			expect(newState.elapsedSeconds).toBe(50);
+			expect(newState.isPlaying).toBe(false);
+		});
+
+		it("should return unchanged state when no currentTrack", () => {
+			const state: PlayerState = {
+				...initialState,
+				currentTrack: null,
+				queue: [],
+				queueIndex: 0,
+				isPlaying: true,
+				elapsedSeconds: 0,
+			};
+
+			const newState = playerReducer(state, { type: "TICK" });
+
+			expect(newState).toEqual(state);
+			expect(newState.elapsedSeconds).toBe(0);
+		});
+
+		it("should stop playback at end of queue with repeatMode 'off'", () => {
+			const track1 = createMockTrack("1", "Track 1", 180);
+			const state: PlayerState = {
+				...initialState,
+				currentTrack: track1,
+				queue: [track1],
+				queueIndex: 0,
+				isPlaying: true,
+				elapsedSeconds: 179,
+				repeatMode: "off",
+			};
+
+			const newState = playerReducer(state, { type: "TICK" });
+
+			expect(newState.isPlaying).toBe(false);
+			expect(newState.elapsedSeconds).toBe(0);
+		});
 	});
 
 	describe("TOGGLE_SHUFFLE with TICK integration", () => {
