@@ -8,10 +8,10 @@ export interface PopulatedArtist {
 }
 
 export interface AlbumResponse {
-	id: string;
+	_id: string;
 	title: string;
 	artist: {
-		id: string;
+		_id: string;
 		name: string;
 		imageUrl?: string;
 	};
@@ -39,10 +39,10 @@ function transformAlbum(album: LeanAlbumWithArtist): AlbumResponse {
 	const artist = album.artist_id;
 
 	return {
-		id: album._id.toString(),
+		_id: album._id.toString(),
 		title: album.title,
 		artist: {
-			id: artist?._id?.toString() ?? "",
+			_id: artist?._id?.toString() ?? "",
 			name: artist?.name ?? "",
 			imageUrl: artist?.image_url,
 		},

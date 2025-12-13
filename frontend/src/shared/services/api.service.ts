@@ -3,16 +3,8 @@ import { ApiResponse } from "../types";
 const AUTH_TOKEN_KEY = "accessToken";
 
 function getApiBaseUrl(): string {
-	if (import.meta.env.VITE_API_URL) {
-		return import.meta.env.VITE_API_URL;
-	}
-
-	if (import.meta.env.DEV) {
-		return "";
-	}
-
 	const { protocol, host } = window.location;
-	return `${protocol}//${host.replace("4000", "6000")}`;
+	return `${protocol}//${host.replace("4000", "6001")}`;
 }
 
 class ApiService {
