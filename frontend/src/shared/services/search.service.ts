@@ -8,13 +8,11 @@ export interface SearchResult {
 
 export const searchService = {
 	async search(query: string): Promise<SearchResult> {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const response = await apiService.get<any>(
-			`/api/search?q=${encodeURIComponent(query)}`
+		const response = await apiService.get<TrackWithPopulated[]>(
+			`/api/tracks/search?q=${encodeURIComponent(query)}`
 		);
 		return {
-			...response,
-			tracks: response.tracks ? normalizeTracks(response.tracks) as TrackWithPopulated[] : [],
+			tracks: Array.isArray(response) ? normalizeTracks(response) as TrackWithPopulated[] : [],
 		};
 	},
 };

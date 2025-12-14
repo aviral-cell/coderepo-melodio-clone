@@ -3,9 +3,6 @@ import type { Track, PaginatedResponse } from "../types";
 import type { TrackWithPopulated } from "../types/player.types";
 import { normalizeTrack, normalizeTracks } from "../utils";
 
-/**
- * Query parameters for fetching tracks
- */
 export interface TrackQueryParams {
 	page?: number;
 	limit?: number;
@@ -14,9 +11,6 @@ export interface TrackQueryParams {
 	albumId?: string;
 }
 
-/**
- * Build URL search params from query object
- */
 function buildSearchParams(params?: TrackQueryParams): string {
 	if (!params) return "";
 
@@ -43,15 +37,10 @@ function buildSearchParams(params?: TrackQueryParams): string {
 }
 
 export const tracksService = {
-	/**
-	 * Get paginated list of tracks
-	 * Optional filters: genre, artistId, albumId
-	 */
 	async getAll(
 		params?: TrackQueryParams,
 	): Promise<PaginatedResponse<TrackWithPopulated>> {
 		const queryString = buildSearchParams(params);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response = await apiService.get<PaginatedResponse<any>>(
 			`/api/tracks${queryString}`,
 		);
@@ -61,18 +50,11 @@ export const tracksService = {
 		};
 	},
 
-	/**
-	 * Get a single track by ID with populated artist and album
-	 */
 	async getById(id: string): Promise<TrackWithPopulated> {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response = await apiService.get<any>(`/api/tracks/${id}`);
 		return normalizeTrack(response) as TrackWithPopulated;
 	},
 
-	/**
-	 * Get tracks by genre
-	 */
 	async getByGenre(
 		genre: string,
 		params?: Omit<TrackQueryParams, "genre">,
@@ -80,29 +62,19 @@ export const tracksService = {
 		return this.getAll({ ...params, genre });
 	},
 
-	/**
-	 * Get recommended tracks (top played tracks)
-	 */
 	async getRecommended(
 		limit: number = 10,
 	): Promise<PaginatedResponse<TrackWithPopulated>> {
 		return this.getAll({ limit });
 	},
 
-	/**
-	 * Search tracks by title prefix or genre
-	 */
 	async search(query: string): Promise<TrackWithPopulated[]> {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response = await apiService.get<any[]>(
 			`/api/tracks/search?q=${encodeURIComponent(query)}`,
 		);
 		return normalizeTracks(response) as TrackWithPopulated[];
 	},
 
-	/**
-	 * Log a track play (increment play count)
-	 */
 	async logPlay(id: string): Promise<Track> {
 		return apiService.post<Track>(`/api/tracks/${id}/play`);
 	},

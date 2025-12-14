@@ -12,10 +12,6 @@ import type { TrackWithPopulated } from "@/shared/types/player.types";
 import type { AlbumWithPopulated } from "@/shared/services/albums.service";
 import type { Playlist } from "@/shared/types";
 
-/**
- * HomePage - Main landing page for authenticated users.
- * Displays recommended tracks, recently played, albums, tracks, and playlists.
- */
 export default function HomePage(): JSX.Element {
 	const { addToast } = useToast();
 	const { recentTracks } = useRecentlyPlayed();
@@ -34,7 +30,6 @@ export default function HomePage(): JSX.Element {
 				const response = await tracksService.getAll({ page: 1, limit: 30 });
 				const allTracks = response.items;
 				setTracks(allTracks.slice(0, 20));
-				// Shuffle for recommended - simple Fisher-Yates shuffle
 				const shuffled = [...allTracks].sort(() => Math.random() - 0.5);
 				setRecommendedTracks(shuffled.slice(0, 10));
 			} catch (error) {
@@ -91,7 +86,6 @@ export default function HomePage(): JSX.Element {
 		<div className="p-8">
 			<h1 className="mb-6 text-3xl font-bold text-white">{getGreeting()}</h1>
 
-			{/* Recommended for you Section */}
 			<section className="mb-8">
 				<h2 className="mb-4 text-xl font-bold text-white">Recommended for you</h2>
 				{isLoadingTracks ? (
@@ -117,7 +111,6 @@ export default function HomePage(): JSX.Element {
 				)}
 			</section>
 
-			{/* Recently Played Section */}
 			{recentTracks.length > 0 && (
 				<section className="mb-8">
 					<h2 className="mb-4 text-xl font-bold text-white">Recently played</h2>
@@ -129,7 +122,6 @@ export default function HomePage(): JSX.Element {
 				</section>
 			)}
 
-			{/* Browse Albums Section */}
 			<section className="mb-8">
 				<h2 className="mb-4 text-xl font-bold text-white">Browse Albums</h2>
 				{isLoadingAlbums ? (
@@ -155,7 +147,6 @@ export default function HomePage(): JSX.Element {
 				)}
 			</section>
 
-			{/* Browse Tracks Section */}
 			<section className="mb-8">
 				<h2 className="mb-4 text-xl font-bold text-white">Browse Tracks</h2>
 				{isLoadingTracks ? (
@@ -181,7 +172,6 @@ export default function HomePage(): JSX.Element {
 				)}
 			</section>
 
-			{/* Your Playlists Section */}
 			<section className="mb-8">
 				<h2 className="mb-4 text-xl font-bold text-white">Your Playlists</h2>
 				{isLoadingPlaylists ? (

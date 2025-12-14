@@ -53,10 +53,8 @@ const playlistSchema = new Schema<IPlaylistDocument>(
 	},
 );
 
-// Ascending index on owner_id for filtering user's playlists
 playlistSchema.index({ owner_id: 1 }, { name: "owner_id_asc_idx" });
 
-// Descending index on updated_at for sorting
 playlistSchema.index({ updated_at: -1 }, { name: "updated_at_desc_idx" });
 
 export const Playlist: Model<IPlaylistDocument> =

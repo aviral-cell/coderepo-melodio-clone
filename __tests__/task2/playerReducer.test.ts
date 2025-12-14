@@ -1,14 +1,11 @@
 /**
  * @jest-environment jsdom
  */
+
 /**
- * @file playerReducer.test.ts
- * @description Unit tests for the player reducer that manages music playback state.
- *
- * Test Coverage:
- * - TOGGLE_SHUFFLE: Queue randomization with current track preservation at index 0
- * - TOGGLE_REPEAT: Cycling through 'off' -> 'all' -> 'one' -> 'off'
- * - TICK: Progress tracking and auto-advance based on repeat mode
+ * INTRO: Player Reducer Unit Tests
+ * SCENARIO: Testing TOGGLE_SHUFFLE, TOGGLE_REPEAT, and TICK actions
+ * EXPECTATION: Shuffle randomizes queue, repeat cycles through modes, tick advances playback
  */
 import { playerReducer, initialState } from "@/shared/contexts/playerReducer";
 import type { PlayerState } from "@/shared/types/player.types";

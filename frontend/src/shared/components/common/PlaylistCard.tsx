@@ -9,11 +9,6 @@ interface PlaylistCardProps {
 	className?: string;
 }
 
-/**
- * Playlist card component with navigation to playlist detail page
- * - Card click redirects to playlist detail page
- * - Shows playlist name and track count
- */
 export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 	const navigate = useNavigate();
 
@@ -39,7 +34,6 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 				className
 			)}
 		>
-			{/* Playlist Cover */}
 			<div className="relative mb-4 aspect-square overflow-hidden rounded-md shadow-lg">
 				{playlist.coverImageUrl ? (
 					<img
@@ -54,7 +48,6 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 				)}
 			</div>
 
-			{/* Playlist Info */}
 			<div className="min-w-0">
 				<h3 className="truncate text-base font-semibold text-white">
 					{playlist.name}

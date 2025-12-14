@@ -4,10 +4,6 @@
 
 /**
  * INTRO: usePlaylistOperations Hook Tests
- *
- * Tests for the usePlaylistOperations hook which provides playlist operations
- * with optimistic updates and rollback on failure.
- *
  * SCENARIO: Testing reorder/remove operations with optimistic UI updates
  * EXPECTATION: UI updates immediately, rolls back on API failure
  */

@@ -24,10 +24,6 @@ const genres: Genre[] = [
 	{ name: "Hip-Hop", slug: "hip-hop", color: "#E61E32", image: "https://picsum.photos/seed/hiphop-genre/200/200" },
 ];
 
-/**
- * GenrePage - Browse music by genre.
- * Displays genre cards with images, clicking filters tracks by genre.
- */
 export default function GenrePage(): JSX.Element {
 	const { addToast } = useToast();
 
@@ -71,7 +67,6 @@ export default function GenrePage(): JSX.Element {
 		<div className="p-8">
 			{selectedGenre ? (
 				<>
-					{/* Back Button and Genre Heading */}
 					<div className="mb-6">
 						<Button
 							variant="ghost"
@@ -86,7 +81,6 @@ export default function GenrePage(): JSX.Element {
 						</h1>
 					</div>
 
-					{/* Tracks Grid */}
 					{isLoading ? (
 						<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
 							{Array.from({ length: 10 }).map((_, index) => (
@@ -111,10 +105,8 @@ export default function GenrePage(): JSX.Element {
 				</>
 			) : (
 				<>
-					{/* Genre Browse Header */}
 					<h1 className="mb-6 text-3xl font-bold text-white">Browse by Genre</h1>
 
-					{/* Genre Cards Grid */}
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
 						{genres.map((genre) => (
 							<button
@@ -123,12 +115,10 @@ export default function GenrePage(): JSX.Element {
 								className="relative h-40 overflow-hidden rounded-lg transition-transform hover:scale-105"
 								style={{ backgroundColor: genre.color }}
 							>
-								{/* Genre Name */}
 								<span className="absolute left-4 top-4 text-2xl font-bold text-white">
 									{genre.name}
 								</span>
 
-								{/* Rotated Image */}
 								<div className="absolute -bottom-2 -right-4 h-24 w-24 rotate-[25deg] overflow-hidden rounded shadow-lg">
 									<img
 										src={genre.image}

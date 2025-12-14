@@ -2,26 +2,17 @@ import { apiService } from "./api.service";
 import type { Album, Artist, PaginatedResponse } from "../types";
 import type { TrackWithPopulated } from "../types/player.types";
 
-/**
- * Album with populated artist and tracks
- */
 export interface AlbumWithPopulated extends Omit<Album, "artistId" | "artist"> {
 	artistId: Pick<Artist, "_id" | "name" | "imageUrl">;
 	tracks?: TrackWithPopulated[];
 }
 
-/**
- * Query parameters for fetching albums
- */
 export interface AlbumQueryParams {
 	page?: number;
 	limit?: number;
 	artistId?: string;
 }
 
-/**
- * Build URL search params from query object
- */
 function buildSearchParams(params?: AlbumQueryParams): string {
 	if (!params) return "";
 
@@ -42,10 +33,6 @@ function buildSearchParams(params?: AlbumQueryParams): string {
 }
 
 export const albumsService = {
-	/**
-	 * Get paginated list of albums
-	 * Optional filter: artistId
-	 */
 	async getAll(
 		params?: AlbumQueryParams,
 	): Promise<PaginatedResponse<AlbumWithPopulated>> {
@@ -55,16 +42,10 @@ export const albumsService = {
 		);
 	},
 
-	/**
-	 * Get a single album by ID with populated artist and tracks
-	 */
 	async getById(id: string): Promise<AlbumWithPopulated> {
 		return apiService.get<AlbumWithPopulated>(`/api/albums/${id}`);
 	},
 
-	/**
-	 * Search albums by title
-	 */
 	async search(query: string): Promise<AlbumWithPopulated[]> {
 		return apiService.get<AlbumWithPopulated[]>(
 			`/api/albums/search?q=${encodeURIComponent(query)}`,
@@ -72,5 +53,4 @@ export const albumsService = {
 	},
 };
 
-// Backward compatibility alias
 export const albumService = albumsService;

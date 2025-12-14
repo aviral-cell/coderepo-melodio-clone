@@ -4,11 +4,8 @@
 
 /**
  * INTRO: useSearch Hook Tests
- *
- * Tests for the useSearch hook which provides search functionality with debouncing.
- *
- * SCENARIO: Testing search execution, debouncing, loading states, and error handling
- * EXPECTATION: Search uses debounced value, handles loading/error states correctly
+ * SCENARIO: Testing search with debouncing, loading states, and error handling
+ * EXPECTATION: Hook calls searchService with debounced query and manages state correctly
  */
 
 import { renderHook, waitFor, act } from "@testing-library/react";

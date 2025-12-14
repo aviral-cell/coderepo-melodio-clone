@@ -64,9 +64,8 @@ export function PlayerBar() {
 			: undefined;
 
 	return (
-		<footer className="fixed bottom-0 left-0 right-0 z-40 h-[90px] border-t border-melodio-light-gray bg-melodio-dark-gray px-4">
+		<footer className="fixed bottom-0 left-0 right-0 z-40 h-[120px] sm:h-[90px] border-t border-melodio-light-gray bg-melodio-dark-gray px-4">
 			<div className="flex h-full items-center justify-center sm:justify-between">
-				{/* Left: Track Info - hidden on mobile */}
 				<div className="hidden w-[30%] items-center gap-4 sm:flex">
 					{currentTrack && (
 						<>
@@ -95,8 +94,25 @@ export function PlayerBar() {
 					)}
 				</div>
 
-				{/* Center: Player Controls - full width on mobile, 40% on desktop */}
 				<div className="flex w-full flex-col items-center gap-2 sm:w-[40%]">
+					{currentTrack && (
+						<div className="flex sm:hidden items-center gap-2 w-full justify-center">
+							{albumCover ? (
+								<img
+									src={albumCover}
+									alt={currentTrack.title}
+									className="h-8 w-8 rounded flex-shrink-0"
+								/>
+							) : (
+								<div className="flex h-8 w-8 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
+									<ListMusic className="h-4 w-4 text-melodio-text-subdued" />
+								</div>
+							)}
+							<p className="truncate text-xs text-white max-w-[150px]">
+								{currentTrack.title}
+							</p>
+						</div>
+					)}
 					<div className="flex items-center gap-4">
 						<Button
 							variant="ghost"
@@ -109,7 +125,7 @@ export function PlayerBar() {
 							)}
 							onClick={toggleShuffle}
 						>
-							<Shuffle className="h-4 w-4" />
+							<Shuffle className="h-5 w-5" />
 						</Button>
 
 						<Button
@@ -128,9 +144,9 @@ export function PlayerBar() {
 							disabled={!currentTrack}
 						>
 							{isPlaying ? (
-								<Pause className="h-4 w-4" fill="black" />
+								<Pause className="h-5 w-5" fill="black" />
 							) : (
-								<Play className="h-4 w-4 pl-0.5" fill="black" />
+								<Play className="h-5 w-5 pl-0.5" fill="black" />
 							)}
 						</button>
 
@@ -155,14 +171,13 @@ export function PlayerBar() {
 							onClick={toggleRepeat}
 						>
 							{repeatMode === "one" ? (
-								<Repeat1 className="h-4 w-4" />
+								<Repeat1 className="h-5 w-5" />
 							) : (
-								<Repeat className="h-4 w-4" />
+								<Repeat className="h-5 w-5" />
 							)}
 						</Button>
 					</div>
 
-					{/* Progress Bar */}
 					<div className="flex w-full max-w-[500px] items-center gap-2">
 						<span className="w-10 text-right text-xs text-melodio-text-subdued">
 							{formatDuration(elapsedSeconds)}
@@ -182,7 +197,6 @@ export function PlayerBar() {
 					</div>
 				</div>
 
-				{/* Right: Volume & Queue - hidden on mobile */}
 				<div className="hidden w-[30%] items-center justify-end gap-4 sm:flex">
 					<Button
 						variant="ghost"
@@ -190,11 +204,11 @@ export function PlayerBar() {
 						className="h-8 w-8 text-melodio-text-subdued hover:text-white"
 						onClick={toggleQueue}
 					>
-						<ListMusic className="h-4 w-4" />
+						<ListMusic className="h-5 w-5" />
 					</Button>
 
 					<div className="flex items-center gap-2">
-						<Volume2 className="h-4 w-4 text-melodio-text-subdued" />
+						<Volume2 className="h-5 w-5 text-melodio-text-subdued" />
 						<Slider
 							value={[volume]}
 							max={100}

@@ -3,7 +3,7 @@
 	"configurations": [
 		{
 			"type": "node",
-			"name": "Debug Hackify Application",
+			"name": "Debug Melodio Application",
 			"request": "launch",
 			"runtimeExecutable": "npm",
 			"runtimeArgs": [

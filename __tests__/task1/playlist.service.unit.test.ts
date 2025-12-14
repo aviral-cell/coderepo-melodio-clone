@@ -3,21 +3,9 @@
  */
 
 /**
- * INTRO: Playlist Service Unit Tests (HackerRank Task 1 - Frontend)
- *
- * Tests the playlist.service.ts file to verify correct HTTP methods and request bodies.
- * These tests mock the apiService to verify the frontend service makes correct API calls.
- *
- * SCENARIO: Testing all playlist service methods
- * EXPECTATION:
- * - getAll should use GET method
- * - getById should use GET method
- * - create should use POST method with { name, description? } body
- * - update should use PATCH method with { name?, description? } body
- * - delete should use DELETE method
- * - reorderTracks should use PATCH method with { trackIds: [...] } body
- * - addTrack should use POST method with { trackId } body
- * - removeTrack should use DELETE method
+ * INTRO: Playlist Service Unit Tests
+ * SCENARIO: Testing all playlist service methods with correct HTTP methods and request bodies
+ * EXPECTATION: Each method uses appropriate HTTP verb and sends correct payload to API
  */
 
 const mockApiService = {

@@ -2,9 +2,6 @@ import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
 import { useToast, type Toast, type ToastType } from "@/shared/hooks/useToast";
 import { cn } from "@/lib/utils";
 
-/**
- * Get icon component based on toast type
- */
 function getToastIcon(type: ToastType) {
 	switch (type) {
 		case "success":
@@ -18,9 +15,6 @@ function getToastIcon(type: ToastType) {
 	}
 }
 
-/**
- * Get styles based on toast type
- */
 function getToastStyles(type: ToastType): string {
 	switch (type) {
 		case "success":
@@ -34,9 +28,6 @@ function getToastStyles(type: ToastType): string {
 	}
 }
 
-/**
- * Get icon color based on toast type
- */
 function getIconColor(type: ToastType): string {
 	switch (type) {
 		case "success":
@@ -50,9 +41,6 @@ function getIconColor(type: ToastType): string {
 	}
 }
 
-/**
- * Individual toast item component
- */
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 	const Icon = getToastIcon(toast.type);
 
@@ -80,10 +68,6 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 	);
 }
 
-/**
- * Toaster component - renders all active toasts
- * Must be placed inside ToastProvider
- */
 export function Toaster() {
 	const { toasts, removeToast } = useToast();
 

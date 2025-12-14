@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import path from "path";
 import { errorMiddleware, notFoundHandler } from "./shared/middleware/error.middleware.js";
 import { sanitizeBody } from "./shared/middleware/validation.middleware.js";
 import { authRoutes } from "./features/auth/auth.routes.js";
@@ -9,7 +10,13 @@ import { artistRoutes } from "./features/artists/artists.routes.js";
 import { albumRoutes } from "./features/albums/albums.routes.js";
 import { trackRoutes } from "./features/tracks/tracks.routes.js";
 import { playlistRoutes } from "./features/playlists/playlists.routes.js";
-import { searchRoutes } from "./features/search/search.routes.js";
+
+const getPublicDir = (): string => {
+	if (typeof __dirname !== "undefined") {
+		return path.join(__dirname, "../public");
+	}
+	return path.join(process.cwd(), "backend/public");
+};
 
 export function createApp(): Application {
 	const app: Application = express();
@@ -39,8 +46,11 @@ export function createApp(): Application {
 
 	app.use(sanitizeBody);
 
+	const publicDir = getPublicDir();
+	app.use(express.static(publicDir));
+
 	app.get("/", (_req: Request, res: Response) => {
-		res.send("<h1>API server is running</h1>");
+		res.sendFile(path.join(publicDir, "index.html"));
 	});
 
 	app.get("/api", (_req: Request, res: Response) => {
@@ -62,7 +72,6 @@ export function createApp(): Application {
 	app.use("/api/albums", albumRoutes);
 	app.use("/api/tracks", trackRoutes);
 	app.use("/api/playlists", playlistRoutes);
-	app.use("/api/search", searchRoutes);
 
 	app.use(notFoundHandler);
 

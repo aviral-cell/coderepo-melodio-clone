@@ -19,11 +19,6 @@ interface SidebarProviderProps {
 	children: ReactNode;
 }
 
-/**
- * SidebarProvider manages the sidebar collapsed/expanded state.
- * - Desktop (>= 1024px): Expanded by default
- * - Mobile (< 1024px): Collapsed by default
- */
 export function SidebarProvider({ children }: SidebarProviderProps) {
 	const [isCollapsed, setIsCollapsed] = useState(false);
 

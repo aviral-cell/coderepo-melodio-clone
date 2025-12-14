@@ -23,7 +23,6 @@ import { usePlayer } from "@/shared/contexts/PlayerContext";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 import { formatDuration } from "@/shared/utils";
 
-// Sortable queue item component
 interface SortableQueueItemProps {
 	track: TrackWithPopulated;
 	index: number;
@@ -73,7 +72,6 @@ function SortableQueueItem({
 					: "hover:bg-melodio-light-gray/50"
 			)}
 		>
-			{/* Drag Handle */}
 			<button
 				{...attributes}
 				{...listeners}
@@ -83,7 +81,6 @@ function SortableQueueItem({
 				<GripVertical className="h-4 w-4" />
 			</button>
 
-			{/* Track Info */}
 			<button
 				onClick={onPlay}
 				className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded"
@@ -141,7 +138,6 @@ function SortableQueueItem({
 				{formatDuration(track.durationInSeconds)}
 			</span>
 
-			{/* Remove Button */}
 			{!isCurrentTrack && (
 				<Button
 					variant="ghost"
@@ -208,8 +204,7 @@ export function QueuePanel() {
 	}
 
 	return (
-		<div className="fixed bottom-[90px] right-0 z-50 flex h-[calc(100vh-90px)] w-80 flex-col border-l border-melodio-light-gray bg-melodio-dark-gray">
-			{/* Header */}
+		<div className="fixed bottom-[120px] sm:bottom-[90px] right-0 z-50 flex h-[calc(100vh-120px)] sm:h-[calc(100vh-90px)] w-80 flex-col border-l border-melodio-light-gray bg-melodio-dark-gray">
 			<div className="flex items-center justify-between border-b border-melodio-light-gray p-4">
 				<h2 className="text-lg font-bold text-white">Queue</h2>
 				<Button
@@ -225,7 +220,6 @@ export function QueuePanel() {
 
 			<ScrollArea className="flex-1">
 				<div className="p-4">
-					{/* Now Playing */}
 					{currentTrack && (
 						<section className="mb-6">
 							<h3 className="mb-2 text-sm font-semibold text-white">
@@ -281,7 +275,6 @@ export function QueuePanel() {
 						</section>
 					)}
 
-					{/* Upcoming */}
 					{upcomingTracks.length > 0 && (
 						<section>
 							<div className="mb-2 flex items-center justify-between">
@@ -328,7 +321,6 @@ export function QueuePanel() {
 						</section>
 					)}
 
-					{/* Empty state */}
 					{!currentTrack && queue.length === 0 && (
 						<div className="py-8 text-center">
 							<Music className="mx-auto mb-4 h-12 w-12 text-melodio-text-subdued" />

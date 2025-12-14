@@ -7,9 +7,6 @@ import { initConfig, getConfig } from "./shared/config/index.js";
 
 const config = initConfig();
 
-/**
- * Connect to MongoDB database
- */
 async function connectDatabase(): Promise<void> {
 	try {
 		console.log("Connecting to MongoDB...");
@@ -21,9 +18,6 @@ async function connectDatabase(): Promise<void> {
 	}
 }
 
-/**
- * Graceful shutdown handler
- */
 async function gracefulShutdown(signal: string): Promise<void> {
 	console.log(`\n${signal} received. Shutting down gracefully...`);
 
@@ -37,9 +31,6 @@ async function gracefulShutdown(signal: string): Promise<void> {
 	}
 }
 
-/**
- * Start the server
- */
 async function startServer(): Promise<void> {
 	await connectDatabase();
 

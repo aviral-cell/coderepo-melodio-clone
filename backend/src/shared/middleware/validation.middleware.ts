@@ -2,12 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { validationResult, ValidationChain } from "express-validator";
 import { isValidObjectId, sendError } from "../utils/index.js";
 
-/**
- * Middleware to run express-validator validations and return errors
- */
 export function validate(validations: ValidationChain[]) {
 	return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-		// Run all validations
 		await Promise.all(validations.map((validation) => validation.run(req)));
 
 		const errors = validationResult(req);
@@ -25,9 +21,6 @@ export function validate(validations: ValidationChain[]) {
 	};
 }
 
-/**
- * Middleware to validate MongoDB ObjectId in request params
- */
 export function validateObjectId(paramName = "id") {
 	return (req: Request, res: Response, next: NextFunction): void => {
 		const id = req.params[paramName];
@@ -46,9 +39,6 @@ export function validateObjectId(paramName = "id") {
 	};
 }
 
-/**
- * Middleware to validate multiple ObjectIds in request params
- */
 export function validateObjectIds(...paramNames: string[]) {
 	return (req: Request, res: Response, next: NextFunction): void => {
 		for (const paramName of paramNames) {
@@ -69,9 +59,6 @@ export function validateObjectIds(...paramNames: string[]) {
 	};
 }
 
-/**
- * Middleware to sanitize request body by trimming strings
- */
 export function sanitizeBody(req: Request, _res: Response, next: NextFunction): void {
 	if (req.body && typeof req.body === "object") {
 		req.body = trimStrings(req.body);
@@ -79,9 +66,6 @@ export function sanitizeBody(req: Request, _res: Response, next: NextFunction): 
 	next();
 }
 
-/**
- * Recursively trim string values in an object
- */
 function trimStrings(obj: unknown): unknown {
 	if (typeof obj === "string") {
 		return obj.trim();

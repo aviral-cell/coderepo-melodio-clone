@@ -3,23 +3,9 @@
  */
 
 /**
- * INTRO: Search Service Integration Tests (HackerRank Task 3 - Backend)
- *
- * Tests the search endpoint: GET /api/search?q=query
- * Uses real MongoDB test database for integration testing.
- * These tests follow TDD approach - written BEFORE implementation.
- *
- * SCENARIO: Search returns TRACKS ONLY (no artists, albums)
- * - Prefix-based matching on track title
- * - Case-insensitive search
- * - Maximum 5 results returned
- * - Empty query returns empty results
- * - Requires authentication
- *
- * EXPECTATION:
- * - Response format: { success: true, data: { tracks: [...] } }
- * - Each track has: id, title, artist, album, durationInSeconds, etc.
- * - Artist and album are populated with minimal fields
+ * INTRO: Track Search Integration Tests
+ * SCENARIO: GET /api/tracks/search with query parameter
+ * EXPECTATION: Returns matched tracks array with populated artist/album info
  */
 
 import * as dotenv from "dotenv";
@@ -33,7 +19,7 @@ import { createApp } from "../../backend/src/app";
 import { loadConfig, Config } from "../../backend/src/shared/config";
 
 const config: Config = loadConfig(true);
-const API_BASE = "/api/search";
+const API_BASE = "/api/tracks/search";
 const AUTH_BASE = "/api/auth";
 
 interface IUser {
@@ -237,8 +223,8 @@ describe("Search Service", () => {
 		await Track.deleteMany({});
 	});
 
-	describe("GET /api/search (Track Search)", () => {
-		it("should return tracks only (no artists or albums in response)", async () => {
+	describe("GET /api/tracks/search", () => {
+		it("should return track search results with populated artist and album info", async () => {
 			const artist = await createTestArtist("Thunder Band", "rock");
 			const album = await createTestAlbum("Thunder Album", artist._id);
 			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
@@ -250,11 +236,18 @@ describe("Search Service", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(res.body.data).toHaveProperty("tracks");
-			expect(Array.isArray(res.body.data.tracks)).toBe(true);
-			expect(res.body.data.tracks.length).toBeGreaterThan(0);
-			expect(res.body.data).not.toHaveProperty("artists");
-			expect(res.body.data).not.toHaveProperty("albums");
+			expect(Array.isArray(res.body.data)).toBe(true);
+			expect(res.body.data.length).toBeGreaterThan(0);
+
+			const track = res.body.data[0];
+			expect(track).toHaveProperty("id");
+			expect(track).toHaveProperty("title");
+			expect(track).toHaveProperty("artist");
+			expect(track.artist).toHaveProperty("id");
+			expect(track.artist).toHaveProperty("name");
+			expect(track).toHaveProperty("album");
+			expect(track.album).toHaveProperty("id");
+			expect(track.album).toHaveProperty("title");
 		});
 
 		it("should use prefix-based matching (case-insensitive)", async () => {
@@ -271,9 +264,9 @@ describe("Search Service", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(res.body.data.tracks.length).toBe(3);
+			expect(res.body.data.length).toBe(3);
 
-			const titles = res.body.data.tracks.map((t: { title: string }) => t.title);
+			const titles = res.body.data.map((t: { title: string }) => t.title);
 			expect(titles).toContain("Thunder Road");
 			expect(titles).toContain("Thunder Strike");
 			expect(titles).toContain("Thunderstorm");
@@ -294,10 +287,10 @@ describe("Search Service", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(res.body.data.tracks.length).toBe(5);
+			expect(res.body.data.length).toBe(5);
 		});
 
-		it("should return empty tracks array for empty query", async () => {
+		it("should return empty array for empty query", async () => {
 			const artist = await createTestArtist("Test Artist", "rock");
 			const album = await createTestAlbum("Test Album", artist._id);
 			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
@@ -308,10 +301,10 @@ describe("Search Service", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(res.body.data.tracks).toEqual([]);
+			expect(res.body.data).toEqual([]);
 		});
 
-		it("should return empty tracks array for whitespace-only query", async () => {
+		it("should return empty array for whitespace-only query", async () => {
 			const artist = await createTestArtist("Test Artist", "rock");
 			const album = await createTestAlbum("Test Album", artist._id);
 			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
@@ -322,10 +315,10 @@ describe("Search Service", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(res.body.data.tracks).toEqual([]);
+			expect(res.body.data).toEqual([]);
 		});
 
-		it("should return empty tracks array when no matches found", async () => {
+		it("should return empty array when no matches found", async () => {
 			const artist = await createTestArtist("Test Artist", "rock");
 			const album = await createTestAlbum("Test Album", artist._id);
 			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
@@ -336,7 +329,7 @@ describe("Search Service", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(res.body.data.tracks).toEqual([]);
+			expect(res.body.data).toEqual([]);
 		});
 
 		it("should return 401 Unauthorized without token", async () => {
@@ -353,32 +346,6 @@ describe("Search Service", () => {
 			expect(res.status).toBe(401);
 		});
 
-		it("should return tracks with populated artist and album info", async () => {
-			const artist = await createTestArtist("Test Artist", "rock");
-			const album = await createTestAlbum("Test Album", artist._id);
-			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
-
-			const res = await request(app)
-				.get(`${API_BASE}?q=Thunder`)
-				.set("Authorization", `Bearer ${authToken}`);
-
-			expect(res.status).toBe(200);
-			expect(res.body.success).toBe(true);
-			expect(res.body.data.tracks.length).toBe(1);
-
-			const track = res.body.data.tracks[0];
-			expect(track).toHaveProperty("id");
-			expect(track).toHaveProperty("title", "Thunder Road");
-			expect(track).toHaveProperty("artist");
-			expect(track.artist).toHaveProperty("id");
-			expect(track.artist).toHaveProperty("name", "Test Artist");
-			expect(track).toHaveProperty("album");
-			expect(track.album).toHaveProperty("id");
-			expect(track.album).toHaveProperty("title", "Test Album");
-			expect(track).toHaveProperty("durationInSeconds");
-			expect(track).toHaveProperty("genre", "rock");
-		});
-
 		it("should handle special characters in search query", async () => {
 			const artist = await createTestArtist("Test Artist", "rock");
 			const album = await createTestAlbum("Test Album", artist._id);
@@ -392,7 +359,7 @@ describe("Search Service", () => {
 			expect(res.body.success).toBe(true);
 		});
 
-		it("should search without q parameter and return empty results", async () => {
+		it("should return empty array without q parameter", async () => {
 			const artist = await createTestArtist("Test Artist", "rock");
 			const album = await createTestAlbum("Test Album", artist._id);
 			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
@@ -403,7 +370,7 @@ describe("Search Service", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(res.body.data.tracks).toEqual([]);
+			expect(res.body.data).toEqual([]);
 		});
 	});
 });

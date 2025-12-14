@@ -90,10 +90,8 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 
 	return (
 		<header className="sticky top-0 z-20 flex h-16 items-center justify-between bg-melodio-black/95 px-3 md:px-6 backdrop-blur-sm">
-			{/* Left spacer - hidden on mobile */}
 			<div className="hidden md:block md:w-32" />
 
-			{/* Center: Search Bar */}
 			<form onSubmit={handleSearch} className="flex-1 max-w-xl">
 				<div ref={searchContainerRef} className="relative">
 					<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-melodio-text-subdued" />
@@ -113,7 +111,6 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 				</div>
 			</form>
 
-			{/* Right: User Profile - flexible on mobile */}
 			<div className="flex w-auto md:w-32 items-center justify-end ml-2 md:ml-0">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>

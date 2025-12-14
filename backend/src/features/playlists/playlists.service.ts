@@ -2,27 +2,18 @@ import mongoose from "mongoose";
 import { Playlist, IPlaylist } from "./playlist.model.js";
 import { Track } from "../tracks/track.model.js";
 
-/**
- * Artist data structure for populated track responses
- */
 interface PopulatedArtist {
 	_id: mongoose.Types.ObjectId;
 	name: string;
 	image_url?: string;
 }
 
-/**
- * Album data structure for populated track responses
- */
 interface PopulatedAlbum {
 	_id: mongoose.Types.ObjectId;
 	title: string;
 	cover_image_url?: string;
 }
 
-/**
- * Populated track for playlist responses
- */
 interface PopulatedTrack {
 	_id: mongoose.Types.ObjectId;
 	title: string;
@@ -37,9 +28,6 @@ interface PopulatedTrack {
 	updated_at: Date;
 }
 
-/**
- * Track response format (camelCase for API)
- */
 export interface TrackInPlaylistResponse {
 	id: string;
 	title: string;
@@ -62,9 +50,6 @@ export interface TrackInPlaylistResponse {
 	updatedAt: Date;
 }
 
-/**
- * Playlist response format (camelCase for API)
- */
 export interface PlaylistResponse {
 	_id: string;
 	name: string;
@@ -78,24 +63,15 @@ export interface PlaylistResponse {
 	updatedAt: Date;
 }
 
-/**
- * Lean playlist type for query results
- */
 interface LeanPlaylist extends IPlaylist {
 	_id: mongoose.Types.ObjectId;
 }
 
-/**
- * Lean playlist with populated tracks
- */
 interface LeanPlaylistWithTracks extends Omit<IPlaylist, "track_ids"> {
 	_id: mongoose.Types.ObjectId;
 	track_ids: PopulatedTrack[];
 }
 
-/**
- * Transform track document to API response format
- */
 function transformTrack(track: PopulatedTrack): TrackInPlaylistResponse {
 	const artist = track.artist_id;
 	const album = track.album_id;
@@ -123,9 +99,6 @@ function transformTrack(track: PopulatedTrack): TrackInPlaylistResponse {
 	};
 }
 
-/**
- * Transform playlist document to API response format (without populated tracks)
- */
 function transformPlaylist(playlist: LeanPlaylist): PlaylistResponse {
 	return {
 		_id: playlist._id.toString(),
@@ -140,9 +113,6 @@ function transformPlaylist(playlist: LeanPlaylist): PlaylistResponse {
 	};
 }
 
-/**
- * Transform playlist document to API response format (with populated tracks)
- */
 function transformPlaylistWithTracks(
 	playlist: LeanPlaylistWithTracks,
 ): PlaylistResponse {
@@ -161,9 +131,6 @@ function transformPlaylistWithTracks(
 }
 
 export const playlistsService = {
-	/**
-	 * Find all playlists owned by a user, sorted by updated_at descending
-	 */
 	async findByOwnerId(ownerId: string): Promise<PlaylistResponse[]> {
 		const playlists = await Playlist.find({
 			owner_id: new mongoose.Types.ObjectId(ownerId),
@@ -175,11 +142,6 @@ export const playlistsService = {
 		return playlists.map((playlist) => transformPlaylist(playlist));
 	},
 
-	/**
-	 * Find a single playlist by ID with populated tracks
-	 * Access control: owner can view any, non-owner can only view public
-	 * Returns { playlist, accessDenied } to differentiate 403 from 404
-	 */
 	async findById(
 		id: string,
 		requestingUserId: string,
@@ -199,7 +161,6 @@ export const playlistsService = {
 			return { playlist: null, accessDenied: false };
 		}
 
-		// Check access control
 		const isOwner = playlist.owner_id.toString() === requestingUserId;
 		if (!isOwner && !playlist.is_public) {
 			return { playlist: null, accessDenied: true };
@@ -211,9 +172,6 @@ export const playlistsService = {
 		};
 	},
 
-	/**
-	 * Create a new playlist
-	 */
 	async create(
 		ownerId: string,
 		data: {
@@ -236,10 +194,6 @@ export const playlistsService = {
 		return transformPlaylist(leanPlaylist);
 	},
 
-	/**
-	 * Update a playlist
-	 * Returns { playlist, notFound, accessDenied }
-	 */
 	async update(
 		id: string,
 		ownerId: string,
@@ -254,19 +208,16 @@ export const playlistsService = {
 		notFound: boolean;
 		accessDenied: boolean;
 	}> {
-		// First find the playlist to check ownership
 		const existingPlaylist = await Playlist.findById(id).lean<LeanPlaylist>().exec();
 
 		if (!existingPlaylist) {
 			return { playlist: null, notFound: true, accessDenied: false };
 		}
 
-		// Check ownership
 		if (existingPlaylist.owner_id.toString() !== ownerId) {
 			return { playlist: null, notFound: false, accessDenied: true };
 		}
 
-		// Build update object with snake_case field names
 		const updateData: Record<string, unknown> = {};
 		if (updates.name !== undefined) updateData.name = updates.name;
 		if (updates.description !== undefined)
@@ -292,22 +243,16 @@ export const playlistsService = {
 		};
 	},
 
-	/**
-	 * Delete a playlist
-	 * Returns { deleted, notFound, accessDenied }
-	 */
 	async delete(
 		id: string,
 		ownerId: string,
 	): Promise<{ deleted: boolean; notFound: boolean; accessDenied: boolean }> {
-		// First find the playlist to check ownership
 		const existingPlaylist = await Playlist.findById(id).lean<LeanPlaylist>().exec();
 
 		if (!existingPlaylist) {
 			return { deleted: false, notFound: true, accessDenied: false };
 		}
 
-		// Check ownership
 		if (existingPlaylist.owner_id.toString() !== ownerId) {
 			return { deleted: false, notFound: false, accessDenied: true };
 		}
@@ -316,10 +261,6 @@ export const playlistsService = {
 		return { deleted: true, notFound: false, accessDenied: false };
 	},
 
-	/**
-	 * Add a track to a playlist (idempotent - no duplicates)
-	 * Returns { playlist, notFound, accessDenied, trackNotFound }
-	 */
 	async addTrack(
 		playlistId: string,
 		trackId: string,
@@ -330,7 +271,6 @@ export const playlistsService = {
 		accessDenied: boolean;
 		trackNotFound: boolean;
 	}> {
-		// First find the playlist to check ownership
 		const existingPlaylist = await Playlist.findById(playlistId)
 			.lean<LeanPlaylist>()
 			.exec();
@@ -344,7 +284,6 @@ export const playlistsService = {
 			};
 		}
 
-		// Check ownership
 		if (existingPlaylist.owner_id.toString() !== ownerId) {
 			return {
 				playlist: null,
@@ -354,7 +293,6 @@ export const playlistsService = {
 			};
 		}
 
-		// Check if track exists
 		const trackObjectId = new mongoose.Types.ObjectId(trackId);
 		const track = await Track.findById(trackObjectId).lean().exec();
 		if (!track) {
@@ -366,7 +304,6 @@ export const playlistsService = {
 			};
 		}
 
-		// Add track if not already in playlist (idempotent)
 		const updatedPlaylist = await Playlist.findByIdAndUpdate(
 			playlistId,
 			{ $addToSet: { track_ids: trackObjectId } },
@@ -392,10 +329,6 @@ export const playlistsService = {
 		};
 	},
 
-	/**
-	 * Remove a track from a playlist (idempotent - no error if track not in playlist)
-	 * Returns { playlist, notFound, accessDenied }
-	 */
 	async removeTrack(
 		playlistId: string,
 		trackId: string,
@@ -405,7 +338,6 @@ export const playlistsService = {
 		notFound: boolean;
 		accessDenied: boolean;
 	}> {
-		// First find the playlist to check ownership
 		const existingPlaylist = await Playlist.findById(playlistId)
 			.lean<LeanPlaylist>()
 			.exec();
@@ -414,12 +346,10 @@ export const playlistsService = {
 			return { playlist: null, notFound: true, accessDenied: false };
 		}
 
-		// Check ownership
 		if (existingPlaylist.owner_id.toString() !== ownerId) {
 			return { playlist: null, notFound: false, accessDenied: true };
 		}
 
-		// Remove track (idempotent - no error if not present)
 		const trackObjectId = new mongoose.Types.ObjectId(trackId);
 		const updatedPlaylist = await Playlist.findByIdAndUpdate(
 			playlistId,
@@ -440,10 +370,6 @@ export const playlistsService = {
 		};
 	},
 
-	/**
-	 * Reorder tracks in a playlist
-	 * Returns { playlist, notFound, accessDenied, invalidTrackIds }
-	 */
 	async reorderTracks(
 		playlistId: string,
 		trackIds: string[],
@@ -454,7 +380,6 @@ export const playlistsService = {
 		accessDenied: boolean;
 		invalidTrackIds: boolean;
 	}> {
-		// First find the playlist to check ownership
 		const existingPlaylist = await Playlist.findById(playlistId)
 			.lean<LeanPlaylist>()
 			.exec();
@@ -468,7 +393,6 @@ export const playlistsService = {
 			};
 		}
 
-		// Check ownership
 		if (existingPlaylist.owner_id.toString() !== ownerId) {
 			return {
 				playlist: null,
@@ -478,7 +402,6 @@ export const playlistsService = {
 			};
 		}
 
-		// Validate that trackIds match current playlist tracks (same IDs, possibly different order)
 		const currentTrackIds = existingPlaylist.track_ids.map((id) =>
 			id.toString(),
 		);
@@ -497,7 +420,6 @@ export const playlistsService = {
 			};
 		}
 
-		// Update track order
 		const trackObjectIds = trackIds.map(
 			(id) => new mongoose.Types.ObjectId(id),
 		);

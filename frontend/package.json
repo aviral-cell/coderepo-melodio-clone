@@ -4,7 +4,7 @@
 	"type": "module",
 	"description": "Melodio Music Player Frontend",
 	"scripts": {
-		"dev": "vite --port 4000",
+		"dev": "vite --port 3000",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
 		"test": "jest --passWithNoTests",
@@ -31,6 +31,7 @@
 		"@radix-ui/react-tooltip": "^1.1.6",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"colorthief": "^2.6.0",
 		"lucide-react": "^0.468.0",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",

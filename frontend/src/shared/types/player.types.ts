@@ -1,25 +1,16 @@
 import type { Artist, Album, Track } from "./index";
 
-/**
- * Track with populated artist and album data for player
- */
 export interface TrackWithPopulated extends Omit<Track, "artistId" | "albumId" | "artist" | "album"> {
 	artistId: Pick<Artist, "_id" | "name" | "imageUrl">;
 	albumId: Pick<Album, "_id" | "title" | "coverImageUrl">;
 }
 
-/**
- * Repeat mode options
- */
 export type RepeatMode = "off" | "all" | "one";
 
-/**
- * Player state interface
- */
 export interface PlayerState {
 	currentTrack: TrackWithPopulated | null;
 	queue: TrackWithPopulated[];
-	originalQueue: TrackWithPopulated[]; // Stores original order when shuffle is enabled
+	originalQueue: TrackWithPopulated[];
 	queueIndex: number;
 	isPlaying: boolean;
 	elapsedSeconds: number;
@@ -29,9 +20,6 @@ export interface PlayerState {
 	isQueueOpen: boolean;
 }
 
-/**
- * Player action types
- */
 export type PlayerAction =
 	| { type: "PLAY_TRACK"; payload: TrackWithPopulated }
 	| { type: "PLAY_TRACKS"; payload: { tracks: TrackWithPopulated[]; startIndex: number } }

@@ -47,13 +47,10 @@ const albumSchema = new Schema<IAlbumDocument>(
 	},
 );
 
-// Text index on title for full-text search
 albumSchema.index({ title: "text" }, { name: "title_text_idx" });
 
-// Ascending index on artist_id for filtering
 albumSchema.index({ artist_id: 1 }, { name: "artist_id_asc_idx" });
 
-// Descending index on release_date for sorting
 albumSchema.index({ release_date: -1 }, { name: "release_date_desc_idx" });
 
 export const Album: Model<IAlbumDocument> = mongoose.model<IAlbumDocument>(

@@ -5,8 +5,8 @@
 This document outlines the step-by-step implementation plan for migrating the music streaming application from MENN (MongoDB + Express via NestJS + Next.js) to MERN (MongoDB + Express + React + Node.js) stack.
 
 **Target Ports:**
-- Frontend (React + Vite): `4000`
-- Backend (Express + Node.js): `6001`
+- Frontend (React + Vite): `3000`
+- Backend (Express + Node.js): `5000`
 
 **Agent Delegation:**
 | Agent | Responsibility |
@@ -137,8 +137,8 @@ npm run test          # Runs all tests (tasks + others)
 
 2. Configure root `package.json` with workspace scripts:
    - `npm run dev` - Start both backend and frontend
-   - `npm run dev:backend` - Start backend only (port 6001)
-   - `npm run dev:frontend` - Start frontend only (port 4000)
+   - `npm run dev:backend` - Start backend only (port 5000)
+   - `npm run dev:frontend` - Start frontend only (port 3000)
    - `npm run seed` - Seed database
    - `npm run test` - Run all tests
    - `npm run test:task1` - Run task1 tests
@@ -170,8 +170,8 @@ npm run test          # Runs all tests (tasks + others)
    - Dev deps: jest, @testing-library/react, @types/*
 
 7. Environment configuration:
-   - Backend `.env.example`: MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN, PORT=6001
-   - Frontend `.env.example`: VITE_API_URL=http://localhost:6001/api
+   - Backend `.env.example`: MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN, PORT=5000
+   - Frontend `.env.example`: VITE_API_URL=http://localhost:5000/api
 
 8. MongoDB Connection:
    ```
@@ -179,7 +179,7 @@ npm run test          # Runs all tests (tasks + others)
    ```
 
 **Acceptance Criteria:**
-- `npm run dev` from root starts both servers (backend:6001, frontend:4000)
+- `npm run dev` from root starts both servers (backend:5000, frontend:3000)
 - Backend GET `/` returns "API server is running"
 - Frontend loads with React Router working
 - MongoDB connection ready
@@ -383,13 +383,13 @@ npm run test          # Runs all tests (tasks + others)
 5. **Playwright MCP verification** against MENN app (http://localhost:3000)
 
 **MENN Reference App:**
-- Frontend: http://localhost:3000
-- Backend: http://localhost:5000
+- Frontend: http://localhost:4000
+- Backend: http://localhost:6001
 - Test credentials: `alex.morgan@melodio.com` / `password123`
 
 **MERN App (being built):**
-- Frontend: http://localhost:4000
-- Backend: http://localhost:6001
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000
 
 ---
 
@@ -891,8 +891,8 @@ npm run test:task3  # Search functionality
 5. Queue management
 
 **Comparison Steps:**
-1. Start MENN app on localhost:3000
-2. Start MERN app on localhost:4000
+1. Start MENN app on localhost:4000
+2. Start MERN app on localhost:3000
 3. Compare side-by-side using Playwright screenshots
 
 **⏸️ CHECKPOINT: Stop and await user review before proceeding to Phase 5.**
@@ -981,7 +981,7 @@ npm run test:task3  # Search functionality
 
 ```bash
 # Kill any existing servers
-npx kill-port 4000 && npx kill-port 6001
+npx kill-port 3000 && npx kill-port 5000
 
 # Seed database
 npm run seed
@@ -1012,7 +1012,7 @@ npm run seed
 
 ```bash
 # Kill dev servers after completion
-npx kill-port 4000 && npx kill-port 6001
+npx kill-port 3000 && npx kill-port 5000
 ```
 
 ---

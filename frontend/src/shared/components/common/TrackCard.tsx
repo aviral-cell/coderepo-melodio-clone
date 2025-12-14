@@ -11,11 +11,6 @@ interface TrackCardProps {
 	className?: string;
 }
 
-/**
- * Track card component with play/pause button and navigation
- * - Play/pause button plays/pauses the track (does NOT redirect)
- * - Card click redirects to track detail page
- */
 export function TrackCard({ track, className }: TrackCardProps) {
 	const navigate = useNavigate();
 	const { state, playTrack, togglePlayPause } = usePlayer();
@@ -60,7 +55,6 @@ export function TrackCard({ track, className }: TrackCardProps) {
 				className
 			)}
 		>
-			{/* Album Cover */}
 			<div className="relative mb-4 aspect-square overflow-hidden rounded-md shadow-lg">
 				{albumCover ? (
 					<img
@@ -74,7 +68,6 @@ export function TrackCard({ track, className }: TrackCardProps) {
 					</div>
 				)}
 
-				{/* Play/Pause Button Overlay */}
 				<button
 					type="button"
 					onClick={handlePlayClick}
@@ -94,7 +87,6 @@ export function TrackCard({ track, className }: TrackCardProps) {
 				</button>
 			</div>
 
-			{/* Track Info */}
 			<div className="min-w-0">
 				<h3 className="truncate text-base font-semibold text-white">
 					{track.title}

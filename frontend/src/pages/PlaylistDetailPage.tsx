@@ -52,6 +52,7 @@ import { usePlayer } from "@/shared/contexts/PlayerContext";
 import { usePlaylistRefresh } from "@/shared/contexts/PlaylistContext";
 import { useToast } from "@/shared/hooks/useToast";
 import { usePlaylistOperations } from "@/shared/hooks/usePlaylistOperations";
+import { useImageColor } from "@/shared/hooks/useImageColor";
 import { playlistsService, type PlaylistWithTracks } from "@/shared/services/playlist.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 import { formatDuration } from "@/shared/utils";
@@ -111,7 +112,6 @@ function SortableTrackItem({
 				isDragging && "bg-melodio-light-gray z-50"
 			)}
 		>
-			{/* Drag Handle */}
 			<button
 				className="cursor-grab touch-none text-melodio-text-subdued opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
 				{...attributes}
@@ -121,7 +121,6 @@ function SortableTrackItem({
 				<GripVertical className="h-4 w-4" />
 			</button>
 
-			{/* Track Number / Play Button */}
 			<div className="flex items-center justify-center">
 				<span
 					className={cn(
@@ -152,7 +151,6 @@ function SortableTrackItem({
 				</button>
 			</div>
 
-			{/* Title and Artist */}
 			<div className="flex min-w-0 items-center gap-3">
 				<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
 					{albumCover ? (
@@ -180,15 +178,12 @@ function SortableTrackItem({
 				</div>
 			</div>
 
-			{/* Album - hidden on mobile */}
 			<span className="hidden truncate text-sm text-melodio-text-subdued sm:block">{albumTitle}</span>
 
-			{/* Duration */}
 			<span className="text-sm text-melodio-text-subdued">
 				{formatTime(track.durationInSeconds)}
 			</span>
 
-			{/* Actions */}
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button
@@ -213,10 +208,6 @@ function SortableTrackItem({
 	);
 }
 
-/**
- * PlaylistDetailPage - Display playlist details with track list.
- * Gradient header, play controls, track list with remove option.
- */
 export default function PlaylistDetailPage(): JSX.Element {
 	const params = useParams();
 	const navigate = useNavigate();
@@ -233,6 +224,11 @@ export default function PlaylistDetailPage(): JSX.Element {
 	const [editName, setEditName] = useState("");
 	const [editDescription, setEditDescription] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const tracks = playlist?.tracks || [];
+	const coverImageUrl = playlist?.coverImageUrl ||
+		(tracks[0] && typeof tracks[0].albumId === "object" ? tracks[0].albumId.coverImageUrl : undefined);
+	const { color: dominantColor, isReady: isColorReady } = useImageColor(coverImageUrl);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
@@ -409,8 +405,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 	if (isLoading) {
 		return (
 			<>
-				{/* Header skeleton */}
-				<div className="bg-gradient-to-b from-purple-800 to-melodio-dark-gray p-4 sm:p-8">
+				<div className="bg-melodio-dark-gray p-4 sm:p-8">
 					<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 						<Skeleton className="h-40 w-40 rounded sm:h-56 sm:w-56" />
 						<div className="flex-1 text-center sm:text-left">
@@ -420,13 +415,11 @@ export default function PlaylistDetailPage(): JSX.Element {
 						</div>
 					</div>
 				</div>
-				{/* Controls skeleton */}
 				<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 					<div className="flex justify-center sm:justify-start">
 						<Skeleton className="h-14 w-14 rounded-full" />
 					</div>
 				</div>
-				{/* Tracks skeleton */}
 				<div className="px-4 sm:px-8">
 					{Array.from({ length: 5 }).map((_, i) => (
 						<div
@@ -462,7 +455,6 @@ export default function PlaylistDetailPage(): JSX.Element {
 		);
 	}
 
-	const tracks = playlist.tracks || [];
 	const totalDuration = tracks.reduce((sum, track) => sum + track.durationInSeconds, 0);
 
 	const isPlaylistPlaying =
@@ -470,9 +462,19 @@ export default function PlaylistDetailPage(): JSX.Element {
 
 	return (
 		<>
-			{/* Playlist Header */}
-			<div className="bg-gradient-to-b from-purple-800 to-melodio-dark-gray p-4 sm:p-8">
-				<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
+			<div
+				className="relative p-4 sm:p-8"
+				style={{ backgroundColor: "var(--melodio-dark-gray, #121212)" }}
+			>
+				<div
+					className="absolute inset-0"
+					style={{
+						background: `linear-gradient(to bottom, ${dominantColor}, var(--melodio-dark-gray, #121212))`,
+						opacity: isColorReady ? 1 : 0,
+						transition: "opacity 0.6s ease-in-out",
+					}}
+				/>
+				<div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
 						{playlist.coverImageUrl ? (
 							<img
@@ -503,7 +505,6 @@ export default function PlaylistDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			{/* Controls */}
 			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 				<div className="flex items-center justify-center gap-4 sm:justify-start sm:gap-6">
 					<Button
@@ -547,11 +548,9 @@ export default function PlaylistDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			{/* Track List */}
 			<div className="px-4 sm:px-8">
 				{tracks.length > 0 ? (
 					<>
-						{/* Header - hidden on mobile */}
 						<div className="mb-4 hidden grid-cols-[24px_16px_4fr_3fr_1fr_40px] gap-4 border-b border-melodio-light-gray px-4 pb-2 text-melodio-text-subdued sm:grid">
 							<span />
 							<span className="text-sm">#</span>
@@ -563,7 +562,6 @@ export default function PlaylistDetailPage(): JSX.Element {
 							<span />
 						</div>
 
-						{/* Tracks with drag-and-drop */}
 						<DndContext
 							sensors={sensors}
 							collisionDetection={closestCenter}
@@ -606,7 +604,6 @@ export default function PlaylistDetailPage(): JSX.Element {
 				)}
 			</div>
 
-			{/* Edit Dialog */}
 			<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
 				<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
 					<DialogHeader>
@@ -659,7 +656,6 @@ export default function PlaylistDetailPage(): JSX.Element {
 				</DialogContent>
 			</Dialog>
 
-			{/* Delete Confirmation Dialog */}
 			<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 				<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
 					<DialogHeader>

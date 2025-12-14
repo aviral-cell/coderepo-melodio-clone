@@ -3,11 +3,8 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LoadingSpinnerProps {
-	/** Optional text to display below the spinner */
 	text?: string;
-	/** Size of the spinner */
 	size?: "sm" | "md" | "lg";
-	/** Additional CSS classes */
 	className?: string;
 }
 
@@ -17,9 +14,6 @@ const sizeClasses = {
 	lg: "h-10 w-10",
 } as const;
 
-/**
- * Centered loading spinner with optional text
- */
 export function LoadingSpinner({
 	text,
 	size = "md",

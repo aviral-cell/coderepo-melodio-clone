@@ -1,18 +1,3 @@
-/**
- * Database Seed Script
- *
- * This script populates the MongoDB database with sample data for development and testing.
- *
- * Run with: npm run seed
- *
- * Creates:
- * - 5 artists (one per genre: rock, pop, jazz, electronic, hip-hop)
- * - 10 albums (2 per artist)
- * - 50 tracks (5 per album, durations between 180-300 seconds)
- * - 2 test users with known credentials
- * - 1 test playlist with 6 tracks
- */
-
 import * as dotenv from "dotenv";
 dotenv.config();
 

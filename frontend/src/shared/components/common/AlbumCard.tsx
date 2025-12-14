@@ -10,11 +10,6 @@ interface AlbumCardProps {
 	className?: string;
 }
 
-/**
- * Album card component with navigation to album detail page
- * - Card click redirects to album detail page
- * - Shows album cover, title, year, and artist
- */
 export function AlbumCard({ album, className }: AlbumCardProps) {
 	const navigate = useNavigate();
 
@@ -49,7 +44,6 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 				className
 			)}
 		>
-			{/* Album Cover */}
 			<div className="relative mb-4 aspect-square overflow-hidden rounded-md shadow-lg">
 				{album.coverImageUrl ? (
 					<img
@@ -64,7 +58,6 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 				)}
 			</div>
 
-			{/* Album Info */}
 			<div className="min-w-0">
 				<h3 className="truncate text-base font-semibold text-white">
 					{album.title}

@@ -1,7 +1,3 @@
-/**
- * Fisher-Yates shuffle algorithm
- * Returns a new shuffled array without mutating the original
- */
 export function shuffleArray<T>(array: T[]): T[] {
 	const shuffled = [...array];
 	for (let i = shuffled.length - 1; i > 0; i--) {

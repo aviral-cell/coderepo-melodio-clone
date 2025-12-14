@@ -25,7 +25,7 @@ export function MainLayout({
 			<Sidebar />
 			<main
 				className={cn(
-					"pb-24 transition-all duration-300",
+					"pb-32 sm:pb-24 transition-all duration-300",
 					isCollapsed ? "ml-20" : "ml-64"
 				)}
 			>

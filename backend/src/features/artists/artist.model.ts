@@ -47,10 +47,8 @@ const artistSchema = new Schema<IArtistDocument>(
 	},
 );
 
-// Text index on name for full-text search
 artistSchema.index({ name: "text" }, { name: "name_text_idx" });
 
-// Descending index on follower_count for sorting
 artistSchema.index({ follower_count: -1 }, { name: "follower_count_desc_idx" });
 
 export const Artist: Model<IArtistDocument> = mongoose.model<IArtistDocument>(

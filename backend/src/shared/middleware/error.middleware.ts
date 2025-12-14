@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ApiResponse } from "../types/index.js";
 
-/**
- * Custom application error class
- */
 export class AppError extends Error {
 	public readonly statusCode: number;
 	public readonly isOperational: boolean;
@@ -14,14 +11,10 @@ export class AppError extends Error {
 		this.isOperational = isOperational;
 		this.name = "AppError";
 
-		// Maintains proper stack trace for where our error was thrown
 		Error.captureStackTrace(this, this.constructor);
 	}
 }
 
-/**
- * Not Found Error
- */
 export class NotFoundError extends AppError {
 	constructor(resource = "Resource") {
 		super(`${resource} not found`, 404);
@@ -29,9 +22,6 @@ export class NotFoundError extends AppError {
 	}
 }
 
-/**
- * Validation Error
- */
 export class ValidationError extends AppError {
 	public readonly errors: Array<{ field: string; message: string }>;
 
@@ -42,9 +32,6 @@ export class ValidationError extends AppError {
 	}
 }
 
-/**
- * Unauthorized Error
- */
 export class UnauthorizedError extends AppError {
 	constructor(message = "Unauthorized") {
 		super(message, 401);
@@ -52,9 +39,6 @@ export class UnauthorizedError extends AppError {
 	}
 }
 
-/**
- * Forbidden Error
- */
 export class ForbiddenError extends AppError {
 	constructor(message = "Forbidden") {
 		super(message, 403);
@@ -62,23 +46,18 @@ export class ForbiddenError extends AppError {
 	}
 }
 
-/**
- * Global error handling middleware
- */
 export function errorMiddleware(
 	err: Error,
 	_req: Request,
 	res: Response,
 	_next: NextFunction,
 ): void {
-	// Log error for debugging
 	console.error("Error:", {
 		name: err.name,
 		message: err.message,
 		stack: process.env["NODE_ENV"] === "development" ? err.stack : undefined,
 	});
 
-	// Handle known application errors
 	if (err instanceof AppError) {
 		const response: ApiResponse = {
 			success: false,
@@ -93,7 +72,6 @@ export function errorMiddleware(
 		return;
 	}
 
-	// Handle Mongoose validation errors
 	if (err.name === "ValidationError") {
 		const response: ApiResponse = {
 			success: false,
@@ -109,7 +87,6 @@ export function errorMiddleware(
 		return;
 	}
 
-	// Handle Mongoose CastError (invalid ObjectId)
 	if (err.name === "CastError") {
 		const response: ApiResponse = {
 			success: false,
@@ -119,7 +96,6 @@ export function errorMiddleware(
 		return;
 	}
 
-	// Handle Mongoose duplicate key error
 	if ("code" in err && err.code === 11000) {
 		const response: ApiResponse = {
 			success: false,
@@ -129,7 +105,6 @@ export function errorMiddleware(
 		return;
 	}
 
-	// Handle unknown errors
 	const response: ApiResponse = {
 		success: false,
 		error:
@@ -141,9 +116,6 @@ export function errorMiddleware(
 	res.status(500).json(response);
 }
 
-/**
- * 404 Not Found handler for unmatched routes
- */
 export function notFoundHandler(req: Request, res: Response): void {
 	const response: ApiResponse = {
 		success: false,

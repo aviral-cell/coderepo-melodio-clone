@@ -17,11 +17,6 @@ interface PlaylistProviderProps {
 	children: ReactNode;
 }
 
-/**
- * PlaylistProvider manages playlist refresh state across components.
- * Components can call triggerRefresh() to notify others that playlists have changed.
- * Components can listen to refreshTrigger to know when to re-fetch playlists.
- */
 export function PlaylistProvider({ children }: PlaylistProviderProps) {
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 

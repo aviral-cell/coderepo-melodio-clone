@@ -24,11 +24,6 @@ interface AddToPlaylistModalProps {
 	onSuccess?: () => void;
 }
 
-/**
- * Modal for adding a track to a playlist
- * - Lists user's playlists
- * - Select playlist to add current track
- */
 export function AddToPlaylistModal({
 	open,
 	onOpenChange,
@@ -160,7 +155,6 @@ export function AddToPlaylistModal({
 												isAdded && "bg-melodio-light-gray/50"
 											)}
 										>
-											{/* Playlist Cover */}
 											<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
 												{playlist.coverImageUrl ? (
 													<img
@@ -175,7 +169,6 @@ export function AddToPlaylistModal({
 												)}
 											</div>
 
-											{/* Playlist Info */}
 											<div className="min-w-0 flex-1">
 												<p className="truncate text-sm font-medium text-white">
 													{playlist.name}
@@ -185,7 +178,6 @@ export function AddToPlaylistModal({
 												</p>
 											</div>
 
-											{/* Action Icon */}
 											<div className="flex-shrink-0">
 												{isAdding ? (
 													<Loader2 className="h-5 w-5 animate-spin text-melodio-text-subdued" />

@@ -5,25 +5,14 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 
 interface EmptyStateProps {
-	/** Icon to display */
 	icon?: LucideIcon;
-	/** Title text */
 	title: string;
-	/** Description text */
 	description?: string;
-	/** Action button text */
 	actionLabel?: string;
-	/** Action button callback */
 	onAction?: () => void;
-	/** Additional CSS classes */
 	className?: string;
 }
 
-/**
- * Empty state placeholder component
- * - Icon, title, and description
- * - Optional action button
- */
 export function EmptyState({
 	icon: Icon = Inbox,
 	title,

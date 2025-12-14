@@ -16,22 +16,16 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
 import { useToast } from "@/shared/hooks/useToast";
+import { useImageColor } from "@/shared/hooks/useImageColor";
 import { tracksService } from "@/shared/services";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 
-/**
- * Format seconds to mm:ss format
- */
 function formatTime(seconds: number): string {
 	const minutes = Math.floor(seconds / 60);
 	const remainingSeconds = seconds % 60;
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
-/**
- * TrackDetailPage - Display track details with play controls.
- * Gradient header based on track album cover, play button, add to queue, add to playlist.
- */
 export default function TrackDetailPage(): JSX.Element {
 	const params = useParams();
 	const trackId = params.id as string;
@@ -42,6 +36,9 @@ export default function TrackDetailPage(): JSX.Element {
 	const [track, setTrack] = useState<TrackWithPopulated | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
+
+	const albumCover = track && typeof track.albumId === "object" ? track.albumId.coverImageUrl : undefined;
+	const { color: dominantColor, isReady: isColorReady } = useImageColor(albumCover);
 
 	const fetchTrack = useCallback(async () => {
 		try {
@@ -82,7 +79,7 @@ export default function TrackDetailPage(): JSX.Element {
 	if (isLoading) {
 		return (
 			<>
-				<div className="bg-gradient-to-b from-teal-800 to-melodio-dark-gray p-4 sm:p-8">
+				<div className="bg-melodio-dark-gray p-4 sm:p-8">
 					<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 						<Skeleton className="h-40 w-40 rounded sm:h-56 sm:w-56" />
 						<div className="flex-1">
@@ -116,17 +113,25 @@ export default function TrackDetailPage(): JSX.Element {
 		typeof track.albumId === "object" ? track.albumId.title : "Unknown Album";
 	const albumId =
 		typeof track.albumId === "object" ? track.albumId._id : null;
-	const albumCover =
-		typeof track.albumId === "object" ? track.albumId.coverImageUrl : undefined;
 
 	const isCurrentTrack = state.currentTrack?._id === track._id;
 	const isPlaying = isCurrentTrack && state.isPlaying;
 
 	return (
 		<>
-			{/* Track Header */}
-			<div className="bg-gradient-to-b from-teal-800 to-melodio-dark-gray p-4 sm:p-8">
-				<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
+			<div
+				className="relative p-4 sm:p-8"
+				style={{ backgroundColor: "var(--melodio-dark-gray, #121212)" }}
+			>
+				<div
+					className="absolute inset-0"
+					style={{
+						background: `linear-gradient(to bottom, ${dominantColor}, var(--melodio-dark-gray, #121212))`,
+						opacity: isColorReady ? 1 : 0,
+						transition: "opacity 0.6s ease-in-out",
+					}}
+				/>
+				<div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
 						{albumCover ? (
 							<img
@@ -178,7 +183,6 @@ export default function TrackDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			{/* Controls */}
 			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 				<div className="flex items-center justify-center gap-4 sm:justify-start">
 					<Button
@@ -194,7 +198,6 @@ export default function TrackDetailPage(): JSX.Element {
 						)}
 					</Button>
 
-					{/* Add to Playlist Button */}
 					<Button
 						size="icon"
 						variant="ghost"
@@ -205,7 +208,6 @@ export default function TrackDetailPage(): JSX.Element {
 						<Plus className="h-6 w-6" />
 					</Button>
 
-					{/* More Options Dropdown */}
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button
@@ -240,7 +242,6 @@ export default function TrackDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			{/* Additional Info */}
 			<div className="px-4 py-4 sm:px-8">
 				<div className="rounded-lg bg-melodio-dark-gray p-6">
 					<h2 className="mb-4 text-lg font-bold text-white">About this track</h2>
@@ -265,7 +266,6 @@ export default function TrackDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			{/* Add to Playlist Modal */}
 			<AddToPlaylistModal
 				open={isPlaylistModalOpen}
 				onOpenChange={setIsPlaylistModalOpen}

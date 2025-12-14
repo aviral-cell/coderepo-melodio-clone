@@ -12,10 +12,6 @@ import PlaylistDetailPage from "@/pages/PlaylistDetailPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
-/**
- * RootLayout - Base layout wrapper for all routes.
- * Provides consistent background styling.
- */
 function RootLayout(): JSX.Element {
 	return (
 		<div className="min-h-screen bg-background text-foreground">
@@ -24,10 +20,6 @@ function RootLayout(): JSX.Element {
 	);
 }
 
-/**
- * AuthLayout - Layout for authentication pages (login/register).
- * Displays centered content with app branding.
- */
 function AuthLayout(): JSX.Element {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-melodio-dark-gray to-melodio-black px-4 py-8">
@@ -40,10 +32,6 @@ function AuthLayout(): JSX.Element {
 	);
 }
 
-/**
- * AppLayout - Layout for authenticated app pages.
- * Wraps content with MainLayout (Sidebar, TopBar, PlayerBar, QueuePanel).
- */
 function AppLayout(): JSX.Element {
 	return (
 		<ProtectedRoute>
@@ -54,9 +42,6 @@ function AppLayout(): JSX.Element {
 	);
 }
 
-/**
- * NotFoundPage - 404 error page.
- */
 function NotFoundPage(): JSX.Element {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center p-8">
@@ -66,9 +51,6 @@ function NotFoundPage(): JSX.Element {
 	);
 }
 
-/**
- * Placeholder pages for routes not yet implemented.
- */
 function SearchPage(): JSX.Element {
 	return (
 		<div className="p-6">
@@ -87,25 +69,11 @@ function LibraryPage(): JSX.Element {
 	);
 }
 
-/**
- * Application router configuration.
- *
- * Route structure:
- * - /login, /register -> AuthLayout (no sidebar)
- * - / (protected) -> MainLayout with Sidebar, TopBar, PlayerBar
- * - /genre (protected) -> MainLayout
- * - /playlist/:id (protected) -> MainLayout
- * - /album/:id (protected) -> MainLayout
- * - /track/:id (protected) -> MainLayout
- * - /search (protected) -> MainLayout
- * - /library (protected) -> MainLayout
- */
 export const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <RootLayout />,
 		children: [
-			// Protected app routes with MainLayout
 			{
 				element: <AppLayout />,
 				children: [
@@ -139,14 +107,12 @@ export const router = createBrowserRouter([
 					},
 				],
 			},
-			// 404 fallback
 			{
 				path: "*",
 				element: <NotFoundPage />,
 			},
 		],
 	},
-	// Auth routes (outside RootLayout to have different styling)
 	{
 		element: <AuthLayout />,
 		children: [

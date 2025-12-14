@@ -13,9 +13,6 @@ export interface UpdatePlaylistInput {
 	description?: string;
 }
 
-/**
- * Playlist with populated track objects
- */
 export interface PlaylistWithTracks extends Omit<Playlist, "tracks"> {
 	tracks?: TrackWithPopulated[];
 }
@@ -26,7 +23,6 @@ export const playlistsService = {
 	},
 
 	async getById(id: string): Promise<PlaylistWithTracks> {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const response = await apiService.get<any>("/api/playlists/" + id);
 		return {
 			...response,
@@ -65,5 +61,4 @@ export const playlistsService = {
 	},
 };
 
-// Backward compatibility alias
 export const playlistService = playlistsService;

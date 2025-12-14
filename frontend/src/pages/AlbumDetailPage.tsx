@@ -10,6 +10,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/common/EmptyState";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
 import { useToast } from "@/shared/hooks/useToast";
+import { useImageColor } from "@/shared/hooks/useImageColor";
 import { albumsService, tracksService } from "@/shared/services";
 import type { AlbumWithPopulated } from "@/shared/services/albums.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
@@ -31,6 +32,8 @@ export default function AlbumDetailPage(): JSX.Element {
 	const [album, setAlbum] = useState<AlbumWithPopulated | null>(null);
 	const [tracks, setTracks] = useState<TrackWithPopulated[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+
+	const { color: dominantColor, isReady: isColorReady } = useImageColor(album?.coverImageUrl);
 
 	const fetchAlbumData = useCallback(async () => {
 		try {
@@ -70,7 +73,7 @@ export default function AlbumDetailPage(): JSX.Element {
 	if (isLoading) {
 		return (
 			<>
-				<div className="bg-gradient-to-b from-amber-800 to-melodio-dark-gray p-4 sm:p-8">
+				<div className="bg-melodio-dark-gray p-4 sm:p-8">
 					<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 						<Skeleton className="h-40 w-40 rounded sm:h-56 sm:w-56" />
 						<div className="flex-1 text-center sm:text-left">
@@ -106,9 +109,19 @@ export default function AlbumDetailPage(): JSX.Element {
 
 	return (
 		<>
-			{/* Album Header */}
-			<div className="bg-gradient-to-b from-amber-800 to-melodio-dark-gray p-4 sm:p-8">
-				<div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
+			<div
+				className="relative p-4 sm:p-8"
+				style={{ backgroundColor: "var(--melodio-dark-gray, #121212)" }}
+			>
+				<div
+					className="absolute inset-0"
+					style={{
+						background: `linear-gradient(to bottom, ${dominantColor}, var(--melodio-dark-gray, #121212))`,
+						opacity: isColorReady ? 1 : 0,
+						transition: "opacity 0.6s ease-in-out",
+					}}
+				/>
+				<div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
 						{album.coverImageUrl ? (
 							<img
@@ -139,7 +152,6 @@ export default function AlbumDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			{/* Controls */}
 			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 				<div className="flex justify-center sm:justify-start">
 					<Button
@@ -158,11 +170,9 @@ export default function AlbumDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			{/* Track List */}
 			<div className="px-4 sm:px-8">
 				{tracks.length > 0 ? (
 					<>
-						{/* Header - hidden on mobile */}
 						<div className="mb-4 hidden grid-cols-[16px_4fr_1fr] gap-4 border-b border-melodio-light-gray px-4 pb-2 text-melodio-text-subdued sm:grid">
 							<span className="text-sm">#</span>
 							<span className="text-sm">Title</span>
@@ -171,7 +181,6 @@ export default function AlbumDetailPage(): JSX.Element {
 							</span>
 						</div>
 
-						{/* Tracks */}
 						{tracks.map((track, index) => {
 							const isCurrentTrack = state.currentTrack?._id === track._id;
 							const isPlaying = isCurrentTrack && state.isPlaying;
@@ -193,7 +202,6 @@ export default function AlbumDetailPage(): JSX.Element {
 										}
 									}}
 								>
-									{/* Track Number / Play Button */}
 									<div className="flex items-center justify-center">
 										<span
 											className={cn(
@@ -220,7 +228,6 @@ export default function AlbumDetailPage(): JSX.Element {
 										</button>
 									</div>
 
-									{/* Title */}
 									<div className="min-w-0">
 										<Link
 											to={`/track/${track._id}`}
@@ -235,7 +242,6 @@ export default function AlbumDetailPage(): JSX.Element {
 										<p className="truncate text-xs text-melodio-text-subdued">{artistName}</p>
 									</div>
 
-									{/* Duration */}
 									<span className="text-right text-sm text-melodio-text-subdued">
 										{formatTime(track.durationInSeconds)}
 									</span>

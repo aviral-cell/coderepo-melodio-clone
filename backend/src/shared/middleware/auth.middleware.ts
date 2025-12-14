@@ -3,14 +3,6 @@ import jwt from "jsonwebtoken";
 import { AuthenticatedRequest, JwtPayload } from "../types/index.js";
 import { sendError } from "../utils/index.js";
 
-/**
- * JWT Authentication Middleware
- *
- * Validates the JWT token from the Authorization header and attaches
- * the decoded user information to the request object.
- *
- * Expected header format: Authorization: Bearer <token>
- */
 export function authMiddleware(
 	req: AuthenticatedRequest,
 	res: Response,
@@ -67,12 +59,6 @@ export function authMiddleware(
 	}
 }
 
-/**
- * Optional Authentication Middleware
- *
- * Similar to authMiddleware but does not reject requests without tokens.
- * Useful for routes that work differently for authenticated vs anonymous users.
- */
 export function optionalAuthMiddleware(
 	req: AuthenticatedRequest,
 	res: Response,
@@ -113,7 +99,6 @@ export function optionalAuthMiddleware(
 
 		next();
 	} catch {
-		// Silently continue without auth for optional middleware
 		next();
 	}
 }
