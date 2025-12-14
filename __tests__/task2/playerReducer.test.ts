@@ -317,16 +317,6 @@ describe("playerReducer", () => {
 			const stateBackToOff = playerReducer(stateOne, { type: "TOGGLE_REPEAT" });
 			expect(stateBackToOff.repeatMode).toBe("off");
 		});
-
-		it("should handle repeat mode cycling correctly through all modes", () => {
-			const expectedCycle = ["off", "all", "one", "off", "all", "one"] as const;
-			let currentState: PlayerState = { ...initialState, repeatMode: "off" };
-
-			for (let i = 1; i < expectedCycle.length; i++) {
-				currentState = playerReducer(currentState, { type: "TOGGLE_REPEAT" });
-				expect(currentState.repeatMode).toBe(expectedCycle[i]);
-			}
-		});
 	});
 
 	describe("TICK", () => {

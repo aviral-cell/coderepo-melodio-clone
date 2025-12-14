@@ -377,4 +377,62 @@ describe("Playlist Service", () => {
 			expect(result).toEqual(mockResponse);
 		});
 	});
+
+	describe("Error Handling", () => {
+		it("should propagate API errors from getAll", async () => {
+			const error = new Error("Network error");
+			mockApiService.get.mockRejectedValueOnce(error);
+
+			await expect(playlistService.getAll()).rejects.toThrow("Network error");
+		});
+
+		it("should propagate API errors from getById", async () => {
+			const error = new Error("Playlist not found");
+			mockApiService.get.mockRejectedValueOnce(error);
+
+			await expect(playlistService.getById("invalid-id")).rejects.toThrow("Playlist not found");
+		});
+
+		it("should propagate API errors from create", async () => {
+			const error = new Error("Validation error");
+			mockApiService.post.mockRejectedValueOnce(error);
+
+			await expect(playlistService.create({ name: "Test" })).rejects.toThrow("Validation error");
+		});
+
+		it("should propagate API errors from update", async () => {
+			const error = new Error("Update failed");
+			mockApiService.patch.mockRejectedValueOnce(error);
+
+			await expect(playlistService.update("playlist-123", { name: "New Name" })).rejects.toThrow("Update failed");
+		});
+
+		it("should propagate API errors from delete", async () => {
+			const error = new Error("Delete failed");
+			mockApiService.delete.mockRejectedValueOnce(error);
+
+			await expect(playlistService.delete("playlist-123")).rejects.toThrow("Delete failed");
+		});
+
+		it("should propagate API errors from reorderTracks", async () => {
+			const error = new Error("Reorder failed");
+			mockApiService.patch.mockRejectedValueOnce(error);
+
+			await expect(playlistService.reorderTracks("playlist-123", ["t1", "t2"])).rejects.toThrow("Reorder failed");
+		});
+
+		it("should propagate API errors from addTrack", async () => {
+			const error = new Error("Add track failed");
+			mockApiService.post.mockRejectedValueOnce(error);
+
+			await expect(playlistService.addTrack("playlist-123", "track-456")).rejects.toThrow("Add track failed");
+		});
+
+		it("should propagate API errors from removeTrack", async () => {
+			const error = new Error("Remove track failed");
+			mockApiService.delete.mockRejectedValueOnce(error);
+
+			await expect(playlistService.removeTrack("playlist-123", "track-456")).rejects.toThrow("Remove track failed");
+		});
+	});
 });
