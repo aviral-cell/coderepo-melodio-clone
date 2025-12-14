@@ -34,9 +34,26 @@ function randomDuration(): number {
 	return Math.floor(Math.random() * (300 - 180 + 1)) + 180;
 }
 
-function getImageUrl(seed: string, size = 300): string {
-	const encodedSeed = encodeURIComponent(seed.toLowerCase().replace(/\s+/g, "-"));
-	return `https://picsum.photos/seed/${encodedSeed}/${size}/${size}`;
+function getImageUrl(seed: string): string {
+	const normalizedSeed = seed.toLowerCase().replace(/\s+/g, "-");
+
+	if (normalizedSeed.startsWith("artist-")) {
+		const name = normalizedSeed.replace("artist-", "");
+		return `/images/artists/${name}.jpg`;
+	}
+	if (normalizedSeed.startsWith("album-")) {
+		const name = normalizedSeed.replace("album-", "");
+		return `/images/albums/${name}.jpg`;
+	}
+	if (normalizedSeed.startsWith("track-")) {
+		const name = normalizedSeed.replace("track-", "");
+		return `/images/tracks/${name}.jpg`;
+	}
+	if (normalizedSeed.startsWith("playlist-")) {
+		return `/images/playlists/${normalizedSeed}.jpg`;
+	}
+
+	return `/images/${normalizedSeed}.jpg`;
 }
 
 const artistsSeedData: ArtistSeedData[] = [

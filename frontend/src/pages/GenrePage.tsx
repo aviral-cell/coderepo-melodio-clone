@@ -17,11 +17,11 @@ interface Genre {
 }
 
 const genres: Genre[] = [
-	{ name: "Rock", slug: "rock", color: "#E13300", image: "https://picsum.photos/seed/rock-genre/200/200" },
-	{ name: "Pop", slug: "pop", color: "#1DB954", image: "https://picsum.photos/seed/pop-genre/200/200" },
-	{ name: "Jazz", slug: "jazz", color: "#8D67AB", image: "https://picsum.photos/seed/jazz-genre/200/200" },
-	{ name: "Electronic", slug: "electronic", color: "#1E3264", image: "https://picsum.photos/seed/electronic-genre/200/200" },
-	{ name: "Hip-Hop", slug: "hip-hop", color: "#E61E32", image: "https://picsum.photos/seed/hiphop-genre/200/200" },
+	{ name: "Rock", slug: "rock", color: "#E13300", image: "/images/genres/rock.jpg" },
+	{ name: "Pop", slug: "pop", color: "#1DB954", image: "/images/genres/pop.jpg" },
+	{ name: "Jazz", slug: "jazz", color: "#8D67AB", image: "/images/genres/jazz.jpg" },
+	{ name: "Electronic", slug: "electronic", color: "#1E3264", image: "/images/genres/electronic.jpg" },
+	{ name: "Hip-Hop", slug: "hip-hop", color: "#E61E32", image: "/images/genres/hiphop.jpg" },
 ];
 
 export default function GenrePage(): JSX.Element {
