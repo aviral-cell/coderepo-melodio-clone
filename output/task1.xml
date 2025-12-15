@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="16" failures="0" errors="0" time="3.059">
+  <testsuite name="Playlist Operations Behavior Tests" errors="0" failures="0" skipped="0" timestamp="2025-12-15T13:49:28" time="2.326" tests="16">
+    <testcase classname="Playlist Operations Behavior Tests Playlist Loading and Display should display loading state initially" name="Playlist Operations Behavior Tests Playlist Loading and Display should display loading state initially" time="0.036">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Playlist Loading and Display should display all tracks in correct order after loading" name="Playlist Operations Behavior Tests Playlist Loading and Display should display all tracks in correct order after loading" time="0.077">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Playlist Loading and Display should display playlist name and track count" name="Playlist Operations Behavior Tests Playlist Loading and Display should display playlist name and track count" time="0.037">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Playlist Loading and Display should display empty state when playlist has no tracks" name="Playlist Operations Behavior Tests Playlist Loading and Display should display empty state when playlist has no tracks" time="0.035">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Playlist Loading and Display should make GET request to correct endpoint" name="Playlist Operations Behavior Tests Playlist Loading and Display should make GET request to correct endpoint" time="0.019">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Remove Track should remove track from list when remove button is clicked" name="Playlist Operations Behavior Tests Remove Track should remove track from list when remove button is clicked" time="0.264">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Remove Track should make DELETE request to correct endpoint when removing track" name="Playlist Operations Behavior Tests Remove Track should make DELETE request to correct endpoint when removing track" time="0.213">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Remove Track should keep track in list when API returns error" name="Playlist Operations Behavior Tests Remove Track should keep track in list when API returns error" time="0.202">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Remove Track should handle removing the last track" name="Playlist Operations Behavior Tests Remove Track should handle removing the last track" time="0.182">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Drag and Drop Reorder should display drag handles for each track" name="Playlist Operations Behavior Tests Drag and Drop Reorder should display drag handles for each track" time="0.053">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Drag and Drop Reorder should have draggable track items with correct ARIA attributes" name="Playlist Operations Behavior Tests Drag and Drop Reorder should have draggable track items with correct ARIA attributes" time="0.039">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Drag and Drop Reorder should make PATCH request to reorder endpoint when drag completes" name="Playlist Operations Behavior Tests Drag and Drop Reorder should make PATCH request to reorder endpoint when drag completes" time="0.061">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Drag and Drop Reorder should send trackIds array in reorder request body" name="Playlist Operations Behavior Tests Drag and Drop Reorder should send trackIds array in reorder request body" time="0.036">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Playlist Actions Menu should display playlist action menu with edit and delete options" name="Playlist Operations Behavior Tests Playlist Actions Menu should display playlist action menu with edit and delete options" time="0.127">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Track Playback should have play button for each track" name="Playlist Operations Behavior Tests Track Playback should have play button for each track" time="0.067">
+    </testcase>
+    <testcase classname="Playlist Operations Behavior Tests Track Playback should have play all button for playlist" name="Playlist Operations Behavior Tests Track Playback should have play all button for playlist" time="0.031">
+    </testcase>
+  </testsuite>
+</testsuites>

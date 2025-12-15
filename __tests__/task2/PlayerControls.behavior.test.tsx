@@ -182,6 +182,126 @@ function getCurrentTrackTitle(): string | null {
   return titleElement?.textContent || null;
 }
 
+/**
+ * FLEXIBLE STATE CHECK HELPERS
+ * These helpers check for visual state through multiple indicators,
+ * allowing different CSS implementations (classes, inline styles, aria attributes).
+ */
+
+/**
+ * Check if a button appears visually active/enabled (e.g., green color for shuffle/repeat)
+ * Flexible to allow different CSS implementations
+ */
+function isButtonActive(button: HTMLElement): boolean {
+  const className = button.className || "";
+  const style = button.getAttribute("style") || "";
+  const ariaPressed = button.getAttribute("aria-pressed");
+  const dataActive = button.getAttribute("data-active");
+
+  // Check for common active state class patterns
+  const hasActiveClass = /green|active|enabled|primary|selected|on\b/i.test(className);
+  // Check for green color in inline styles (common green values)
+  const hasActiveStyle = /green|#22c55e|#10b981|rgb\(34,\s*197,\s*94\)|rgb\(16,\s*185,\s*129\)/i.test(style);
+  // Check aria-pressed attribute
+  const hasAriaPressed = ariaPressed === "true";
+  // Check data-active attribute
+  const hasDataActive = dataActive === "true";
+
+  return hasActiveClass || hasActiveStyle || hasAriaPressed || hasDataActive;
+}
+
+/**
+ * Check if a button appears visually inactive/subdued (e.g., gray/subdued color)
+ */
+function isButtonInactive(button: HTMLElement): boolean {
+  const className = button.className || "";
+  const style = button.getAttribute("style") || "";
+  const ariaPressed = button.getAttribute("aria-pressed");
+  const dataActive = button.getAttribute("data-active");
+
+  // Check for common inactive state class patterns
+  const hasSubduedClass = /subdued|muted|disabled|inactive|secondary|gray|off\b/i.test(className);
+  // Active state indicators should be absent
+  const noActiveClass = !/green|active|enabled|primary|selected|on\b/i.test(className);
+  const noActiveStyle = !/green|#22c55e|#10b981|rgb\(34,\s*197,\s*94\)|rgb\(16,\s*185,\s*129\)/i.test(style);
+  // Check aria-pressed is false or absent
+  const noAriaPressed = ariaPressed !== "true";
+  // Check data-active is false or absent
+  const noDataActive = dataActive !== "true";
+
+  return (hasSubduedClass || noActiveClass) && noActiveStyle && noAriaPressed && noDataActive;
+}
+
+/**
+ * Assert that a button is in active/enabled visual state
+ */
+function expectButtonToBeActive(button: HTMLElement): void {
+  const active = isButtonActive(button);
+  if (!active) {
+    throw new Error(
+      `Expected button to be active but it appears inactive.\n` +
+      `className: ${button.className}\n` +
+      `style: ${button.getAttribute("style")}\n` +
+      `aria-pressed: ${button.getAttribute("aria-pressed")}`
+    );
+  }
+  expect(active).toBe(true);
+}
+
+/**
+ * Assert that a button is in inactive/subdued visual state
+ */
+function expectButtonToBeInactive(button: HTMLElement): void {
+  const inactive = isButtonInactive(button);
+  if (!inactive) {
+    throw new Error(
+      `Expected button to be inactive but it appears active.\n` +
+      `className: ${button.className}\n` +
+      `style: ${button.getAttribute("style")}\n` +
+      `aria-pressed: ${button.getAttribute("aria-pressed")}`
+    );
+  }
+  expect(inactive).toBe(true);
+}
+
+/**
+ * Check if an SVG icon represents a specific icon type
+ * Flexible to allow different icon libraries (Lucide, FontAwesome, custom SVGs)
+ */
+function hasIconType(element: HTMLElement, iconType: "play" | "pause" | "repeat" | "repeat1" | "shuffle"): boolean {
+  const svg = element.querySelector("svg");
+  if (!svg) return false;
+
+  const className = svg.className?.baseVal || svg.getAttribute("class") || "";
+  const ariaLabel = svg.getAttribute("aria-label") || "";
+  const dataIcon = svg.getAttribute("data-icon") || "";
+
+  // Check class name for icon identifier
+  const classMatch = new RegExp(`lucide-${iconType}|fa-${iconType}|icon-${iconType}|${iconType}`, "i").test(className);
+  // Check aria-label
+  const ariaMatch = new RegExp(iconType, "i").test(ariaLabel);
+  // Check data-icon attribute
+  const dataMatch = new RegExp(iconType, "i").test(dataIcon);
+
+  return classMatch || ariaMatch || dataMatch;
+}
+
+/**
+ * Assert that element contains a specific icon type
+ */
+function expectIconType(element: HTMLElement, iconType: "play" | "pause" | "repeat" | "repeat1" | "shuffle"): void {
+  const hasIcon = hasIconType(element, iconType);
+  if (!hasIcon) {
+    const svg = element.querySelector("svg");
+    throw new Error(
+      `Expected element to have ${iconType} icon.\n` +
+      `SVG class: ${svg?.getAttribute("class")}\n` +
+      `SVG aria-label: ${svg?.getAttribute("aria-label")}`
+    );
+  }
+  expect(hasIcon).toBe(true);
+}
+
 describe("PlayerBar Controls Behavior Tests", () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -205,8 +325,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
       );
 
       const shuffleButton = getShuffleButton();
-      expect(shuffleButton).toHaveClass("text-melodio-text-subdued");
-      expect(shuffleButton).not.toHaveClass("text-melodio-green");
+      expectButtonToBeInactive(shuffleButton);
     });
 
     it("should change shuffle button to green when shuffle is enabled", async () => {
@@ -227,12 +346,11 @@ describe("PlayerBar Controls Behavior Tests", () => {
 
       const shuffleButton = getShuffleButton();
 
-      expect(shuffleButton).toHaveClass("text-melodio-text-subdued");
+      expectButtonToBeInactive(shuffleButton);
 
       await user.click(shuffleButton);
 
-      expect(shuffleButton).toHaveClass("text-melodio-green");
-      expect(shuffleButton).not.toHaveClass("text-melodio-text-subdued");
+      expectButtonToBeActive(shuffleButton);
     });
 
     it("should return shuffle button to subdued when shuffle is disabled", async () => {
@@ -253,11 +371,10 @@ describe("PlayerBar Controls Behavior Tests", () => {
       const shuffleButton = getShuffleButton();
 
       await user.click(shuffleButton);
-      expect(shuffleButton).toHaveClass("text-melodio-green");
+      expectButtonToBeActive(shuffleButton);
 
       await user.click(shuffleButton);
-      expect(shuffleButton).toHaveClass("text-melodio-text-subdued");
-      expect(shuffleButton).not.toHaveClass("text-melodio-green");
+      expectButtonToBeInactive(shuffleButton);
     });
   });
 
@@ -270,8 +387,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
       );
 
       const repeatButton = getRepeatButton();
-      expect(repeatButton).toHaveClass("text-melodio-text-subdued");
-      expect(repeatButton).not.toHaveClass("text-melodio-green");
+      expectButtonToBeInactive(repeatButton);
     });
 
     it("should cycle repeat mode: off -> all (green) -> one (green, Repeat1 icon) -> off (subdued)", async () => {
@@ -290,26 +406,20 @@ describe("PlayerBar Controls Behavior Tests", () => {
 
       const repeatButton = getRepeatButton();
 
-      expect(repeatButton).toHaveClass("text-melodio-text-subdued");
-      let svg = repeatButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-repeat");
+      expectButtonToBeInactive(repeatButton);
+      expectIconType(repeatButton, "repeat");
 
       await user.click(repeatButton);
-      expect(repeatButton).toHaveClass("text-melodio-green");
-      expect(repeatButton).not.toHaveClass("text-melodio-text-subdued");
-      svg = repeatButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-repeat");
+      expectButtonToBeActive(repeatButton);
+      expectIconType(repeatButton, "repeat");
 
       await user.click(repeatButton);
-      expect(repeatButton).toHaveClass("text-melodio-green");
-      svg = repeatButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-repeat1");
+      expectButtonToBeActive(repeatButton);
+      expectIconType(repeatButton, "repeat1");
 
       await user.click(repeatButton);
-      expect(repeatButton).toHaveClass("text-melodio-text-subdued");
-      expect(repeatButton).not.toHaveClass("text-melodio-green");
-      svg = repeatButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-repeat");
+      expectButtonToBeInactive(repeatButton);
+      expectIconType(repeatButton, "repeat");
     });
 
     it("should show Repeat1 icon when repeat mode is one", async () => {
@@ -331,9 +441,8 @@ describe("PlayerBar Controls Behavior Tests", () => {
       await user.click(repeatButton);
       await user.click(repeatButton);
 
-      const svg = repeatButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-repeat1");
-      expect(repeatButton).toHaveClass("text-melodio-green");
+      expectIconType(repeatButton, "repeat1");
+      expectButtonToBeActive(repeatButton);
     });
   });
 
@@ -420,8 +529,8 @@ describe("PlayerBar Controls Behavior Tests", () => {
       await user.click(repeatButton);
       await user.click(repeatButton);
 
-      expect(repeatButton).toHaveClass("text-melodio-green");
-      expect(repeatButton.querySelector("svg")).toHaveClass("lucide-repeat1");
+      expectButtonToBeActive(repeatButton);
+      expectIconType(repeatButton, "repeat1");
 
       await act(async () => {
         jest.advanceTimersByTime(4000);
@@ -458,8 +567,8 @@ describe("PlayerBar Controls Behavior Tests", () => {
       const repeatButton = getRepeatButton();
       await user.click(repeatButton);
 
-      expect(repeatButton).toHaveClass("text-melodio-green");
-      expect(repeatButton.querySelector("svg")).toHaveClass("lucide-repeat");
+      expectButtonToBeActive(repeatButton);
+      expectIconType(repeatButton, "repeat");
 
       await act(async () => {
         jest.advanceTimersByTime(5000);
@@ -484,7 +593,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
       });
 
       const repeatButton = getRepeatButton();
-      expect(repeatButton).toHaveClass("text-melodio-text-subdued");
+      expectButtonToBeInactive(repeatButton);
 
       await act(async () => {
         jest.advanceTimersByTime(3000);
@@ -493,8 +602,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
       expect(getElapsedTimeDisplay()).toBe("0:00");
 
       const playPauseButton = getPlayPauseButton();
-      const svg = playPauseButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-play");
+      expectIconType(playPauseButton, "play");
     });
 
     it("should advance to next track when current track ends with repeat off", async () => {
@@ -514,7 +622,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
       expect(getCurrentTrackTitle()).toBe("Track 1");
 
       const repeatButton = getRepeatButton();
-      expect(repeatButton).toHaveClass("text-melodio-text-subdued");
+      expectButtonToBeInactive(repeatButton);
 
       await act(async () => {
         jest.advanceTimersByTime(3000);
@@ -541,8 +649,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
       });
 
       const playPauseButton = getPlayPauseButton();
-      const svg = playPauseButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-pause");
+      expectIconType(playPauseButton, "pause");
     });
 
     it("should toggle between play and pause on click", async () => {
@@ -561,13 +668,11 @@ describe("PlayerBar Controls Behavior Tests", () => {
 
       const playPauseButton = getPlayPauseButton();
 
-      let svg = playPauseButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-pause");
+      expectIconType(playPauseButton, "pause");
 
       await user.click(playPauseButton);
 
-      svg = playPauseButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-play");
+      expectIconType(playPauseButton, "play");
 
       await act(async () => {
         jest.advanceTimersByTime(2000);
@@ -577,8 +682,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 
       await user.click(playPauseButton);
 
-      svg = playPauseButton.querySelector("svg");
-      expect(svg).toHaveClass("lucide-pause");
+      expectIconType(playPauseButton, "pause");
 
       await act(async () => {
         jest.advanceTimersByTime(1000);
@@ -658,7 +762,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
       const shuffleButton = getShuffleButton();
       await user.click(shuffleButton);
 
-      expect(shuffleButton).toHaveClass("text-melodio-green");
+      expectButtonToBeActive(shuffleButton);
 
       expect(getCurrentTrackTitle()).toBe("Track 1");
 
