@@ -24,6 +24,12 @@ export function createApp(): Application {
 	app.use(
 		helmet({
 			crossOriginResourcePolicy: { policy: "cross-origin" },
+			contentSecurityPolicy: {
+				directives: {
+					...helmet.contentSecurityPolicy.getDefaultDirectives(),
+					"frame-ancestors": ["'self'", "*.hrcdn.net", "*.hackerrank.com"],
+				},
+			},
 		}),
 	);
 

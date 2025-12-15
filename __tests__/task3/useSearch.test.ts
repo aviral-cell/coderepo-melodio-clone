@@ -33,18 +33,18 @@ const createMockTrack = (id: string): TrackWithPopulated => ({
 	title: `Track ${id}`,
 	duration: 180,
 	trackNumber: 1,
-	audioUrl: `http://example.com/${id}.mp3`,
+	audioUrl: `https://www.hackerrank.com/${id}.mp3`,
 	createdAt: "2023-01-01T00:00:00Z",
 	updatedAt: "2023-01-01T00:00:00Z",
 	artistId: {
 		_id: "artist-1",
 		name: "Test Artist",
-		imageUrl: "http://example.com/artist.jpg",
+		imageUrl: "https://www.hackerrank.com/artist.jpg",
 	},
 	albumId: {
 		_id: "album-1",
 		title: "Test Album",
-		coverImageUrl: "http://example.com/album.jpg",
+		coverImageUrl: "https://www.hackerrank.com/album.jpg",
 	},
 });
 

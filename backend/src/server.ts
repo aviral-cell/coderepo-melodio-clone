@@ -36,8 +36,9 @@ async function startServer(): Promise<void> {
 
 	const app = createApp();
 
-	const server = app.listen(config.port, () => {
-		console.log(`Server running on http://localhost:${config.port}`);
+	const host = "0.0.0.0";
+	const server = app.listen(config.port, host, () => {
+		console.log(`Server running on http://${host}:${config.port}`);
 		console.log(`Environment: ${config.nodeEnv}`);
 	});
 

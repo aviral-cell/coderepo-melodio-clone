@@ -99,7 +99,7 @@ npm run test         # All tests (tasks + others)
 - **And:** Response status is 201
 
 #### Scenario: Registration fails when email already exists
-- **Given:** Email "test@example.com" is already registered
+- **Given:** Email "test@hackerrank.com" is already registered
 - **When:** New user tries to register with same email
 - **Then:** Response status is 409 Conflict
 - **And:** Error message indicates email already registered
@@ -125,37 +125,37 @@ npm run test         # All tests (tasks + others)
 - **And:** Validation error indicates missing field
 
 #### Scenario: Email is stored lowercase regardless of input case
-- **Given:** Email is "Test@EXAMPLE.com"
+- **Given:** Email is "Test@hackerrank.com"
 - **When:** User successfully registers
-- **Then:** Email stored in database is "test@example.com"
+- **Then:** Email stored in database is "test@hackerrank.com"
 
 ---
 
 ### 1.2 Login User
 
 #### Scenario: Successful login with valid credentials
-- **Given:** User exists with email "test@example.com" and password "password123"
+- **Given:** User exists with email "test@hackerrank.com" and password "password123"
 - **When:** Login with correct email and password
 - **Then:** Response status is 200 OK
 - **And:** JWT access token is returned
 - **And:** User object is returned (without passwordHash)
 
 #### Scenario: Login fails with incorrect password
-- **Given:** User exists with email "test@example.com"
+- **Given:** User exists with email "test@hackerrank.com"
 - **When:** Login with correct email but wrong password
 - **Then:** Response status is 401 Unauthorized
 - **And:** Generic error message "Invalid email or password"
 - **And:** No token is returned
 
 #### Scenario: Login fails with non-existent email
-- **Given:** No user with email "nonexistent@example.com"
+- **Given:** No user with email "nonexistent@hackerrank.com"
 - **When:** Login with that email
 - **Then:** Response status is 401 Unauthorized
 - **And:** Generic error message "Invalid email or password"
 
 #### Scenario: Login is case-insensitive for email
-- **Given:** User registered with email "test@example.com"
-- **When:** Login with email "TEST@Example.COM"
+- **Given:** User registered with email "test@hackerrank.com"
+- **When:** Login with email "TEST@hackerrank.com"
 - **Then:** Login succeeds
 
 ---

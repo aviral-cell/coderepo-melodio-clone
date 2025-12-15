@@ -136,7 +136,7 @@ let app: Application;
 let authToken: string;
 
 const testUser = {
-	email: "searchtest@example.com",
+	email: "searchtest@hackerrank.com",
 	username: "searchtestuser",
 	password: "Password123!",
 	displayName: "Search Test User",
@@ -146,7 +146,7 @@ async function createTestArtist(name: string, genre: string): Promise<IArtistDoc
 	return Artist.create({
 		name,
 		bio: `Bio for ${name}`,
-		image_url: `https://example.com/${name.toLowerCase().replace(/\s/g, "-")}.jpg`,
+		image_url: `https://www.hackerrank.com/${name.toLowerCase().replace(/\s/g, "-")}.jpg`,
 		genres: [genre],
 		follower_count: 1000,
 	});
@@ -160,7 +160,7 @@ async function createTestAlbum(
 		title,
 		artist_id: artistId,
 		release_date: new Date("2023-01-01"),
-		cover_image_url: `https://example.com/${title.toLowerCase().replace(/\s/g, "-")}.jpg`,
+		cover_image_url: `https://www.hackerrank.com/${title.toLowerCase().replace(/\s/g, "-")}.jpg`,
 		total_tracks: 5,
 	});
 }
@@ -180,7 +180,7 @@ async function createTestTrack(
 		track_number: trackNumber,
 		genre: genre.toLowerCase(),
 		play_count: 100,
-		cover_image_url: `https://example.com/${title.toLowerCase().replace(/\s/g, "-")}.jpg`,
+		cover_image_url: `https://www.hackerrank.com/${title.toLowerCase().replace(/\s/g, "-")}.jpg`,
 	});
 }
 
