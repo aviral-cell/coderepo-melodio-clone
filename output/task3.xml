@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="32" failures="0" errors="0" time="6.818">
+  <testsuite name="Search Feature - Behavior Tests" errors="0" failures="0" skipped="0" timestamp="2025-12-15T11:14:00" time="2.256" tests="22">
+    <testcase classname="Search Feature - Behavior Tests Dropdown Visibility should not render when isOpen is false" name="Search Feature - Behavior Tests Dropdown Visibility should not render when isOpen is false" time="0.043">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Dropdown Visibility should render when isOpen is true" name="Search Feature - Behavior Tests Dropdown Visibility should render when isOpen is true" time="0.017">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Empty Query Behavior should show no results message for empty query without API call" name="Search Feature - Behavior Tests Empty Query Behavior should show no results message for empty query without API call" time="0.009">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Empty Query Behavior should show no results message for whitespace-only query without API call" name="Search Feature - Behavior Tests Empty Query Behavior should show no results message for whitespace-only query without API call" time="0.011">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Debounce Behavior should debounce API calls when query changes" name="Search Feature - Behavior Tests Debounce Behavior should debounce API calls when query changes" time="0.044">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Debounce Behavior should call API after debounce delay (300ms)" name="Search Feature - Behavior Tests Debounce Behavior should call API after debounce delay (300ms)" time="0.01">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Debounce Behavior should reset debounce timer on rapid query changes" name="Search Feature - Behavior Tests Debounce Behavior should reset debounce timer on rapid query changes" time="0.012">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Loading State should show loading indicator during API fetch" name="Search Feature - Behavior Tests Loading State should show loading indicator during API fetch" time="0.011">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Loading State should hide loading indicator after fetch completes" name="Search Feature - Behavior Tests Loading State should hide loading indicator after fetch completes" time="0.016">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Results Display should display search results after successful API response" name="Search Feature - Behavior Tests Results Display should display search results after successful API response" time="0.014">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Results Display should display track title correctly" name="Search Feature - Behavior Tests Results Display should display track title correctly" time="0.007">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Results Display should display artist and album info correctly" name="Search Feature - Behavior Tests Results Display should display artist and album info correctly" time="0.009">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Results Display should display track duration correctly" name="Search Feature - Behavior Tests Results Display should display track duration correctly" time="0.006">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Results Display should show singular RESULT text for single track" name="Search Feature - Behavior Tests Results Display should show singular RESULT text for single track" time="0.01">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests No Results State should display &apos;No results found&apos; when API returns empty array" name="Search Feature - Behavior Tests No Results State should display &apos;No results found&apos; when API returns empty array" time="0.007">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Error State should display error message when API call fails" name="Search Feature - Behavior Tests Error State should display error message when API call fails" time="0.006">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Error State should display generic error message for non-Error exceptions" name="Search Feature - Behavior Tests Error State should display generic error message for non-Error exceptions" time="0.004">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Track Selection should call onTrackSelect callback when track is clicked" name="Search Feature - Behavior Tests Track Selection should call onTrackSelect callback when track is clicked" time="0.102">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Track Selection should call onClose callback when track is clicked" name="Search Feature - Behavior Tests Track Selection should call onClose callback when track is clicked" time="0.02">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Query Changes should fetch new results when query changes" name="Search Feature - Behavior Tests Query Changes should fetch new results when query changes" time="0.01">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Query Changes should clear error when query becomes empty" name="Search Feature - Behavior Tests Query Changes should clear error when query becomes empty" time="0.008">
+    </testcase>
+    <testcase classname="Search Feature - Behavior Tests Race Condition Handling should cancel previous request when query changes rapidly" name="Search Feature - Behavior Tests Race Condition Handling should cancel previous request when query changes rapidly" time="0.009">
+    </testcase>
+  </testsuite>
+  <testsuite name="Search Service" errors="0" failures="0" skipped="0" timestamp="2025-12-15T11:13:59" time="5.77" tests="10">
+    <testcase classname="Search Service GET /api/tracks/search should return track search results with populated artist and album info" name="Search Service GET /api/tracks/search should return track search results with populated artist and album info" time="0.05">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should use prefix-based matching (case-insensitive)" name="Search Service GET /api/tracks/search should use prefix-based matching (case-insensitive)" time="0.029">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should limit results to maximum 5 tracks" name="Search Service GET /api/tracks/search should limit results to maximum 5 tracks" time="0.041">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should return empty array for empty query" name="Search Service GET /api/tracks/search should return empty array for empty query" time="0.018">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should return empty array for whitespace-only query" name="Search Service GET /api/tracks/search should return empty array for whitespace-only query" time="0.015">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should return empty array when no matches found" name="Search Service GET /api/tracks/search should return empty array when no matches found" time="0.02">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should return 401 Unauthorized without token" name="Search Service GET /api/tracks/search should return 401 Unauthorized without token" time="0.009">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should return 401 Unauthorized with invalid token" name="Search Service GET /api/tracks/search should return 401 Unauthorized with invalid token" time="0.011">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should handle special characters in search query" name="Search Service GET /api/tracks/search should handle special characters in search query" time="0.024">
+    </testcase>
+    <testcase classname="Search Service GET /api/tracks/search should return empty array without q parameter" name="Search Service GET /api/tracks/search should return empty array without q parameter" time="0.016">
+    </testcase>
+  </testsuite>
+</testsuites>
