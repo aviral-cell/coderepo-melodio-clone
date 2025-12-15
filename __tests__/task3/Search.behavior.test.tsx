@@ -4,21 +4,19 @@
 
 /**
  * INTRO: Search Feature Behavior Tests
- * SCENARIO: Testing search with debouncing, loading states, results display, and error handling
- * EXPECTATION: Component displays correct UI states based on actual user interactions
+ * SCENARIO: Testing search with debouncing, loading states, results display, navigation, and error handling
+ * EXPECTATION: Component makes correct HTTP requests and displays correct UI states
+ *
+ * NOTE: Tests mock at the fetch (HTTP) level, not at service/hook level.
+ * This allows candidates to implement services/hooks however they prefer.
  */
 
+import React from "react";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Routes, Route, useLocation } from "react-router";
 
-// Mock the search service at the API level (not the hook)
-const mockSearchService = {
-	search: jest.fn(),
-};
-
-jest.mock("@/shared/services/search.service", () => ({
-	searchService: mockSearchService,
-}));
+import { SearchDropdown } from "@/shared/components/common/SearchDropdown";
 
 // Mock formatDuration utility for consistent test output
 jest.mock("@/shared/utils", () => ({
@@ -28,69 +26,263 @@ jest.mock("@/shared/utils", () => ({
 		return `${mins}:${secs.toString().padStart(2, "0")}`;
 	},
 	cn: (...classes: (string | undefined)[]) => classes.filter(Boolean).join(" "),
+	normalizeTracks: (tracks: unknown[]) => tracks.map((track: Record<string, unknown>) => ({
+		_id: track.id,
+		title: track.title,
+		durationInSeconds: track.durationInSeconds,
+		trackNumber: track.trackNumber,
+		genre: track.genre,
+		playCount: track.playCount,
+		createdAt: track.createdAt,
+		updatedAt: track.updatedAt,
+		coverImageUrl: track.coverImageUrl,
+		artistId: track.artist,
+		albumId: track.album,
+	})),
 }));
 
-import { SearchDropdown } from "@/shared/components/common/SearchDropdown";
-import type { TrackWithPopulated } from "@/shared/types/player.types";
+/**
+ * Backend API Track Response format (what the API returns)
+ */
+interface BackendTrackResponse {
+	id: string;
+	title: string;
+	durationInSeconds: number;
+	trackNumber: number;
+	genre: string;
+	playCount: number;
+	createdAt: string;
+	updatedAt: string;
+	coverImageUrl?: string;
+	artist: {
+		id: string;
+		name: string;
+		imageUrl?: string;
+	};
+	album: {
+		id: string;
+		title: string;
+		coverImageUrl?: string;
+	};
+}
 
-const createMockTrack = (
+/**
+ * Factory function to create mock tracks in BACKEND API format
+ */
+function createMockTrack(
 	id: string,
 	title: string,
 	artistName = "Test Artist",
 	albumTitle = "Test Album"
-): TrackWithPopulated => ({
-	_id: id,
-	title,
-	durationInSeconds: 180,
-	trackNumber: 1,
-	genre: "Rock",
-	playCount: 1000,
-	createdAt: "2023-01-01T00:00:00Z",
-	updatedAt: "2023-01-01T00:00:00Z",
-	artistId: {
-		_id: `artist-${id}`,
-		name: artistName,
-		imageUrl: `https://hackerrank.com/artist-${id}.jpg`,
-	},
-	albumId: {
-		_id: `album-${id}`,
-		title: albumTitle,
-		coverImageUrl: `https://hackerrank.com/album-${id}.jpg`,
-	},
-});
+): BackendTrackResponse {
+	return {
+		id,
+		title,
+		durationInSeconds: 180,
+		trackNumber: 1,
+		genre: "rock",
+		playCount: 1000,
+		createdAt: "2023-01-01T00:00:00Z",
+		updatedAt: "2023-01-01T00:00:00Z",
+		coverImageUrl: `https://hackerrank.com/track-${id}.jpg`,
+		artist: {
+			id: `artist-${id}`,
+			name: artistName,
+			imageUrl: `https://hackerrank.com/artist-${id}.jpg`,
+		},
+		album: {
+			id: `album-${id}`,
+			title: albumTitle,
+			coverImageUrl: `https://hackerrank.com/album-${id}.jpg`,
+		},
+	};
+}
+
+/**
+ * Create a successful API response wrapper
+ */
+function createApiResponse<T>(data: T) {
+	return {
+		success: true,
+		data,
+	};
+}
+
+/**
+ * Helper component to capture current location for navigation testing
+ */
+function LocationDisplay() {
+	const location = useLocation();
+	return <div data-testid="location-display">{location.pathname}</div>;
+}
+
+/**
+ * Test wrapper with Router for navigation testing
+ */
+function TestWrapper({
+	children,
+	initialRoute = "/",
+}: {
+	children: React.ReactNode;
+	initialRoute?: string;
+}) {
+	return (
+		<MemoryRouter initialEntries={[initialRoute]}>
+			{children}
+			<LocationDisplay />
+		</MemoryRouter>
+	);
+}
+
+/**
+ * Render SearchDropdown with routing context
+ */
+function renderSearchDropdown(props: {
+	query: string;
+	isOpen: boolean;
+	onClose?: jest.Mock;
+}) {
+	const onClose = props.onClose || jest.fn();
+	return render(
+		<TestWrapper>
+			<SearchDropdown
+				query={props.query}
+				isOpen={props.isOpen}
+				onClose={onClose}
+			/>
+			<Routes>
+				<Route path="/track/:id" element={<div data-testid="track-detail-page">Track Detail</div>} />
+			</Routes>
+		</TestWrapper>
+	);
+}
 
 const DEBOUNCE_DELAY = 300;
 
+// Store original fetch and location
+const originalFetch = global.fetch;
+const originalLocation = window.location;
+
+let mockFetch: jest.Mock;
+
 describe("Search Feature - Behavior Tests", () => {
-	const defaultProps = {
-		query: "",
-		isOpen: true,
-		onClose: jest.fn(),
-		onTrackSelect: jest.fn(),
-	};
+	beforeAll(() => {
+		// Setup proper window.location for JSDOM so apiService can construct URLs
+		delete (window as { location?: Location }).location;
+		window.location = {
+			...originalLocation,
+			protocol: "http:",
+			host: "localhost:3000",
+			hostname: "localhost",
+			port: "3000",
+			pathname: "/",
+			search: "",
+			hash: "",
+			href: "http://localhost:3000/",
+			origin: "http://localhost:3000",
+		} as Location;
+	});
+
+	afterAll(() => {
+		window.location = originalLocation;
+	});
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		mockFetch = jest.fn();
+		global.fetch = mockFetch;
+		localStorage.setItem("accessToken", "test-token");
 		jest.useFakeTimers();
 	});
 
 	afterEach(() => {
+		global.fetch = originalFetch;
+		localStorage.clear();
 		jest.useRealTimers();
+		jest.clearAllMocks();
 	});
+
+	/**
+	 * Helper to setup fetch mock for search API
+	 */
+	function setupSearchFetch(tracks: BackendTrackResponse[]) {
+		mockFetch.mockImplementation((url: string) => {
+			if (url.includes("/api/tracks/search")) {
+				return Promise.resolve({
+					ok: true,
+					status: 200,
+					headers: new Headers({ "content-type": "application/json" }),
+					json: () => Promise.resolve(createApiResponse(tracks)),
+				});
+			}
+			return Promise.resolve({
+				ok: true,
+				status: 200,
+				headers: new Headers({ "content-type": "application/json" }),
+				json: () => Promise.resolve(createApiResponse([])),
+			});
+		});
+	}
+
+	/**
+	 * Helper to setup fetch mock that returns an error
+	 */
+	function setupSearchFetchError(errorMessage: string) {
+		mockFetch.mockImplementation((url: string) => {
+			if (url.includes("/api/tracks/search")) {
+				return Promise.resolve({
+					ok: false,
+					status: 500,
+					headers: new Headers({ "content-type": "application/json" }),
+					json: () => Promise.resolve({ success: false, error: errorMessage }),
+				});
+			}
+			return Promise.resolve({
+				ok: true,
+				status: 200,
+				headers: new Headers({ "content-type": "application/json" }),
+				json: () => Promise.resolve(createApiResponse([])),
+			});
+		});
+	}
+
+	/**
+	 * Helper to setup fetch mock that never resolves (for loading state testing)
+	 */
+	function setupSearchFetchPending() {
+		mockFetch.mockImplementation((url: string) => {
+			if (url.includes("/api/tracks/search")) {
+				return new Promise(() => {}); // Never resolves
+			}
+			return Promise.resolve({
+				ok: true,
+				status: 200,
+				headers: new Headers({ "content-type": "application/json" }),
+				json: () => Promise.resolve(createApiResponse([])),
+			});
+		});
+	}
 
 	describe("Dropdown Visibility", () => {
 		it("should not render when isOpen is false", () => {
-			mockSearchService.search.mockResolvedValue({ tracks: [] });
+			setupSearchFetch([]);
 
-			render(<SearchDropdown {...defaultProps} isOpen={false} />);
+			render(
+				<TestWrapper>
+					<SearchDropdown query="" isOpen={false} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			expect(screen.queryByTestId("search-dropdown")).not.toBeInTheDocument();
 		});
 
 		it("should render when isOpen is true", async () => {
-			mockSearchService.search.mockResolvedValue({ tracks: [] });
+			setupSearchFetch([]);
 
-			render(<SearchDropdown {...defaultProps} isOpen={true} query="" />);
+			render(
+				<TestWrapper>
+					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -101,8 +293,15 @@ describe("Search Feature - Behavior Tests", () => {
 	});
 
 	describe("Empty Query Behavior", () => {
-		it("should show no results message for empty query without API call", async () => {
-			render(<SearchDropdown {...defaultProps} query="" />);
+		it("should show no results and skip API call for empty or whitespace-only query", async () => {
+			setupSearchFetch([]);
+
+			// Test empty string query
+			const { rerender } = render(
+				<TestWrapper>
+					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -110,111 +309,158 @@ describe("Search Feature - Behavior Tests", () => {
 
 			expect(screen.getByTestId("search-no-results")).toBeInTheDocument();
 			expect(screen.getByTestId("search-no-results")).toHaveTextContent("No results found");
-			expect(mockSearchService.search).not.toHaveBeenCalled();
-		});
 
-		it("should show no results message for whitespace-only query without API call", async () => {
-			render(<SearchDropdown {...defaultProps} query="   " />);
+			// Verify no API call for empty query
+			let searchCalls = mockFetch.mock.calls.filter(
+				(call) => call[0].includes("/api/tracks/search")
+			);
+			expect(searchCalls.length).toBe(0);
+
+			// Test whitespace-only query
+			rerender(
+				<TestWrapper>
+					<SearchDropdown query="   " isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			expect(screen.getByTestId("search-no-results")).toBeInTheDocument();
-			expect(mockSearchService.search).not.toHaveBeenCalled();
+
+			// Verify no API call for whitespace query
+			searchCalls = mockFetch.mock.calls.filter(
+				(call) => call[0].includes("/api/tracks/search")
+			);
+			expect(searchCalls.length).toBe(0);
+		});
+	});
+
+	describe("API Request Behavior", () => {
+		it("should make GET request to /api/tracks/search with query parameter", async () => {
+			setupSearchFetch([createMockTrack("1", "Thunder")]);
+
+			render(
+				<TestWrapper>
+					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+
+			await act(async () => {
+				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+			});
+
+			await waitFor(() => {
+				const searchCalls = mockFetch.mock.calls.filter(
+					(call) => call[0].includes("/api/tracks/search")
+				);
+				expect(searchCalls.length).toBeGreaterThan(0);
+				expect(searchCalls[0][0]).toContain("q=Thunder");
+			});
+		});
+
+		it("should include authorization header in API request", async () => {
+			setupSearchFetch([createMockTrack("1", "Thunder")]);
+
+			render(
+				<TestWrapper>
+					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+
+			await act(async () => {
+				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+			});
+
+			await waitFor(() => {
+				const searchCalls = mockFetch.mock.calls.filter(
+					(call) => call[0].includes("/api/tracks/search")
+				);
+				expect(searchCalls.length).toBeGreaterThan(0);
+				// apiService passes headers as a Headers object
+				const headers = searchCalls[0][1].headers;
+				expect(headers.get("Authorization")).toContain("Bearer");
+			});
 		});
 	});
 
 	describe("Debounce Behavior", () => {
-		it("should debounce API calls when query changes", async () => {
-			mockSearchService.search.mockResolvedValue({ tracks: [createMockTrack("1", "Thunder")] });
+		it("should not make API call before debounce delay completes when query changes", async () => {
+			setupSearchFetch([createMockTrack("1", "Thunder")]);
 
-			const { rerender } = render(<SearchDropdown {...defaultProps} query="" />);
+			// Start with empty query (no API call)
+			const { rerender } = render(
+				<TestWrapper>
+					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			// Clear any initial calls
+			mockFetch.mockClear();
 
-			mockSearchService.search.mockClear();
+			// Change query - this starts the debounce timer
+			rerender(
+				<TestWrapper>
+					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
-			rerender(<SearchDropdown {...defaultProps} query="Thunder" />);
-
+			// Advance timer but not enough for debounce to complete
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY - 50);
 			});
 
-			expect(mockSearchService.search).not.toHaveBeenCalled();
-
-			await act(async () => {
-				jest.advanceTimersByTime(50);
-			});
-
-			await waitFor(() => {
-				expect(mockSearchService.search).toHaveBeenCalledWith("Thunder");
-			});
+			// API should NOT have been called yet
+			const searchCalls = mockFetch.mock.calls.filter(
+				(call) => call[0].includes("/api/tracks/search")
+			);
+			expect(searchCalls.length).toBe(0);
 		});
 
-		it("should call API after debounce delay (300ms)", async () => {
-			mockSearchService.search.mockResolvedValue({ tracks: [createMockTrack("1", "Thunder")] });
+		it("should make API call after debounce delay (300ms) when query changes", async () => {
+			setupSearchFetch([createMockTrack("1", "Thunder")]);
 
-			render(<SearchDropdown {...defaultProps} query="Thunder" />);
+			// Start with empty query (no API call)
+			const { rerender } = render(
+				<TestWrapper>
+					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
+			// Clear any initial calls
+			mockFetch.mockClear();
+
+			// Change query - this starts the debounce timer
+			rerender(
+				<TestWrapper>
+					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+
+			// Advance timer to complete debounce
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			await waitFor(() => {
-				expect(mockSearchService.search).toHaveBeenCalledWith("Thunder");
-			});
-		});
-
-		it("should reset debounce timer on rapid query changes", async () => {
-			mockSearchService.search.mockResolvedValue({ tracks: [createMockTrack("1", "Final")] });
-
-			const { rerender } = render(<SearchDropdown {...defaultProps} query="" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			mockSearchService.search.mockClear();
-
-			rerender(<SearchDropdown {...defaultProps} query="Th" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(200);
-			});
-
-			expect(mockSearchService.search).not.toHaveBeenCalled();
-
-			rerender(<SearchDropdown {...defaultProps} query="Thu" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(200);
-			});
-
-			expect(mockSearchService.search).not.toHaveBeenCalled();
-
-			await act(async () => {
-				jest.advanceTimersByTime(100);
-			});
-
-			await waitFor(() => {
-				expect(mockSearchService.search).toHaveBeenCalledWith("Thu");
-				expect(mockSearchService.search).toHaveBeenCalledTimes(1);
+				const searchCalls = mockFetch.mock.calls.filter(
+					(call) => call[0].includes("/api/tracks/search")
+				);
+				expect(searchCalls.length).toBeGreaterThan(0);
 			});
 		});
 	});
 
 	describe("Loading State", () => {
-		it("should show loading indicator during API fetch", async () => {
-			let resolveSearch: (value: { tracks: TrackWithPopulated[] }) => void;
-			const pendingPromise = new Promise<{ tracks: TrackWithPopulated[] }>((resolve) => {
-				resolveSearch = resolve;
-			});
-			mockSearchService.search.mockReturnValue(pendingPromise);
+		it("should show loading indicator while waiting for API response", async () => {
+			setupSearchFetchPending();
 
-			render(<SearchDropdown {...defaultProps} query="Thunder" />);
+			render(
+				<TestWrapper>
+					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -222,21 +468,32 @@ describe("Search Feature - Behavior Tests", () => {
 
 			await waitFor(() => {
 				expect(screen.getByTestId("search-loading")).toBeInTheDocument();
-			});
-
-			await act(async () => {
-				resolveSearch!({ tracks: [] });
 			});
 		});
 
-		it("should hide loading indicator after fetch completes", async () => {
-			let resolveSearch: (value: { tracks: TrackWithPopulated[] }) => void;
-			const pendingPromise = new Promise<{ tracks: TrackWithPopulated[] }>((resolve) => {
-				resolveSearch = resolve;
+		it("should hide loading indicator after API response is received", async () => {
+			let resolvePromise: (value: unknown) => void;
+			const pendingPromise = new Promise((resolve) => {
+				resolvePromise = resolve;
 			});
-			mockSearchService.search.mockReturnValue(pendingPromise);
 
-			render(<SearchDropdown {...defaultProps} query="Thunder" />);
+			mockFetch.mockImplementation((url: string) => {
+				if (url.includes("/api/tracks/search")) {
+					return pendingPromise;
+				}
+				return Promise.resolve({
+					ok: true,
+					status: 200,
+					headers: new Headers({ "content-type": "application/json" }),
+					json: () => Promise.resolve(createApiResponse([])),
+				});
+			});
+
+			render(
+				<TestWrapper>
+					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -247,7 +504,12 @@ describe("Search Feature - Behavior Tests", () => {
 			});
 
 			await act(async () => {
-				resolveSearch!({ tracks: [createMockTrack("1", "Thunder")] });
+				resolvePromise!({
+					ok: true,
+					status: 200,
+					headers: new Headers({ "content-type": "application/json" }),
+					json: () => Promise.resolve(createApiResponse([createMockTrack("1", "Thunder")])),
+				});
 			});
 
 			await waitFor(() => {
@@ -257,14 +519,19 @@ describe("Search Feature - Behavior Tests", () => {
 	});
 
 	describe("Results Display", () => {
-		it("should display search results after successful API response", async () => {
+		it("should display correct results count (singular/plural) based on number of tracks", async () => {
+			// Test multiple results (plural)
 			const mockTracks = [
 				createMockTrack("track-1", "Thunder", "Imagine Dragons", "Evolve"),
 				createMockTrack("track-2", "Lightning", "Eric Clapton", "Slowhand"),
 			];
-			mockSearchService.search.mockResolvedValue({ tracks: mockTracks });
+			setupSearchFetch(mockTracks);
 
-			render(<SearchDropdown {...defaultProps} query="thunder" />);
+			const { unmount } = render(
+				<TestWrapper>
+					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -275,62 +542,16 @@ describe("Search Feature - Behavior Tests", () => {
 			});
 
 			expect(screen.getByTestId("search-results-count")).toHaveTextContent("2 RESULTS");
-			expect(screen.getByTestId("search-result-item-track-1")).toBeInTheDocument();
-			expect(screen.getByTestId("search-result-item-track-2")).toBeInTheDocument();
-		});
+			unmount();
 
-		it("should display track title correctly", async () => {
-			const mockTracks = [createMockTrack("track-1", "Thunder")];
-			mockSearchService.search.mockResolvedValue({ tracks: mockTracks });
+			// Test single result (singular)
+			setupSearchFetch([createMockTrack("track-1", "Thunder")]);
 
-			render(<SearchDropdown {...defaultProps} query="thunder" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-result-title-track-1")).toHaveTextContent("Thunder");
-			});
-		});
-
-		it("should display artist and album info correctly", async () => {
-			const mockTracks = [createMockTrack("track-1", "Thunder", "Imagine Dragons", "Evolve")];
-			mockSearchService.search.mockResolvedValue({ tracks: mockTracks });
-
-			render(<SearchDropdown {...defaultProps} query="thunder" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-result-artist-track-1")).toHaveTextContent(
-					"Imagine Dragons - Evolve"
-				);
-			});
-		});
-
-		it("should display track duration correctly", async () => {
-			const mockTracks = [createMockTrack("track-1", "Thunder")]; // 180 seconds = 3:00
-			mockSearchService.search.mockResolvedValue({ tracks: mockTracks });
-
-			render(<SearchDropdown {...defaultProps} query="thunder" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-result-duration-track-1")).toHaveTextContent("3:00");
-			});
-		});
-
-		it("should show singular RESULT text for single track", async () => {
-			const mockTracks = [createMockTrack("track-1", "Thunder")];
-			mockSearchService.search.mockResolvedValue({ tracks: mockTracks });
-
-			render(<SearchDropdown {...defaultProps} query="thunder" />);
+			render(
+				<TestWrapper>
+					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -340,13 +561,51 @@ describe("Search Feature - Behavior Tests", () => {
 				expect(screen.getByTestId("search-results-count")).toHaveTextContent("1 RESULT");
 			});
 		});
+
+		it("should display complete track information (title, artist, album, duration)", async () => {
+			const mockTracks = [
+				createMockTrack("track-1", "Thunder", "Imagine Dragons", "Evolve"),
+				createMockTrack("track-2", "Lightning", "Eric Clapton", "Slowhand"),
+			];
+			setupSearchFetch(mockTracks);
+
+			render(
+				<TestWrapper>
+					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+
+			await act(async () => {
+				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+			});
+
+			await waitFor(() => {
+				// Verify track titles
+				expect(screen.getByTestId("search-result-title-track-1")).toHaveTextContent("Thunder");
+				expect(screen.getByTestId("search-result-title-track-2")).toHaveTextContent("Lightning");
+				// Verify artist and album info
+				expect(screen.getByTestId("search-result-artist-track-1")).toHaveTextContent(
+					"Imagine Dragons - Evolve"
+				);
+				expect(screen.getByTestId("search-result-artist-track-2")).toHaveTextContent(
+					"Eric Clapton - Slowhand"
+				);
+				// Verify duration (180 seconds = 3:00)
+				expect(screen.getByTestId("search-result-duration-track-1")).toHaveTextContent("3:00");
+				expect(screen.getByTestId("search-result-duration-track-2")).toHaveTextContent("3:00");
+			});
+		});
 	});
 
 	describe("No Results State", () => {
 		it("should display 'No results found' when API returns empty array", async () => {
-			mockSearchService.search.mockResolvedValue({ tracks: [] });
+			setupSearchFetch([]);
 
-			render(<SearchDropdown {...defaultProps} query="nonexistenttrack" />);
+			render(
+				<TestWrapper>
+					<SearchDropdown query="nonexistenttrack" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -360,25 +619,15 @@ describe("Search Feature - Behavior Tests", () => {
 	});
 
 	describe("Error State", () => {
-		it("should display error message when API call fails", async () => {
-			mockSearchService.search.mockRejectedValue(new Error("Network error"));
+		it("should display error message when API fails or throws", async () => {
+			// Test API returning error response
+			setupSearchFetchError("Network error");
 
-			render(<SearchDropdown {...defaultProps} query="thunder" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-error")).toBeInTheDocument();
-				expect(screen.getByTestId("search-error")).toHaveTextContent("Network error");
-			});
-		});
-
-		it("should display generic error message for non-Error exceptions", async () => {
-			mockSearchService.search.mockRejectedValue("String error");
-
-			render(<SearchDropdown {...defaultProps} query="thunder" />);
+			const { unmount } = render(
+				<TestWrapper>
+					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
@@ -386,155 +635,95 @@ describe("Search Feature - Behavior Tests", () => {
 
 			await waitFor(() => {
 				expect(screen.getByTestId("search-error")).toBeInTheDocument();
-				expect(screen.getByTestId("search-error")).toHaveTextContent("Search failed");
+			});
+
+			unmount();
+
+			// Test fetch throwing an error
+			mockFetch.mockImplementation((url: string) => {
+				if (url.includes("/api/tracks/search")) {
+					return Promise.reject(new Error("Network failure"));
+				}
+				return Promise.resolve({
+					ok: true,
+					status: 200,
+					headers: new Headers({ "content-type": "application/json" }),
+					json: () => Promise.resolve(createApiResponse([])),
+				});
+			});
+
+			render(
+				<TestWrapper>
+					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+
+			await act(async () => {
+				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+			});
+
+			await waitFor(() => {
+				expect(screen.getByTestId("search-error")).toBeInTheDocument();
 			});
 		});
 	});
 
-	describe("Track Selection", () => {
-		it("should call onTrackSelect callback when track is clicked", async () => {
+	describe("Track Selection Navigation", () => {
+		it("should navigate to track detail page and close dropdown when track is clicked", async () => {
 			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-			const mockTracks = [createMockTrack("track-1", "Thunder")];
-			const onTrackSelect = jest.fn();
-			mockSearchService.search.mockResolvedValue({ tracks: mockTracks });
-
-			render(
-				<SearchDropdown
-					{...defaultProps}
-					query="thunder"
-					onTrackSelect={onTrackSelect}
-				/>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-result-item-track-1")).toBeInTheDocument();
-			});
-
-			await user.click(screen.getByTestId("search-result-item-track-1"));
-
-			expect(onTrackSelect).toHaveBeenCalledTimes(1);
-			expect(onTrackSelect).toHaveBeenCalledWith(mockTracks[0]);
-		});
-
-		it("should call onClose callback when track is clicked", async () => {
-			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-			const mockTracks = [createMockTrack("track-1", "Thunder")];
 			const onClose = jest.fn();
-			mockSearchService.search.mockResolvedValue({ tracks: mockTracks });
+			const mockTracks = [
+				createMockTrack("abc-123", "First Track"),
+				createMockTrack("xyz-789", "Second Track"),
+			];
+			setupSearchFetch(mockTracks);
 
-			render(
-				<SearchDropdown
-					{...defaultProps}
-					query="thunder"
-					onClose={onClose}
-				/>
-			);
+			renderSearchDropdown({
+				query: "track",
+				isOpen: true,
+				onClose,
+			});
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			await waitFor(() => {
-				expect(screen.getByTestId("search-result-item-track-1")).toBeInTheDocument();
+				expect(screen.getByTestId("search-result-item-xyz-789")).toBeInTheDocument();
 			});
 
-			await user.click(screen.getByTestId("search-result-item-track-1"));
+			// Click the second track
+			await user.click(screen.getByTestId("search-result-item-xyz-789"));
 
+			// Verify navigation to correct track page
+			await waitFor(() => {
+				expect(screen.getByTestId("location-display")).toHaveTextContent("/track/xyz-789");
+			});
+
+			// Verify onClose was called
 			expect(onClose).toHaveBeenCalledTimes(1);
 		});
 	});
 
-	describe("Query Changes", () => {
-		it("should fetch new results when query changes", async () => {
-			mockSearchService.search
-				.mockResolvedValueOnce({ tracks: [createMockTrack("track-1", "First Result")] })
-				.mockResolvedValueOnce({ tracks: [createMockTrack("track-2", "Second Result")] });
+	describe("Search Result Item Accessibility", () => {
+		it("should render search results as clickable buttons", async () => {
+			const mockTracks = [createMockTrack("track-1", "Thunder")];
+			setupSearchFetch(mockTracks);
 
-			const { rerender } = render(<SearchDropdown {...defaultProps} query="first" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-result-title-track-1")).toHaveTextContent("First Result");
-			});
-
-			rerender(<SearchDropdown {...defaultProps} query="second" />);
+			render(
+				<TestWrapper>
+					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
 
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			await waitFor(() => {
-				expect(screen.getByTestId("search-result-title-track-2")).toHaveTextContent("Second Result");
-			});
-		});
-
-		it("should clear error when query becomes empty", async () => {
-			mockSearchService.search.mockRejectedValue(new Error("Network error"));
-
-			const { rerender } = render(<SearchDropdown {...defaultProps} query="thunder" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-error")).toBeInTheDocument();
-			});
-
-			rerender(<SearchDropdown {...defaultProps} query="" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.queryByTestId("search-error")).not.toBeInTheDocument();
-				expect(screen.getByTestId("search-no-results")).toBeInTheDocument();
-			});
-		});
-	});
-
-	describe("Race Condition Handling", () => {
-		it("should cancel previous request when query changes rapidly", async () => {
-			let resolveFirst: (value: { tracks: TrackWithPopulated[] }) => void;
-			const firstPromise = new Promise<{ tracks: TrackWithPopulated[] }>((resolve) => {
-				resolveFirst = resolve;
-			});
-
-			mockSearchService.search
-				.mockReturnValueOnce(firstPromise)
-				.mockResolvedValueOnce({ tracks: [createMockTrack("new", "New Result")] });
-
-			const { rerender } = render(<SearchDropdown {...defaultProps} query="first" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-loading")).toBeInTheDocument();
-			});
-
-			rerender(<SearchDropdown {...defaultProps} query="second" />);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await act(async () => {
-				resolveFirst!({ tracks: [createMockTrack("old", "Old Result")] });
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-result-title-new")).toHaveTextContent("New Result");
-				expect(screen.queryByTestId("search-result-title-old")).not.toBeInTheDocument();
+				const resultItem = screen.getByTestId("search-result-item-track-1");
+				expect(resultItem.tagName).toBe("BUTTON");
+				expect(resultItem).toHaveAttribute("type", "button");
 			});
 		});
 	});

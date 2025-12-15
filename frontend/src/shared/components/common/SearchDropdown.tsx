@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import { Music, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -9,19 +10,18 @@ interface SearchDropdownProps {
 	query: string;
 	isOpen: boolean;
 	onClose: () => void;
-	onTrackSelect: (track: TrackWithPopulated) => void;
 }
 
 export function SearchDropdown({
 	query,
 	isOpen,
 	onClose,
-	onTrackSelect,
 }: SearchDropdownProps) {
+	const navigate = useNavigate();
 	const { tracks, isLoading, error } = useSearch(query);
 
 	const handleTrackClick = (track: TrackWithPopulated) => {
-		onTrackSelect(track);
+		navigate(`/track/${track._id}`);
 		onClose();
 	};
 

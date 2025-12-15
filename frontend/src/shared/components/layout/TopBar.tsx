@@ -14,8 +14,6 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { SearchDropdown } from "@/shared/components/common/SearchDropdown";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { usePlayer } from "@/shared/contexts/PlayerContext";
-import type { TrackWithPopulated } from "@/shared/types/player.types";
 
 interface TopBarProps {
 	initialQuery?: string;
@@ -24,7 +22,6 @@ interface TopBarProps {
 export function TopBar({ initialQuery = "" }: TopBarProps) {
 	const navigate = useNavigate();
 	const { user, logout } = useAuth();
-	const { playTrack } = usePlayer();
 	const [searchQuery, setSearchQuery] = useState(initialQuery);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const searchContainerRef = useRef<HTMLDivElement>(null);
@@ -66,14 +63,6 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 		e.preventDefault();
 	}, []);
 
-	const handleTrackSelect = useCallback(
-		(track: TrackWithPopulated) => {
-			playTrack(track);
-			setIsDropdownOpen(false);
-		},
-		[playTrack]
-	);
-
 	const handleCloseDropdown = useCallback(() => {
 		setIsDropdownOpen(false);
 	}, []);
@@ -106,7 +95,6 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 						query={searchQuery}
 						isOpen={isDropdownOpen}
 						onClose={handleCloseDropdown}
-						onTrackSelect={handleTrackSelect}
 					/>
 				</div>
 			</form>
