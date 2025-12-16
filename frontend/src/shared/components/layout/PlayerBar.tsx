@@ -83,7 +83,7 @@ export function PlayerBar() {
 								)}
 							</div>
 							<div className="min-w-0">
-								<p className="truncate text-sm text-white">
+								<p className="truncate text-sm text-white" data-testid="current-track-title">
 									{currentTrack.title}
 								</p>
 								<p className="truncate text-xs text-melodio-text-subdued">
@@ -124,8 +124,10 @@ export function PlayerBar() {
 									: "text-melodio-text-subdued hover:text-white"
 							)}
 							onClick={toggleShuffle}
+							data-testid="shuffle-button"
+							data-active={shuffleEnabled}
 						>
-							<Shuffle className="h-5 w-5" />
+							<Shuffle className="h-5 w-5" data-testid="shuffle-icon" />
 						</Button>
 
 						<Button
@@ -133,8 +135,9 @@ export function PlayerBar() {
 							size="icon"
 							className="h-8 w-8 text-melodio-text-subdued hover:text-white"
 							onClick={previous}
+							data-testid="previous-button"
 						>
-							<SkipBack className="h-5 w-5" />
+							<SkipBack className="h-5 w-5" data-testid="skip-back-icon" />
 						</Button>
 
 						<button
@@ -142,11 +145,12 @@ export function PlayerBar() {
 							className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition-transform hover:scale-105 disabled:opacity-50"
 							onClick={togglePlayPause}
 							disabled={!currentTrack}
+							data-testid="play-pause-button"
 						>
 							{isPlaying ? (
-								<Pause className="h-5 w-5" fill="black" />
+								<Pause className="h-5 w-5" fill="black" data-testid="pause-icon" />
 							) : (
-								<Play className="h-5 w-5 pl-0.5" fill="black" />
+								<Play className="h-5 w-5 pl-0.5" fill="black" data-testid="play-icon" />
 							)}
 						</button>
 
@@ -155,8 +159,9 @@ export function PlayerBar() {
 							size="icon"
 							className="h-8 w-8 text-melodio-text-subdued hover:text-white"
 							onClick={next}
+							data-testid="next-button"
 						>
-							<SkipForward className="h-5 w-5" />
+							<SkipForward className="h-5 w-5" data-testid="skip-forward-icon" />
 						</Button>
 
 						<Button
@@ -169,17 +174,19 @@ export function PlayerBar() {
 									: "text-melodio-text-subdued hover:text-white"
 							)}
 							onClick={toggleRepeat}
+							data-testid="repeat-button"
+							data-active={repeatMode !== "off"}
 						>
 							{repeatMode === "one" ? (
-								<Repeat1 className="h-5 w-5" />
+								<Repeat1 className="h-5 w-5" data-testid="repeat1-icon" />
 							) : (
-								<Repeat className="h-5 w-5" />
+								<Repeat className="h-5 w-5" data-testid="repeat-icon" />
 							)}
 						</Button>
 					</div>
 
 					<div className="flex w-full max-w-[500px] items-center gap-2">
-						<span className="w-10 text-right text-xs text-melodio-text-subdued">
+						<span className="w-10 text-right text-xs text-melodio-text-subdued" data-testid="elapsed-time">
 							{formatDuration(elapsedSeconds)}
 						</span>
 						<Slider
@@ -189,7 +196,7 @@ export function PlayerBar() {
 							className="w-full"
 							onValueChange={handleSeek}
 						/>
-						<span className="w-10 text-xs text-melodio-text-subdued">
+						<span className="w-10 text-xs text-melodio-text-subdued" data-testid="total-duration">
 							{currentTrack
 								? formatDuration(currentTrack.durationInSeconds)
 								: "0:00"}
