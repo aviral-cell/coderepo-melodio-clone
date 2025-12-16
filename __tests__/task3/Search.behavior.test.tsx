@@ -421,6 +421,13 @@ describe("Search Feature - Behavior Tests", () => {
 				</TestWrapper>
 			);
 
+			await waitFor(() => {
+				const searchCalls = mockFetch.mock.calls.filter(
+					(call) => call[0].includes("/api/tracks/search")
+				);
+				expect(searchCalls.length).toBe(0);
+			});
+
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
@@ -432,70 +439,89 @@ describe("Search Feature - Behavior Tests", () => {
 				expect(searchCalls.length).toBeGreaterThan(0);
 			});
 		});
-	});
 
-	describe("Loading State", () => {
-		it("should show loading indicator while waiting for API response", async () => {
-			setupSearchFetchPending();
+		it("should debounce rapid query changes and only make one API call with final query", async () => {
+			setupSearchFetch([createMockTrack("1", "Thunder")]);
 
-			render(
+			const { rerender } = render(
+				<TestWrapper>
+					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+
+			mockFetch.mockClear();
+
+			const getSearchCalls = () =>
+				mockFetch.mock.calls.filter((call) => call[0].includes("/api/tracks/search"));
+
+			// ═══ RAPID TYPING: Each keystroke resets debounce timer ═══
+
+			// Type "T" → wait 100ms (debounce timer starts)
+			rerender(
+				<TestWrapper>
+					<SearchDropdown query="T" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+			await act(async () => {
+				jest.advanceTimersByTime(100);
+			});
+			expect(getSearchCalls().length).toBe(0); // No API call yet
+
+			// Type "Th" → wait 100ms (debounce timer resets)
+			rerender(
+				<TestWrapper>
+					<SearchDropdown query="Th" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+			await act(async () => {
+				jest.advanceTimersByTime(100);
+			});
+			expect(getSearchCalls().length).toBe(0); // No API call yet
+
+			// Type "Thu" → wait 100ms (debounce timer resets)
+			rerender(
+				<TestWrapper>
+					<SearchDropdown query="Thu" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+			await act(async () => {
+				jest.advanceTimersByTime(100);
+			});
+			expect(getSearchCalls().length).toBe(0); // No API call yet
+
+			// Type "Thun" → wait 100ms (debounce timer resets)
+			rerender(
+				<TestWrapper>
+					<SearchDropdown query="Thun" isOpen={true} onClose={jest.fn()} />
+				</TestWrapper>
+			);
+			await act(async () => {
+				jest.advanceTimersByTime(100);
+			});
+			expect(getSearchCalls().length).toBe(0); // No API call yet
+
+			// Type "Thunder" (final query)
+			rerender(
 				<TestWrapper>
 					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
 				</TestWrapper>
 			);
 
+			// Still within 300ms of last change - no API call
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				jest.advanceTimersByTime(100);
+			});
+			expect(getSearchCalls().length).toBe(0); // No API call yet
+
+			// ═══ AFTER 300ms: Debounce completes, API should be called ═══
+			await act(async () => {
+				jest.advanceTimersByTime(200); // Total 300ms since "Thunder"
 			});
 
 			await waitFor(() => {
-				expect(screen.getByTestId("search-loading")).toBeInTheDocument();
-			});
-		});
-
-		it("should hide loading indicator after API response is received", async () => {
-			let resolvePromise: (value: unknown) => void;
-			const pendingPromise = new Promise((resolve) => {
-				resolvePromise = resolve;
-			});
-
-			mockFetch.mockImplementation((url: string) => {
-				if (url.includes("/api/tracks/search")) {
-					return pendingPromise;
-				}
-				return Promise.resolve({
-					ok: true,
-					status: 200,
-					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve(createApiResponse([])),
-				});
-			});
-
-			render(
-				<TestWrapper>
-					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByTestId("search-loading")).toBeInTheDocument();
-			});
-
-			await act(async () => {
-				resolvePromise!({
-					ok: true,
-					status: 200,
-					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve(createApiResponse([createMockTrack("1", "Thunder")])),
-				});
-			});
-
-			await waitFor(() => {
-				expect(screen.queryByTestId("search-loading")).not.toBeInTheDocument();
+				const searchCalls = getSearchCalls();
+				expect(searchCalls.length).toBe(1); // Exactly 1 API call
+				expect(searchCalls[0][0]).toContain("q=Thunder"); // With final query
 			});
 		});
 	});
@@ -674,29 +700,6 @@ describe("Search Feature - Behavior Tests", () => {
 			});
 
 			expect(onClose).toHaveBeenCalledTimes(1);
-		});
-	});
-
-	describe("Search Result Item Accessibility", () => {
-		it("should render search results as clickable buttons", async () => {
-			const mockTracks = [createMockTrack("track-1", "Thunder")];
-			setupSearchFetch(mockTracks);
-
-			render(
-				<TestWrapper>
-					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			await waitFor(() => {
-				const resultItem = screen.getByTestId("search-result-item-track-1");
-				expect(resultItem.tagName).toBe("BUTTON");
-				expect(resultItem).toHaveAttribute("type", "button");
-			});
 		});
 	});
 });

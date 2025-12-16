@@ -20,22 +20,29 @@ Object.defineProperty(window, "matchMedia", {
 	})),
 });
 
-// Mock ResizeObserver
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-	observe: jest.fn(),
-	unobserve: jest.fn(),
-	disconnect: jest.fn(),
-}));
+// Mock ResizeObserver as a proper class
+class MockResizeObserver {
+	observe = jest.fn();
+	unobserve = jest.fn();
+	disconnect = jest.fn();
+}
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 
-// Mock IntersectionObserver
-global.IntersectionObserver = jest.fn().mockImplementation(() => ({
-	observe: jest.fn(),
-	unobserve: jest.fn(),
-	disconnect: jest.fn(),
-}));
+// Mock IntersectionObserver as a proper class
+class MockIntersectionObserver {
+	observe = jest.fn();
+	unobserve = jest.fn();
+	disconnect = jest.fn();
+	root = null;
+	rootMargin = "";
+	thresholds = [];
+}
+global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 // Suppress console errors during tests (optional)
 const originalError = console.error;
+const originalWarn = console.warn;
+
 beforeAll(() => {
 	console.error = (...args: unknown[]) => {
 		// Suppress specific React warnings if needed
@@ -47,8 +54,20 @@ beforeAll(() => {
 		}
 		originalError.call(console, ...args);
 	};
+
+	console.warn = (...args: unknown[]) => {
+		// Suppress react-router "No routes matched" warnings in tests
+		if (
+			typeof args[0] === "string" &&
+			args[0].includes("No routes matched location")
+		) {
+			return;
+		}
+		originalWarn.call(console, ...args);
+	};
 });
 
 afterAll(() => {
 	console.error = originalError;
+	console.warn = originalWarn;
 });
