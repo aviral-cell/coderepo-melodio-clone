@@ -182,36 +182,22 @@ function getCurrentTrackTitle(): string | null {
   return titleElement?.textContent || null;
 }
 
-/**
- * FLEXIBLE STATE CHECK HELPERS
- * These helpers check for visual state through multiple indicators,
- * allowing different CSS implementations (classes, inline styles, aria attributes).
- */
-
-/**
- * Check if a button appears visually active/enabled (e.g., green color for shuffle/repeat)
- * Flexible to allow different CSS implementations
- */
 function isButtonActive(button: HTMLElement): boolean {
   const className = button.className || "";
   const style = button.getAttribute("style") || "";
   const ariaPressed = button.getAttribute("aria-pressed");
   const dataActive = button.getAttribute("data-active");
 
-  // Check for common active state class patterns
   const hasActiveClass = /green|active|enabled|primary|selected|on\b/i.test(className);
-  // Check for green color in inline styles (common green values)
   const hasActiveStyle = /green|#22c55e|#10b981|rgb\(34,\s*197,\s*94\)|rgb\(16,\s*185,\s*129\)/i.test(style);
-  // Check aria-pressed attribute
   const hasAriaPressed = ariaPressed === "true";
-  // Check data-active attribute
   const hasDataActive = dataActive === "true";
 
   return hasActiveClass || hasActiveStyle || hasAriaPressed || hasDataActive;
 }
 
 /**
- * Check if a button appears visually inactive/subdued (e.g., gray/subdued color)
+ * Check if a button appears visually inactive/subdued
  */
 function isButtonInactive(button: HTMLElement): boolean {
   const className = button.className || "";
@@ -219,14 +205,10 @@ function isButtonInactive(button: HTMLElement): boolean {
   const ariaPressed = button.getAttribute("aria-pressed");
   const dataActive = button.getAttribute("data-active");
 
-  // Check for common inactive state class patterns
   const hasSubduedClass = /subdued|muted|disabled|inactive|secondary|gray|off\b/i.test(className);
-  // Active state indicators should be absent
   const noActiveClass = !/green|active|enabled|primary|selected|on\b/i.test(className);
   const noActiveStyle = !/green|#22c55e|#10b981|rgb\(34,\s*197,\s*94\)|rgb\(16,\s*185,\s*129\)/i.test(style);
-  // Check aria-pressed is false or absent
   const noAriaPressed = ariaPressed !== "true";
-  // Check data-active is false or absent
   const noDataActive = dataActive !== "true";
 
   return (hasSubduedClass || noActiveClass) && noActiveStyle && noAriaPressed && noDataActive;
@@ -264,10 +246,6 @@ function expectButtonToBeInactive(button: HTMLElement): void {
   expect(inactive).toBe(true);
 }
 
-/**
- * Check if an SVG icon represents a specific icon type
- * Flexible to allow different icon libraries (Lucide, FontAwesome, custom SVGs)
- */
 function hasIconType(element: HTMLElement, iconType: "play" | "pause" | "repeat" | "repeat1" | "shuffle"): boolean {
   const svg = element.querySelector("svg");
   if (!svg) return false;
@@ -276,11 +254,8 @@ function hasIconType(element: HTMLElement, iconType: "play" | "pause" | "repeat"
   const ariaLabel = svg.getAttribute("aria-label") || "";
   const dataIcon = svg.getAttribute("data-icon") || "";
 
-  // Check class name for icon identifier
   const classMatch = new RegExp(`lucide-${iconType}|fa-${iconType}|icon-${iconType}|${iconType}`, "i").test(className);
-  // Check aria-label
   const ariaMatch = new RegExp(iconType, "i").test(ariaLabel);
-  // Check data-icon attribute
   const dataMatch = new RegExp(iconType, "i").test(dataIcon);
 
   return classMatch || ariaMatch || dataMatch;
