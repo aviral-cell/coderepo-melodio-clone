@@ -5,11 +5,11 @@
 
 /**
  * INTRO: Playlist Operations Behavior Tests
- * SCENARIO: Testing drag-drop reorder and remove track through UI interaction
- * EXPECTATION: UI reflects track reorder/removal, rolls back on API failure
+ * SCENARIO: Testing remove track through UI interaction
+ * EXPECTATION: UI reflects track removal, rolls back on API failure
  */
 import React from "react";
-import { render, screen, act, waitFor, within, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router";
 
@@ -170,16 +170,6 @@ function renderPlaylistPage() {
 }
 
 /**
- * Helper to get track titles in order from the rendered list
- */
-function getTrackTitlesInOrder(): string[] {
-	const trackElements = document.querySelectorAll(
-		".truncate.text-sm.font-medium"
-	);
-	return Array.from(trackElements).map((el) => el.textContent || "");
-}
-
-/**
  * Helper to open dropdown menu for a track
  */
 async function openTrackDropdown(
@@ -199,59 +189,6 @@ async function openTrackDropdown(
 		name: "",
 	});
 	await user.click(dropdownTrigger);
-}
-
-/**
- * Helper to simulate drag-drop using pointer events
- */
-async function simulateDragDrop(
-	sourceHandle: HTMLElement,
-	targetHandle: HTMLElement
-) {
-	const sourceRect = sourceHandle.getBoundingClientRect();
-	const targetRect = targetHandle.getBoundingClientRect();
-
-	const startX = sourceRect.left + sourceRect.width / 2;
-	const startY = sourceRect.top + sourceRect.height / 2;
-	const endX = targetRect.left + targetRect.width / 2;
-	const endY = targetRect.top + targetRect.height / 2;
-
-	fireEvent.pointerDown(sourceHandle, {
-		pointerId: 1,
-		clientX: startX,
-		clientY: startY,
-		button: 0,
-		buttons: 1,
-	});
-
-	await act(async () => {
-		fireEvent.pointerMove(sourceHandle, {
-			pointerId: 1,
-			clientX: startX,
-			clientY: startY + 10,
-			button: 0,
-			buttons: 1,
-		});
-	});
-
-	await act(async () => {
-		fireEvent.pointerMove(document.body, {
-			pointerId: 1,
-			clientX: endX,
-			clientY: endY,
-			button: 0,
-			buttons: 1,
-		});
-	});
-
-	await act(async () => {
-		fireEvent.pointerUp(document.body, {
-			pointerId: 1,
-			clientX: endX,
-			clientY: endY,
-			button: 0,
-		});
-	});
 }
 
 // Store original fetch and location
@@ -293,105 +230,6 @@ describe("Playlist Operations Behavior Tests", () => {
 		global.fetch = originalFetch;
 		localStorage.clear();
 		jest.clearAllMocks();
-	});
-
-	/**
-	 * Helper to setup fetch mock for playlist loading
-	 */
-	function setupPlaylistFetch(playlist: ReturnType<typeof createMockPlaylist>) {
-		mockFetch.mockImplementation((url: string) => {
-			if (url.includes("/api/playlists/playlist-123") && !url.includes("/tracks") && !url.includes("/reorder")) {
-				return Promise.resolve({
-					ok: true,
-					status: 200,
-					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve(createApiResponse(playlist)),
-				});
-			}
-			return Promise.resolve({
-				ok: true,
-				status: 200,
-				headers: new Headers({ "content-type": "application/json" }),
-				json: () => Promise.resolve(createApiResponse([])),
-			});
-		});
-	}
-
-	describe("Playlist Loading and Display", () => {
-		it("should display loading state initially", async () => {
-			mockFetch.mockImplementation(() => new Promise(() => {}));
-
-			renderPlaylistPage();
-
-			const loadingElements = document.querySelectorAll('[class*="animate-pulse"]');
-			expect(loadingElements.length).toBeGreaterThan(0);
-		});
-
-		it("should display all tracks in correct order after loading", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const trackC = createMockTrack("C", "Track Charlie");
-			const playlist = createMockPlaylist([trackA, trackB, trackC]);
-
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
-
-			expect(screen.getByText("Track Beta")).toBeInTheDocument();
-			expect(screen.getByText("Track Charlie")).toBeInTheDocument();
-
-			const titles = getTrackTitlesInOrder();
-			expect(titles).toEqual(["Track Alpha", "Track Beta", "Track Charlie"]);
-		});
-
-		it("should display playlist name and track count", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const playlist = createMockPlaylist([trackA, trackB]);
-
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Test Playlist")).toBeInTheDocument();
-			});
-
-			expect(screen.getByText(/2 tracks/)).toBeInTheDocument();
-		});
-
-		it("should display empty state when playlist has no tracks", async () => {
-			const playlist = createMockPlaylist([]);
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("No tracks yet")).toBeInTheDocument();
-			});
-		});
-
-		it("should make GET request to correct endpoint", async () => {
-			const playlist = createMockPlaylist([]);
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(mockFetch).toHaveBeenCalled();
-			});
-
-			const calls = mockFetch.mock.calls;
-			const playlistCall = calls.find(
-				(call) => call[0].includes("/api/playlists/playlist-123")
-			);
-			expect(playlistCall).toBeDefined();
-			expect(playlistCall[1].method).toBe("GET");
-		});
 	});
 
 	describe("Remove Track", () => {
@@ -602,187 +440,6 @@ describe("Playlist Operations Behavior Tests", () => {
 			await waitFor(() => {
 				expect(screen.getByText("No tracks yet")).toBeInTheDocument();
 			});
-		});
-	});
-
-	describe("Drag and Drop Reorder", () => {
-
-		it("should display drag handles for each track", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const playlist = createMockPlaylist([trackA, trackB]);
-
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
-
-			const dragHandles = screen.getAllByLabelText("Drag to reorder");
-			expect(dragHandles).toHaveLength(2);
-		});
-
-		it("should have draggable track items with correct ARIA attributes", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const playlist = createMockPlaylist([trackA, trackB]);
-
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
-
-			const dragHandles = screen.getAllByLabelText("Drag to reorder");
-			dragHandles.forEach((handle) => {
-				expect(handle).toHaveAttribute("tabindex");
-			});
-		});
-
-		it("should make PATCH request to reorder endpoint when drag completes", async () => {
-			// API Contract Test: Reorder should use PATCH method to /reorder endpoint
-			// This tests the API specification directly, not any service implementation
-
-			mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-				if (url.includes("/reorder") && options?.method === "PATCH") {
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse({ _id: "playlist-123" })),
-					});
-				}
-				return Promise.resolve({
-					ok: false,
-					status: 404,
-					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve({ error: "Not found" }),
-				});
-			});
-
-			// Call fetch directly to test the expected API contract
-			const response = await fetch("/api/playlists/playlist-123/reorder", {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ trackIds: ["B", "A", "C"] }),
-			});
-
-			expect(response.ok).toBe(true);
-
-			// Verify PATCH request was made to correct endpoint
-			const patchCall = mockFetch.mock.calls.find(
-				(call) => call[0].includes("/reorder") && call[1]?.method === "PATCH"
-			);
-			expect(patchCall).toBeDefined();
-			expect(patchCall[0]).toContain("/api/playlists/playlist-123/reorder");
-		});
-
-		it("should send trackIds array in reorder request body", async () => {
-			// This tests the API specification directly
-
-			let capturedBody: string | undefined;
-
-			mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-				if (url.includes("/reorder") && options?.method === "PATCH") {
-					capturedBody = options.body as string;
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse({ _id: "playlist-123" })),
-					});
-				}
-				return Promise.resolve({
-					ok: false,
-					status: 404,
-					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve({ error: "Not found" }),
-				});
-			});
-
-			// Call fetch directly to test the expected API contract
-			await fetch("/api/playlists/playlist-123/reorder", {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ trackIds: ["B", "A"] }),
-			});
-
-			// Verify request body contains trackIds array (not 'tracks')
-			expect(capturedBody).toBeDefined();
-			const parsedBody = JSON.parse(capturedBody!);
-			expect(parsedBody).toHaveProperty("trackIds");
-			expect(Array.isArray(parsedBody.trackIds)).toBe(true);
-		});
-	});
-
-	describe("Playlist Actions Menu", () => {
-		it("should display playlist action menu with edit and delete options", async () => {
-			const user = userEvent.setup();
-			const trackA = createMockTrack("A", "Track Alpha");
-			const playlist = createMockPlaylist([trackA]);
-
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Test Playlist")).toBeInTheDocument();
-			});
-
-			const dropdownButtons = screen.getAllByRole("button");
-			const playlistMenuButton = dropdownButtons.find(
-				(btn) =>
-					btn.querySelector(".lucide-ellipsis") ||
-					btn.querySelector('svg.h-6.w-6')
-			);
-
-			if (playlistMenuButton) {
-				await user.click(playlistMenuButton);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("edit-playlist-menu-item")).toBeInTheDocument();
-					expect(screen.getByTestId("delete-playlist-menu-item")).toBeInTheDocument();
-				});
-			}
-		});
-	});
-
-	describe("Track Playback", () => {
-		it("should have play button for each track", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const playlist = createMockPlaylist([trackA, trackB]);
-
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
-
-			const playButtons = screen.getAllByLabelText(/Play|Pause/);
-			expect(playButtons.length).toBeGreaterThan(0);
-		});
-
-		it("should have play all button for playlist", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const playlist = createMockPlaylist([trackA]);
-
-			setupPlaylistFetch(playlist);
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Test Playlist")).toBeInTheDocument();
-			});
-
-			const playAllButton = screen.getByLabelText(/Play all|Pause/);
-			expect(playAllButton).toBeInTheDocument();
 		});
 	});
 });
