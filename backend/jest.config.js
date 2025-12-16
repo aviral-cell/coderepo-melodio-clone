@@ -4,8 +4,9 @@ module.exports = {
 	testEnvironment: "node",
 	// Run tests sequentially to avoid MongoDB connection/model conflicts
 	maxWorkers: 1,
-	roots: ["<rootDir>/src", "<rootDir>/__tests__"],
+	roots: ["<rootDir>/src", "<rootDir>/../__tests__"],
 	testMatch: ["**/*.test.ts", "**/*.spec.ts"],
+	testPathIgnorePatterns: ["/node_modules/", "\\.behavior\\.test\\.tsx?$"],
 	moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 	collectCoverageFrom: [
 		"src/**/*.ts",

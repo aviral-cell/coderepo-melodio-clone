@@ -2,12 +2,6 @@
  * @jest-environment node
  */
 
-/**
- * INTRO: Track Search Integration Tests
- * SCENARIO: GET /api/tracks/search with query parameter
- * EXPECTATION: Returns matched tracks array with populated artist/album info
- */
-
 import * as dotenv from "dotenv";
 import * as path from "path";
 dotenv.config({ path: path.resolve(__dirname, "../../backend/.env") });

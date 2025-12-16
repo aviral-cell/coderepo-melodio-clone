@@ -5,39 +5,42 @@ import { TextEncoder, TextDecoder } from "util";
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
-// Mock window.matchMedia for components that use media queries
-Object.defineProperty(window, "matchMedia", {
-	writable: true,
-	value: jest.fn().mockImplementation((query: string) => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addListener: jest.fn(),
-		removeListener: jest.fn(),
-		addEventListener: jest.fn(),
-		removeEventListener: jest.fn(),
-		dispatchEvent: jest.fn(),
-	})),
-});
+// Only set up browser mocks when window is defined (jsdom environment)
+if (typeof window !== "undefined") {
+	// Mock window.matchMedia for components that use media queries
+	Object.defineProperty(window, "matchMedia", {
+		writable: true,
+		value: jest.fn().mockImplementation((query: string) => ({
+			matches: false,
+			media: query,
+			onchange: null,
+			addListener: jest.fn(),
+			removeListener: jest.fn(),
+			addEventListener: jest.fn(),
+			removeEventListener: jest.fn(),
+			dispatchEvent: jest.fn(),
+		})),
+	});
 
-// Mock ResizeObserver as a proper class
-class MockResizeObserver {
-	observe = jest.fn();
-	unobserve = jest.fn();
-	disconnect = jest.fn();
-}
-global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
+	// Mock ResizeObserver as a proper class
+	class MockResizeObserver {
+		observe = jest.fn();
+		unobserve = jest.fn();
+		disconnect = jest.fn();
+	}
+	global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 
-// Mock IntersectionObserver as a proper class
-class MockIntersectionObserver {
-	observe = jest.fn();
-	unobserve = jest.fn();
-	disconnect = jest.fn();
-	root = null;
-	rootMargin = "";
-	thresholds = [];
+	// Mock IntersectionObserver as a proper class
+	class MockIntersectionObserver {
+		observe = jest.fn();
+		unobserve = jest.fn();
+		disconnect = jest.fn();
+		root = null;
+		rootMargin = "";
+		thresholds = [];
+	}
+	global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 }
-global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 // Suppress console errors during tests (optional)
 const originalError = console.error;

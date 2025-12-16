@@ -3,11 +3,6 @@
  * @jest-environment jsdom
  */
 
-/**
- * INTRO: Playlist Operations Behavior Tests
- * SCENARIO: Testing remove track through UI interaction
- * EXPECTATION: UI reflects track removal, rolls back on API failure
- */
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -18,12 +13,10 @@ import { PlayerProvider } from "@/shared/contexts/PlayerContext";
 import { PlaylistProvider } from "@/shared/contexts/PlaylistContext";
 import { ToastProvider } from "@/shared/hooks/useToast";
 
-// Mock useImageColor to avoid color extraction issues in tests
 jest.mock("@/shared/hooks/useImageColor", () => ({
 	useImageColor: () => ({ color: "#333333", isReady: true }),
 }));
 
-// Mock auth context to provide authenticated user
 jest.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
@@ -36,7 +29,6 @@ jest.mock("@/shared/contexts/AuthContext", () => ({
 	}),
 }));
 
-// Mock SidebarContext
 jest.mock("@/shared/contexts/SidebarContext", () => ({
 	SidebarProvider: ({ children }: { children: React.ReactNode }) => children,
 	useSidebar: () => ({
@@ -46,9 +38,6 @@ jest.mock("@/shared/contexts/SidebarContext", () => ({
 	}),
 }));
 
-/**
- * Backend API Track Response format (what the API returns)
- */
 interface BackendTrackResponse {
 	id: string;
 	title: string;
@@ -71,9 +60,6 @@ interface BackendTrackResponse {
 	};
 }
 
-/**
- * Factory function to create mock tracks in BACKEND API format
- */
 function createMockTrack(id: string, title: string): BackendTrackResponse {
 	return {
 		id,
@@ -98,9 +84,6 @@ function createMockTrack(id: string, title: string): BackendTrackResponse {
 	};
 }
 
-/**
- * Create mock playlist with tracks in BACKEND API format
- */
 function createMockPlaylist(tracks: BackendTrackResponse[]) {
 	return {
 		_id: "playlist-123",
@@ -115,9 +98,6 @@ function createMockPlaylist(tracks: BackendTrackResponse[]) {
 	};
 }
 
-/**
- * Create a successful API response wrapper
- */
 function createApiResponse<T>(data: T) {
 	return {
 		success: true,
@@ -125,9 +105,6 @@ function createApiResponse<T>(data: T) {
 	};
 }
 
-/**
- * Create an error API response
- */
 function createErrorResponse(message: string) {
 	return {
 		success: false,
@@ -135,9 +112,6 @@ function createErrorResponse(message: string) {
 	};
 }
 
-/**
- * Test wrapper with all required providers
- */
 function TestWrapper({
 	children,
 	initialRoute = "/playlists/playlist-123",
@@ -156,9 +130,6 @@ function TestWrapper({
 	);
 }
 
-/**
- * Render PlaylistDetailPage with routing
- */
 function renderPlaylistPage() {
 	return render(
 		<TestWrapper>
@@ -169,9 +140,6 @@ function renderPlaylistPage() {
 	);
 }
 
-/**
- * Helper to open dropdown menu for a track
- */
 async function openTrackDropdown(
 	user: ReturnType<typeof userEvent.setup>,
 	trackTitle: string
@@ -191,11 +159,9 @@ async function openTrackDropdown(
 	await user.click(dropdownTrigger);
 }
 
-// Store original fetch and location
 const originalFetch = global.fetch;
 const originalLocation = window.location;
 
-// Mock fetch at the HTTP level
 let mockFetch: jest.Mock;
 
 describe("Playlist Operations Behavior Tests", () => {
@@ -271,18 +237,22 @@ describe("Playlist Operations Behavior Tests", () => {
 
 			renderPlaylistPage();
 
+			// Wait for playlist to load
 			await waitFor(() => {
 				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
 			});
 
+			// Open dropdown and click remove
 			await openTrackDropdown(user, "Track Beta");
 			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
+			// Verify track is removed
 			await waitFor(() => {
 				expect(screen.queryByText("Track Beta")).not.toBeInTheDocument();
 			});
 
+			// Verify other tracks remain
 			expect(screen.getByText("Track Alpha")).toBeInTheDocument();
 			expect(screen.getByText("Track Charlie")).toBeInTheDocument();
 		});
@@ -328,10 +298,12 @@ describe("Playlist Operations Behavior Tests", () => {
 				expect(screen.getByText("Track Beta")).toBeInTheDocument();
 			});
 
+			// Open dropdown and click remove
 			await openTrackDropdown(user, "Track Beta");
 			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
+			// Verify DELETE request was made to correct endpoint
 			await waitFor(() => {
 				const deleteCall = mockFetch.mock.calls.find(
 					(call) => call[1]?.method === "DELETE"
@@ -378,10 +350,12 @@ describe("Playlist Operations Behavior Tests", () => {
 				expect(screen.getByText("Track Beta")).toBeInTheDocument();
 			});
 
+			// Open dropdown and click remove
 			await openTrackDropdown(user, "Track Beta");
 			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
+			// Verify DELETE was attempted
 			await waitFor(() => {
 				const deleteCall = mockFetch.mock.calls.find(
 					(call) => call[1]?.method === "DELETE"
@@ -389,6 +363,7 @@ describe("Playlist Operations Behavior Tests", () => {
 				expect(deleteCall).toBeDefined();
 			});
 
+			// Verify track is still in list (rollback on error)
 			expect(screen.getByText("Track Beta")).toBeInTheDocument();
 			expect(screen.getByText("Track Alpha")).toBeInTheDocument();
 		});
@@ -433,10 +408,12 @@ describe("Playlist Operations Behavior Tests", () => {
 				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
 			});
 
+			// Open dropdown and click remove
 			await openTrackDropdown(user, "Track Alpha");
 			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
+			// Verify empty state is shown
 			await waitFor(() => {
 				expect(screen.getByText("No tracks yet")).toBeInTheDocument();
 			});

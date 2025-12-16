@@ -3,12 +3,6 @@
  * @jest-environment jsdom
  */
 
-/**
- * INTRO: Search Feature Behavior Tests
- * SCENARIO: Testing search with debouncing, loading states, results display, navigation, and error handling
- * EXPECTATION: Component makes correct HTTP requests and displays correct UI states
- */
-
 import React from "react";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -16,7 +10,6 @@ import { MemoryRouter, Routes, Route, useLocation } from "react-router";
 
 import { SearchDropdown } from "@/shared/components/common/SearchDropdown";
 
-// Mock formatDuration utility for consistent test output
 jest.mock("@/shared/utils", () => ({
 	formatDuration: (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -39,9 +32,6 @@ jest.mock("@/shared/utils", () => ({
 	})),
 }));
 
-/**
- * Backend API Track Response format (what the API returns)
- */
 interface BackendTrackResponse {
 	id: string;
 	title: string;
@@ -64,9 +54,6 @@ interface BackendTrackResponse {
 	};
 }
 
-/**
- * Factory function to create mock tracks in BACKEND API format
- */
 function createMockTrack(
 	id: string,
 	title: string,
@@ -96,9 +83,6 @@ function createMockTrack(
 	};
 }
 
-/**
- * Create a successful API response wrapper
- */
 function createApiResponse<T>(data: T) {
 	return {
 		success: true,
@@ -106,17 +90,11 @@ function createApiResponse<T>(data: T) {
 	};
 }
 
-/**
- * Helper component to capture current location for navigation testing
- */
 function LocationDisplay() {
 	const location = useLocation();
 	return <div data-testid="location-display">{location.pathname}</div>;
 }
 
-/**
- * Test wrapper with Router for navigation testing
- */
 function TestWrapper({
 	children,
 	initialRoute = "/",
@@ -132,9 +110,6 @@ function TestWrapper({
 	);
 }
 
-/**
- * Render SearchDropdown with routing context
- */
 function renderSearchDropdown(props: {
 	query: string;
 	isOpen: boolean;
@@ -197,9 +172,6 @@ describe("Search Feature - Behavior Tests", () => {
 		jest.clearAllMocks();
 	});
 
-	/**
-	 * Helper to setup fetch mock for search API
-	 */
 	function setupSearchFetch(tracks: BackendTrackResponse[]) {
 		mockFetch.mockImplementation((url: string) => {
 			if (url.includes("/api/tracks/search")) {
@@ -219,9 +191,6 @@ describe("Search Feature - Behavior Tests", () => {
 		});
 	}
 
-	/**
-	 * Helper to setup fetch mock that returns an error
-	 */
 	function setupSearchFetchError(errorMessage: string) {
 		mockFetch.mockImplementation((url: string) => {
 			if (url.includes("/api/tracks/search")) {
@@ -241,9 +210,6 @@ describe("Search Feature - Behavior Tests", () => {
 		});
 	}
 
-	/**
-	 * Helper to setup fetch mock that never resolves (for loading state testing)
-	 */
 	function setupSearchFetchPending() {
 		mockFetch.mockImplementation((url: string) => {
 			if (url.includes("/api/tracks/search")) {
@@ -302,14 +268,17 @@ describe("Search Feature - Behavior Tests", () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify no results shown
 			expect(screen.getByTestId("search-no-results")).toBeInTheDocument();
 			expect(screen.getByTestId("search-no-results")).toHaveTextContent("No results found");
 
+			// Verify no API call
 			let searchCalls = mockFetch.mock.calls.filter(
 				(call) => call[0].includes("/api/tracks/search")
 			);
 			expect(searchCalls.length).toBe(0);
 
+			// Test whitespace query
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="   " isOpen={true} onClose={jest.fn()} />
@@ -343,6 +312,7 @@ describe("Search Feature - Behavior Tests", () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify API request
 			await waitFor(() => {
 				const searchCalls = mockFetch.mock.calls.filter(
 					(call) => call[0].includes("/api/tracks/search")
@@ -365,6 +335,7 @@ describe("Search Feature - Behavior Tests", () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify authorization header
 			await waitFor(() => {
 				const searchCalls = mockFetch.mock.calls.filter(
 					(call) => call[0].includes("/api/tracks/search")
@@ -388,16 +359,19 @@ describe("Search Feature - Behavior Tests", () => {
 
 			mockFetch.mockClear();
 
+			// Change query
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
 				</TestWrapper>
 			);
 
+			// Advance less than debounce delay
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY - 50);
 			});
 
+			// Verify no API call yet
 			const searchCalls = mockFetch.mock.calls.filter(
 				(call) => call[0].includes("/api/tracks/search")
 			);
@@ -415,12 +389,14 @@ describe("Search Feature - Behavior Tests", () => {
 
 			mockFetch.mockClear();
 
+			// Change query
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
 				</TestWrapper>
 			);
 
+			// Verify no call yet
 			await waitFor(() => {
 				const searchCalls = mockFetch.mock.calls.filter(
 					(call) => call[0].includes("/api/tracks/search")
@@ -428,10 +404,12 @@ describe("Search Feature - Behavior Tests", () => {
 				expect(searchCalls.length).toBe(0);
 			});
 
+			// Complete debounce delay
 			await act(async () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify API call made
 			await waitFor(() => {
 				const searchCalls = mockFetch.mock.calls.filter(
 					(call) => call[0].includes("/api/tracks/search")
@@ -454,9 +432,7 @@ describe("Search Feature - Behavior Tests", () => {
 			const getSearchCalls = () =>
 				mockFetch.mock.calls.filter((call) => call[0].includes("/api/tracks/search"));
 
-			// ═══ RAPID TYPING: Each keystroke resets debounce timer ═══
-
-			// Type "T" → wait 100ms (debounce timer starts)
+			// Type "T"
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="T" isOpen={true} onClose={jest.fn()} />
@@ -465,9 +441,9 @@ describe("Search Feature - Behavior Tests", () => {
 			await act(async () => {
 				jest.advanceTimersByTime(100);
 			});
-			expect(getSearchCalls().length).toBe(0); // No API call yet
+			expect(getSearchCalls().length).toBe(0);
 
-			// Type "Th" → wait 100ms (debounce timer resets)
+			// Type "Th"
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="Th" isOpen={true} onClose={jest.fn()} />
@@ -476,9 +452,9 @@ describe("Search Feature - Behavior Tests", () => {
 			await act(async () => {
 				jest.advanceTimersByTime(100);
 			});
-			expect(getSearchCalls().length).toBe(0); // No API call yet
+			expect(getSearchCalls().length).toBe(0);
 
-			// Type "Thu" → wait 100ms (debounce timer resets)
+			// Type "Thu"
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="Thu" isOpen={true} onClose={jest.fn()} />
@@ -487,9 +463,9 @@ describe("Search Feature - Behavior Tests", () => {
 			await act(async () => {
 				jest.advanceTimersByTime(100);
 			});
-			expect(getSearchCalls().length).toBe(0); // No API call yet
+			expect(getSearchCalls().length).toBe(0);
 
-			// Type "Thun" → wait 100ms (debounce timer resets)
+			// Type "Thun"
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="Thun" isOpen={true} onClose={jest.fn()} />
@@ -498,30 +474,30 @@ describe("Search Feature - Behavior Tests", () => {
 			await act(async () => {
 				jest.advanceTimersByTime(100);
 			});
-			expect(getSearchCalls().length).toBe(0); // No API call yet
+			expect(getSearchCalls().length).toBe(0);
 
-			// Type "Thunder" (final query)
+			// Type "Thunder" (final)
 			rerender(
 				<TestWrapper>
 					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
 				</TestWrapper>
 			);
 
-			// Still within 300ms of last change - no API call
 			await act(async () => {
 				jest.advanceTimersByTime(100);
 			});
-			expect(getSearchCalls().length).toBe(0); // No API call yet
+			expect(getSearchCalls().length).toBe(0);
 
-			// ═══ AFTER 300ms: Debounce completes, API should be called ═══
+			// Complete debounce
 			await act(async () => {
-				jest.advanceTimersByTime(200); // Total 300ms since "Thunder"
+				jest.advanceTimersByTime(200);
 			});
 
+			// Verify single API call with final query
 			await waitFor(() => {
 				const searchCalls = getSearchCalls();
-				expect(searchCalls.length).toBe(1); // Exactly 1 API call
-				expect(searchCalls[0][0]).toContain("q=Thunder"); // With final query
+				expect(searchCalls.length).toBe(1);
+				expect(searchCalls[0][0]).toContain("q=Thunder");
 			});
 		});
 	});
@@ -548,9 +524,11 @@ describe("Search Feature - Behavior Tests", () => {
 				expect(screen.getByTestId("search-results-list")).toBeInTheDocument();
 			});
 
+			// Verify plural
 			expect(screen.getByTestId("search-results-count")).toHaveTextContent("2 RESULTS");
 			unmount();
 
+			// Test singular
 			setupSearchFetch([createMockTrack("track-1", "Thunder")]);
 
 			render(
@@ -585,6 +563,7 @@ describe("Search Feature - Behavior Tests", () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify track information
 			await waitFor(() => {
 				expect(screen.getByTestId("search-result-title-track-1")).toHaveTextContent("Thunder");
 				expect(screen.getByTestId("search-result-title-track-2")).toHaveTextContent("Lightning");
@@ -614,6 +593,7 @@ describe("Search Feature - Behavior Tests", () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify no results message
 			await waitFor(() => {
 				expect(screen.getByTestId("search-no-results")).toBeInTheDocument();
 				expect(screen.getByTestId("search-no-results")).toHaveTextContent("No results found");
@@ -635,12 +615,14 @@ describe("Search Feature - Behavior Tests", () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify error state (API returns error)
 			await waitFor(() => {
 				expect(screen.getByTestId("search-error")).toBeInTheDocument();
 			});
 
 			unmount();
 
+			// Test network failure
 			mockFetch.mockImplementation((url: string) => {
 				if (url.includes("/api/tracks/search")) {
 					return Promise.reject(new Error("Network failure"));
@@ -663,6 +645,7 @@ describe("Search Feature - Behavior Tests", () => {
 				jest.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
+			// Verify error state (network failure)
 			await waitFor(() => {
 				expect(screen.getByTestId("search-error")).toBeInTheDocument();
 			});
@@ -693,12 +676,15 @@ describe("Search Feature - Behavior Tests", () => {
 				expect(screen.getByTestId("search-result-item-xyz-789")).toBeInTheDocument();
 			});
 
+			// Click track
 			await user.click(screen.getByTestId("search-result-item-xyz-789"));
 
+			// Verify navigation
 			await waitFor(() => {
 				expect(screen.getByTestId("location-display")).toHaveTextContent("/track/xyz-789");
 			});
 
+			// Verify dropdown closed
 			expect(onClose).toHaveBeenCalledTimes(1);
 		});
 	});
