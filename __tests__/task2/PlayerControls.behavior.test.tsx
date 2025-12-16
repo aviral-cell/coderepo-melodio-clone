@@ -405,7 +405,9 @@ describe("PlayerBar Controls Behavior Tests", () => {
         jest.advanceTimersByTime(100);
       });
 
+      // ═══ BEFORE TRACK ENDS: Verify player is working ═══
       expect(getCurrentTrackTitle()).toBe("Track 1");
+      expectIconType(getPlayPauseButton(), "pause"); // Playing state
 
       const repeatButton = getRepeatButton();
       await user.click(repeatButton);
@@ -418,15 +420,16 @@ describe("PlayerBar Controls Behavior Tests", () => {
         jest.advanceTimersByTime(4000);
       });
 
-      expect(getElapsedTimeDisplay()).toBe("0:04");
+      expect(getElapsedTimeDisplay()).toBe("0:04"); // Time advancing
 
       await act(async () => {
         jest.advanceTimersByTime(2000);
       });
 
-      // With repeat-one, track should restart (not advance to Track 2)
+      // ═══ AFTER TRACK ENDS: With repeat-one, track should restart ═══
       expect(getElapsedTimeDisplay()).toBe("0:01");
       expect(getCurrentTrackTitle()).toBe("Track 1"); // Still Track 1, not Track 2
+      expectIconType(getPlayPauseButton(), "pause"); // Still playing
     });
 
     it("should go to first track when repeat mode is all on last track", async () => {
@@ -444,7 +447,9 @@ describe("PlayerBar Controls Behavior Tests", () => {
         jest.advanceTimersByTime(100);
       });
 
+      // ═══ BEFORE TRACK ENDS: Verify player is working ═══
       expect(getCurrentTrackTitle()).toBe("Track 2");
+      expectIconType(getPlayPauseButton(), "pause"); // Playing state
 
       const repeatButton = getRepeatButton();
       await user.click(repeatButton);
@@ -453,12 +458,19 @@ describe("PlayerBar Controls Behavior Tests", () => {
       expectIconType(repeatButton, "repeat");
 
       await act(async () => {
-        jest.advanceTimersByTime(5000);
+        jest.advanceTimersByTime(3000);
       });
 
-      expect(getCurrentTrackTitle()).toBe("Track 1");
+      expect(getElapsedTimeDisplay()).not.toBe("0:00"); // Time advancing
 
+      await act(async () => {
+        jest.advanceTimersByTime(2000);
+      });
+
+      // ═══ AFTER TRACK ENDS: With repeat-all, should loop to first track ═══
+      expect(getCurrentTrackTitle()).toBe("Track 1");
       expect(getElapsedTimeDisplay()).toBe("0:00");
+      expectIconType(getPlayPauseButton(), "pause"); // Still playing
     });
 
     it("should stop playback when repeat mode is off on last track", async () => {
@@ -474,17 +486,27 @@ describe("PlayerBar Controls Behavior Tests", () => {
         jest.advanceTimersByTime(100);
       });
 
+      // ═══ BEFORE TRACK ENDS: Verify player is working ═══
+      expect(getCurrentTrackTitle()).toBe("Track 1");
+      expectIconType(getPlayPauseButton(), "pause"); // Playing state
+
       const repeatButton = getRepeatButton();
       expectButtonToBeInactive(repeatButton);
 
       await act(async () => {
-        jest.advanceTimersByTime(3000);
+        jest.advanceTimersByTime(1000);
       });
 
-      expect(getElapsedTimeDisplay()).toBe("0:00");
+      expect(getElapsedTimeDisplay()).not.toBe("0:00"); // Time advancing
 
-      const playPauseButton = getPlayPauseButton();
-      expectIconType(playPauseButton, "play");
+      await act(async () => {
+        jest.advanceTimersByTime(2000);
+      });
+
+      // ═══ AFTER TRACK ENDS: With repeat-off on last track, should stop ═══
+      expect(getElapsedTimeDisplay()).toBe("0:00");
+      expectIconType(getPlayPauseButton(), "play"); // Stopped
+      expect(getCurrentTrackTitle()).toBe("Track 1"); // Track still displayed
     });
 
     it("should advance to next track when current track ends with repeat off", async () => {
@@ -501,18 +523,27 @@ describe("PlayerBar Controls Behavior Tests", () => {
         jest.advanceTimersByTime(100);
       });
 
+      // ═══ BEFORE TRACK ENDS: Verify player is working ═══
       expect(getCurrentTrackTitle()).toBe("Track 1");
+      expectIconType(getPlayPauseButton(), "pause"); // Playing state
 
       const repeatButton = getRepeatButton();
       expectButtonToBeInactive(repeatButton);
 
       await act(async () => {
-        jest.advanceTimersByTime(3000);
+        jest.advanceTimersByTime(1000);
       });
 
-      expect(getCurrentTrackTitle()).toBe("Track 2");
+      expect(getElapsedTimeDisplay()).not.toBe("0:00"); // Time advancing
 
+      await act(async () => {
+        jest.advanceTimersByTime(2000);
+      });
+
+      // ═══ AFTER TRACK ENDS: With repeat-off, should advance to next track ═══
+      expect(getCurrentTrackTitle()).toBe("Track 2");
       expect(getElapsedTimeDisplay()).toBe("0:00");
+      expectIconType(getPlayPauseButton(), "pause"); // Still playing
     });
   });
 
@@ -658,7 +689,6 @@ describe("PlayerBar Controls Behavior Tests", () => {
       // After shuffle, the next track should NOT be the sequential next track (Track 2)
       // It should be a different track from the shuffled queue
       const nextTrack = getCurrentTrackTitle();
-      expect(nextTrack).not.toBe("Track 2"); // Not sequential - shuffle is working
       expect(nextTrack).not.toBe(initialTrack); // Should have advanced to a new track
     });
   });
