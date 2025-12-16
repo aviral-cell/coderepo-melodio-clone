@@ -198,6 +198,7 @@ function SortableTrackItem({
 					<DropdownMenuItem
 						onClick={onRemove}
 						className="text-red-400"
+						data-testid="remove-track-menu-item"
 					>
 						<Trash2 className="mr-2 h-4 w-4" />
 						Remove from playlist
@@ -532,13 +533,17 @@ export default function PlaylistDetailPage(): JSX.Element {
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="start">
-							<DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+							<DropdownMenuItem
+								onClick={() => setIsEditDialogOpen(true)}
+								data-testid="edit-playlist-menu-item"
+							>
 								<Edit2 className="mr-2 h-4 w-4" />
 								Edit details
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => setIsDeleteDialogOpen(true)}
 								className="text-red-400"
+								data-testid="delete-playlist-menu-item"
 							>
 								<Trash2 className="mr-2 h-4 w-4" />
 								Delete playlist

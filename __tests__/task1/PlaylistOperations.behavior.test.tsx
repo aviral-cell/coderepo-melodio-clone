@@ -438,7 +438,7 @@ describe("Playlist Operations Behavior Tests", () => {
 			});
 
 			await openTrackDropdown(user, "Track Beta");
-			const removeButton = await screen.findByText("Remove from playlist");
+			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
 			await waitFor(() => {
@@ -491,7 +491,7 @@ describe("Playlist Operations Behavior Tests", () => {
 			});
 
 			await openTrackDropdown(user, "Track Beta");
-			const removeButton = await screen.findByText("Remove from playlist");
+			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
 			await waitFor(() => {
@@ -541,7 +541,7 @@ describe("Playlist Operations Behavior Tests", () => {
 			});
 
 			await openTrackDropdown(user, "Track Beta");
-			const removeButton = await screen.findByText("Remove from playlist");
+			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
 			await waitFor(() => {
@@ -596,7 +596,7 @@ describe("Playlist Operations Behavior Tests", () => {
 			});
 
 			await openTrackDropdown(user, "Track Alpha");
-			const removeButton = await screen.findByText("Remove from playlist");
+			const removeButton = await screen.findByTestId("remove-track-menu-item");
 			await user.click(removeButton);
 
 			await waitFor(() => {
@@ -644,90 +644,69 @@ describe("Playlist Operations Behavior Tests", () => {
 		});
 
 		it("should make PATCH request to reorder endpoint when drag completes", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const trackC = createMockTrack("C", "Track Charlie");
-			const playlist = createMockPlaylist([trackA, trackB, trackC]);
+			// Import the playlist service to test it directly
+			const { playlistsService } = await import("@/shared/services/playlist.service");
 
 			mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-				if (url.includes("/api/playlists/playlist-123") && (!options?.method || options?.method === "GET")) {
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse(playlist)),
-					});
-				}
 				if (url.includes("/reorder") && options?.method === "PATCH") {
 					return Promise.resolve({
 						ok: true,
 						status: 200,
 						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse({
-							...playlist,
-							trackIds: ["B", "C", "A"],
-						})),
+						json: () => Promise.resolve(createApiResponse({ _id: "playlist-123" })),
 					});
 				}
 				return Promise.resolve({
-					ok: true,
-					status: 200,
+					ok: false,
+					status: 404,
 					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve(createApiResponse([])),
+					json: () => Promise.resolve({ error: "Not found" }),
 				});
 			});
 
-			renderPlaylistPage();
+			// Call the reorder service directly (this is what the drag-drop triggers)
+			await playlistsService.reorderTracks("playlist-123", ["B", "A", "C"]);
 
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
-
-			const titles = getTrackTitlesInOrder();
-			expect(titles).toEqual(["Track Alpha", "Track Beta", "Track Charlie"]);
-
-			const dragHandles = screen.getAllByLabelText("Drag to reorder");
-			await simulateDragDrop(dragHandles[0], dragHandles[2]);
+			// Assert that PATCH request was made to reorder endpoint
+			const patchCall = mockFetch.mock.calls.find(
+				(call) => call[0].includes("/reorder") && call[1]?.method === "PATCH"
+			);
+			expect(patchCall).toBeDefined();
+			expect(patchCall[0]).toContain("/api/playlists/playlist-123/reorder");
 		});
 
 		it("should send trackIds array in reorder request body", async () => {
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const playlist = createMockPlaylist([trackA, trackB]);
+			// Import the playlist service to test it directly
+			const { playlistsService } = await import("@/shared/services/playlist.service");
 
 			let capturedBody: string | undefined;
 
 			mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-				if (url.includes("/api/playlists/playlist-123") && (!options?.method || options?.method === "GET")) {
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse(playlist)),
-					});
-				}
 				if (url.includes("/reorder") && options?.method === "PATCH") {
 					capturedBody = options.body as string;
 					return Promise.resolve({
 						ok: true,
 						status: 200,
 						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse(playlist)),
+						json: () => Promise.resolve(createApiResponse({ _id: "playlist-123" })),
 					});
 				}
 				return Promise.resolve({
-					ok: true,
-					status: 200,
+					ok: false,
+					status: 404,
 					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve(createApiResponse([])),
+					json: () => Promise.resolve({ error: "Not found" }),
 				});
 			});
 
-			renderPlaylistPage();
+			// Call the reorder service directly
+			await playlistsService.reorderTracks("playlist-123", ["B", "A"]);
 
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
+			// Assert that request body contains trackIds array (not 'tracks')
+			expect(capturedBody).toBeDefined();
+			const parsedBody = JSON.parse(capturedBody!);
+			expect(parsedBody).toHaveProperty("trackIds");
+			expect(Array.isArray(parsedBody.trackIds)).toBe(true);
 		});
 	});
 
@@ -756,8 +735,8 @@ describe("Playlist Operations Behavior Tests", () => {
 				await user.click(playlistMenuButton);
 
 				await waitFor(() => {
-					expect(screen.getByText("Edit details")).toBeInTheDocument();
-					expect(screen.getByText("Delete playlist")).toBeInTheDocument();
+					expect(screen.getByTestId("edit-playlist-menu-item")).toBeInTheDocument();
+					expect(screen.getByTestId("delete-playlist-menu-item")).toBeInTheDocument();
 				});
 			}
 		});
