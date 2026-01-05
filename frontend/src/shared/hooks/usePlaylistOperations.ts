@@ -37,7 +37,9 @@ export function usePlaylistOperations(
 				await playlistService.reorderTracks(playlistId, trackIds);
 			} catch (error) {
 				setPlaylist(originalTracks);
-				onError?.(error instanceof Error ? error : new Error("Reorder failed"));
+				const err = error instanceof Error ? error : new Error("Failed to reorder tracks");
+				onError?.(err);
+				throw err;
 			} finally {
 				setIsReordering(false);
 			}
@@ -57,7 +59,9 @@ export function usePlaylistOperations(
 				await playlistService.removeTrack(playlistId, trackId);
 			} catch (error) {
 				setPlaylist(originalTracks);
-				onError?.(error instanceof Error ? error : new Error("Remove failed"));
+				const err = error instanceof Error ? error : new Error("Failed to remove track");
+				onError?.(err);
+				throw err;
 			} finally {
 				setIsRemoving(false);
 			}

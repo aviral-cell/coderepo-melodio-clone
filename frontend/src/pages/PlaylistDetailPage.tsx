@@ -253,14 +253,14 @@ export default function PlaylistDetailPage(): JSX.Element {
 		});
 	}, []);
 
-	const { reorderTracks, isReordering } = usePlaylistOperations(
+	const { reorderTracks, removeTrack, isReordering, isRemoving } = usePlaylistOperations(
 		playlistId,
 		playlist?.tracks || [],
 		setTracks,
 		(error) => {
 			addToast({
 				type: "error",
-				message: error.message || "Failed to reorder tracks",
+				message: error.message || "Operation failed",
 			});
 		}
 	);
@@ -319,25 +319,13 @@ export default function PlaylistDetailPage(): JSX.Element {
 
 	const handleRemoveTrack = async (trackId: string) => {
 		try {
-			await playlistsService.removeTrack(playlistId, trackId);
-			setPlaylist((prev) => {
-				if (!prev) return prev;
-				return {
-					...prev,
-					tracks: prev.tracks?.filter((t) => t._id !== trackId),
-					trackIds: prev.trackIds.filter((id) => id !== trackId),
-				};
-			});
+			await removeTrack(trackId);
 			triggerRefresh();
 			addToast({
 				type: "success",
 				message: "Track removed from playlist",
 			});
-		} catch (error) {
-			addToast({
-				type: "error",
-				message: error instanceof Error ? error.message : "Failed to remove track",
-			});
+		} catch {
 		}
 	};
 
