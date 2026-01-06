@@ -104,7 +104,7 @@ export const tracksService = {
 			Track.find(filter)
 				.populate<{ artist_id: PopulatedArtist | null }>("artist_id", "name image_url")
 				.populate<{ album_id: PopulatedAlbum | null }>("album_id", "title cover_image_url")
-				.sort({ created_at: -1 })
+				.sort({ created_at: 1 })
 				.skip(skip)
 				.limit(limit)
 				.lean<LeanTrackWithPopulated[]>()

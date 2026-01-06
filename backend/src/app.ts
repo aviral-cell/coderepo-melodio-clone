@@ -1,6 +1,5 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { errorMiddleware, notFoundHandler } from "./shared/middleware/error.middleware.js";
@@ -21,27 +20,7 @@ const getPublicDir = (): string => {
 export function createApp(): Application {
 	const app: Application = express();
 
-	app.use(
-		helmet({
-			crossOriginResourcePolicy: { policy: "cross-origin" },
-			contentSecurityPolicy: {
-				directives: {
-					...helmet.contentSecurityPolicy.getDefaultDirectives(),
-					"frame-ancestors": ["'self'", "*.hrcdn.net", "*.hackerrank.com"],
-				},
-			},
-		}),
-	);
-
-	app.use(
-		cors({
-			origin: "*",
-			methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-			allowedHeaders: ["Content-Type", "Authorization"],
-			optionsSuccessStatus: 204,
-		}),
-	);
-	app.options("*", cors());
+	app.use(cors());
 
 	if (process.env["NODE_ENV"] !== "test") {
 		app.use(morgan("dev"));
