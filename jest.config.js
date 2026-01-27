@@ -1,5 +1,4 @@
 module.exports = {
-	silent: true,
 	projects: [
 		{
 			displayName: "frontend",
@@ -73,6 +72,10 @@ module.exports = {
 			},
 		],
 	],
+	silent: true,
+	verbose: true,
+	forceExit: true,
+	detectOpenHandles: true,
 	clearMocks: true,
 	resetMocks: true,
 	restoreMocks: true,
