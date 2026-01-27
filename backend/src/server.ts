@@ -39,7 +39,6 @@ async function startServer(): Promise<void> {
 	const host = "0.0.0.0";
 	const server = app.listen(config.port, host, () => {
 		console.log(`Server running on http://${host}:${config.port}`);
-		console.log(`Environment: ${config.nodeEnv}`);
 	});
 
 	server.on("error", (error: NodeJS.ErrnoException) => {

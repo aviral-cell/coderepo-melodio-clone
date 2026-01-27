@@ -40,6 +40,17 @@ export const paymentController = {
 
 			const idempotencyKey = req.headers["idempotency-key"] as string | undefined;
 
+			if (idempotencyKey) {
+				const cachedResult = cacheService.get<{ success: boolean; data: unknown }>(
+					`payment:${idempotencyKey}`,
+				);
+
+				if (cachedResult) {
+					sendSuccess(res, cachedResult.data);
+					return;
+				}
+			}
+
 			const validationErrors = validateCardPaymentRequest(req.body);
 			if (validationErrors.length > 0) {
 				sendError(res, "Validation failed", 400, validationErrors);
@@ -56,7 +67,7 @@ export const paymentController = {
 			try {
 				const result = await paymentService.processCardPayment(
 					userId,
-					body.amount,
+					body.subscriptionPrice,
 					body.cardDetails,
 					idempotencyKey || null,
 					session,
@@ -64,6 +75,14 @@ export const paymentController = {
 
 				if (session) {
 					await session.commitTransaction();
+				}
+
+				if (idempotencyKey) {
+					cacheService.set(
+						`payment:${idempotencyKey}`,
+						{ success: true, data: result },
+						IDEMPOTENCY_CACHE_TTL,
+					);
 				}
 
 				sendSuccess(res, result);

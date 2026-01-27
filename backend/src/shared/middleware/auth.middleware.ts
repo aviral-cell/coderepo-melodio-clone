@@ -45,6 +45,11 @@ export async function authMiddleware(
 			return;
 		}
 
+		if (!user.is_active) {
+			sendError(res, "Account inactive", 401);
+			return;
+		}
+
 		req.user = {
 			userId: decoded.userId,
 			email: decoded.email,

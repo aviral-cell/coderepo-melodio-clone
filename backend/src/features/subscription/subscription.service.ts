@@ -76,12 +76,13 @@ export const subscriptionService = {
 
 		const now = new Date();
 		const oneMonthFromNow = new Date(now);
+		oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
 
 		const updateData = {
-			plan: SubscriptionPlan.FREE,
+			plan: SubscriptionPlan.PREMIUM,
 			start_date: now,
 			end_date: oneMonthFromNow,
-			auto_renew: false,
+			auto_renew: true,
 		};
 
 		const options = session ? { new: true, upsert: true, session } : { new: true, upsert: true };

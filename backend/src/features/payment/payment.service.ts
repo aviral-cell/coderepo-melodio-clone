@@ -56,16 +56,21 @@ export const paymentService = {
 			throw new PaymentError("Already subscribed to premium", 400);
 		}
 
-		const createdPayments = await Payment.create([
-			{
-				user_id: userObjectId,
-				amount,
-				status: PaymentStatus.PENDING,
-				card_last4: cardLast4,
-				idempotency_key: idempotencyKey,
-				timestamp: new Date(),
-			},
-		]);
+		const sessionOpts = session ? { session } : {};
+
+		const createdPayments = await Payment.create(
+			[
+				{
+					user_id: userObjectId,
+					amount,
+					status: PaymentStatus.PENDING,
+					card_last4: cardLast4,
+					idempotency_key: idempotencyKey,
+					timestamp: new Date(),
+				},
+			],
+			sessionOpts,
+		);
 
 		const payment = createdPayments[0];
 		if (!payment) {
@@ -74,14 +79,31 @@ export const paymentService = {
 
 		const chargeResult = await this.chargeCard(cardDetails, amount);
 		if (!chargeResult.success) {
-			await Payment.findByIdAndUpdate(payment._id, {
-				status: PaymentStatus.FAILED,
-			}).exec();
+			await Payment.findByIdAndUpdate(
+				payment._id,
+				{ status: PaymentStatus.FAILED },
+				sessionOpts,
+			).exec();
 
 			throw new PaymentError("Card charge failed", 400);
 		}
 
-		const subscription = await subscriptionService.upgradeToPremium(userId);
+		await Payment.findByIdAndUpdate(
+			payment._id,
+			{ status: PaymentStatus.COMPLETED },
+			sessionOpts,
+		).exec();
+
+		const subscription = await subscriptionService.upgradeToPremium(
+			userId,
+			session || undefined,
+		);
+
+		await User.findByIdAndUpdate(
+			userObjectId,
+			{ subscription_status: SubscriptionStatus.PREMIUM },
+			sessionOpts,
+		).exec();
 
 		return {
 			success: true,
