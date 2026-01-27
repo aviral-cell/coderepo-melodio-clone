@@ -30,7 +30,6 @@ export function AccountSwitcher() {
 	const isPrimary = user?.accountType !== "family_member";
 
 	const fetchSwitchableAccounts = useCallback(async () => {
-		// Only primary accounts can switch to family members
 		if (!isPrimary) {
 			setAccounts([]);
 			return;
@@ -49,7 +48,6 @@ export function AccountSwitcher() {
 			}));
 			setAccounts(familyAccounts);
 		} catch {
-			// Silently fail - not critical for UX
 			setAccounts([]);
 		} finally {
 			setIsLoading(false);
@@ -86,7 +84,6 @@ export function AccountSwitcher() {
 		[isSwitching, switchAccount, addToast]
 	);
 
-	// For family members, show option to switch back to primary
 	if (!isPrimary && user?.primaryAccountId) {
 		return (
 			<DropdownMenuSub>
@@ -114,7 +111,6 @@ export function AccountSwitcher() {
 		);
 	}
 
-	// No accounts to switch to
 	if (accounts.length === 0) {
 		return null;
 	}

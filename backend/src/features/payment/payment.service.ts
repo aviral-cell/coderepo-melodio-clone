@@ -41,10 +41,6 @@ function generateTransactionId(): string {
 }
 
 export const paymentService = {
-	/**
-	 * Process card payment and upgrade subscription.
-	 * MUST use MongoDB transaction for atomicity.
-	 */
 	async processCardPayment(
 		userId: string,
 		amount: number,
@@ -55,67 +51,37 @@ export const paymentService = {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 		const cardLast4 = cardDetails.cardNumber.slice(-4);
 
-		// Check if user already has premium subscription
 		const isAlreadyPremium = await subscriptionService.isPremium(userId);
 		if (isAlreadyPremium) {
 			throw new PaymentError("Already subscribed to premium", 400);
 		}
 
-		// Build session options (only if session provided)
-		const sessionOpts = session ? { session } : {};
-
-		// Create Payment record with status: pending
-		const createdPayments = await Payment.create(
-			[
-				{
-					user_id: userObjectId,
-					amount,
-					status: PaymentStatus.PENDING,
-					card_last4: cardLast4,
-					idempotency_key: idempotencyKey,
-					timestamp: new Date(),
-				},
-			],
-			sessionOpts,
-		);
+		const createdPayments = await Payment.create([
+			{
+				user_id: userObjectId,
+				amount,
+				status: PaymentStatus.PENDING,
+				card_last4: cardLast4,
+				idempotency_key: idempotencyKey,
+				timestamp: new Date(),
+			},
+		]);
 
 		const payment = createdPayments[0];
 		if (!payment) {
 			throw new PaymentError("Failed to create payment record", 500);
 		}
 
-		// Simulate card charge (always succeeds in mock)
 		const chargeResult = await this.chargeCard(cardDetails, amount);
 		if (!chargeResult.success) {
-			// Update payment to failed
-			await Payment.findByIdAndUpdate(
-				payment._id,
-				{ status: PaymentStatus.FAILED },
-				sessionOpts,
-			).exec();
+			await Payment.findByIdAndUpdate(payment._id, {
+				status: PaymentStatus.FAILED,
+			}).exec();
 
 			throw new PaymentError("Card charge failed", 400);
 		}
 
-		// Update Payment status to completed
-		await Payment.findByIdAndUpdate(
-			payment._id,
-			{ status: PaymentStatus.COMPLETED },
-			sessionOpts,
-		).exec();
-
-		// Upgrade subscription to premium
-		const subscription = await subscriptionService.upgradeToPremium(
-			userId,
-			session || undefined,
-		);
-
-		// Also update user's subscription_status field
-		await User.findByIdAndUpdate(
-			userObjectId,
-			{ subscription_status: SubscriptionStatus.PREMIUM },
-			sessionOpts,
-		).exec();
+		const subscription = await subscriptionService.upgradeToPremium(userId);
 
 		return {
 			success: true,
@@ -130,15 +96,10 @@ export const paymentService = {
 		};
 	},
 
-	/**
-	 * Simulate card charge.
-	 * In mock implementation, always succeeds as long as card format is valid.
-	 */
 	async chargeCard(
 		cardDetails: CardDetails,
 		amount: number,
 	): Promise<{ success: boolean; transactionId?: string; error?: string }> {
-		// Validate card format (should already be validated by DTO, but double-check)
 		if (!/^\d{16}$/.test(cardDetails.cardNumber)) {
 			return { success: false, error: "Invalid card number format" };
 		}
@@ -159,16 +120,12 @@ export const paymentService = {
 			return { success: false, error: "Invalid amount" };
 		}
 
-		// Mock: Always succeed
 		return {
 			success: true,
 			transactionId: generateTransactionId(),
 		};
 	},
 
-	/**
-	 * Get payment history for a user, sorted by timestamp descending.
-	 */
 	async getPaymentHistory(userId: string): Promise<PaymentResponse[]> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 
@@ -179,9 +136,6 @@ export const paymentService = {
 		return payments.map(transformPayment);
 	},
 
-	/**
-	 * Find payment by idempotency key.
-	 */
 	async findByIdempotencyKey(
 		idempotencyKey: string,
 	): Promise<PaymentResponse | null> {

@@ -45,12 +45,6 @@ function generateUsername(name: string): string {
 }
 
 export const familyService = {
-	/**
-	 * Add a new family member to the primary account.
-	 * - Max 3 family members allowed
-	 * - Family members have no password
-	 * - Family members inherit subscription status from primary
-	 */
 	async addFamilyMember(
 		primaryUserId: string,
 		memberData: FamilyMemberDto,
@@ -62,12 +56,10 @@ export const familyService = {
 			throw new FamilyError("Primary user not found", 404);
 		}
 
-		// Family members cannot add other family members
 		if (primaryUser.account_type === AccountType.FAMILY_MEMBER) {
 			throw new FamilyError("Only primary account can manage family", 403);
 		}
 
-		// Check max 3 family members limit
 		const existingMembersCount = await User.countDocuments({
 			primary_account_id: primaryUserObjectId,
 			is_active: true,
@@ -77,7 +69,6 @@ export const familyService = {
 			throw new FamilyError("Maximum 3 family members allowed", 400);
 		}
 
-		// Check if email is already registered
 		const existingEmail = await User.findOne({
 			email: memberData.email.toLowerCase(),
 		}).exec();
@@ -86,7 +77,6 @@ export const familyService = {
 			throw new FamilyError("Email already registered", 409);
 		}
 
-		// Generate unique username from name
 		let username = generateUsername(memberData.name);
 		let attempts = 0;
 		while (await User.findOne({ username }).exec()) {
@@ -97,25 +87,20 @@ export const familyService = {
 			}
 		}
 
-		// Create family member user
 		const familyMember = await User.create({
 			email: memberData.email.toLowerCase(),
 			username,
-			password_hash: "", // Family members have no password (empty string instead of null to satisfy required constraint)
+			password_hash: "",
 			display_name: memberData.name,
 			account_type: AccountType.FAMILY_MEMBER,
 			primary_account_id: primaryUserObjectId,
-			is_active: true,
-			subscription_status: primaryUser.subscription_status, // Inherit from primary
+			is_active: false,
+			subscription_status: primaryUser.subscription_status,
 		});
 
 		return transformFamilyMember(familyMember);
 	},
 
-	/**
-	 * Get all family members for a primary account.
-	 * If called by a family member, returns family members under their primary account.
-	 */
 	async getFamilyMembers(userId: string): Promise<{
 		familyMembers: FamilyMemberResponse[];
 		maxMembers: number;
@@ -123,13 +108,11 @@ export const familyService = {
 	}> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 
-		// Check if the user is a family member
 		const user = await User.findById(userObjectId).exec();
 		if (!user) {
 			throw new FamilyError("User not found", 404);
 		}
 
-		// If family member, use their primary account ID; otherwise use their own ID
 		const primaryAccountId =
 			user.account_type === AccountType.FAMILY_MEMBER && user.primary_account_id
 				? user.primary_account_id
@@ -152,10 +135,6 @@ export const familyService = {
 		};
 	},
 
-	/**
-	 * Remove (hard delete) a family member.
-	 * Permanently deletes the family member record.
-	 */
 	async removeFamilyMember(
 		primaryUserId: string,
 		memberId: string,
@@ -163,30 +142,25 @@ export const familyService = {
 		const primaryUserObjectId = new mongoose.Types.ObjectId(primaryUserId);
 		const memberObjectId = new mongoose.Types.ObjectId(memberId);
 
-		// Verify the user is a primary account
 		const primaryUser = await User.findById(primaryUserObjectId).exec();
 		if (!primaryUser) {
 			throw new FamilyError("User not found", 404);
 		}
 
-		// Family members cannot remove other family members
 		if (primaryUser.account_type === AccountType.FAMILY_MEMBER) {
 			throw new FamilyError("Not authorized to manage family members", 403);
 		}
 
-		// Find the family member
 		const member = await User.findById(memberObjectId).exec();
 
 		if (!member) {
 			throw new FamilyError("Family member not found", 404);
 		}
 
-		// Verify the member belongs to the primary user
 		if (!member.primary_account_id?.equals(primaryUserObjectId)) {
 			throw new FamilyError("Not authorized to remove this family member", 403);
 		}
 
-		// Hard delete: permanently remove the family member
 		await User.findByIdAndDelete(memberObjectId).exec();
 
 		return true;

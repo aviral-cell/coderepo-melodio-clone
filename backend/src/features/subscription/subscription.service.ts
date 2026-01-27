@@ -31,9 +31,6 @@ function transformSubscription(sub: ISubscriptionDocument): SubscriptionResponse
 }
 
 export const subscriptionService = {
-	/**
-	 * Get subscription by user ID. Creates a free subscription if none exists.
-	 */
 	async getByUserId(userId: string): Promise<SubscriptionResponse> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 
@@ -53,9 +50,6 @@ export const subscriptionService = {
 		return transformSubscription(subscription);
 	},
 
-	/**
-	 * Create a free subscription for a new user.
-	 */
 	async create(userId: string): Promise<SubscriptionResponse> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 
@@ -74,11 +68,6 @@ export const subscriptionService = {
 		return transformSubscription(subscription);
 	},
 
-	/**
-	 * Upgrade user subscription to premium.
-	 * Sets plan to premium, start_date to now, end_date to 1 month from now,
-	 * and auto_renew to true.
-	 */
 	async upgradeToPremium(
 		userId: string,
 		session?: ClientSession,
@@ -87,13 +76,12 @@ export const subscriptionService = {
 
 		const now = new Date();
 		const oneMonthFromNow = new Date(now);
-		oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
 
 		const updateData = {
-			plan: SubscriptionPlan.PREMIUM,
+			plan: SubscriptionPlan.FREE,
 			start_date: now,
 			end_date: oneMonthFromNow,
-			auto_renew: true,
+			auto_renew: false,
 		};
 
 		const options = session ? { new: true, upsert: true, session } : { new: true, upsert: true };
@@ -114,11 +102,6 @@ export const subscriptionService = {
 		return subscription;
 	},
 
-	/**
-	 * Check if user can create a new playlist.
-	 * Free users: max 2 playlists
-	 * Premium users: unlimited playlists
-	 */
 	async canCreatePlaylist(userId: string): Promise<boolean> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 
@@ -135,9 +118,6 @@ export const subscriptionService = {
 		return true;
 	},
 
-	/**
-	 * Check if user has premium subscription.
-	 */
 	async isPremium(userId: string): Promise<boolean> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 

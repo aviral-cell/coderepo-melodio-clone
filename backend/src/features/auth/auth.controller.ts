@@ -109,10 +109,6 @@ export const authController = {
 		}
 	},
 
-	/**
-	 * POST /api/auth/switch
-	 * Switch to another account (family member or primary).
-	 */
 	async switchAccount(
 		req: AuthenticatedRequest,
 		res: Response,

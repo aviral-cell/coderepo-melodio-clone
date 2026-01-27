@@ -104,7 +104,6 @@ export function PaymentModal({
 			cvv: validateCvv(cvv),
 		};
 
-		// Check if expiry date is in the future
 		if (!newErrors.expiryMonth && !newErrors.expiryYear) {
 			const now = new Date();
 			const currentYear = now.getFullYear() % 100;
@@ -232,7 +231,6 @@ export function PaymentModal({
 
 				<form onSubmit={handleSubmit}>
 					<div className="space-y-4 py-4">
-						{/* Card Number */}
 						<div className="space-y-2">
 							<label
 								htmlFor="card-number"

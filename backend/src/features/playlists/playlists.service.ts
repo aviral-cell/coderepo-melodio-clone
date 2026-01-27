@@ -192,7 +192,6 @@ export const playlistsService = {
 			coverImageUrl?: string;
 		},
 	): Promise<PlaylistResponse> {
-		// Check if user can create playlist based on subscription
 		const canCreate = await subscriptionService.canCreatePlaylist(ownerId);
 		if (!canCreate) {
 			throw new PlaylistError(

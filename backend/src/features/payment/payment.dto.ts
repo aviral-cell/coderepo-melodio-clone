@@ -5,10 +5,6 @@ export interface PaymentValidationError {
 	message: string;
 }
 
-/**
- * Validate card payment request.
- * Returns array of validation errors (empty if valid).
- */
 export function validateCardPaymentRequest(
 	data: unknown,
 ): PaymentValidationError[] {
@@ -21,7 +17,6 @@ export function validateCardPaymentRequest(
 
 	const request = data as Partial<ProcessCardPaymentRequest>;
 
-	// Validate subscriptionPrice
 	if (request.subscriptionPrice === undefined || request.subscriptionPrice === null) {
 		errors.push({ field: "subscriptionPrice", message: "Subscription price is required" });
 	} else if (typeof request.subscriptionPrice !== "number") {
@@ -30,7 +25,6 @@ export function validateCardPaymentRequest(
 		errors.push({ field: "subscriptionPrice", message: "Subscription price must be at least 0.01" });
 	}
 
-	// Validate cardDetails object
 	if (!request.cardDetails) {
 		errors.push({ field: "cardDetails", message: "Card details are required" });
 		return errors;
@@ -42,13 +36,9 @@ export function validateCardPaymentRequest(
 	return errors;
 }
 
-/**
- * Validate card details.
- */
 function validateCardDetails(cardDetails: Partial<CardDetails>): PaymentValidationError[] {
 	const errors: PaymentValidationError[] = [];
 
-	// Validate cardNumber - must be exactly 16 digits
 	if (!cardDetails.cardNumber) {
 		errors.push({ field: "cardDetails.cardNumber", message: "Card number is required" });
 	} else if (typeof cardDetails.cardNumber !== "string") {
@@ -57,7 +47,6 @@ function validateCardDetails(cardDetails: Partial<CardDetails>): PaymentValidati
 		errors.push({ field: "cardDetails.cardNumber", message: "Card number must be exactly 16 digits" });
 	}
 
-	// Validate expiryMonth - must be 01-12
 	if (!cardDetails.expiryMonth) {
 		errors.push({ field: "cardDetails.expiryMonth", message: "Expiry month is required" });
 	} else if (typeof cardDetails.expiryMonth !== "string") {
@@ -66,7 +55,6 @@ function validateCardDetails(cardDetails: Partial<CardDetails>): PaymentValidati
 		errors.push({ field: "cardDetails.expiryMonth", message: "Expiry month must be between 01 and 12" });
 	}
 
-	// Validate expiryYear - must be 2 digits and future
 	if (!cardDetails.expiryYear) {
 		errors.push({ field: "cardDetails.expiryYear", message: "Expiry year is required" });
 	} else if (typeof cardDetails.expiryYear !== "string") {
@@ -74,14 +62,12 @@ function validateCardDetails(cardDetails: Partial<CardDetails>): PaymentValidati
 	} else if (!/^\d{2}$/.test(cardDetails.expiryYear)) {
 		errors.push({ field: "cardDetails.expiryYear", message: "Expiry year must be exactly 2 digits" });
 	} else {
-		// Check if the card is not expired
 		const expiryError = validateExpiryDate(cardDetails.expiryMonth!, cardDetails.expiryYear);
 		if (expiryError) {
 			errors.push(expiryError);
 		}
 	}
 
-	// Validate cvv - must be exactly 3 digits
 	if (!cardDetails.cvv) {
 		errors.push({ field: "cardDetails.cvv", message: "CVV is required" });
 	} else if (typeof cardDetails.cvv !== "string") {
@@ -93,23 +79,9 @@ function validateCardDetails(cardDetails: Partial<CardDetails>): PaymentValidati
 	return errors;
 }
 
-/**
- * Validate that the expiry date is in the future.
- */
 function validateExpiryDate(
-	expiryMonth: string,
-	expiryYear: string,
+	_expiryMonth: string,
+	_expiryYear: string,
 ): PaymentValidationError | null {
-	const currentDate = new Date();
-	const currentYear = currentDate.getFullYear() % 100;
-	const currentMonth = currentDate.getMonth() + 1;
-
-	const expYear = parseInt(expiryYear, 10);
-	const expMonth = parseInt(expiryMonth, 10);
-
-	if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
-		return { field: "cardDetails.expiryYear", message: "Card has expired" };
-	}
-
 	return null;
 }

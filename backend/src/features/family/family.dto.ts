@@ -9,10 +9,6 @@ export interface FamilyMemberValidationError {
 	message: string;
 }
 
-/**
- * Validate family member creation request.
- * Returns array of validation errors (empty if valid).
- */
 export function validateFamilyMemberRequest(
 	data: unknown,
 ): FamilyMemberValidationError[] {
@@ -25,7 +21,6 @@ export function validateFamilyMemberRequest(
 
 	const request = data as Partial<FamilyMemberDto>;
 
-	// Validate name - required, 2-50 characters
 	if (!request.name) {
 		errors.push({ field: "name", message: "Name is required" });
 	} else if (typeof request.name !== "string") {
@@ -39,7 +34,6 @@ export function validateFamilyMemberRequest(
 		}
 	}
 
-	// Validate email - required, valid email format
 	if (!request.email) {
 		errors.push({ field: "email", message: "Email is required" });
 	} else if (typeof request.email !== "string") {
@@ -51,7 +45,6 @@ export function validateFamilyMemberRequest(
 		}
 	}
 
-	// Validate age - optional, must be a number if provided
 	if (request.age !== undefined && request.age !== null) {
 		if (typeof request.age !== "number") {
 			errors.push({ field: "age", message: "Age must be a number" });

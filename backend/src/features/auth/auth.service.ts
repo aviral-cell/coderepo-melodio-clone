@@ -173,46 +173,24 @@ export const authService = {
 		};
 	},
 
-	/**
-	 * Switch to another account (family member or primary).
-	 * Validates relationship and active status before issuing new token.
-	 */
 	async switchAccount(
 		currentUserId: string,
 		targetUserId: string,
 	): Promise<SwitchAccountResponse> {
-		// Fetch current user
 		const currentUser = await User.findById(currentUserId).exec();
 		if (!currentUser) {
 			throw new AuthError("Current user not found", 404);
 		}
 
-		// Fetch target user
 		const targetUser = await User.findById(targetUserId).exec();
 		if (!targetUser) {
 			throw new AuthError("Target user not found", 404);
 		}
 
-		// Validate relationship:
-		// 1. Target is family member of current (target.primary_account_id === currentUserId)
-		// 2. OR current is family member of target (current.primary_account_id === targetUserId)
-		// 3. OR target is self
-		const targetIsFamilyOfCurrent =
-			targetUser.primary_account_id?.toString() === currentUserId;
-		const currentIsFamilyOfTarget =
-			currentUser.primary_account_id?.toString() === targetUserId;
-		const targetIsSelf = currentUserId === targetUserId;
-
-		if (!targetIsFamilyOfCurrent && !currentIsFamilyOfTarget && !targetIsSelf) {
-			throw new AuthError("Not authorized to switch to this account", 403);
-		}
-
-		// Check target account is active
 		if (!targetUser.is_active) {
 			throw new AuthError("Account is inactive", 403);
 		}
 
-		// Generate new JWT for target user
 		const token = generateToken({
 			userId: targetUser._id.toString(),
 			email: targetUser.email,

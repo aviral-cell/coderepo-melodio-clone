@@ -5,10 +5,6 @@ import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/inde
 import { AuthenticatedRequest } from "../../shared/types/index.js";
 
 export const familyController = {
-	/**
-	 * POST /api/family
-	 * Add a new family member.
-	 */
 	async addFamilyMember(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -21,7 +17,6 @@ export const familyController = {
 				return;
 			}
 
-			// Validate request body
 			const validationErrors = validateFamilyMemberRequest(req.body);
 			if (validationErrors.length > 0) {
 				sendError(res, "Validation failed", 400, validationErrors);
@@ -41,10 +36,6 @@ export const familyController = {
 		}
 	},
 
-	/**
-	 * GET /api/family
-	 * List all family members for the current user.
-	 */
 	async getFamilyMembers(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -69,10 +60,6 @@ export const familyController = {
 		}
 	},
 
-	/**
-	 * DELETE /api/family/:memberId
-	 * Remove a family member (soft delete).
-	 */
 	async removeFamilyMember(
 		req: AuthenticatedRequest,
 		res: Response,

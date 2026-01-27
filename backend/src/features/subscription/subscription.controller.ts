@@ -6,11 +6,6 @@ import { usersService } from "../users/users.service.js";
 import { AccountType } from "../users/user.model.js";
 
 export const subscriptionController = {
-	/**
-	 * GET /api/subscription
-	 * Get current user's subscription.
-	 * For family members, returns the primary account's subscription.
-	 */
 	async getSubscription(
 		req: AuthenticatedRequest,
 		res: Response,

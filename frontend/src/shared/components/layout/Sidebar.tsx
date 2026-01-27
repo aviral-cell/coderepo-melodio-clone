@@ -115,7 +115,6 @@ export function Sidebar() {
 							</Link>
 						);
 					})}
-					{/* Subscription Link */}
 					<Link
 						to="/subscription"
 						className={cn(
@@ -140,7 +139,6 @@ export function Sidebar() {
 							</span>
 						)}
 					</Link>
-					{/* Family Settings Link */}
 					<Link
 						to="/settings/family"
 						className={cn(

@@ -1,5 +1,5 @@
-/** @type {import('jest').Config} */
 module.exports = {
+	silent: true,
 	projects: [
 		{
 			displayName: "frontend",
@@ -15,7 +15,7 @@ module.exports = {
 			],
 			testPathIgnorePatterns: ["/node_modules/", "search\\.service\\.test\\.ts$"],
 			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
-			setupFilesAfterEnv: ["<rootDir>/frontend/jest.setup.ts"],
+			setupFilesAfterEnv: ["<rootDir>/frontend/jest.setup.ts", "<rootDir>/jest.silence.js"],
 			transform: {
 				"^.+\\.(ts|tsx)$": [
 					"ts-jest",
@@ -43,6 +43,7 @@ module.exports = {
 				"**/__tests__/task5/**/*.behavior.test.ts",
 			],
 			moduleFileExtensions: ["ts", "js", "json", "node"],
+			setupFilesAfterEnv: ["<rootDir>/jest.silence.js"],
 			transform: {
 				"^.+\\.tsx?$": [
 					"ts-jest",

@@ -49,7 +49,6 @@ export function CreatePlaylistDialog({
 			const playlists = await playlistsService.getAll();
 			setPlaylistCount(playlists.length);
 		} catch {
-			// Silently fail
 		} finally {
 			setIsLoadingCount(false);
 		}
@@ -108,7 +107,6 @@ export function CreatePlaylistDialog({
 		}
 	};
 
-	// Show upgrade prompt if at limit
 	if (isAtLimit && !isLoadingCount) {
 		return (
 			<Dialog open={open} onOpenChange={handleClose}>
@@ -162,7 +160,6 @@ export function CreatePlaylistDialog({
 				</DialogHeader>
 				<form onSubmit={handleSubmit}>
 					<div className="space-y-4 py-4">
-						{/* Playlist count indicator for free users */}
 						{!isPremium && !isLoadingCount && (
 							<div className="rounded-md bg-melodio-light-gray/50 p-2 text-center text-xs text-melodio-text-subdued">
 								{playlistCount} of {FREE_PLAYLIST_LIMIT} playlists used

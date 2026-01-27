@@ -9,11 +9,8 @@ import { cacheService } from "../../shared/services/cache.service.js";
 import { usersService } from "../users/users.service.js";
 import { AccountType } from "../users/user.model.js";
 
-const IDEMPOTENCY_CACHE_TTL = 3600; // 1 hour in seconds
+const IDEMPOTENCY_CACHE_TTL = 3600;
 
-/**
- * Check if MongoDB is running as a replica set (supports transactions).
- */
 async function isReplicaSet(): Promise<boolean> {
 	try {
 		const admin = mongoose.connection.db?.admin();
@@ -26,10 +23,6 @@ async function isReplicaSet(): Promise<boolean> {
 }
 
 export const paymentController = {
-	/**
-	 * POST /api/payment/card
-	 * Process card payment for premium subscription upgrade.
-	 */
 	async processCardPayment(
 		req: AuthenticatedRequest,
 		res: Response,
@@ -45,22 +38,8 @@ export const paymentController = {
 				return;
 			}
 
-			// Extract idempotency key from header
 			const idempotencyKey = req.headers["idempotency-key"] as string | undefined;
 
-			// Check cache for existing result
-			if (idempotencyKey) {
-				const cachedResult = cacheService.get<{ success: boolean; data: unknown }>(
-					`payment:${idempotencyKey}`,
-				);
-
-				if (cachedResult) {
-					sendSuccess(res, cachedResult.data);
-					return;
-				}
-			}
-
-			// Validate request body
 			const validationErrors = validateCardPaymentRequest(req.body);
 			if (validationErrors.length > 0) {
 				sendError(res, "Validation failed", 400, validationErrors);
@@ -69,7 +48,6 @@ export const paymentController = {
 
 			const body = req.body as ProcessCardPaymentRequest;
 
-			// Start MongoDB transaction if replica set available
 			if (useTransactions) {
 				session = await mongoose.startSession();
 				session.startTransaction();
@@ -78,29 +56,18 @@ export const paymentController = {
 			try {
 				const result = await paymentService.processCardPayment(
 					userId,
-					body.subscriptionPrice,
+					body.amount,
 					body.cardDetails,
 					idempotencyKey || null,
 					session,
 				);
 
-				// Commit transaction if using transactions
 				if (session) {
 					await session.commitTransaction();
 				}
 
-				// Cache result with idempotency key
-				if (idempotencyKey) {
-					cacheService.set(
-						`payment:${idempotencyKey}`,
-						{ success: true, data: result },
-						IDEMPOTENCY_CACHE_TTL,
-					);
-				}
-
 				sendSuccess(res, result);
 			} catch (error) {
-				// Abort transaction on any error
 				if (session) {
 					await session.abortTransaction();
 				}
@@ -119,11 +86,6 @@ export const paymentController = {
 		}
 	},
 
-	/**
-	 * GET /api/payments
-	 * Get payment history for current user.
-	 * For family members, returns the primary account's payment history.
-	 */
 	async getPaymentHistory(
 		req: AuthenticatedRequest,
 		res: Response,

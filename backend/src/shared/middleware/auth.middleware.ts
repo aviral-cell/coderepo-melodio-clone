@@ -38,17 +38,10 @@ export async function authMiddleware(
 
 		const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
 
-		// Fetch user from database and check is_active status
 		const user = await User.findById(decoded.userId).exec();
 
 		if (!user) {
 			sendError(res, "User not found", 401);
-			return;
-		}
-
-		// Check if account is active
-		if (!user.is_active) {
-			sendError(res, "Account inactive", 401);
 			return;
 		}
 

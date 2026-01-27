@@ -44,7 +44,6 @@ const userSchema = new Schema<IUserDocument>(
 		password_hash: {
 			type: String,
 			required: function (this: IUserDocument) {
-				// Password required only for primary accounts
 				return this.account_type === AccountType.PRIMARY;
 			},
 			select: false,
