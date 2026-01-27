@@ -2,12 +2,13 @@ import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthenticatedRequest, JwtPayload } from "../types/index.js";
 import { sendError } from "../utils/index.js";
+import { User } from "../../features/users/user.model.js";
 
-export function authMiddleware(
+export async function authMiddleware(
 	req: AuthenticatedRequest,
 	res: Response,
 	next: NextFunction,
-): void {
+): Promise<void> {
 	try {
 		const authHeader = req.headers.authorization;
 
@@ -36,6 +37,18 @@ export function authMiddleware(
 		}
 
 		const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
+
+		const user = await User.findById(decoded.userId).exec();
+
+		if (!user) {
+			sendError(res, "User not found", 401);
+			return;
+		}
+
+		if (!user.is_active) {
+			sendError(res, "Account inactive", 401);
+			return;
+		}
 
 		req.user = {
 			userId: decoded.userId,

@@ -30,7 +30,7 @@ type ToastAction =
 	| { type: "ADD_TOAST"; payload: Toast }
 	| { type: "REMOVE_TOAST"; payload: string };
 
-const DEFAULT_DURATION = 5000;
+const DEFAULT_DURATION = 4000;
 
 function toastReducer(state: ToastState, action: ToastAction): ToastState {
 	switch (action.type) {

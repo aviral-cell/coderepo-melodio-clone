@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Search, LogOut, User } from "lucide-react";
+import { Link } from "react-router";
+import { Search, LogOut, User, Crown, Users } from "lucide-react";
 
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
@@ -13,6 +14,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { SearchDropdown } from "@/shared/components/common/SearchDropdown";
+import { AccountSwitcher } from "@/shared/components/common/AccountSwitcher";
 import { useAuth } from "@/shared/contexts/AuthContext";
 
 interface TopBarProps {
@@ -126,11 +128,38 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 							<p className="mt-1 text-xs font-normal text-melodio-text-subdued">
 								{user?.email}
 							</p>
+							{user?.subscriptionStatus === "premium" && (
+								<div className="mt-1 flex items-center gap-1 text-xs text-yellow-500">
+									<Crown className="h-3 w-3" />
+									Premium
+								</div>
+							)}
 						</DropdownMenuLabel>
+						<DropdownMenuSeparator className="bg-melodio-light-gray" />
+						<Link to="/subscription">
+							<DropdownMenuItem
+								className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+								data-testid="topbar-subscription-link"
+							>
+								<Crown className="mr-2 h-4 w-4" />
+								Subscription
+							</DropdownMenuItem>
+						</Link>
+						<Link to="/settings/family">
+							<DropdownMenuItem
+								className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+								data-testid="topbar-family-settings-link"
+							>
+								<Users className="mr-2 h-4 w-4" />
+								Family Settings
+							</DropdownMenuItem>
+						</Link>
+						<AccountSwitcher />
 						<DropdownMenuSeparator className="bg-melodio-light-gray" />
 						<DropdownMenuItem
 							onClick={handleLogout}
 							className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+							data-testid="topbar-logout-btn"
 						>
 							<LogOut className="mr-2 h-4 w-4" />
 							Log out

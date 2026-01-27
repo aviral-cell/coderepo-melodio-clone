@@ -7,7 +7,6 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				// Melodio color palette
 				melodio: {
 					green: "#1DB954",
 					"green-dark": "#1ed760",
@@ -17,7 +16,6 @@ const config: Config = {
 					text: "#ffffff",
 					"text-subdued": "#b3b3b3",
 				},
-				// Shadcn UI theme colors
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",

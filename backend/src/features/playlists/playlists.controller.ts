@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { playlistsService } from "./playlists.service.js";
+import { playlistsService, PlaylistError } from "./playlists.service.js";
 import {
 	sendSuccess,
 	sendError,
@@ -77,6 +77,10 @@ export const playlistsController = {
 
 			sendSuccess(res, playlist, undefined, 201);
 		} catch (error) {
+			if (error instanceof PlaylistError) {
+				sendError(res, error.message, error.statusCode);
+				return;
+			}
 			next(error);
 		}
 	},

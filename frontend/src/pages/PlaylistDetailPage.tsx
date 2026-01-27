@@ -11,7 +11,6 @@ import {
 	type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-	arrayMove,
 	SortableContext,
 	sortableKeyboardCoordinates,
 	useSortable,
@@ -253,7 +252,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 		});
 	}, []);
 
-	const { reorderTracks, removeTrack, isReordering, isRemoving } = usePlaylistOperations(
+	const { reorderTracks, removeTrack, isReordering, isRemoving: _isRemoving } = usePlaylistOperations(
 		playlistId,
 		playlist?.tracks || [],
 		setTracks,

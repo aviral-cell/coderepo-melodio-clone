@@ -4,6 +4,8 @@ export {
 	type LoginInput,
 	type RegisterInput,
 	type AuthResponse,
+	type SwitchAccountInput,
+	type SwitchAccountResponse,
 } from "./auth.service";
 export { searchService, type SearchResult } from "./search.service";
 export {
@@ -28,3 +30,15 @@ export {
 	type ArtistWithAlbums,
 	type ArtistQueryParams,
 } from "./artists.service";
+export { subscriptionService } from "./subscription.service";
+export {
+	paymentService,
+	type PaymentRequest,
+	type PaymentResponse,
+	type PaymentHistoryResponse,
+} from "./payment.service";
+export {
+	familyService,
+	type AddFamilyMemberInput,
+	type AddFamilyMemberResponse,
+} from "./family.service";

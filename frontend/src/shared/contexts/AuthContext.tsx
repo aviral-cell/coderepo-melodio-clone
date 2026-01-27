@@ -24,6 +24,8 @@ interface AuthContextType extends AuthState {
 	login: (input: LoginInput) => Promise<void>;
 	register: (input: RegisterInput) => Promise<void>;
 	logout: () => void;
+	switchAccount: (targetUserId: string) => Promise<void>;
+	refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -102,6 +104,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		});
 	}, []);
 
+	const switchAccount = useCallback(async (targetUserId: string) => {
+		const response = await authService.switchAccount({ targetUserId });
+		localStorage.setItem("accessToken", response.token);
+		setState({
+			user: response.user,
+			token: response.token,
+			isAuthenticated: true,
+			isLoading: false,
+		});
+	}, []);
+
+	const refreshUser = useCallback(async () => {
+		const storedToken = localStorage.getItem("accessToken");
+		if (storedToken) {
+			const user = await authService.getMe();
+			setState((prev) => ({
+				...prev,
+				user,
+			}));
+		}
+	}, []);
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -109,6 +133,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				login,
 				register,
 				logout,
+				switchAccount,
+				refreshUser,
 			}}
 		>
 			{children}

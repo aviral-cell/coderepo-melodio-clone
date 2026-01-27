@@ -1,6 +1,17 @@
 import mongoose from "mongoose";
 import { Playlist, IPlaylist } from "./playlist.model.js";
 import { Track } from "../tracks/track.model.js";
+import { subscriptionService } from "../subscription/subscription.service.js";
+
+export class PlaylistError extends Error {
+	statusCode: number;
+
+	constructor(message: string, statusCode: number) {
+		super(message);
+		this.statusCode = statusCode;
+		this.name = "PlaylistError";
+	}
+}
 
 interface PopulatedArtist {
 	_id: mongoose.Types.ObjectId;
@@ -181,6 +192,14 @@ export const playlistsService = {
 			coverImageUrl?: string;
 		},
 	): Promise<PlaylistResponse> {
+		const canCreate = await subscriptionService.canCreatePlaylist(ownerId);
+		if (!canCreate) {
+			throw new PlaylistError(
+				"Free users can only create up to 2 playlists. Upgrade to Premium for unlimited playlists.",
+				403,
+			);
+		}
+
 		const playlist = await Playlist.create({
 			name: data.name,
 			description: data.description,

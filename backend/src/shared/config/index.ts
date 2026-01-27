@@ -27,7 +27,7 @@ export function loadConfig(isTest = false): Config {
 		mongodbUri: finalMongodbUri,
 		jwtSecret: getRequiredEnv("JWT_SECRET"),
 		jwtExpiresIn: getOptionalEnv("JWT_EXPIRES_IN", "7d"),
-		port: parseInt(getOptionalEnv("PORT", "5000"), 10),
+		port: parseInt(getOptionalEnv("PORT", "8000"), 10),
 		nodeEnv: isTest ? "test" : getOptionalEnv("NODE_ENV", "development"),
 	};
 }
