@@ -21,10 +21,12 @@ export function sendError(
 	statusCode = 400,
 	errors?: Array<{ field: string; message: string }>,
 ): Response {
-	const response: ApiResponse = {
+	const response: ApiResponse & { message?: string; details?: typeof errors } = {
 		success: false,
 		error,
+		message: error,
 		errors,
+		details: errors,
 	};
 	return res.status(statusCode).json(response);
 }
