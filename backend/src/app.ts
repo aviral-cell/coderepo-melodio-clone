@@ -9,6 +9,9 @@ import { artistRoutes } from "./features/artists/artists.routes.js";
 import { albumRoutes } from "./features/albums/albums.routes.js";
 import { trackRoutes } from "./features/tracks/tracks.routes.js";
 import { playlistRoutes } from "./features/playlists/playlists.routes.js";
+import { subscriptionRoutes } from "./features/subscription/subscription.routes.js";
+import { paymentRoutes } from "./features/payment/payment.routes.js";
+import { familyRoutes } from "./features/family/family.routes.js";
 
 const getPublicDir = (): string => {
 	if (typeof __dirname !== "undefined") {
@@ -57,6 +60,10 @@ export function createApp(): Application {
 	app.use("/api/albums", albumRoutes);
 	app.use("/api/tracks", trackRoutes);
 	app.use("/api/playlists", playlistRoutes);
+	app.use("/api/subscription", subscriptionRoutes);
+	app.use("/api/payment", paymentRoutes);
+	app.use("/api/payments", paymentRoutes);
+	app.use("/api/family", familyRoutes);
 
 	app.use(notFoundHandler);
 

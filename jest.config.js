@@ -10,6 +10,8 @@ module.exports = {
 				"**/__tests__/task1/**/*.test.{ts,tsx}",
 				"**/__tests__/task2/**/*.test.{ts,tsx}",
 				"**/__tests__/task3/**/*.test.{ts,tsx}",
+				"**/__tests__/task4/**/*.test.tsx",
+				"**/__tests__/task5/**/*.test.tsx",
 			],
 			testPathIgnorePatterns: ["/node_modules/", "search\\.service\\.test\\.ts$"],
 			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
@@ -35,7 +37,11 @@ module.exports = {
 			preset: "ts-jest",
 			testEnvironment: "node",
 			roots: ["<rootDir>/__tests__"],
-			testMatch: ["**/__tests__/task3/search.service.test.ts"],
+			testMatch: [
+				"**/__tests__/task3/search.service.test.ts",
+				"**/__tests__/task4/**/*.behavior.test.ts",
+				"**/__tests__/task5/**/*.behavior.test.ts",
+			],
 			moduleFileExtensions: ["ts", "js", "json", "node"],
 			transform: {
 				"^.+\\.tsx?$": [

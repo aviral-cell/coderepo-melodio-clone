@@ -8,6 +8,8 @@ import { Artist } from "../features/artists/artist.model.js";
 import { Album } from "../features/albums/album.model.js";
 import { Track } from "../features/tracks/track.model.js";
 import { Playlist } from "../features/playlists/playlist.model.js";
+import { Subscription } from "../features/subscription/subscription.model.js";
+import { SubscriptionPlan } from "../features/subscription/subscription.types.js";
 import { initConfig } from "../shared/config/index.js";
 
 const config = initConfig();
@@ -228,6 +230,7 @@ async function clearDatabase(): Promise<void> {
 		Album.deleteMany({}),
 		Track.deleteMany({}),
 		Playlist.deleteMany({}),
+		Subscription.deleteMany({}),
 	]);
 
 	console.log("Existing data cleared.");
@@ -287,16 +290,17 @@ async function seedArtistsAlbumsAndTracks(): Promise<{
 	return { artistCount, albumCount, trackCount };
 }
 
-async function seedUsers(): Promise<number> {
+async function seedUsers(): Promise<{ userCount: number; subscriptionCount: number }> {
 	console.log("Creating test users...");
 
 	const saltRounds = 10;
 	let userCount = 0;
+	let subscriptionCount = 0;
 
 	for (const userData of testUsers) {
 		const passwordHash = await bcrypt.hash(userData.password, saltRounds);
 
-		await User.create({
+		const user = await User.create({
 			email: userData.email,
 			username: userData.username,
 			password_hash: passwordHash,
@@ -305,9 +309,20 @@ async function seedUsers(): Promise<number> {
 
 		userCount++;
 		console.log(`  Created user: ${userData.username} (${userData.email})`);
+
+		await Subscription.create({
+			user_id: user._id,
+			plan: SubscriptionPlan.FREE,
+			start_date: new Date(),
+			end_date: null,
+			auto_renew: false,
+		});
+
+		subscriptionCount++;
+		console.log(`    Created subscription for user: ${userData.username}`);
 	}
 
-	return userCount;
+	return { userCount, subscriptionCount };
 }
 
 async function seedPlaylists(): Promise<number> {
@@ -350,7 +365,7 @@ async function seed(): Promise<void> {
 
 		const { artistCount, albumCount, trackCount } = await seedArtistsAlbumsAndTracks();
 
-		const userCount = await seedUsers();
+		const { userCount, subscriptionCount } = await seedUsers();
 
 		const playlistCount = await seedPlaylists();
 
@@ -361,6 +376,7 @@ async function seed(): Promise<void> {
 		console.log(`Albums created: ${albumCount}`);
 		console.log(`Tracks created: ${trackCount}`);
 		console.log(`Users created: ${userCount}`);
+		console.log(`Subscriptions created: ${subscriptionCount}`);
 		console.log(`Playlists created: ${playlistCount}`);
 		console.log("========================================");
 		console.log("\nTest Users:");

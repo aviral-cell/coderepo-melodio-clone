@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { usersService } from "../users/users.service.js";
+import { User, AccountType, SubscriptionStatus } from "../users/user.model.js";
 
 export interface RegisterData {
 	email: string;
@@ -22,6 +23,21 @@ export interface AuthResponse {
 		username: string;
 		displayName: string;
 		avatarUrl?: string;
+		accountType: AccountType;
+		primaryAccountId: string | null;
+		subscriptionStatus: SubscriptionStatus;
+	};
+}
+
+export interface SwitchAccountResponse {
+	token: string;
+	user: {
+		_id: string;
+		email: string;
+		displayName: string;
+		accountType: AccountType;
+		primaryAccountId: string | null;
+		subscriptionStatus: SubscriptionStatus;
 	};
 }
 
@@ -31,6 +47,9 @@ export interface UserResponse {
 	username: string;
 	displayName: string;
 	avatarUrl?: string;
+	accountType: AccountType;
+	primaryAccountId: string | null;
+	subscriptionStatus: SubscriptionStatus;
 }
 
 export class AuthError extends Error {
@@ -97,6 +116,9 @@ export const authService = {
 				username: user.username,
 				displayName: user.display_name,
 				avatarUrl: user.avatar_url,
+				accountType: user.account_type,
+				primaryAccountId: user.primary_account_id?.toString() || null,
+				subscriptionStatus: user.subscription_status,
 			},
 		};
 	},
@@ -126,6 +148,9 @@ export const authService = {
 				username: user.username,
 				displayName: user.display_name,
 				avatarUrl: user.avatar_url,
+				accountType: user.account_type,
+				primaryAccountId: user.primary_account_id?.toString() || null,
+				subscriptionStatus: user.subscription_status,
 			},
 		};
 	},
@@ -142,6 +167,68 @@ export const authService = {
 			username: user.username,
 			displayName: user.display_name,
 			avatarUrl: user.avatar_url,
+			accountType: user.account_type,
+			primaryAccountId: user.primary_account_id?.toString() || null,
+			subscriptionStatus: user.subscription_status,
+		};
+	},
+
+	/**
+	 * Switch to another account (family member or primary).
+	 * Validates relationship and active status before issuing new token.
+	 */
+	async switchAccount(
+		currentUserId: string,
+		targetUserId: string,
+	): Promise<SwitchAccountResponse> {
+		// Fetch current user
+		const currentUser = await User.findById(currentUserId).exec();
+		if (!currentUser) {
+			throw new AuthError("Current user not found", 404);
+		}
+
+		// Fetch target user
+		const targetUser = await User.findById(targetUserId).exec();
+		if (!targetUser) {
+			throw new AuthError("Target user not found", 404);
+		}
+
+		// Validate relationship:
+		// 1. Target is family member of current (target.primary_account_id === currentUserId)
+		// 2. OR current is family member of target (current.primary_account_id === targetUserId)
+		// 3. OR target is self
+		const targetIsFamilyOfCurrent =
+			targetUser.primary_account_id?.toString() === currentUserId;
+		const currentIsFamilyOfTarget =
+			currentUser.primary_account_id?.toString() === targetUserId;
+		const targetIsSelf = currentUserId === targetUserId;
+
+		if (!targetIsFamilyOfCurrent && !currentIsFamilyOfTarget && !targetIsSelf) {
+			throw new AuthError("Not authorized to switch to this account", 403);
+		}
+
+		// Check target account is active
+		if (!targetUser.is_active) {
+			throw new AuthError("Account is inactive", 403);
+		}
+
+		// Generate new JWT for target user
+		const token = generateToken({
+			userId: targetUser._id.toString(),
+			email: targetUser.email,
+			username: targetUser.username,
+		});
+
+		return {
+			token,
+			user: {
+				_id: targetUser._id.toString(),
+				email: targetUser.email,
+				displayName: targetUser.display_name,
+				accountType: targetUser.account_type,
+				primaryAccountId: targetUser.primary_account_id?.toString() || null,
+				subscriptionStatus: targetUser.subscription_status,
+			},
 		};
 	},
 };

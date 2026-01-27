@@ -38,6 +38,7 @@
 *.tsbuildinfo
 *next-env.d.ts
 *vite-env.d.ts
+*colorthief.d.ts
 
 ### Node ###
 # Logs
@@ -179,3 +180,6 @@ melodio.txt
 
 **/junit.xml
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,node
+
+*CLAUDE.md
+**/docs

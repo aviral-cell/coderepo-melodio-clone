@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router";
+import { Crown } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -10,10 +12,13 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { usePlaylistRefresh } from "@/shared/contexts/PlaylistContext";
 import { useToast } from "@/shared/hooks/useToast";
 import { playlistsService } from "@/shared/services/playlist.service";
 import type { Playlist } from "@/shared/types";
+
+const FREE_PLAYLIST_LIMIT = 2;
 
 interface CreatePlaylistDialogProps {
 	open: boolean;
@@ -29,8 +34,32 @@ export function CreatePlaylistDialog({
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [playlistCount, setPlaylistCount] = useState(0);
+	const [isLoadingCount, setIsLoadingCount] = useState(true);
+
+	const { user } = useAuth();
 	const { addToast } = useToast();
 	const { triggerRefresh } = usePlaylistRefresh();
+
+	const isPremium = user?.subscriptionStatus === "premium";
+	const isAtLimit = !isPremium && playlistCount >= FREE_PLAYLIST_LIMIT;
+
+	const fetchPlaylistCount = useCallback(async () => {
+		try {
+			const playlists = await playlistsService.getAll();
+			setPlaylistCount(playlists.length);
+		} catch {
+			// Silently fail
+		} finally {
+			setIsLoadingCount(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		if (open) {
+			fetchPlaylistCount();
+		}
+	}, [open, fetchPlaylistCount]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -79,6 +108,49 @@ export function CreatePlaylistDialog({
 		}
 	};
 
+	// Show upgrade prompt if at limit
+	if (isAtLimit && !isLoadingCount) {
+		return (
+			<Dialog open={open} onOpenChange={handleClose}>
+				<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
+					<DialogHeader>
+						<DialogTitle className="flex items-center gap-2 text-white">
+							<Crown className="h-5 w-5 text-yellow-500" />
+							Playlist Limit Reached
+						</DialogTitle>
+						<DialogDescription>
+							Free accounts are limited to {FREE_PLAYLIST_LIMIT} playlists.
+							Upgrade to Premium for unlimited playlists.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="py-6 text-center">
+						<div className="mb-4 text-sm text-melodio-text-subdued">
+							You have used {playlistCount} of {FREE_PLAYLIST_LIMIT} playlists
+						</div>
+						<Link to="/subscription" onClick={() => onOpenChange(false)}>
+							<Button
+								className="bg-melodio-green text-black hover:bg-melodio-green/90"
+								data-testid="playlist-limit-upgrade-btn"
+							>
+								<Crown className="mr-2 h-4 w-4" />
+								Upgrade to Premium
+							</Button>
+						</Link>
+					</div>
+					<DialogFooter>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={handleClose}
+						>
+							Close
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		);
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={handleClose}>
 			<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
@@ -90,6 +162,12 @@ export function CreatePlaylistDialog({
 				</DialogHeader>
 				<form onSubmit={handleSubmit}>
 					<div className="space-y-4 py-4">
+						{/* Playlist count indicator for free users */}
+						{!isPremium && !isLoadingCount && (
+							<div className="rounded-md bg-melodio-light-gray/50 p-2 text-center text-xs text-melodio-text-subdued">
+								{playlistCount} of {FREE_PLAYLIST_LIMIT} playlists used
+							</div>
+						)}
 						<div className="space-y-2">
 							<label
 								htmlFor="playlist-name"
@@ -105,6 +183,7 @@ export function CreatePlaylistDialog({
 								onChange={(e) => setName(e.target.value)}
 								className="bg-melodio-light-gray"
 								autoFocus
+								data-testid="playlist-name-input"
 							/>
 						</div>
 						<div className="space-y-2">
@@ -121,6 +200,7 @@ export function CreatePlaylistDialog({
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
 								className="bg-melodio-light-gray"
+								data-testid="playlist-description-input"
 							/>
 						</div>
 					</div>
@@ -130,10 +210,15 @@ export function CreatePlaylistDialog({
 							variant="ghost"
 							onClick={handleClose}
 							disabled={isSubmitting}
+							data-testid="playlist-cancel-btn"
 						>
 							Cancel
 						</Button>
-						<Button type="submit" disabled={isSubmitting || !name.trim()}>
+						<Button
+							type="submit"
+							disabled={isSubmitting || !name.trim()}
+							data-testid="playlist-create-btn"
+						>
 							{isSubmitting ? "Creating..." : "Create"}
 						</Button>
 					</DialogFooter>

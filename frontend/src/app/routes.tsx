@@ -9,6 +9,8 @@ import GenrePage from "@/pages/GenrePage";
 import AlbumDetailPage from "@/pages/AlbumDetailPage";
 import TrackDetailPage from "@/pages/TrackDetailPage";
 import PlaylistDetailPage from "@/pages/PlaylistDetailPage";
+import SubscriptionPage from "@/pages/SubscriptionPage";
+import FamilySettingsPage from "@/pages/FamilySettingsPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
@@ -104,6 +106,14 @@ export const router = createBrowserRouter([
 					{
 						path: "library",
 						element: <LibraryPage />,
+					},
+					{
+						path: "subscription",
+						element: <SubscriptionPage />,
+					},
+					{
+						path: "settings/family",
+						element: <FamilySettingsPage />,
 					},
 				],
 			},

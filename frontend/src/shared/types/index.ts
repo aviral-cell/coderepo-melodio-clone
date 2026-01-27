@@ -19,12 +19,20 @@ export interface PaginatedResponse<T> {
 	hasPrev: boolean;
 }
 
+export type AccountType = "primary" | "family_member";
+export type SubscriptionPlan = "free" | "premium";
+export type SubscriptionStatus = "free" | "premium";
+
 export interface User {
 	_id: string;
 	email: string;
 	username: string;
 	displayName: string;
 	avatarUrl?: string;
+	accountType?: AccountType;
+	primaryAccountId?: string;
+	isActive?: boolean;
+	subscriptionStatus?: SubscriptionStatus;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -115,4 +123,52 @@ export interface PlayerState {
 	duration: number;
 	repeat: "none" | "one" | "all";
 	shuffle: boolean;
+}
+
+export interface Subscription {
+	_id: string;
+	userId: string;
+	plan: SubscriptionPlan;
+	startDate: string;
+	endDate: string | null;
+	autoRenew: boolean;
+	createdAt: string;
+	updatedAt: string;
+	isFamilyMember?: boolean;
+	primaryAccountId?: string | null;
+}
+
+export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
+
+export interface Payment {
+	_id: string;
+	userId: string;
+	amount: number;
+	status: PaymentStatus;
+	cardLast4: string;
+	idempotencyKey: string | null;
+	timestamp: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface CardDetails {
+	cardNumber: string;
+	expiryMonth: string;
+	expiryYear: string;
+	cvv: string;
+}
+
+export interface FamilyMember {
+	_id: string;
+	displayName: string;
+	email: string;
+	isActive: boolean;
+	createdAt: string;
+}
+
+export interface FamilyMembersResponse {
+	familyMembers: FamilyMember[];
+	maxMembers: number;
+	remainingSlots: number;
 }

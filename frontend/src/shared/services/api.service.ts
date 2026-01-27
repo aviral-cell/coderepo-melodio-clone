@@ -4,7 +4,7 @@ const AUTH_TOKEN_KEY = "accessToken";
 
 function getApiBaseUrl(): string {
 	const { protocol, host } = window.location;
-	return `${protocol}//${host.replace("3000", "5000")}`;
+	return `${protocol}//${host.replace("3000", "8000")}`;
 }
 
 class ApiService {

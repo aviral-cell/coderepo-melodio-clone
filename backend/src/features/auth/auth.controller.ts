@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { authService, AuthError } from "./auth.service.js";
-import { sendSuccess, sendError } from "../../shared/utils/index.js";
+import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
 
 function isValidEmail(email: string): boolean {
@@ -100,6 +100,46 @@ export const authController = {
 			const user = await authService.getMe(userId);
 
 			sendSuccess(res, user);
+		} catch (error) {
+			if (error instanceof AuthError) {
+				sendError(res, error.message, error.statusCode);
+				return;
+			}
+			next(error);
+		}
+	},
+
+	/**
+	 * POST /api/auth/switch
+	 * Switch to another account (family member or primary).
+	 */
+	async switchAccount(
+		req: AuthenticatedRequest,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				sendError(res, "User not authenticated", 401);
+				return;
+			}
+
+			const { targetUserId } = req.body as { targetUserId?: string };
+
+			if (!targetUserId) {
+				sendError(res, "Target user ID is required", 400);
+				return;
+			}
+
+			if (!isValidObjectId(targetUserId)) {
+				sendError(res, "Invalid target user ID", 400);
+				return;
+			}
+
+			const result = await authService.switchAccount(userId, targetUserId);
+
+			sendSuccess(res, result);
 		} catch (error) {
 			if (error instanceof AuthError) {
 				sendError(res, error.message, error.statusCode);

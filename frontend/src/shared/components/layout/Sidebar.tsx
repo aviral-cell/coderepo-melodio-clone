@@ -8,6 +8,8 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	Radio,
+	Crown,
+	Users,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -35,7 +37,8 @@ const navItems = [
 export function Sidebar() {
 	const location = useLocation();
 	const pathname = location.pathname;
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, user } = useAuth();
+	const isPremium = user?.subscriptionStatus === "premium";
 	const { isCollapsed, toggleSidebar } = useSidebar();
 	const { refreshTrigger } = usePlaylistRefresh();
 
@@ -112,6 +115,47 @@ export function Sidebar() {
 							</Link>
 						);
 					})}
+					{/* Subscription Link */}
+					<Link
+						to="/subscription"
+						className={cn(
+							"flex items-center gap-4 rounded-md px-3 py-3 text-sm font-semibold transition-colors",
+							pathname === "/subscription"
+								? "text-white"
+								: "text-melodio-text-subdued hover:text-white",
+							isCollapsed && "justify-center px-2"
+						)}
+						title={isCollapsed ? "Subscription" : undefined}
+						data-testid="sidebar-subscription-link"
+					>
+						<Crown className={cn("h-6 w-6 flex-shrink-0", isPremium && "text-yellow-500")} />
+						{!isCollapsed && (
+							<span className="flex items-center gap-2">
+								Subscription
+								{isPremium && (
+									<span className="rounded-full bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-medium text-yellow-500">
+										PRO
+									</span>
+								)}
+							</span>
+						)}
+					</Link>
+					{/* Family Settings Link */}
+					<Link
+						to="/settings/family"
+						className={cn(
+							"flex items-center gap-4 rounded-md px-3 py-3 text-sm font-semibold transition-colors",
+							pathname === "/settings/family"
+								? "text-white"
+								: "text-melodio-text-subdued hover:text-white",
+							isCollapsed && "justify-center px-2"
+						)}
+						title={isCollapsed ? "Family" : undefined}
+						data-testid="sidebar-family-link"
+					>
+						<Users className="h-6 w-6 flex-shrink-0" />
+						{!isCollapsed && "Family"}
+					</Link>
 					{isCollapsed && (
 						<button
 							type="button"

@@ -168,3 +168,9 @@ body {
 .animate-slide-up {
 	animation: slide-up 0.3s ease-out;
 }
+
+/* Password masking without native type="password" to prevent browser password popups */
+.password-mask {
+	-webkit-text-security: disc;
+	text-security: disc;
+}
