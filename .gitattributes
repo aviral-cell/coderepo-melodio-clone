@@ -1,3 +1,1 @@
-# Exclude a specific file from the download zip
 **/problem-statements/ export-ignore
-**/docs/ export-ignore

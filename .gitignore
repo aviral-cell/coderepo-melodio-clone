@@ -175,11 +175,10 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
-melodio.txt
 **/.playwright-mcp
+/docs
 
 **/junit.xml
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,node
 
-*CLAUDE.md
-**/docs
+CLAUDE.md
