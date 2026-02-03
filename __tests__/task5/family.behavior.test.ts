@@ -17,6 +17,7 @@ const config: Config = loadConfig(true);
 
 const FAMILY_API_BASE = "/api/family";
 const AUTH_API_BASE = "/api/auth";
+const PAYMENT_API_BASE = "/api/payment";
 
 enum AccountType {
 	PRIMARY = "primary",
@@ -128,6 +129,10 @@ function generateUniqueEmail(prefix: string): string {
 	return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(7)}@hackerrank.com`;
 }
 
+function generateIdempotencyKey(): string {
+	return `idem-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+}
+
 async function registerAndLoginUser(
 	userData: typeof primaryUserData,
 ): Promise<{ token: string; userId: string }> {
@@ -144,46 +149,35 @@ async function registerAndLoginUser(
 	};
 }
 
-async function upgradeToPremium(userId: string): Promise<void> {
-	const userObjectId = new mongoose.Types.ObjectId(userId);
-	const oneMonthFromNow = new Date();
-	oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
-
-	await Subscription.findOneAndUpdate(
-		{ user_id: userObjectId },
-		{
-			plan: SubscriptionPlan.PREMIUM,
-			start_date: new Date(),
-			end_date: oneMonthFromNow,
-			auto_renew: true,
-		},
-		{ upsert: true, new: true },
-	);
-
-	await User.findByIdAndUpdate(userObjectId, {
-		subscription_status: SubscriptionStatus.PREMIUM,
-	});
+async function upgradeToPremiumViaApi(token: string): Promise<void> {
+	await request(app)
+		.post(`${PAYMENT_API_BASE}/card`)
+		.set("Authorization", `Bearer ${token}`)
+		.set("Idempotency-Key", generateIdempotencyKey())
+		.send({
+			subscriptionPrice: 999,
+			cardDetails: {
+				cardNumber: "4111111111111111",
+				expiryMonth: "12",
+				expiryYear: "30",
+				cvv: "123",
+			},
+		});
 }
 
-async function createFamilyMemberDirectly(
-	primaryUserId: string,
+async function createFamilyMemberViaApi(
+	token: string,
 	memberData: { email: string; name: string },
-): Promise<IUserDocument> {
-	const primaryUserObjectId = new mongoose.Types.ObjectId(primaryUserId);
-	const primaryUser = await User.findById(primaryUserObjectId);
+): Promise<{ memberId: string; memberData: Record<string, unknown> }> {
+	const response = await request(app)
+		.post(FAMILY_API_BASE)
+		.set("Authorization", `Bearer ${token}`)
+		.send(memberData);
 
-	const familyMember = await User.create({
-		email: memberData.email.toLowerCase(),
-		username: `${memberData.name.toLowerCase().replace(/\s+/g, "")}_${Date.now()}`,
-		password_hash: "",
-		display_name: memberData.name,
-		account_type: AccountType.FAMILY_MEMBER,
-		primary_account_id: primaryUserObjectId,
-		is_active: true,
-		subscription_status: primaryUser?.subscription_status || SubscriptionStatus.FREE,
-	});
-
-	return familyMember;
+	return {
+		memberId: response.body.data._id,
+		memberData: response.body.data,
+	};
 }
 
 describe("Family Management API", () => {
@@ -223,7 +217,7 @@ describe("Family Management API", () => {
 				const result = await registerAndLoginUser(uniquePrimaryUser);
 				premiumToken = result.token;
 				premiumUserId = result.userId;
-				await upgradeToPremium(premiumUserId);
+				await upgradeToPremiumViaApi(premiumToken);
 			});
 
 			it("should add family member successfully when user has premium subscription", async () => {
@@ -301,9 +295,17 @@ describe("Family Management API", () => {
 				expect(response.body.data.isActive).toBe(true);
 				expect(response.body.data.subscriptionStatus).toBe(SubscriptionStatus.FREE);
 
-				const dbMember = await User.findById(response.body.data._id);
-				expect(dbMember?.subscription_status).toBe(SubscriptionStatus.FREE);
-				expect(dbMember?.primary_account_id?.toString()).toBe(freeUserId);
+				const getMembersResponse = await request(app)
+					.get(FAMILY_API_BASE)
+					.set("Authorization", `Bearer ${freeToken}`);
+
+				expect(getMembersResponse.status).toBe(200);
+				const member = getMembersResponse.body.data.familyMembers.find(
+					(m: { _id: string }) => m._id === response.body.data._id,
+				);
+				expect(member).toBeDefined();
+				expect(member.subscriptionStatus).toBe(SubscriptionStatus.FREE);
+				expect(member.primaryAccountId).toBe(freeUserId);
 			});
 		});
 	});
@@ -322,7 +324,7 @@ describe("Family Management API", () => {
 				const result = await registerAndLoginUser(uniquePrimaryUser);
 				premiumToken = result.token;
 				premiumUserId = result.userId;
-				await upgradeToPremium(premiumUserId);
+				await upgradeToPremiumViaApi(premiumToken);
 			});
 
 			it("should return 403 when trying to switch to unrelated account", async () => {
@@ -345,12 +347,12 @@ describe("Family Management API", () => {
 			});
 
 			it("should return 403 when family member tries to switch to another family member", async () => {
-				const familyMemberA = await createFamilyMemberDirectly(premiumUserId, {
+				const { memberId: memberAId } = await createFamilyMemberViaApi(premiumToken, {
 					name: "Family Member A",
 					email: generateUniqueEmail("switch-member-a"),
 				});
 
-				const familyMemberB = await createFamilyMemberDirectly(premiumUserId, {
+				const { memberId: memberBId } = await createFamilyMemberViaApi(premiumToken, {
 					name: "Family Member B",
 					email: generateUniqueEmail("switch-member-b"),
 				});
@@ -358,14 +360,14 @@ describe("Family Management API", () => {
 				const switchToARes = await request(app)
 					.post(`${AUTH_API_BASE}/switch`)
 					.set("Authorization", `Bearer ${premiumToken}`)
-					.send({ targetUserId: familyMemberA._id.toString() });
+					.send({ targetUserId: memberAId });
 
 				const familyMemberAToken = switchToARes.body.data.token;
 
 				const response = await request(app)
 					.post(`${AUTH_API_BASE}/switch`)
 					.set("Authorization", `Bearer ${familyMemberAToken}`)
-					.send({ targetUserId: familyMemberB._id.toString() });
+					.send({ targetUserId: memberBId });
 
 				expect(response.status).toBe(403);
 				expect(response.body.success).toBe(false);

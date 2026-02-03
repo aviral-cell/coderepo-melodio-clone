@@ -59,6 +59,10 @@ export const playlistsService = {
 			"/api/playlists/" + playlistId + "/tracks/" + trackId
 		);
 	},
+
+	async copyPlaylist(playlistId: string, name?: string): Promise<Playlist> {
+		return apiService.post<Playlist>("/api/playlists/" + playlistId + "/copy", { name });
+	},
 };
 
 export const playlistService = playlistsService;

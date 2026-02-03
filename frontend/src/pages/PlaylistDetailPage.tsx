@@ -26,6 +26,7 @@ import {
 	Edit2,
 	Music,
 	GripVertical,
+	Copy,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -224,6 +225,9 @@ export default function PlaylistDetailPage(): JSX.Element {
 	const [editName, setEditName] = useState("");
 	const [editDescription, setEditDescription] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+	const [copyName, setCopyName] = useState("");
+	const [copying, setCopying] = useState(false);
 
 	const tracks = playlist?.tracks || [];
 	const coverImageUrl = playlist?.coverImageUrl ||
@@ -390,6 +394,35 @@ export default function PlaylistDetailPage(): JSX.Element {
 		}
 	};
 
+	const handleCopyPlaylist = async () => {
+		if (!playlist) return;
+		setCopying(true);
+		try {
+			const newPlaylist = await playlistsService.copyPlaylist(playlist._id, copyName || undefined);
+			addToast({
+				type: "success",
+				message: `Created "${newPlaylist.name}"`,
+			});
+			setCopyDialogOpen(false);
+			triggerRefresh();
+			navigate(`/playlist/${newPlaylist._id}`);
+		} catch (error) {
+			addToast({
+				type: "error",
+				message: error instanceof Error ? error.message : "Failed to copy playlist",
+			});
+		} finally {
+			setCopying(false);
+		}
+	};
+
+	const openCopyDialog = () => {
+		if (playlist) {
+			setCopyName(`Copy of ${playlist.name}`);
+			setCopyDialogOpen(true);
+		}
+	};
+
 	if (isLoading) {
 		return (
 			<>
@@ -507,6 +540,17 @@ export default function PlaylistDetailPage(): JSX.Element {
 						) : (
 							<Play className="h-8 w-8 fill-black text-black ml-0.5" fill="black" />
 						)}
+					</Button>
+
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={openCopyDialog}
+						className="gap-2"
+						data-testid="playlist-copy-btn"
+					>
+						<Copy className="h-4 w-4" />
+						Copy
 					</Button>
 
 					<DropdownMenu>
@@ -672,6 +716,43 @@ export default function PlaylistDetailPage(): JSX.Element {
 							disabled={isSubmitting}
 						>
 							{isSubmitting ? "Deleting..." : "Delete"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			<Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
+				<DialogContent className="border-melodio-light-gray bg-melodio-dark-gray sm:max-w-md">
+					<DialogHeader>
+						<DialogTitle className="text-white">Copy Playlist</DialogTitle>
+					</DialogHeader>
+					<div className="py-4">
+						<label htmlFor="copyName" className="text-sm font-medium text-white">
+							Playlist name
+						</label>
+						<Input
+							id="copyName"
+							value={copyName}
+							onChange={(e) => setCopyName(e.target.value)}
+							placeholder="Enter playlist name"
+							className="mt-2 bg-melodio-light-gray"
+							data-testid="playlist-copy-name-input"
+						/>
+					</div>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={() => setCopyDialogOpen(false)}
+							data-testid="playlist-copy-cancel-btn"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleCopyPlaylist}
+							disabled={copying}
+							data-testid="playlist-copy-submit-btn"
+						>
+							{copying ? "Copying..." : "Copy"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>

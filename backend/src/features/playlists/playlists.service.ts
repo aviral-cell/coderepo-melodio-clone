@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Playlist, IPlaylist } from "./playlist.model.js";
 import { Track } from "../tracks/track.model.js";
 import { subscriptionService } from "../subscription/subscription.service.js";
+import { FREE_PLAYLIST_LIMIT } from "../subscription/subscription.types.js";
 
 export class PlaylistError extends Error {
 	statusCode: number;
@@ -195,7 +196,7 @@ export const playlistsService = {
 		const canCreate = await subscriptionService.canCreatePlaylist(ownerId);
 		if (!canCreate) {
 			throw new PlaylistError(
-				"Free users can only create up to 2 playlists. Upgrade to Premium for unlimited playlists.",
+				`Free users can only create up to ${FREE_PLAYLIST_LIMIT} playlists. Upgrade to Premium for unlimited playlists.`,
 				403,
 			);
 		}
@@ -465,5 +466,50 @@ export const playlistsService = {
 			accessDenied: false,
 			invalidTrackIds: false,
 		};
+	},
+
+	async copyPlaylist(
+		playlistId: string,
+		userId: string,
+		customName?: string,
+	): Promise<PlaylistResponse> {
+		const canCreate = await subscriptionService.canCreatePlaylist(userId);
+		if (!canCreate) {
+			throw new PlaylistError(
+				`Free users can only create up to ${FREE_PLAYLIST_LIMIT} playlists. Upgrade to Premium for unlimited playlists.`,
+				403,
+			);
+		}
+
+		const original = await Playlist.findById(playlistId).lean<LeanPlaylist>().exec();
+
+		if (!original) {
+			throw new PlaylistError("Playlist not found", 404);
+		}
+
+		const isOwner = original.owner_id.toString() === userId;
+		const isPublic = original.is_public;
+
+		if (!isOwner && !isPublic) {
+			throw new PlaylistError("Cannot copy private playlist", 403);
+		}
+
+		const copyName = customName?.trim() || `Copy of ${original.name}`;
+
+		if (copyName.length < 2 || copyName.length > 100) {
+			throw new PlaylistError("Playlist name must be between 2 and 100 characters", 400);
+		}
+
+		const copy = await Playlist.create({
+			name: copyName,
+			description: original.description,
+			is_public: false,
+			owner_id: userId,
+			track_ids: [...original.track_ids],
+			cover_image_url: "/images/playlists/default.jpg",
+		});
+
+		const leanCopy = copy.toObject() as LeanPlaylist;
+		return transformPlaylist(leanCopy);
 	},
 };

@@ -18,7 +18,7 @@ import { useToast } from "@/shared/hooks/useToast";
 import { playlistsService } from "@/shared/services/playlist.service";
 import type { Playlist } from "@/shared/types";
 
-const FREE_PLAYLIST_LIMIT = 2;
+const FREE_PLAYLIST_LIMIT = 7;
 
 interface CreatePlaylistDialogProps {
 	open: boolean;

@@ -27,6 +27,8 @@
 		"test:task3": "cross-env JEST_JUNIT_OUTPUT_NAME=task3.xml jest --config=jest.config.js --testPathPattern=__tests__/task3 --passWithNoTests",
 		"test:task4": "cross-env JEST_JUNIT_OUTPUT_NAME=task4.xml jest --config=jest.config.js --testPathPattern=__tests__/task4 --passWithNoTests",
 		"test:task5": "cross-env JEST_JUNIT_OUTPUT_NAME=task5.xml jest --config=jest.config.js --testPathPattern=__tests__/task5 --passWithNoTests",
+		"test:task6": "cross-env JEST_JUNIT_OUTPUT_NAME=task6.xml jest --config=jest.config.js --testPathPattern=__tests__/task6 --passWithNoTests",
+		"test:task7": "cross-env JEST_JUNIT_OUTPUT_NAME=task7.xml jest --config=jest.config.js --testPathPattern=__tests__/task7 --passWithNoTests",
 		"test:frontend": "npm test --workspace=frontend",
 		"test:backend": "npm test --workspace=backend",
 		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,html,css,scss}\"",

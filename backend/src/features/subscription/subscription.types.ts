@@ -44,3 +44,5 @@ export interface UpdateSubscriptionDto {
 	end_date?: Date | null;
 	auto_renew?: boolean;
 }
+
+export const FREE_PLAYLIST_LIMIT = 7;

@@ -1,6 +1,7 @@
 import mongoose, { ClientSession } from "mongoose";
 import { Subscription } from "./subscription.model.js";
 import {
+	FREE_PLAYLIST_LIMIT,
 	ISubscriptionDocument,
 	SubscriptionPlan,
 	SubscriptionResponse,
@@ -113,7 +114,7 @@ export const subscriptionService = {
 				owner_id: userObjectId,
 			}).exec();
 
-			return playlistCount < 2;
+			return playlistCount < FREE_PLAYLIST_LIMIT;
 		}
 
 		return true;

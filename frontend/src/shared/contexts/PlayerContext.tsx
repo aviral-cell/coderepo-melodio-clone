@@ -11,6 +11,7 @@ import type { PlayerState, PlayerAction } from "../types/player.types";
 import type { TrackWithPopulated } from "../types/player.types";
 import { playerReducer, initialState } from "./playerReducer";
 import { shuffleArray } from "../utils/playerUtils";
+import { historyService } from "@/shared/services/history.service";
 
 export { playerReducer, initialState };
 
@@ -51,6 +52,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 			if (interval) clearInterval(interval);
 		};
 	}, [state.isPlaying, state.currentTrack]);
+
+	useEffect(() => {
+		if (state.currentTrack) {
+			historyService.recordPlay(state.currentTrack._id).catch((error) => {
+				console.error("Failed to record play:", error);
+			});
+		}
+	}, [state.currentTrack?._id]);
 
 	const saveToRecentlyPlayed = useCallback((track: TrackWithPopulated) => {
 		try {

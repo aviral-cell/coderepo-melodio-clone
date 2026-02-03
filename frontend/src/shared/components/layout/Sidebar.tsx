@@ -10,6 +10,7 @@ import {
 	Radio,
 	Crown,
 	Users,
+	History,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -153,6 +154,21 @@ export function Sidebar() {
 					>
 						<Users className="h-6 w-6 flex-shrink-0" />
 						{!isCollapsed && "Family"}
+					</Link>
+					<Link
+						to="/recently-played"
+						className={cn(
+							"flex items-center gap-4 rounded-md px-3 py-3 text-sm font-semibold transition-colors",
+							pathname === "/recently-played"
+								? "text-white"
+								: "text-melodio-text-subdued hover:text-white",
+							isCollapsed && "justify-center px-2"
+						)}
+						title={isCollapsed ? "Recently Played" : undefined}
+						data-testid="sidebar-recently-played-link"
+					>
+						<History className="h-6 w-6 flex-shrink-0" />
+						{!isCollapsed && "Recently Played"}
 					</Link>
 					{isCollapsed && (
 						<button

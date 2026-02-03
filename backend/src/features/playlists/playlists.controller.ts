@@ -288,4 +288,31 @@ export const playlistsController = {
 			next(error);
 		}
 	},
+
+	async copyPlaylist(
+		req: AuthenticatedRequest,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { id } = req.params;
+			const { name } = req.body;
+			const userId = req.user!.userId;
+
+			if (!id || !isValidObjectId(id)) {
+				sendError(res, "Invalid playlist ID format", 400);
+				return;
+			}
+
+			const playlist = await playlistsService.copyPlaylist(id, userId, name);
+
+			sendSuccess(res, playlist, undefined, 201);
+		} catch (error) {
+			if (error instanceof PlaylistError) {
+				sendError(res, error.message, error.statusCode);
+				return;
+			}
+			next(error);
+		}
+	},
 };

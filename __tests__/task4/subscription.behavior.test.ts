@@ -17,6 +17,7 @@ const config: Config = loadConfig(true);
 
 const AUTH_BASE = "/api/auth";
 const PAYMENT_BASE = "/api/payment";
+const SUBSCRIPTION_BASE = "/api/subscription";
 
 enum AccountType {
 	PRIMARY = "primary",
@@ -151,13 +152,6 @@ let Subscription: Model<ISubscriptionDocument>;
 let Payment: Model<IPaymentDocument>;
 let app: Application;
 
-const testUser = {
-	email: "subscription-test@hackerrank.com",
-	username: "subscriptiontestuser",
-	password: "Password123!",
-	displayName: "Subscription Test User",
-};
-
 function createValidCardDetails(): {
 	cardNumber: string;
 	expiryMonth: string;
@@ -201,9 +195,40 @@ function createValidPaymentRequest(
 	};
 }
 
+async function createTestUser(
+	appInstance: Application,
+	email: string,
+	password: string,
+): Promise<{ token: string; userId: string }> {
+	const username = email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "");
+	const displayName = username.charAt(0).toUpperCase() + username.slice(1);
+
+	await request(appInstance).post(`${AUTH_BASE}/register`).send({
+		email,
+		username,
+		password,
+		displayName,
+	});
+
+	const loginRes = await request(appInstance).post(`${AUTH_BASE}/login`).send({
+		email,
+		password,
+	});
+
+	const token = loginRes.body.data.accessToken;
+
+	const meRes = await request(appInstance)
+		.get(`${AUTH_BASE}/me`)
+		.set("Authorization", `Bearer ${token}`);
+
+	return {
+		token,
+		userId: meRes.body.data._id,
+	};
+}
+
 describe("Subscription & Payment API", () => {
-	let authToken: string;
-	let userId: string;
+	let testCounter = 0;
 
 	beforeAll(async () => {
 		await mongoose.connect(config.mongodbUri);
@@ -215,22 +240,6 @@ describe("Subscription & Payment API", () => {
 		Payment = mongoose.models.Payment || mongoose.model<IPaymentDocument>("Payment", paymentSchema);
 
 		app = createApp();
-
-		await User.deleteMany({ email: { $regex: /subscription-test/i } });
-		await Subscription.deleteMany({});
-		await Payment.deleteMany({});
-
-		await request(app).post(`${AUTH_BASE}/register`).send(testUser);
-
-		const loginRes = await request(app).post(`${AUTH_BASE}/login`).send({
-			email: testUser.email,
-			password: testUser.password,
-		});
-
-		authToken = loginRes.body.data.accessToken;
-
-		const user = await User.findOne({ email: testUser.email });
-		userId = user?._id.toString() || "";
 	});
 
 	afterAll(async () => {
@@ -241,22 +250,23 @@ describe("Subscription & Payment API", () => {
 	});
 
 	beforeEach(async () => {
+		await User.deleteMany({ email: { $regex: /subscription-test/i } });
 		await Subscription.deleteMany({});
 		await Payment.deleteMany({});
-		await User.updateOne(
-			{ _id: new mongoose.Types.ObjectId(userId) },
-			{ $set: { subscription_status: SubscriptionStatus.FREE } },
-		);
+		testCounter++;
 	});
 
 	describe("POST /api/payment/card", () => {
 		describe("Success Cases", () => {
 			it("should process payment successfully with correct subscriptionPrice", async () => {
+				const testEmail = `subscription-test-${testCounter}-a@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
+
 				const paymentRequest = createValidPaymentRequest(9.99);
 
 				const res = await request(app)
 					.post(`${PAYMENT_BASE}/card`)
-					.set("Authorization", `Bearer ${authToken}`)
+					.set("Authorization", `Bearer ${token}`)
 					.send(paymentRequest);
 
 				expect(res.status).toBe(200);
@@ -267,24 +277,34 @@ describe("Subscription & Payment API", () => {
 			});
 
 			it("should create payment record with correct amount", async () => {
+				const testEmail = `subscription-test-${testCounter}-b@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
+
 				const paymentRequest = createValidPaymentRequest(14.99);
 
 				const res = await request(app)
 					.post(`${PAYMENT_BASE}/card`)
-					.set("Authorization", `Bearer ${authToken}`)
+					.set("Authorization", `Bearer ${token}`)
 					.send(paymentRequest);
 
 				expect(res.status).toBe(200);
 				expect(res.body.success).toBe(true);
 
-				const payment = await Payment.findById(res.body.data.paymentId);
-				expect(payment).not.toBeNull();
-				expect(payment?.amount).toBe(14.99);
+				const historyRes = await request(app)
+					.get(`${PAYMENT_BASE}`)
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(historyRes.status).toBe(200);
+				expect(historyRes.body.data.payments).toHaveLength(1);
+				expect(historyRes.body.data.payments[0].amount).toBe(14.99);
 			});
 		});
 
 		describe("Card Validation", () => {
 			it("should reject payment with expired card", async () => {
+				const testEmail = `subscription-test-${testCounter}-c@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
+
 				const paymentRequest = {
 					subscriptionPrice: 9.99,
 					cardDetails: createExpiredCardDetails(),
@@ -292,7 +312,7 @@ describe("Subscription & Payment API", () => {
 
 				const res = await request(app)
 					.post(`${PAYMENT_BASE}/card`)
-					.set("Authorization", `Bearer ${authToken}`)
+					.set("Authorization", `Bearer ${token}`)
 					.send(paymentRequest);
 
 				expect(res.status).toBe(400);
@@ -311,12 +331,15 @@ describe("Subscription & Payment API", () => {
 
 		describe("Idempotency (duplicate payment prevention)", () => {
 			it("should return cached result for same idempotency key", async () => {
+				const testEmail = `subscription-test-${testCounter}-d@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
+
 				const paymentRequest = createValidPaymentRequest();
 				const idempotencyKey = `test-idempotency-${Date.now()}`;
 
 				const res1 = await request(app)
 					.post(`${PAYMENT_BASE}/card`)
-					.set("Authorization", `Bearer ${authToken}`)
+					.set("Authorization", `Bearer ${token}`)
 					.set("Idempotency-Key", idempotencyKey)
 					.send(paymentRequest);
 
@@ -327,7 +350,7 @@ describe("Subscription & Payment API", () => {
 
 				const res2 = await request(app)
 					.post(`${PAYMENT_BASE}/card`)
-					.set("Authorization", `Bearer ${authToken}`)
+					.set("Authorization", `Bearer ${token}`)
 					.set("Idempotency-Key", idempotencyKey)
 					.send(paymentRequest);
 
@@ -337,20 +360,23 @@ describe("Subscription & Payment API", () => {
 			});
 
 			it("should not double-charge when same idempotency key is reused (rapid double-click)", async () => {
+				const testEmail = `subscription-test-${testCounter}-e@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
+
 				const paymentRequest = createValidPaymentRequest();
 				const idempotencyKey = `test-rapid-click-${Date.now()}`;
 
 				const [res1, res2] = await Promise.all([
 					request(app)
 						.post(`${PAYMENT_BASE}/card`)
-						.set("Authorization", `Bearer ${authToken}`)
+						.set("Authorization", `Bearer ${token}`)
 						.set("Idempotency-Key", idempotencyKey)
 						.send(paymentRequest),
 					new Promise<request.Response>((resolve) => {
 						setTimeout(async () => {
 							const response = await request(app)
 								.post(`${PAYMENT_BASE}/card`)
-								.set("Authorization", `Bearer ${authToken}`)
+								.set("Authorization", `Bearer ${token}`)
 								.set("Idempotency-Key", idempotencyKey)
 								.send(paymentRequest);
 							resolve(response);
@@ -365,21 +391,28 @@ describe("Subscription & Payment API", () => {
 
 				expect(res1.body.data.paymentId).toBe(res2.body.data.paymentId);
 
-				const payments = await Payment.find({
-					idempotency_key: idempotencyKey,
-				});
-				expect(payments).toHaveLength(1);
+				const historyRes = await request(app)
+					.get(`${PAYMENT_BASE}`)
+					.set("Authorization", `Bearer ${token}`);
+
+				const paymentsWithKey = historyRes.body.data.payments.filter(
+					(p: { idempotencyKey: string | null }) => p.idempotencyKey === idempotencyKey,
+				);
+				expect(paymentsWithKey).toHaveLength(1);
 			});
 		});
 	});
 
 	describe("Post-Payment Updates", () => {
 		it("should upgrade subscription plan to premium after payment", async () => {
+			const testEmail = `subscription-test-${testCounter}-f@hackerrank.com`;
+			const { token } = await createTestUser(app, testEmail, "Password123!");
+
 			const paymentRequest = createValidPaymentRequest(9.99);
 
 			const res = await request(app)
 				.post(`${PAYMENT_BASE}/card`)
-				.set("Authorization", `Bearer ${authToken}`)
+				.set("Authorization", `Bearer ${token}`)
 				.send(paymentRequest);
 
 			expect(res.status).toBe(200);
@@ -387,43 +420,57 @@ describe("Subscription & Payment API", () => {
 			expect(res.body.data.subscription).toBeDefined();
 			expect(res.body.data.subscription.plan).toBe(SubscriptionPlan.PREMIUM);
 
-			const subscription = await Subscription.findOne({
-				user_id: new mongoose.Types.ObjectId(userId),
-			});
-			expect(subscription).not.toBeNull();
-			expect(subscription?.plan).toBe(SubscriptionPlan.PREMIUM);
+			const subRes = await request(app)
+				.get(`${SUBSCRIPTION_BASE}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(subRes.status).toBe(200);
+			expect(subRes.body.data.plan).toBe(SubscriptionPlan.PREMIUM);
 		});
 
 		it("should update user subscription_status to premium after payment", async () => {
+			const testEmail = `subscription-test-${testCounter}-g@hackerrank.com`;
+			const { token } = await createTestUser(app, testEmail, "Password123!");
+
 			const paymentRequest = createValidPaymentRequest(9.99);
 
 			const res = await request(app)
 				.post(`${PAYMENT_BASE}/card`)
-				.set("Authorization", `Bearer ${authToken}`)
+				.set("Authorization", `Bearer ${token}`)
 				.send(paymentRequest);
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 
-			const user = await User.findById(userId);
-			expect(user).not.toBeNull();
-			expect(user?.subscription_status).toBe(SubscriptionStatus.PREMIUM);
+			const meRes = await request(app)
+				.get(`${AUTH_BASE}/me`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(meRes.status).toBe(200);
+			expect(meRes.body.data.subscriptionStatus).toBe(SubscriptionStatus.PREMIUM);
 		});
 
 		it("should update payment status to completed after processing", async () => {
+			const testEmail = `subscription-test-${testCounter}-h@hackerrank.com`;
+			const { token } = await createTestUser(app, testEmail, "Password123!");
+
 			const paymentRequest = createValidPaymentRequest(9.99);
 
 			const res = await request(app)
 				.post(`${PAYMENT_BASE}/card`)
-				.set("Authorization", `Bearer ${authToken}`)
+				.set("Authorization", `Bearer ${token}`)
 				.send(paymentRequest);
 
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 
-			const payment = await Payment.findById(res.body.data.paymentId);
-			expect(payment).not.toBeNull();
-			expect(payment?.status).toBe(PaymentStatus.COMPLETED);
+			const historyRes = await request(app)
+				.get(`${PAYMENT_BASE}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(historyRes.status).toBe(200);
+			expect(historyRes.body.data.payments).toHaveLength(1);
+			expect(historyRes.body.data.payments[0].status).toBe(PaymentStatus.COMPLETED);
 		});
 	});
 });

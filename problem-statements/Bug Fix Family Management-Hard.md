@@ -17,7 +17,7 @@ Your task is to fix the family management system. Currently, family members cann
 **Steps to Test Functionality**
 
 * Log in using test credentials:
-  * Email: alex.morgan@hackify.com
+  * Email: alex.morgan@melodio.com
   * Password: password123
 * Ensure you have Premium subscription (upgrade if needed).
 * Navigate to Family Settings from the sidebar.

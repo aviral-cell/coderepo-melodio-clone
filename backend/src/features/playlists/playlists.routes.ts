@@ -22,4 +22,6 @@ router.delete("/:id/tracks/:trackId", playlistsController.removeTrack);
 
 router.patch("/:id/reorder", playlistsController.reorderTracks);
 
+router.post("/:id/copy", playlistsController.copyPlaylist);
+
 export const playlistRoutes = router;

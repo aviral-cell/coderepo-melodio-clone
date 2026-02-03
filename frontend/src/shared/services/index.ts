@@ -42,3 +42,8 @@ export {
 	type AddFamilyMemberInput,
 	type AddFamilyMemberResponse,
 } from "./family.service";
+export {
+	historyService,
+	type RecentlyPlayedTrack,
+	type RecentlyPlayedResponse,
+} from "./history.service";

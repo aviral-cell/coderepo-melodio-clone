@@ -18,7 +18,7 @@ Your task is to fix the payment processing flow. Currently, users cannot success
 **Steps to Test Functionality**
 
 * Log in using test credentials:
-  * Email: alex.morgan@hackify.com
+  * Email: alex.morgan@melodio.com
   * Password: password123
 * Navigate to the Subscription page from the sidebar.
 * Click on "Upgrade to Premium" button.

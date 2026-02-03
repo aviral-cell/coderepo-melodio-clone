@@ -12,6 +12,7 @@ import { playlistRoutes } from "./features/playlists/playlists.routes.js";
 import { subscriptionRoutes } from "./features/subscription/subscription.routes.js";
 import { paymentRoutes } from "./features/payment/payment.routes.js";
 import { familyRoutes } from "./features/family/family.routes.js";
+import { historyRoutes } from "./features/history/history.routes.js";
 
 const getPublicDir = (): string => {
 	if (typeof __dirname !== "undefined") {
@@ -64,6 +65,7 @@ export function createApp(): Application {
 	app.use("/api/payment", paymentRoutes);
 	app.use("/api/payments", paymentRoutes);
 	app.use("/api/family", familyRoutes);
+	app.use("/api/history", historyRoutes);
 
 	app.use(notFoundHandler);
 

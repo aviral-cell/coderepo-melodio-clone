@@ -40,6 +40,8 @@ module.exports = {
 				"**/__tests__/task3/search.service.test.ts",
 				"**/__tests__/task4/**/*.behavior.test.ts",
 				"**/__tests__/task5/**/*.behavior.test.ts",
+				"**/__tests__/task6/**/*.behavior.test.ts",
+				"**/__tests__/task7/**/*.behavior.test.ts",
 			],
 			moduleFileExtensions: ["ts", "js", "json", "node"],
 			setupFilesAfterEnv: ["<rootDir>/jest.silence.js"],

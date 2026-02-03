@@ -11,6 +11,7 @@ import TrackDetailPage from "@/pages/TrackDetailPage";
 import PlaylistDetailPage from "@/pages/PlaylistDetailPage";
 import SubscriptionPage from "@/pages/SubscriptionPage";
 import FamilySettingsPage from "@/pages/FamilySettingsPage";
+import RecentlyPlayedPage from "@/pages/RecentlyPlayedPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
@@ -106,6 +107,10 @@ export const router = createBrowserRouter([
 					{
 						path: "library",
 						element: <LibraryPage />,
+					},
+					{
+						path: "recently-played",
+						element: <RecentlyPlayedPage />,
 					},
 					{
 						path: "subscription",

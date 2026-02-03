@@ -28,7 +28,7 @@ const PREMIUM_FEATURES = [
 ];
 
 const FREE_FEATURES = [
-	"Up to 2 playlists",
+	"Up to 7 playlists",
 	"No family members",
 	"Ads between tracks",
 	"Standard audio quality",
