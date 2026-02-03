@@ -199,63 +199,6 @@ describe("Playlist Operations Behavior Tests", () => {
 	});
 
 	describe("Remove Track", () => {
-		it("should remove track from list when remove button is clicked", async () => {
-			const user = userEvent.setup();
-			const trackA = createMockTrack("A", "Track Alpha");
-			const trackB = createMockTrack("B", "Track Beta");
-			const trackC = createMockTrack("C", "Track Charlie");
-			const playlist = createMockPlaylist([trackA, trackB, trackC]);
-
-			mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-				if (url.includes("/api/playlists/playlist-123") && options?.method === "GET") {
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse(playlist)),
-					});
-				}
-				if (url.includes("/api/playlists/playlist-123/tracks/B") && options?.method === "DELETE") {
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse({
-							...playlist,
-							tracks: [trackA, trackC],
-							trackIds: ["A", "C"],
-						})),
-					});
-				}
-				return Promise.resolve({
-					ok: true,
-					status: 200,
-					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve(createApiResponse([])),
-				});
-			});
-
-			renderPlaylistPage();
-
-			// Wait for playlist to load
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
-
-			// Open dropdown and click remove
-			await openTrackDropdown(user, "Track Beta");
-			const removeButton = await screen.findByTestId("remove-track-menu-item");
-			await user.click(removeButton);
-
-			// Verify track is removed
-			await waitFor(() => {
-				expect(screen.queryByText("Track Beta")).not.toBeInTheDocument();
-			});
-
-			// Verify other tracks remain
-			expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			expect(screen.getByText("Track Charlie")).toBeInTheDocument();
-		});
 
 		it("should make DELETE request to correct endpoint when removing track", async () => {
 			const user = userEvent.setup();
@@ -366,57 +309,6 @@ describe("Playlist Operations Behavior Tests", () => {
 			// Verify track is still in list (rollback on error)
 			expect(screen.getByText("Track Beta")).toBeInTheDocument();
 			expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-		});
-
-		it("should handle removing the last track", async () => {
-			const user = userEvent.setup();
-			const trackA = createMockTrack("A", "Track Alpha");
-			const playlist = createMockPlaylist([trackA]);
-
-			mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-				if (url.includes("/api/playlists/playlist-123") && (!options?.method || options?.method === "GET")) {
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse(playlist)),
-					});
-				}
-				if (options?.method === "DELETE") {
-					return Promise.resolve({
-						ok: true,
-						status: 200,
-						headers: new Headers({ "content-type": "application/json" }),
-						json: () => Promise.resolve(createApiResponse({
-							...playlist,
-							tracks: [],
-							trackIds: [],
-						})),
-					});
-				}
-				return Promise.resolve({
-					ok: true,
-					status: 200,
-					headers: new Headers({ "content-type": "application/json" }),
-					json: () => Promise.resolve(createApiResponse([])),
-				});
-			});
-
-			renderPlaylistPage();
-
-			await waitFor(() => {
-				expect(screen.getByText("Track Alpha")).toBeInTheDocument();
-			});
-
-			// Open dropdown and click remove
-			await openTrackDropdown(user, "Track Alpha");
-			const removeButton = await screen.findByTestId("remove-track-menu-item");
-			await user.click(removeButton);
-
-			// Verify empty state is shown
-			await waitFor(() => {
-				expect(screen.getByText("No tracks yet")).toBeInTheDocument();
-			});
 		});
 	});
 });

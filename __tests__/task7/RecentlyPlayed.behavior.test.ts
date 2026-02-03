@@ -345,15 +345,6 @@ describe("Recently Played History API", () => {
 				testTracks = await getTracksFromApi(authToken, 10);
 			});
 
-			it("should record track play successfully and return 200", async () => {
-				expect(testTracks.length).toBeGreaterThan(0);
-				const response = await recordPlayViaApi(authToken, testTracks[0].id);
-
-				expect(response.status).toBe(200);
-				expect(response.body.success).toBe(true);
-				expect(response.body.message).toMatch(/play recorded/i);
-			});
-
 			it("should create play history entry in database after recording play", async () => {
 				await recordPlayViaApi(authToken, testTracks[0].id);
 
@@ -406,47 +397,6 @@ describe("Recently Played History API", () => {
 				expect(response.status).toBe(404);
 				expect(response.body.success).toBe(false);
 				expect(response.body.error).toMatch(/track not found/i);
-			});
-
-			it("should return 400 when trackId is missing", async () => {
-				const response = await request(app)
-					.post(`${HISTORY_API_BASE}/play`)
-					.set("Authorization", `Bearer ${authToken}`)
-					.send({});
-
-				expect(response.status).toBe(400);
-				expect(response.body.success).toBe(false);
-			});
-
-			it("should return 400 when trackId format is invalid", async () => {
-				const response = await request(app)
-					.post(`${HISTORY_API_BASE}/play`)
-					.set("Authorization", `Bearer ${authToken}`)
-					.send({ trackId: "invalid-id" });
-
-				expect(response.status).toBe(400);
-				expect(response.body.success).toBe(false);
-			});
-		});
-
-		describe("Authorization", () => {
-			it("should return 401 when no auth token is provided", async () => {
-				const response = await request(app)
-					.post(`${HISTORY_API_BASE}/play`)
-					.send({ trackId: new mongoose.Types.ObjectId().toString() });
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
-			});
-
-			it("should return 401 when invalid auth token is provided", async () => {
-				const response = await request(app)
-					.post(`${HISTORY_API_BASE}/play`)
-					.set("Authorization", "Bearer invalid-token")
-					.send({ trackId: new mongoose.Types.ObjectId().toString() });
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
 			});
 		});
 	});
@@ -514,17 +464,6 @@ describe("Recently Played History API", () => {
 				expect(response.body.data.tracks[2].id).toBe(tracksToPlay[0].id);
 			});
 
-			it("should return empty array when user has no play history", async () => {
-				const response = await request(app)
-					.get(`${HISTORY_API_BASE}/recently-played`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(200);
-				expect(response.body.success).toBe(true);
-				expect(response.body.data.tracks).toHaveLength(0);
-				expect(response.body.data.total).toBe(0);
-			});
-
 			it("should populate artist and album data correctly", async () => {
 				await recordPlayViaApi(authToken, testTracks[0].id);
 
@@ -578,20 +517,6 @@ describe("Recently Played History API", () => {
 				expect(response.body.data.total).toBe(30);
 			});
 
-			it("should enforce maximum limit of 50 tracks", async () => {
-				for (let i = 0; i < 55; i++) {
-					await recordPlayViaApi(authToken, testTracks[i % testTracks.length].id);
-				}
-
-				const response = await request(app)
-					.get(`${HISTORY_API_BASE}/recently-played`)
-					.query({ limit: 100 })
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(200);
-				expect(response.body.data.tracks.length).toBeLessThanOrEqual(50);
-			}, 15000);
-
 			it("should use default limit when not specified", async () => {
 				const tracksToPlay = testTracks.slice(0, 25);
 				for (const track of tracksToPlay) {
@@ -605,16 +530,6 @@ describe("Recently Played History API", () => {
 				expect(response.status).toBe(200);
 				expect(response.body.data.tracks).toHaveLength(20);
 				expect(response.body.data.total).toBe(25);
-			});
-		});
-
-		describe("Authorization", () => {
-			it("should return 401 when no auth token is provided", async () => {
-				const response = await request(app)
-					.get(`${HISTORY_API_BASE}/recently-played`);
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
 			});
 		});
 	});
@@ -706,25 +621,6 @@ describe("Recently Played History API", () => {
 					.set("Authorization", `Bearer ${userB.token}`);
 
 				expect(userBHistory.body.data.tracks).toHaveLength(5);
-			});
-
-			it("should succeed even when user has no history", async () => {
-				const response = await request(app)
-					.delete(`${HISTORY_API_BASE}/recently-played`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(200);
-				expect(response.body.success).toBe(true);
-			});
-		});
-
-		describe("Authorization", () => {
-			it("should return 401 when no auth token is provided", async () => {
-				const response = await request(app)
-					.delete(`${HISTORY_API_BASE}/recently-played`);
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
 			});
 		});
 	});

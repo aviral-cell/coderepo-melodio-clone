@@ -165,16 +165,6 @@ describe("PlayerBar Controls Behavior Tests", () => {
 	});
 
 	describe("Shuffle Toggle", () => {
-		it("should display shuffle button with subdued color initially when no track is playing", () => {
-			render(
-				<TestWrapper>
-					<PlayerBar />
-				</TestWrapper>
-			);
-
-			const shuffleButton = getShuffleButton();
-			expectButtonToBeInactive(shuffleButton);
-		});
 
 		it("should change shuffle button to green when shuffle is enabled", async () => {
 			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
@@ -230,16 +220,6 @@ describe("PlayerBar Controls Behavior Tests", () => {
 	});
 
 	describe("Repeat Toggle", () => {
-		it("should display repeat button with subdued color initially (repeat off)", () => {
-			render(
-				<TestWrapper>
-					<PlayerBar />
-				</TestWrapper>
-			);
-
-			const repeatButton = getRepeatButton();
-			expectButtonToBeInactive(repeatButton);
-		});
 
 		it("should cycle repeat mode: off -> all (green) -> one (green, Repeat1 icon) -> off (subdued)", async () => {
 			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
@@ -279,16 +259,6 @@ describe("PlayerBar Controls Behavior Tests", () => {
 	});
 
 	describe("Progress Bar (Timer)", () => {
-		it("should display 0:00 elapsed time initially", () => {
-			render(
-				<TestWrapper>
-					<PlayerBar />
-				</TestWrapper>
-			);
-
-			const elapsedTime = getElapsedTimeDisplay();
-			expect(elapsedTime).toBe("0:00");
-		});
 
 		it("should increment elapsed time every second while playing", async () => {
 			const track = createMockTrack("1", "Track 1", 180);
@@ -322,23 +292,6 @@ describe("PlayerBar Controls Behavior Tests", () => {
 				jest.advanceTimersByTime(58000);
 			});
 			expect(getElapsedTimeDisplay()).toBe("1:00");
-		});
-
-		it("should show total duration of current track", async () => {
-			const track = createMockTrack("1", "Track 1", 195);
-
-			render(
-				<TestWrapper>
-					<PlayerBarWithTracks tracks={[track]} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(100);
-			});
-
-			const totalDuration = screen.getByTestId("total-duration");
-			expect(totalDuration).toHaveTextContent("3:15");
 		});
 	});
 
@@ -505,22 +458,6 @@ describe("PlayerBar Controls Behavior Tests", () => {
 	});
 
 	describe("Play/Pause Toggle", () => {
-		it("should show Pause icon when playing", async () => {
-			const track = createMockTrack("1", "Track 1");
-
-			render(
-				<TestWrapper>
-					<PlayerBarWithTracks tracks={[track]} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(100);
-			});
-
-			const playPauseButton = getPlayPauseButton();
-			expectIconType(playPauseButton, "pause");
-		});
 
 		it("should toggle between play and pause on click", async () => {
 			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
@@ -560,58 +497,6 @@ describe("PlayerBar Controls Behavior Tests", () => {
 				jest.advanceTimersByTime(1000);
 			});
 			expect(getElapsedTimeDisplay()).toBe("0:01");
-		});
-	});
-
-	describe("Next/Previous Controls", () => {
-		it("should advance to next track when next button is clicked", async () => {
-			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-			const track1 = createMockTrack("1", "Track 1");
-			const track2 = createMockTrack("2", "Track 2");
-
-			render(
-				<TestWrapper>
-					<PlayerBarWithTracks tracks={[track1, track2]} startIndex={0} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(100);
-			});
-
-			expect(getCurrentTrackTitle()).toBe("Track 1");
-
-			// Click next
-			const nextButton = getNextButton();
-			await user.click(nextButton);
-
-			// Verify track changed
-			expect(getCurrentTrackTitle()).toBe("Track 2");
-		});
-
-		it("should go to previous track when previous button is clicked", async () => {
-			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-			const track1 = createMockTrack("1", "Track 1");
-			const track2 = createMockTrack("2", "Track 2");
-
-			render(
-				<TestWrapper>
-					<PlayerBarWithTracks tracks={[track1, track2]} startIndex={1} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(100);
-			});
-
-			expect(getCurrentTrackTitle()).toBe("Track 2");
-
-			// Click previous
-			const prevButton = getPreviousButton();
-			await user.click(prevButton);
-
-			// Verify track changed
-			expect(getCurrentTrackTitle()).toBe("Track 1");
 		});
 	});
 

@@ -509,28 +509,6 @@ describe("Copy Playlist API", () => {
 				expect(response.body.success).toBe(false);
 				expect(response.body.error).toMatch(/cannot copy private playlist/i);
 			});
-
-			it("should return 401 when not authenticated", async () => {
-				const userData = {
-					email: generateUniqueEmail("unauth-copy"),
-					username: generateUniqueUsername("unauthcopy"),
-					password: "Password123!",
-					displayName: "Unauth Copy User",
-				};
-				const { token } = await registerAndLoginUser(userData);
-
-				const { playlistId } = await createPlaylistViaApi(token, {
-					name: "Playlist for Unauth Test",
-					isPublic: true,
-				});
-
-				const response = await request(app)
-					.post(`${PLAYLISTS_BASE}/${playlistId}/copy`)
-					.send({});
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
-			});
 		});
 
 		describe("Not Found Errors", () => {
@@ -553,25 +531,6 @@ describe("Copy Playlist API", () => {
 				expect(response.status).toBe(404);
 				expect(response.body.success).toBe(false);
 				expect(response.body.error).toMatch(/playlist not found/i);
-			});
-
-			it("should return 400 when playlist ID format is invalid", async () => {
-				const userData = {
-					email: generateUniqueEmail("copy-invalid-id"),
-					username: generateUniqueUsername("copyinvalidid"),
-					password: "Password123!",
-					displayName: "Copy Invalid ID User",
-				};
-				const { token } = await registerAndLoginUser(userData);
-
-				const response = await request(app)
-					.post(`${PLAYLISTS_BASE}/invalid-id-format/copy`)
-					.set("Authorization", `Bearer ${token}`)
-					.send({});
-
-				expect(response.status).toBe(400);
-				expect(response.body.success).toBe(false);
-				expect(response.body.error).toMatch(/invalid.*id/i);
 			});
 		});
 

@@ -12,7 +12,7 @@ module.exports = {
 				"**/__tests__/task4/**/*.test.tsx",
 				"**/__tests__/task5/**/*.test.tsx",
 			],
-			testPathIgnorePatterns: ["/node_modules/", "search\\.service\\.test\\.ts$"],
+			testPathIgnorePatterns: ["/node_modules/", "search\\.service\\.test\\.ts$", "tracks\\.service\\.test\\.ts$"],
 			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 			setupFilesAfterEnv: ["<rootDir>/frontend/jest.setup.ts", "<rootDir>/jest.silence.js"],
 			transform: {
@@ -38,6 +38,7 @@ module.exports = {
 			roots: ["<rootDir>/__tests__"],
 			testMatch: [
 				"**/__tests__/task3/search.service.test.ts",
+				"**/__tests__/task3/tracks.service.test.ts",
 				"**/__tests__/task4/**/*.behavior.test.ts",
 				"**/__tests__/task5/**/*.behavior.test.ts",
 				"**/__tests__/task6/**/*.behavior.test.ts",

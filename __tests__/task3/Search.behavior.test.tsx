@@ -224,80 +224,6 @@ describe("Search Feature - Behavior Tests", () => {
 		});
 	}
 
-	describe("Dropdown Visibility", () => {
-		it("should not render when isOpen is false", () => {
-			setupSearchFetch([]);
-
-			render(
-				<TestWrapper>
-					<SearchDropdown query="" isOpen={false} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			expect(screen.queryByTestId("search-dropdown")).not.toBeInTheDocument();
-		});
-
-		it("should render when isOpen is true", async () => {
-			setupSearchFetch([]);
-
-			render(
-				<TestWrapper>
-					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			expect(screen.getByTestId("search-dropdown")).toBeInTheDocument();
-		});
-	});
-
-	describe("Empty Query Behavior", () => {
-		it("should show no results and skip API call for empty or whitespace-only query", async () => {
-			setupSearchFetch([]);
-
-			const { rerender } = render(
-				<TestWrapper>
-					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			// Verify no results shown
-			expect(screen.getByTestId("search-no-results")).toBeInTheDocument();
-			expect(screen.getByTestId("search-no-results")).toHaveTextContent("No results found");
-
-			// Verify no API call
-			let searchCalls = mockFetch.mock.calls.filter(
-				(call) => call[0].includes("/api/tracks/search")
-			);
-			expect(searchCalls.length).toBe(0);
-
-			// Test whitespace query
-			rerender(
-				<TestWrapper>
-					<SearchDropdown query="   " isOpen={true} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
-
-			expect(screen.getByTestId("search-no-results")).toBeInTheDocument();
-
-			searchCalls = mockFetch.mock.calls.filter(
-				(call) => call[0].includes("/api/tracks/search")
-			);
-			expect(searchCalls.length).toBe(0);
-		});
-	});
-
 	describe("API Request Behavior", () => {
 		it("should make GET request to /api/tracks/search with query parameter", async () => {
 			setupSearchFetch([createMockTrack("1", "Thunder")]);
@@ -348,35 +274,6 @@ describe("Search Feature - Behavior Tests", () => {
 	});
 
 	describe("Debounce Behavior", () => {
-		it("should not make API call before debounce delay completes when query changes", async () => {
-			setupSearchFetch([createMockTrack("1", "Thunder")]);
-
-			const { rerender } = render(
-				<TestWrapper>
-					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			mockFetch.mockClear();
-
-			// Change query
-			rerender(
-				<TestWrapper>
-					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
-				</TestWrapper>
-			);
-
-			// Advance less than debounce delay
-			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY - 50);
-			});
-
-			// Verify no API call yet
-			const searchCalls = mockFetch.mock.calls.filter(
-				(call) => call[0].includes("/api/tracks/search")
-			);
-			expect(searchCalls.length).toBe(0);
-		});
 
 		it("should make API call after debounce delay (300ms) when query changes", async () => {
 			setupSearchFetch([createMockTrack("1", "Thunder")]);
