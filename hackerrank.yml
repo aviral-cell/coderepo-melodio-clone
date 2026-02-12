@@ -1,20 +1,20 @@
-version: 1.0
-configuration:
-  has_webserver: true
-  readonly_paths:
-    - __tests__/**
-    - jest.config.js
-    - jest.silence.js
-    - frontend/jest.config.cjs
-    - frontend/jest.setup.ts
-    - backend/jest.config.js
-    - backend/src/scripts/seed.ts
-    - backend/src/shared/config/index.js
-  ide_config:
-    default_open_files:
-      - frontend/src/app/routes.tsx
-      - backend/src/app.ts
-    project_menu:
-      run: npm start
-      install: npm install
-      test: echo "No test command configured"
+# version: 1.0
+# configuration:
+#   has_webserver: true
+#   readonly_paths:
+#     - __tests__/**
+#     - jest.config.js
+#     - jest.silence.js
+#     - frontend/jest.config.cjs
+#     - frontend/jest.setup.ts
+#     - backend/jest.config.js
+#     - backend/src/scripts/seed.ts
+#     - backend/src/shared/config/index.js
+#   ide_config:
+#     default_open_files:
+#       - frontend/src/app/routes.tsx
+#       - backend/src/app.ts
+#     project_menu:
+#       run: npm start
+#       install: npm install
+#       test: echo "No test command configured"
