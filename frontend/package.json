@@ -9,11 +9,7 @@
 		"preview": "vite preview",
 		"test": "jest --passWithNoTests",
 		"test:watch": "jest --watch --passWithNoTests",
-		"test:coverage": "jest --coverage --passWithNoTests",
-		"test:task1": "jest --testPathPattern=__tests__/task1 --passWithNoTests",
-		"test:task2": "jest --testPathPattern=__tests__/task2 --passWithNoTests",
-		"test:task3": "jest --testPathPattern=__tests__/task3 --passWithNoTests",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+		"test:coverage": "jest --coverage --passWithNoTests"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.3.1",
