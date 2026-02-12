@@ -9,7 +9,7 @@
 #     - frontend/jest.setup.ts
 #     - backend/jest.config.js
 #     - backend/src/scripts/seed.ts
-#     - backend/src/shared/config/index.js
+#     - backend/src/shared/config/index.ts
 #   ide_config:
 #     default_open_files:
 #       - frontend/src/app/routes.tsx
