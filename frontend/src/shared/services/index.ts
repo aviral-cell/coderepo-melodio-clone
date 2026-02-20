@@ -47,3 +47,9 @@ export {
 	type RecentlyPlayedTrack,
 	type RecentlyPlayedResponse,
 } from "./history.service";
+export {
+	mixService,
+	type Mix,
+	type MixDetail,
+	type CreateMixInput,
+} from "./mix.service";

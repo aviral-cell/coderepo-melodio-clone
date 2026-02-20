@@ -15,6 +15,7 @@ import FamilySettingsPage from "@/pages/FamilySettingsPage";
 import RecentlyPlayedPage from "@/pages/RecentlyPlayedPage";
 import PodcastPage from "@/pages/PodcastPage";
 import MoodMixerPage from "@/pages/MoodMixerPage";
+import MixPage from "@/pages/MixPage";
 import DiscoveryPage from "@/pages/DiscoveryPage";
 import ArtistDetailPage from "@/pages/ArtistDetailPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
@@ -151,6 +152,10 @@ export const router = createBrowserRouter([
 					{
 						path: "mood",
 						element: <MoodMixerPage />,
+					},
+					{
+						path: "mix",
+						element: <MixPage />,
 					},
 				],
 			},

@@ -14,6 +14,7 @@ import {
 	Headphones,
 	Smile,
 	Compass,
+	Disc3,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ const navItems = [
 	{ href: "/discover", label: "Discover", icon: Compass },
 	{ href: "/podcasts", label: "Podcasts", icon: Headphones },
 	{ href: "/mood", label: "Mood Mixer", icon: Smile },
+	{ href: "/mix", label: "Mix", icon: Disc3 },
 ];
 
 export function Sidebar() {
