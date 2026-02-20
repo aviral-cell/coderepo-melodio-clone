@@ -15,6 +15,8 @@ import FamilySettingsPage from "@/pages/FamilySettingsPage";
 import RecentlyPlayedPage from "@/pages/RecentlyPlayedPage";
 import PodcastPage from "@/pages/PodcastPage";
 import MoodMixerPage from "@/pages/MoodMixerPage";
+import DiscoveryPage from "@/pages/DiscoveryPage";
+import ArtistDetailPage from "@/pages/ArtistDetailPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
@@ -115,6 +117,10 @@ export const router = createBrowserRouter([
 						element: <TrackDetailPage />,
 					},
 					{
+						path: "artist/:id",
+						element: <ArtistDetailPage />,
+					},
+					{
 						path: "search",
 						element: <SearchPage />,
 					},
@@ -133,6 +139,10 @@ export const router = createBrowserRouter([
 					{
 						path: "settings/family",
 						element: <FamilySettingsPage />,
+					},
+					{
+						path: "discover",
+						element: <DiscoveryPage />,
 					},
 					{
 						path: "podcasts",

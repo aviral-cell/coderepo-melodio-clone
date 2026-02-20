@@ -30,7 +30,9 @@ export function MainLayout({
 				)}
 			>
 				{showTopBar && <TopBar initialQuery={initialSearchQuery} />}
-				{children}
+				<div className="mx-auto max-w-screen-2xl px-2 lg:px-4 rounded-lg overflow-hidden">
+					{children}
+				</div>
 			</main>
 			<PlayerBar />
 			<QueuePanel />

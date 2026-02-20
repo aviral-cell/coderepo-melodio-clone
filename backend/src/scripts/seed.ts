@@ -51,7 +51,7 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "Electric Storm",
-				releaseDate: new Date("2022-03-15"),
+				releaseDate: new Date("2012-03-15"),
 				coverImageUrl: "/images/albums/electric-storm.jpg",
 				tracks: [
 					{ title: "Thunder Road", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/thunder-road.jpg" },
@@ -83,7 +83,7 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "Starlight",
-				releaseDate: new Date("2021-11-10"),
+				releaseDate: new Date("2015-11-10"),
 				coverImageUrl: "/images/albums/starlight.jpg",
 				tracks: [
 					{ title: "Dancing in the Moonlight", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/dancing-in-the-moonlight.jpg" },
@@ -115,7 +115,7 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "Midnight Sessions",
-				releaseDate: new Date("2020-09-05"),
+				releaseDate: new Date("1995-09-05"),
 				coverImageUrl: "/images/albums/midnight-sessions.jpg",
 				tracks: [
 					{ title: "Blue Velvet", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/blue-velvet.jpg" },
@@ -127,7 +127,7 @@ const artistsSeedData: ArtistSeedData[] = [
 			},
 			{
 				title: "Saxophone Dreams",
-				releaseDate: new Date("2022-12-01"),
+				releaseDate: new Date("1987-05-22"),
 				coverImageUrl: "/images/albums/saxophone-dreams.jpg",
 				tracks: [
 					{ title: "Soulful Sax", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/soulful-sax.jpg" },
@@ -147,7 +147,7 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "Digital Horizons",
-				releaseDate: new Date("2021-06-18"),
+				releaseDate: new Date("2003-06-18"),
 				coverImageUrl: "/images/albums/digital-horizons.jpg",
 				tracks: [
 					{ title: "Neon City", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/neon-city.jpg" },
@@ -179,7 +179,7 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "City Streets",
-				releaseDate: new Date("2022-08-30"),
+				releaseDate: new Date("2005-08-30"),
 				coverImageUrl: "/images/albums/city-streets.jpg",
 				tracks: [
 					{ title: "Block Party", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/block-party.jpg" },
@@ -199,6 +199,70 @@ const artistsSeedData: ArtistSeedData[] = [
 					{ title: "Rise Up", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/rise-up.jpg" },
 					{ title: "Money Moves", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/money-moves.jpg" },
 					{ title: "Boss Level", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/boss-level.jpg" },
+				],
+			},
+		],
+	},
+	{
+		name: "Velvet Grooves",
+		genre: "r-and-b",
+		bio: "Soulful R&B group blending classic Motown vibes with modern production and smooth vocal harmonies.",
+		imageUrl: "/images/artists/velvet-grooves.jpg",
+		albums: [
+			{
+				title: "Soul Sessions",
+				releaseDate: new Date("1998-06-20"),
+				coverImageUrl: "/images/albums/soul-sessions.jpg",
+				tracks: [
+					{ title: "Silk and Satin", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/silk-and-satin.jpg" },
+					{ title: "Velvet Night", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/velvet-night.jpg" },
+					{ title: "Soul Fire", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/soul-fire.jpg" },
+					{ title: "Golden Touch", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/golden-touch.jpg" },
+					{ title: "Midnight Groove", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/midnight-groove.jpg" },
+				],
+			},
+			{
+				title: "Midnight Velvet",
+				releaseDate: new Date("2023-09-15"),
+				coverImageUrl: "/images/albums/midnight-velvet.jpg",
+				tracks: [
+					{ title: "After Hours", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/after-hours.jpg" },
+					{ title: "Purple Rain Dance", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/purple-rain-dance.jpg" },
+					{ title: "Smooth Criminal Love", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/smooth-criminal-love.jpg" },
+					{ title: "City Lights Serenade", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/city-lights-serenade.jpg" },
+					{ title: "Velvet Dreams", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/velvet-dreams.jpg" },
+				],
+			},
+		],
+	},
+	{
+		name: "Pacific Symphony",
+		genre: "classical",
+		bio: "Award-winning American orchestral ensemble performing both timeless classical masterworks and bold contemporary compositions.",
+		imageUrl: "/images/artists/pacific-symphony.jpg",
+		albums: [
+			{
+				title: "Heritage Suite",
+				releaseDate: new Date("1985-03-10"),
+				coverImageUrl: "/images/albums/heritage-suite.jpg",
+				tracks: [
+					{ title: "American Overture", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/american-overture.jpg" },
+					{ title: "Prairie Winds", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/prairie-winds.jpg" },
+					{ title: "Liberty March", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/liberty-march.jpg" },
+					{ title: "Mountain Echoes", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/mountain-echoes.jpg" },
+					{ title: "Frontier Fanfare", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/frontier-fanfare.jpg" },
+				],
+			},
+			{
+				title: "American Concerto",
+				releaseDate: new Date("2022-11-05"),
+				coverImageUrl: "/images/albums/american-concerto.jpg",
+				tracks: [
+					{ title: "New World Rising", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/new-world-rising.jpg" },
+					{ title: "Skyline Sonata", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/skyline-sonata.jpg" },
+					{ title: "Metropolitan Suite", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/metropolitan-suite.jpg" },
+					{ title: "Coastal Prelude", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/coastal-prelude.jpg" },
+					{ title: "Stars and Stripes Rhapsody", durationInSeconds: randomDuration(), coverImageUrl: "/images/tracks/stars-and-stripes-rhapsody.jpg" },
 				],
 			},
 		],

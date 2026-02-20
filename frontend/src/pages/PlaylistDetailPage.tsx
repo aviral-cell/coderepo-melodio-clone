@@ -306,7 +306,11 @@ export default function PlaylistDetailPage(): JSX.Element {
 
 	const handlePlayAll = () => {
 		if (!playlist || !playlist.tracks || playlist.tracks.length === 0) return;
-		playTracks(playlist.tracks, 0);
+		if (isPlaylistPlaying) {
+			togglePlayPause();
+		} else {
+			playTracks(playlist.tracks, 0);
+		}
 	};
 
 	const handleTrackPlay = (track: TrackWithPopulated, index: number) => {
@@ -529,9 +533,9 @@ export default function PlaylistDetailPage(): JSX.Element {
 						aria-label={isPlaylistPlaying ? "Pause" : "Play all"}
 					>
 						{isPlaylistPlaying ? (
-							<Pause className="h-8 w-8 fill-black text-black" fill="black" />
+							<Pause className="h-6 w-6 text-black" fill="black" />
 						) : (
-							<Play className="h-8 w-8 fill-black text-black ml-0.5" fill="black" />
+							<Play className="h-6 w-6 text-black" fill="black" />
 						)}
 					</Button>
 

@@ -13,6 +13,7 @@ import {
 	History,
 	Headphones,
 	Smile,
+	Compass,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ import type { Playlist } from "@/shared/types";
 const navItems = [
 	{ href: "/", label: "Home", icon: Home },
 	{ href: "/genre", label: "Genre", icon: Radio },
+	{ href: "/discover", label: "Discover", icon: Compass },
 	{ href: "/podcasts", label: "Podcasts", icon: Headphones },
 	{ href: "/mood", label: "Mood Mixer", icon: Smile },
 ];
