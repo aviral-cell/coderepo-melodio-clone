@@ -14,6 +14,7 @@ import SubscriptionPage from "@/pages/SubscriptionPage";
 import FamilySettingsPage from "@/pages/FamilySettingsPage";
 import RecentlyPlayedPage from "@/pages/RecentlyPlayedPage";
 import PodcastPage from "@/pages/PodcastPage";
+import MoodMixerPage from "@/pages/MoodMixerPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
@@ -136,6 +137,10 @@ export const router = createBrowserRouter([
 					{
 						path: "podcasts",
 						element: <PodcastPage />,
+					},
+					{
+						path: "mood",
+						element: <MoodMixerPage />,
 					},
 				],
 			},

@@ -36,14 +36,22 @@ jest.mock("@/shared/contexts/SidebarContext", () => ({
 	}),
 }));
 
-jest.mock("@/shared/utils", () => {
-	const actual = jest.requireActual("@/shared/utils");
-	return {
-		...actual,
-		normalizeTracks: (tracks: any[]) => tracks,
-		normalizeTrack: (track: any) => track,
-	};
-});
+jest.mock("@/shared/utils", () => ({
+	normalizeTracks: (tracks: any[]) => tracks,
+	normalizeTrack: (track: any) => track,
+	getImageUrl: (path: string | undefined | null) => path || "/melodio.svg",
+	DEFAULT_IMAGE: "/melodio.svg",
+	formatDuration: (seconds: number) => {
+		const min = Math.floor(seconds / 60);
+		const sec = seconds % 60;
+		return `${min}:${sec.toString().padStart(2, "0")}`;
+	},
+	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
+	formatNumber: (num: number) => num.toLocaleString(),
+	capitalize: (str: string) => str.charAt(0).toUpperCase() + str.slice(1),
+	getInitials: (name: string) => name.split(" ").map((n: string) => n[0]).join("").toUpperCase(),
+	preloadImages: jest.fn(),
+}));
 
 // ========== FACTORY FUNCTIONS ==========
 

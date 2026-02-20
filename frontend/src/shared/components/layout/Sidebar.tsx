@@ -12,6 +12,7 @@ import {
 	Users,
 	History,
 	Headphones,
+	Smile,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ const navItems = [
 	{ href: "/", label: "Home", icon: Home },
 	{ href: "/genre", label: "Genre", icon: Radio },
 	{ href: "/podcasts", label: "Podcasts", icon: Headphones },
+	{ href: "/mood", label: "Mood Mixer", icon: Smile },
 ];
 
 export function Sidebar() {
