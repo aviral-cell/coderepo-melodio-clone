@@ -1,9 +1,10 @@
-import { Disc } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { cn } from "@/lib/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
 import type { Album } from "@/shared/types";
 import type { AlbumWithPopulated } from "@/shared/services/albums.service";
+import { getImageUrl } from "@/shared/utils";
 
 interface AlbumCardProps {
 	album: Album | AlbumWithPopulated;
@@ -25,6 +26,7 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 				: undefined;
 
 	const handleCardClick = () => {
+		if (!album._id) return;
 		navigate("/album/" + album._id);
 	};
 
@@ -45,17 +47,11 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 			)}
 		>
 			<div className="relative mb-4 aspect-square overflow-hidden rounded-md shadow-lg">
-				{album.coverImageUrl ? (
-					<img
-						src={album.coverImageUrl}
-						alt={album.title}
-						className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-					/>
-				) : (
-					<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-						<Disc className="h-12 w-12 text-melodio-text-subdued" />
-					</div>
-				)}
+				<AppImage
+					src={getImageUrl(album.coverImageUrl)}
+					alt={album.title}
+					className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+				/>
 			</div>
 
 			<div className="min-w-0">

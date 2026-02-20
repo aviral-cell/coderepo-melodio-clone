@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router";
-import { Music, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { formatDuration } from "@/shared/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
+import { formatDuration, getImageUrl } from "@/shared/utils";
 import { useSearch } from "@/shared/hooks/useSearch";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 
@@ -67,6 +68,7 @@ export function SearchDropdown({
 								typeof track.albumId === "object"
 									? track.albumId.coverImageUrl
 									: undefined;
+							const trackCover = track.coverImageUrl || albumCover;
 
 							return (
 								<button
@@ -80,17 +82,11 @@ export function SearchDropdown({
 									)}
 								>
 									<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
-										{albumCover ? (
-											<img
-												src={albumCover}
-												alt={track.title}
-												className="h-full w-full object-cover"
-											/>
-										) : (
-											<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-												<Music className="h-4 w-4 text-melodio-text-subdued" />
-											</div>
-										)}
+										<AppImage
+											src={getImageUrl(trackCover)}
+											alt={track.title}
+											className="h-full w-full object-cover"
+										/>
 									</div>
 									<div className="min-w-0 flex-1">
 										<p data-testid={`search-result-title-${track._id}`} className="truncate text-sm font-semibold text-white">

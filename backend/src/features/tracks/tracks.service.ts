@@ -30,6 +30,7 @@ export interface TrackResponse {
 	trackNumber: number;
 	genre: string;
 	playCount: number;
+	description: string;
 	coverImageUrl?: string;
 	createdAt: Date;
 	updatedAt: Date;
@@ -70,6 +71,7 @@ function transformTrack(track: LeanTrackWithPopulated): TrackResponse {
 		trackNumber: track.track_number,
 		genre: track.genre,
 		playCount: track.play_count,
+		description: track.description,
 		coverImageUrl: track.cover_image_url,
 		createdAt: track.created_at,
 		updatedAt: track.updated_at,

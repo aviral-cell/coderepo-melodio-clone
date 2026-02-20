@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "./useDebounce";
 import { searchService } from "../services/search.service";
 import type { TrackWithPopulated } from "../types/player.types";
+import { getImageUrl, preloadImages } from "../utils";
 
 interface UseSearchReturn {
 	tracks: TrackWithPopulated[];
@@ -37,6 +38,7 @@ export function useSearch(query: string): UseSearchReturn {
 			try {
 				const result = await searchService.search(trimmedQuery);
 				if (!cancelled) {
+					preloadImages(result.tracks.map((t) => getImageUrl(typeof t.albumId === "object" ? t.albumId.coverImageUrl : undefined)));
 					setTracks(result.tracks);
 				}
 			} catch (err) {

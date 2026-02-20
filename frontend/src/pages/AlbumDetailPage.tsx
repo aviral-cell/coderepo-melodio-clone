@@ -2,9 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import type { JSX } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router";
-import { Play, Pause, Music, Clock3 } from "lucide-react";
+import { Play, Pause, Clock3 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/common/EmptyState";
@@ -14,7 +15,7 @@ import { useImageColor } from "@/shared/hooks/useImageColor";
 import { albumsService, tracksService } from "@/shared/services";
 import type { AlbumWithPopulated } from "@/shared/services/albums.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
-import { formatDuration } from "@/shared/utils";
+import { formatDuration, getImageUrl, preloadImages } from "@/shared/utils";
 
 function formatTime(seconds: number): string {
 	const minutes = Math.floor(seconds / 60);
@@ -41,6 +42,7 @@ export default function AlbumDetailPage(): JSX.Element {
 				albumsService.getById(albumId),
 				tracksService.getAll({ albumId, limit: 50 }),
 			]);
+			preloadImages([getImageUrl(albumData.coverImageUrl)]);
 			setAlbum(albumData);
 			setTracks(tracksData.items);
 		} catch (error) {
@@ -123,17 +125,11 @@ export default function AlbumDetailPage(): JSX.Element {
 				/>
 				<div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
-						{album.coverImageUrl ? (
-							<img
-								src={album.coverImageUrl}
-								alt={album.title}
-								className="h-full w-full object-cover"
-							/>
-						) : (
-							<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-								<Music className="h-20 w-20 text-melodio-text-subdued" />
-							</div>
-						)}
+						<AppImage
+							src={getImageUrl(album.coverImageUrl)}
+							alt={album.title}
+							className="h-full w-full object-cover"
+						/>
 					</div>
 					<div className="text-center sm:text-left">
 						<p className="text-sm font-medium text-white">Album</p>

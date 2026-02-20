@@ -17,11 +17,12 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { cn } from "@/lib/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
-import { formatDuration } from "@/shared/utils";
+import { formatDuration, getImageUrl } from "@/shared/utils";
 
 interface SortableQueueItemProps {
 	track: TrackWithPopulated;
@@ -60,6 +61,7 @@ function SortableQueueItem({
 
 	const albumCover =
 		typeof track.albumId === "object" ? track.albumId.coverImageUrl : undefined;
+	const trackCover = track.coverImageUrl || albumCover;
 
 	return (
 		<div
@@ -85,17 +87,11 @@ function SortableQueueItem({
 				onClick={onPlay}
 				className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded"
 			>
-				{albumCover ? (
-					<img
-						src={albumCover}
-						alt={track.title}
-						className="h-full w-full object-cover"
-					/>
-				) : (
-					<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-						<Music className="h-4 w-4 text-melodio-text-subdued" />
-					</div>
-				)}
+				<AppImage
+					src={getImageUrl(trackCover)}
+					alt={track.title}
+					className="h-full w-full object-cover"
+				/>
 				{isCurrentTrack && (
 					<div className="absolute inset-0 flex items-center justify-center bg-black/40">
 						{isPlaying ? (
@@ -231,18 +227,11 @@ export function QueuePanel() {
 								)}
 							>
 								<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
-									{typeof currentTrack.albumId === "object" &&
-									currentTrack.albumId.coverImageUrl ? (
-										<img
-											src={currentTrack.albumId.coverImageUrl}
-											alt={currentTrack.title}
-											className="h-full w-full object-cover"
-										/>
-									) : (
-										<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-											<Music className="h-4 w-4 text-melodio-text-subdued" />
-										</div>
-									)}
+									<AppImage
+										src={getImageUrl(currentTrack.coverImageUrl || (typeof currentTrack.albumId === "object" ? currentTrack.albumId.coverImageUrl : undefined))}
+										alt={currentTrack.title}
+										className="h-full w-full object-cover"
+									/>
 									<div className="absolute inset-0 flex items-center justify-center bg-black/40">
 										{isPlaying ? (
 											<span className="flex items-center gap-0.5">

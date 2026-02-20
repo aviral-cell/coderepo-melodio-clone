@@ -5,7 +5,7 @@ import { AuthenticatedRequest } from "../../shared/types/index.js";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
-const MAX_LIMIT = 50;
+const MAX_LIMIT = 100;
 
 function parsePaginationParams(query: Record<string, unknown>): { page: number; limit: number } {
 	let page = DEFAULT_PAGE;

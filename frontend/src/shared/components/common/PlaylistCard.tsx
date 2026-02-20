@@ -1,8 +1,9 @@
-import { ListMusic } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { cn } from "@/lib/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
 import type { Playlist } from "@/shared/types";
+import { getImageUrl } from "@/shared/utils";
 
 interface PlaylistCardProps {
 	playlist: Playlist;
@@ -15,6 +16,7 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 	const trackCount = playlist.trackIds?.length ?? playlist.tracks?.length ?? 0;
 
 	const handleCardClick = () => {
+		if (!playlist._id) return;
 		navigate(`/playlist/${playlist._id}`);
 	};
 
@@ -35,17 +37,11 @@ export function PlaylistCard({ playlist, className }: PlaylistCardProps) {
 			)}
 		>
 			<div className="relative mb-4 aspect-square overflow-hidden rounded-md shadow-lg">
-				{playlist.coverImageUrl ? (
-					<img
-						src={playlist.coverImageUrl}
-						alt={playlist.name}
-						className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-					/>
-				) : (
-					<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-melodio-light-gray to-melodio-dark-gray">
-						<ListMusic className="h-12 w-12 text-melodio-text-subdued" />
-					</div>
-				)}
+				<AppImage
+					src={getImageUrl(playlist.coverImageUrl)}
+					alt={playlist.name}
+					className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+				/>
 			</div>
 
 			<div className="min-w-0">

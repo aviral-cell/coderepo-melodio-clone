@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import type { JSX } from "react";
 import { Link } from "react-router";
-import { Clock, History, Music, Play, Pause, Trash2 } from "lucide-react";
+import { Clock, History, Play, Pause, Trash2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/common/EmptyState";
@@ -11,7 +12,7 @@ import { usePlayer } from "@/shared/contexts/PlayerContext";
 import { useToast } from "@/shared/hooks/useToast";
 import { historyService, type RecentlyPlayedTrack } from "@/shared/services/history.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
-import { formatDuration } from "@/shared/utils";
+import { formatDuration, getImageUrl, preloadImages } from "@/shared/utils";
 
 function formatRelativeTime(dateString: string): string {
 	const date = new Date(dateString);
@@ -80,6 +81,7 @@ export default function RecentlyPlayedPage(): JSX.Element {
 		try {
 			setIsLoading(true);
 			const response = await historyService.getRecentlyPlayed(50);
+			preloadImages(response.tracks.map((t) => getImageUrl(t.coverImageUrl)));
 			setTracks(response.tracks);
 		} catch (error) {
 			addToast({
@@ -249,17 +251,11 @@ export default function RecentlyPlayedPage(): JSX.Element {
 
 								<div className="flex min-w-0 items-center gap-3">
 									<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
-										{track.coverImageUrl ? (
-											<img
-												src={track.coverImageUrl}
-												alt={track.title}
-												className="h-full w-full object-cover"
-											/>
-										) : (
-											<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-												<Music className="h-5 w-5 text-melodio-text-subdued" />
-											</div>
-										)}
+										<AppImage
+											src={getImageUrl(track.coverImageUrl)}
+											alt={track.title}
+											className="h-full w-full object-cover"
+										/>
 									</div>
 									<div className="min-w-0 flex-1">
 										<Link

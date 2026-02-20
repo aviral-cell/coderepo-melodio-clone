@@ -11,10 +11,11 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
 import { Slider } from "@/shared/components/ui/slider";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
-import { formatDuration } from "@/shared/utils";
+import { formatDuration, getImageUrl } from "@/shared/utils";
 
 export function PlayerBar() {
 	const {
@@ -62,6 +63,7 @@ export function PlayerBar() {
 		typeof currentTrack?.albumId === "object"
 			? currentTrack.albumId.coverImageUrl
 			: undefined;
+	const trackCover = currentTrack?.coverImageUrl || albumCover;
 
 	return (
 		<footer className="fixed bottom-0 left-0 right-0 z-40 h-[120px] sm:h-[90px] border-t border-melodio-light-gray bg-melodio-dark-gray px-4">
@@ -70,17 +72,11 @@ export function PlayerBar() {
 					{currentTrack && (
 						<>
 							<div className="relative h-14 w-14 overflow-hidden rounded">
-								{albumCover ? (
-									<img
-										src={albumCover}
-										alt={currentTrack.title}
-										className="h-full w-full object-cover"
-									/>
-								) : (
-									<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-										<ListMusic className="h-6 w-6 text-melodio-text-subdued" />
-									</div>
-								)}
+								<AppImage
+									src={getImageUrl(trackCover)}
+									alt={currentTrack.title}
+									className="h-full w-full object-cover"
+								/>
 							</div>
 							<div className="min-w-0">
 								<p className="truncate text-sm text-white" data-testid="current-track-title">
@@ -97,17 +93,11 @@ export function PlayerBar() {
 				<div className="flex w-full flex-col items-center gap-2 sm:w-[40%]">
 					{currentTrack && (
 						<div className="flex sm:hidden items-center gap-2 w-full justify-center">
-							{albumCover ? (
-								<img
-									src={albumCover}
-									alt={currentTrack.title}
-									className="h-8 w-8 rounded flex-shrink-0"
-								/>
-							) : (
-								<div className="flex h-8 w-8 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
-									<ListMusic className="h-4 w-4 text-melodio-text-subdued" />
-								</div>
-							)}
+							<AppImage
+								src={getImageUrl(trackCover)}
+								alt={currentTrack.title}
+								className="h-8 w-8 rounded flex-shrink-0"
+							/>
 							<p className="truncate text-xs text-white max-w-[150px]">
 								{currentTrack.title}
 							</p>

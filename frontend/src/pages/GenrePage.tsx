@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import type { JSX } from "react";
 import { ChevronLeft } from "lucide-react";
 
+import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { TrackCard } from "@/shared/components/common/TrackCard";
 import { tracksService } from "@/shared/services";
 import { useToast } from "@/shared/hooks/useToast";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
+import { getImageUrl, preloadImages } from "@/shared/utils";
 
 interface Genre {
 	name: string;
@@ -38,6 +40,7 @@ export default function GenrePage(): JSX.Element {
 			setIsLoading(true);
 			try {
 				const response = await tracksService.getAll({ genre: selectedGenre, limit: 50 });
+				preloadImages(response.items.map((t) => getImageUrl(t.coverImageUrl || (typeof t.albumId === "object" ? t.albumId.coverImageUrl : undefined))));
 				setTracks(response.items);
 			} catch (error) {
 				addToast({
@@ -120,8 +123,8 @@ export default function GenrePage(): JSX.Element {
 								</span>
 
 								<div className="absolute -bottom-2 -right-4 h-24 w-24 rotate-[25deg] overflow-hidden rounded shadow-lg">
-									<img
-										src={genre.image}
+									<AppImage
+										src={getImageUrl(genre.image)}
 										alt={genre.name}
 										className="h-full w-full object-cover"
 									/>

@@ -2,8 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import type { JSX } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router";
-import { Play, Pause, Music, Clock3, Plus, MoreHorizontal, ListPlus } from "lucide-react";
+import { Play, Pause, Clock3, Plus, MoreHorizontal, ListPlus } from "lucide-react";
 
+import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/common/EmptyState";
@@ -19,6 +20,7 @@ import { useToast } from "@/shared/hooks/useToast";
 import { useImageColor } from "@/shared/hooks/useImageColor";
 import { tracksService } from "@/shared/services";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
+import { getImageUrl, preloadImages } from "@/shared/utils";
 
 function formatTime(seconds: number): string {
 	const minutes = Math.floor(seconds / 60);
@@ -38,11 +40,13 @@ export default function TrackDetailPage(): JSX.Element {
 	const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
 
 	const albumCover = track && typeof track.albumId === "object" ? track.albumId.coverImageUrl : undefined;
-	const { color: dominantColor, isReady: isColorReady } = useImageColor(albumCover);
+	const trackCover = track?.coverImageUrl || albumCover;
+	const { color: dominantColor, isReady: isColorReady } = useImageColor(trackCover);
 
 	const fetchTrack = useCallback(async () => {
 		try {
 			const data = await tracksService.getById(trackId);
+			preloadImages([getImageUrl(data.coverImageUrl || (typeof data.albumId === "object" ? data.albumId.coverImageUrl : undefined))]);
 			setTrack(data);
 		} catch (error) {
 			addToast({
@@ -106,8 +110,6 @@ export default function TrackDetailPage(): JSX.Element {
 
 	const artistName =
 		typeof track.artistId === "object" ? track.artistId.name : "Unknown Artist";
-	const artistId =
-		typeof track.artistId === "object" ? track.artistId._id : null;
 
 	const albumTitle =
 		typeof track.albumId === "object" ? track.albumId.title : "Unknown Album";
@@ -133,32 +135,17 @@ export default function TrackDetailPage(): JSX.Element {
 				/>
 				<div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
-						{albumCover ? (
-							<img
-								src={albumCover}
-								alt={track.title}
-								className="h-full w-full object-cover"
-							/>
-						) : (
-							<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-								<Music className="h-20 w-20 text-melodio-text-subdued" />
-							</div>
-						)}
+						<AppImage
+							src={getImageUrl(trackCover)}
+							alt={track.title}
+							className="h-full w-full object-cover"
+						/>
 					</div>
 					<div className="text-center sm:text-left">
 						<p className="text-sm font-medium text-white">Song</p>
 						<h1 className="mb-4 text-2xl font-bold text-white sm:text-5xl">{track.title}</h1>
 						<div className="flex items-center gap-2 text-sm">
-							{artistId ? (
-								<Link
-									to={`/artist/${artistId}`}
-									className="font-semibold text-white hover:underline"
-								>
-									{artistName}
-								</Link>
-							) : (
-								<span className="font-semibold text-white">{artistName}</span>
-							)}
+							<span className="font-semibold text-white">{artistName}</span>
 							<span className="text-melodio-text-subdued">-</span>
 							{albumId ? (
 								<Link

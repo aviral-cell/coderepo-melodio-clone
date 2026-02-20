@@ -24,12 +24,12 @@ import {
 	MoreHorizontal,
 	Trash2,
 	Edit2,
-	Music,
 	GripVertical,
 	Copy,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import {
@@ -55,7 +55,7 @@ import { usePlaylistOperations } from "@/shared/hooks/usePlaylistOperations";
 import { useImageColor } from "@/shared/hooks/useImageColor";
 import { playlistsService, type PlaylistWithTracks } from "@/shared/services/playlist.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
-import { formatDuration } from "@/shared/utils";
+import { formatDuration, getImageUrl, preloadImages } from "@/shared/utils";
 
 interface SortableTrackItemProps {
 	track: TrackWithPopulated;
@@ -95,6 +95,7 @@ function SortableTrackItem({
 		typeof track.albumId === "object" ? track.albumId.title : "Unknown Album";
 	const albumCover =
 		typeof track.albumId === "object" ? track.albumId.coverImageUrl : undefined;
+	const trackCover = track.coverImageUrl || albumCover;
 
 	const formatTime = (seconds: number): string => {
 		const minutes = Math.floor(seconds / 60);
@@ -153,17 +154,11 @@ function SortableTrackItem({
 
 			<div className="flex min-w-0 items-center gap-3">
 				<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
-					{albumCover ? (
-						<img
-							src={albumCover}
-							alt={track.title}
-							className="h-full w-full object-cover"
-						/>
-					) : (
-						<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-							<Music className="h-4 w-4 text-melodio-text-subdued" />
-						</div>
-					)}
+					<AppImage
+						src={getImageUrl(trackCover)}
+						alt={track.title}
+						className="h-full w-full object-cover"
+					/>
 				</div>
 				<div className="min-w-0">
 					<p
@@ -288,6 +283,10 @@ export default function PlaylistDetailPage(): JSX.Element {
 	const fetchPlaylist = useCallback(async () => {
 		try {
 			const data = await playlistsService.getById(playlistId);
+			preloadImages([
+				getImageUrl(data.coverImageUrl),
+				...(data.tracks || []).map((t) => getImageUrl(t.coverImageUrl || (typeof t.albumId === "object" ? t.albumId.coverImageUrl : undefined))),
+			]);
 			setPlaylist(data);
 			setEditName(data.name);
 			setEditDescription(data.description || "");
@@ -497,17 +496,11 @@ export default function PlaylistDetailPage(): JSX.Element {
 				/>
 				<div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6">
 					<div className="relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56">
-						{playlist.coverImageUrl ? (
-							<img
-								src={playlist.coverImageUrl}
-								alt={playlist.name}
-								className="h-full w-full object-cover"
-							/>
-						) : (
-							<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-700 to-blue-500">
-								<Music className="h-20 w-20 text-white" />
-							</div>
-						)}
+						<AppImage
+							src={getImageUrl(playlist.coverImageUrl)}
+							alt={playlist.name}
+							className="h-full w-full object-cover"
+						/>
 					</div>
 					<div className="text-center sm:text-left">
 						<p className="text-sm font-medium text-white">Playlist</p>

@@ -6,6 +6,7 @@ import { TrackCard } from "@/shared/components/common/TrackCard";
 import { AlbumCard } from "@/shared/components/common/AlbumCard";
 import { PlaylistCard } from "@/shared/components/common/PlaylistCard";
 import { tracksService, albumsService, playlistsService } from "@/shared/services";
+import { getImageUrl, preloadImages } from "@/shared/utils";
 import { useRecentlyPlayed } from "@/shared/hooks/useRecentlyPlayed";
 import { useToast } from "@/shared/hooks/useToast";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
@@ -25,13 +26,23 @@ export default function HomePage(): JSX.Element {
 	const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(true);
 
 	useEffect(() => {
+		const shuffle = <T,>(arr: T[]): T[] => {
+			const copy = [...arr];
+			for (let i = copy.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[copy[i], copy[j]] = [copy[j], copy[i]];
+			}
+			return copy;
+		};
+
 		const fetchTracks = async () => {
 			try {
-				const response = await tracksService.getAll({ page: 1, limit: 30 });
+				const response = await tracksService.getAll({ page: 1, limit: 100 });
 				const allTracks = response.items;
-				setTracks(allTracks.slice(0, 20));
-				const shuffled = [...allTracks].sort(() => Math.random() - 0.5);
+				const shuffled = shuffle(allTracks);
+				preloadImages(shuffled.slice(0, 30).map((t) => getImageUrl(t.coverImageUrl || (typeof t.albumId === "object" ? t.albumId.coverImageUrl : undefined))));
 				setRecommendedTracks(shuffled.slice(0, 10));
+				setTracks(shuffled.slice(10, 30));
 			} catch (error) {
 				addToast({
 					type: "error",
@@ -44,8 +55,10 @@ export default function HomePage(): JSX.Element {
 
 		const fetchAlbums = async () => {
 			try {
-				const response = await albumsService.getAll({ page: 1, limit: 10 });
-				setAlbums(response.items);
+				const response = await albumsService.getAll({ page: 1, limit: 20 });
+				const shuffled = shuffle(response.items);
+				preloadImages(shuffled.slice(0, 10).map((a) => getImageUrl(a.coverImageUrl)));
+				setAlbums(shuffled.slice(0, 10));
 			} catch (error) {
 				addToast({
 					type: "error",
@@ -59,7 +72,9 @@ export default function HomePage(): JSX.Element {
 		const fetchPlaylists = async () => {
 			try {
 				const response = await playlistsService.getAll();
-				setPlaylists(response);
+				const shuffled = shuffle(response);
+				preloadImages(shuffled.map((p) => getImageUrl(p.coverImageUrl)));
+				setPlaylists(shuffled);
 			} catch (error) {
 				addToast({
 					type: "error",

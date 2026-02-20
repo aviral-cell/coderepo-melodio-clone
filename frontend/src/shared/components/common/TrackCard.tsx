@@ -1,8 +1,9 @@
-import { Play, Pause, Music } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { cn } from "@/lib/utils";
-import { formatDuration } from "@/shared/utils";
+import { AppImage } from "@/shared/components/common/AppImage";
+import { formatDuration, getImageUrl } from "@/shared/utils";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 
@@ -25,6 +26,7 @@ export function TrackCard({ track, className }: TrackCardProps) {
 	const albumCover =
 		(track as unknown as { album?: { coverImageUrl: string } }).album?.coverImageUrl ||
 		(typeof track.albumId === "object" ? track.albumId?.coverImageUrl : undefined);
+	const trackCover = track.coverImageUrl || albumCover;
 
 	const handlePlayClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -36,6 +38,7 @@ export function TrackCard({ track, className }: TrackCardProps) {
 	};
 
 	const handleCardClick = () => {
+		if (!track._id) return;
 		navigate(`/track/${track._id}`);
 	};
 
@@ -56,17 +59,11 @@ export function TrackCard({ track, className }: TrackCardProps) {
 			)}
 		>
 			<div className="relative mb-4 aspect-square overflow-hidden rounded-md shadow-lg">
-				{albumCover ? (
-					<img
-						src={albumCover}
-						alt={track.title}
-						className="h-full w-full object-cover"
-					/>
-				) : (
-					<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-						<Music className="h-12 w-12 text-melodio-text-subdued" />
-					</div>
-				)}
+				<AppImage
+					src={getImageUrl(trackCover)}
+					alt={track.title}
+					className="h-full w-full object-cover"
+				/>
 
 				<button
 					type="button"

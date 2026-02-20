@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { ListMusic, Plus, Check, Loader2 } from "lucide-react";
+import { AppImage } from "@/shared/components/common/AppImage";
+import { getImageUrl } from "@/shared/utils";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
@@ -156,17 +158,11 @@ export function AddToPlaylistModal({
 											)}
 										>
 											<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
-												{playlist.coverImageUrl ? (
-													<img
-														src={playlist.coverImageUrl}
-														alt={playlist.name}
-														className="h-full w-full object-cover"
-													/>
-												) : (
-													<div className="flex h-full w-full items-center justify-center bg-melodio-light-gray">
-														<ListMusic className="h-4 w-4 text-melodio-text-subdued" />
-													</div>
-												)}
+												<AppImage
+													src={getImageUrl(playlist.coverImageUrl)}
+													alt={playlist.name}
+													className="h-full w-full object-cover"
+												/>
 											</div>
 
 											<div className="min-w-0 flex-1">

@@ -8,6 +8,7 @@ export interface ITrack {
 	track_number: number;
 	genre: string;
 	play_count: number;
+	description: string;
 	cover_image_url?: string;
 	created_at: Date;
 	updated_at: Date;
@@ -54,6 +55,11 @@ const trackSchema = new Schema<ITrackDocument>(
 			type: Number,
 			min: 0,
 			default: 0,
+		},
+		description: {
+			type: String,
+			required: false,
+			default: "",
 		},
 		cover_image_url: {
 			type: String,

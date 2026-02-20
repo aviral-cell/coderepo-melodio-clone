@@ -1,5 +1,6 @@
 import type { JSX } from "react";
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { createBrowserRouter, Outlet, useLocation } from "react-router-dom";
 import { Music } from "lucide-react";
 
 import LoginPage from "@/pages/auth/LoginPage";
@@ -12,12 +13,24 @@ import PlaylistDetailPage from "@/pages/PlaylistDetailPage";
 import SubscriptionPage from "@/pages/SubscriptionPage";
 import FamilySettingsPage from "@/pages/FamilySettingsPage";
 import RecentlyPlayedPage from "@/pages/RecentlyPlayedPage";
+import PodcastPage from "@/pages/PodcastPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
+
+function ScrollToTop(): null {
+	const { pathname } = useLocation();
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [pathname]);
+
+	return null;
+}
 
 function RootLayout(): JSX.Element {
 	return (
 		<div className="min-h-screen bg-background text-foreground">
+			<ScrollToTop />
 			<Outlet />
 		</div>
 	);
@@ -119,6 +132,10 @@ export const router = createBrowserRouter([
 					{
 						path: "settings/family",
 						element: <FamilySettingsPage />,
+					},
+					{
+						path: "podcasts",
+						element: <PodcastPage />,
 					},
 				],
 			},

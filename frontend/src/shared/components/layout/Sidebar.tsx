@@ -11,6 +11,7 @@ import {
 	Crown,
 	Users,
 	History,
+	Headphones,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ import type { Playlist } from "@/shared/types";
 const navItems = [
 	{ href: "/", label: "Home", icon: Home },
 	{ href: "/genre", label: "Genre", icon: Radio },
+	{ href: "/podcasts", label: "Podcasts", icon: Headphones },
 ];
 
 export function Sidebar() {
