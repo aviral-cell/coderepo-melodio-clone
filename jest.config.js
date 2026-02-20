@@ -11,6 +11,7 @@ module.exports = {
 				"**/__tests__/task3/**/*.test.{ts,tsx}",
 				"**/__tests__/task8/**/*.test.{ts,tsx}",
 				"**/__tests__/task9/**/*.test.{ts,tsx}",
+				"**/__tests__/task10/**/*.test.{ts,tsx}",
 			],
 			testPathIgnorePatterns: ["/node_modules/", "search\\.service\\.test\\.ts$", "tracks\\.service\\.test\\.ts$"],
 			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
