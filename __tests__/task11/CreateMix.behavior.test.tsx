@@ -477,7 +477,7 @@ function setupSuccessfulMocks() {
 
 // ========== TESTS ==========
 
-describe("Create Mix Behavior Tests", () => {
+describe("Create Mix", () => {
 	beforeAll(() => {
 		delete window.location;
 		window.location = {
@@ -508,485 +508,546 @@ describe("Create Mix Behavior Tests", () => {
 		jest.clearAllMocks();
 	});
 
-	// ========== Loading & Error States ==========
+	// ========== PAGE LOADING ==========
 
-	it("should show loading state initially", () => {
-		mockTracksGetAll.mockReturnValue(new Promise(() => {}));
-		mockArtistsGetAll.mockReturnValue(new Promise(() => {}));
-		mockMixGetAll.mockResolvedValue([]);
+	describe("Page Loading", () => {
+		describe("Loading State", () => {
+			it("should show loading state initially", () => {
+				mockTracksGetAll.mockReturnValue(new Promise(() => { }));
+				mockArtistsGetAll.mockReturnValue(new Promise(() => { }));
+				mockMixGetAll.mockResolvedValue([]);
 
-		renderMixPage();
+				renderMixPage();
 
-		expect(screen.getByTestId("mix-page")).toBeInTheDocument();
-		expect(screen.getByText("Mix")).toBeInTheDocument();
-		expect(screen.queryByTestId("mix-create-card")).not.toBeInTheDocument();
-	});
-
-	it("should show error state when track API fails", async () => {
-		mockTracksGetAll.mockRejectedValue(new Error("Network error"));
-		mockArtistsGetAll.mockRejectedValue(new Error("Network error"));
-		mockMixGetAll.mockResolvedValue([]);
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByText("Network error")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-page")).toBeInTheDocument();
+				expect(screen.getByText("Mix")).toBeInTheDocument();
+				expect(screen.queryByTestId("mix-create-card")).not.toBeInTheDocument();
+			});
 		});
 
-		expect(screen.queryByTestId("mix-create-card")).not.toBeInTheDocument();
-	});
+		describe("Error State", () => {
+			it("should show error state when track API fails", async () => {
+				mockTracksGetAll.mockRejectedValue(new Error("Network error"));
+				mockArtistsGetAll.mockRejectedValue(new Error("Network error"));
+				mockMixGetAll.mockResolvedValue([]);
 
-	// ========== Browse View ==========
+				renderMixPage();
 
-	it("should render Create Mix card and Your Mixes section after loading", async () => {
-		setupSuccessfulMocks();
+				await waitFor(() => {
+					expect(screen.getByText("Network error")).toBeInTheDocument();
+				});
 
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		expect(screen.getByTestId("mix-your-mixes")).toBeInTheDocument();
-		expect(screen.getByText("Create Mix")).toBeInTheDocument();
-		expect(screen.getByText("Your Mixes")).toBeInTheDocument();
-	});
-
-	it("should display saved mixes in Your Mixes grid", async () => {
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		expect(screen.getByTestId("mix-card-mix-1")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-card-mix-2")).toBeInTheDocument();
-
-		expect(screen.getByText("The Amplifiers and Neon Dreams mix")).toBeInTheDocument();
-		expect(screen.getByText("Blue Note Quartet mix")).toBeInTheDocument();
-	});
-
-	// ========== Artist Selection (Step 1) ==========
-
-	it("should display artist grid when entering create flow", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-create-card"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		expect(screen.getByTestId("mix-artists-grid")).toBeInTheDocument();
-		expect(screen.getByText("Pick your artists")).toBeInTheDocument();
-
-		expect(screen.getByTestId("mix-artist-artist-rock-1")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-artist-artist-pop-1")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-artist-artist-jazz-1")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-artist-artist-electronic-1")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-artist-artist-hiphop-1")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-artist-artist-rnb-1")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-artist-artist-classical-1")).toBeInTheDocument();
-	});
-
-	it("should toggle artist selection with checkmark on click", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-create-card"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		const artistButton = screen.getByTestId("mix-artist-artist-rock-1");
-
-		expect(within(artistButton).queryByText((_, element) => element?.classList?.contains("bg-melodio-green"))).toBeFalsy();
-
-		await user.click(artistButton);
-
-		// Checkmark overlay should appear when selected
-		await waitFor(() => {
-			const overlay = artistButton.querySelector(".bg-black\\/40");
-			expect(overlay).toBeTruthy();
-		});
-
-		await user.click(artistButton);
-
-		await waitFor(() => {
-			const overlay = artistButton.querySelector(".bg-black\\/40");
-			expect(overlay).toBeFalsy();
+				expect(screen.queryByTestId("mix-create-card")).not.toBeInTheDocument();
+			});
 		});
 	});
 
-	it("should disable Next button when no artists selected", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
+	// ========== BROWSE VIEW ==========
 
-		renderMixPage();
+	describe("Browse View", () => {
+		describe("Saved Mixes Display", () => {
+			it("should display saved mixes in Your Mixes grid", async () => {
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
+				renderMixPage();
 
-		await user.click(screen.getByTestId("mix-create-card"));
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
+				expect(screen.getByTestId("mix-card-mix-1")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-card-mix-2")).toBeInTheDocument();
 
-		expect(screen.getByTestId("mix-next-btn")).toBeDisabled();
-	});
-
-	it("should enable Next button after selecting an artist", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-create-card"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		expect(screen.getByTestId("mix-next-btn")).toBeDisabled();
-
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-next-btn")).not.toBeDisabled();
+				expect(screen.getByText("The Amplifiers and Neon Dreams mix")).toBeInTheDocument();
+				expect(screen.getByText("Blue Note Quartet mix")).toBeInTheDocument();
+			});
 		});
 	});
 
-	// ========== Configure Step (Step 2) ==========
+	// ========== STEP 1 - ARTIST SELECTION ==========
 
-	it("should show variety, discovery, and filter options on step 2", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
+	describe("Step 1 - Artist Selection", () => {
+		describe("Artist Grid", () => {
+			it("should display artist grid when entering create flow", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		renderMixPage();
+				renderMixPage();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				expect(screen.getByTestId("mix-artists-grid")).toBeInTheDocument();
+				expect(screen.getByText("Pick your artists")).toBeInTheDocument();
+
+				expect(screen.getByTestId("mix-artist-artist-rock-1")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-artist-artist-pop-1")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-artist-artist-jazz-1")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-artist-artist-electronic-1")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-artist-artist-hiphop-1")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-artist-artist-rnb-1")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-artist-artist-classical-1")).toBeInTheDocument();
+			});
 		});
 
-		await user.click(screen.getByTestId("mix-create-card"));
+		describe("Artist Toggle", () => {
+			it("should toggle artist selection with checkmark on click", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				const artistButton = screen.getByTestId("mix-artist-artist-rock-1");
+
+				// Initially no checkmark (Check icon rendered via bg-melodio-green)
+				expect(within(artistButton).queryByText((_, element) => element?.classList?.contains("bg-melodio-green"))).toBeFalsy();
+
+				// Click to select
+				await user.click(artistButton);
+
+				// After selecting, the checkmark overlay should appear (div with bg-black/40)
+				await waitFor(() => {
+					const overlay = artistButton.querySelector(".bg-black\\/40");
+					expect(overlay).toBeTruthy();
+				});
+
+				// Click again to deselect
+				await user.click(artistButton);
+
+				await waitFor(() => {
+					const overlay = artistButton.querySelector(".bg-black\\/40");
+					expect(overlay).toBeFalsy();
+				});
+			});
 		});
 
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-next-btn"));
+		describe("Next Button State", () => {
+			it("should enable Next button after selecting an artist", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				expect(screen.getByTestId("mix-next-btn")).toBeDisabled();
+
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-next-btn")).not.toBeDisabled();
+				});
+			});
 		});
-
-		expect(screen.getByText("Adjust your mix")).toBeInTheDocument();
-
-		// Variety options
-		expect(screen.getByTestId("mix-variety-low")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-variety-medium")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-variety-high")).toBeInTheDocument();
-
-		// Discovery options
-		expect(screen.getByTestId("mix-discovery-familiar")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-discovery-blend")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-discovery-discover")).toBeInTheDocument();
-
-		// Filter options
-		expect(screen.getByTestId("mix-filters")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-popular")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-deep-cuts")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-new-releases")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-pump-up")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-chill")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-upbeat")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-downbeat")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-filter-focus")).toBeInTheDocument();
 	});
 
-	it("should toggle filter selection", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
+	// ========== STEP 2 - CONFIGURE MIX ==========
 
-		renderMixPage();
+	describe("Step 2 - Configure Mix", () => {
+		describe("Configuration Options", () => {
+			it("should show variety, discovery, and filter options on step 2", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				// Select an artist and proceed
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				expect(screen.getByText("Adjust your mix")).toBeInTheDocument();
+
+				// Variety options
+				expect(screen.getByTestId("mix-variety-low")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-variety-medium")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-variety-high")).toBeInTheDocument();
+
+				// Discovery options
+				expect(screen.getByTestId("mix-discovery-familiar")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-discovery-blend")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-discovery-discover")).toBeInTheDocument();
+
+				// Filter options
+				expect(screen.getByTestId("mix-filters")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-popular")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-deep-cuts")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-new-releases")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-pump-up")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-chill")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-upbeat")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-downbeat")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-filter-focus")).toBeInTheDocument();
+			});
 		});
 
-		await user.click(screen.getByTestId("mix-create-card"));
+		describe("Filter Toggle", () => {
+			it("should toggle filter selection", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				const popularFilter = screen.getByTestId("mix-filter-popular");
+
+				// Initially outline variant (not selected)
+				// Click to select
+				await user.click(popularFilter);
+
+				// Click again to deselect (toggle)
+				await user.click(popularFilter);
+
+				// No assertion on variant since cn mock just joins strings,
+				// but we verify clicking does not throw and toggles without error
+				expect(popularFilter).toBeInTheDocument();
+			});
 		});
-
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-next-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-		});
-
-		const popularFilter = screen.getByTestId("mix-filter-popular");
-
-		await user.click(popularFilter);
-		await user.click(popularFilter);
-
-		expect(popularFilter).toBeInTheDocument();
 	});
 
-	// ========== Mix Generation (Step 3) ==========
+	// ========== STEP 3 - MIX RESULT ==========
 
-	it("should generate mix and show tracks on Done click", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
+	describe("Step 3 - Mix Result", () => {
+		describe("Mix Generation", () => {
+			it("should generate mix and show tracks on Done click", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		renderMixPage();
+				renderMixPage();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-done-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
+				});
+
+				expect(screen.getByTestId("mix-result-tracks")).toBeInTheDocument();
+				expect(screen.getByTestId("mix-title")).toBeInTheDocument();
+
+				// mixService.create should have been called
+				expect(mockMixCreate).toHaveBeenCalled();
+			});
 		});
 
-		await user.click(screen.getByTestId("mix-create-card"));
+		describe("Track Limit", () => {
+			it("should limit generated mix to 20 tracks", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				// Select all artists for maximum track pool
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-artist-artist-pop-1"));
+				await user.click(screen.getByTestId("mix-artist-artist-jazz-1"));
+				await user.click(screen.getByTestId("mix-artist-artist-electronic-1"));
+				await user.click(screen.getByTestId("mix-artist-artist-hiphop-1"));
+				await user.click(screen.getByTestId("mix-artist-artist-rnb-1"));
+				await user.click(screen.getByTestId("mix-artist-artist-classical-1"));
+
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				// Set variety to high to include all tracks
+				await user.click(screen.getByTestId("mix-variety-high"));
+
+				await user.click(screen.getByTestId("mix-done-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
+				});
+
+				// We have 14 tracks total (7 artists x 2 tracks each), all under 20 limit
+				// The mix should contain all 14 since they all score > 0
+				const resultTracks = screen.getByTestId("mix-result-tracks");
+				const trackCards = resultTracks.children;
+				expect(trackCards.length).toBeLessThanOrEqual(20);
+				expect(trackCards.length).toBe(14);
+			});
 		});
 
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-next-btn"));
+		describe("Variety Low Filter", () => {
+			it("should show only selected artist tracks with variety low", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				// Select only The Amplifiers (rock, 2 tracks)
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				// Set variety to "low" which filters out non-selected artists
+				await user.click(screen.getByTestId("mix-variety-low"));
+
+				await user.click(screen.getByTestId("mix-done-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
+				});
+
+				// With variety "low", scoreTrack returns 0 for non-selected artists
+				// Selected artist tracks should rank first in the generated mix
+				const resultTracks = screen.getByTestId("mix-result-tracks");
+				const trackCards = resultTracks.children;
+				expect(trackCards.length).toBeGreaterThanOrEqual(2);
+
+				// Verify the first two tracks are from The Amplifiers (the selected artist)
+				const firstTrackTitle = within(trackCards[0] as HTMLElement).getByText("Thunder Road");
+				const secondTrackTitle = within(trackCards[1] as HTMLElement).getByText("Lightning Strike");
+				expect(firstTrackTitle).toBeInTheDocument();
+				expect(secondTrackTitle).toBeInTheDocument();
+			});
 		});
 
-		await user.click(screen.getByTestId("mix-done-btn"));
+		describe("Mix Title Generation", () => {
+			it("should generate mix title from selected artist names", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				// Select The Amplifiers
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-done-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
+				});
+
+				// getMixTitle for single artist: "The Amplifiers mix"
+				expect(screen.getByTestId("mix-title")).toHaveTextContent("The Amplifiers mix");
+			});
+
+			it("should generate mix title from multiple selected artist names", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				// Select The Amplifiers and Neon Dreams (2 artists)
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-artist-artist-pop-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-done-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
+				});
+
+				// getMixTitle for two artists: "The Amplifiers and Neon Dreams mix"
+				expect(screen.getByTestId("mix-title")).toHaveTextContent("The Amplifiers and Neon Dreams mix");
+			});
 		});
-
-		expect(screen.getByTestId("mix-result-tracks")).toBeInTheDocument();
-		expect(screen.getByTestId("mix-title")).toBeInTheDocument();
-		expect(mockMixCreate).toHaveBeenCalled();
 	});
 
-	it("should limit generated mix to 20 tracks", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
+	// ========== NAVIGATION ==========
 
-		renderMixPage();
+	describe("Navigation", () => {
+		describe("Back to Artist Selection", () => {
+			it("should navigate back from step 2 to step 1", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				// Click back button on configure step
+				await user.click(screen.getByTestId("mix-configure-back-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				expect(screen.queryByTestId("mix-step-configure")).not.toBeInTheDocument();
+			});
 		});
 
-		await user.click(screen.getByTestId("mix-create-card"));
+		describe("Back to Browse View", () => {
+			it("should navigate from result back to browse view", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
 
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				renderMixPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-create-card"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
+				await user.click(screen.getByTestId("mix-next-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("mix-done-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
+				});
+
+				// Click "Back to Mixes" button on result step
+				await user.click(screen.getByTestId("mix-back-to-mixes-btn"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+				});
+
+				expect(screen.getByTestId("mix-your-mixes")).toBeInTheDocument();
+				expect(screen.queryByTestId("mix-step-result")).not.toBeInTheDocument();
+			});
 		});
-
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-artist-artist-pop-1"));
-		await user.click(screen.getByTestId("mix-artist-artist-jazz-1"));
-		await user.click(screen.getByTestId("mix-artist-artist-electronic-1"));
-		await user.click(screen.getByTestId("mix-artist-artist-hiphop-1"));
-		await user.click(screen.getByTestId("mix-artist-artist-rnb-1"));
-		await user.click(screen.getByTestId("mix-artist-artist-classical-1"));
-
-		await user.click(screen.getByTestId("mix-next-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-variety-high"));
-
-		await user.click(screen.getByTestId("mix-done-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-		});
-
-		// 14 total tracks (7 artists x 2), all under 20 limit
-		const resultTracks = screen.getByTestId("mix-result-tracks");
-		const trackCards = resultTracks.children;
-		expect(trackCards.length).toBeLessThanOrEqual(20);
-		expect(trackCards.length).toBe(14);
-	});
-
-	it("should show only selected artist tracks with variety low", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-create-card"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		// Select The Amplifiers only (rock, 2 tracks)
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-next-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-		});
-
-		// Variety "low" = only selected artist tracks score > 0
-		await user.click(screen.getByTestId("mix-variety-low"));
-
-		await user.click(screen.getByTestId("mix-done-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-		});
-
-		// Selected artist tracks should rank first
-		const resultTracks = screen.getByTestId("mix-result-tracks");
-		const trackCards = resultTracks.children;
-		expect(trackCards.length).toBeGreaterThanOrEqual(2);
-
-		// Verify the first two tracks are from The Amplifiers (the selected artist)
-		const firstTrackTitle = within(trackCards[0] as HTMLElement).getByText("Thunder Road");
-		const secondTrackTitle = within(trackCards[1] as HTMLElement).getByText("Lightning Strike");
-		expect(firstTrackTitle).toBeInTheDocument();
-		expect(secondTrackTitle).toBeInTheDocument();
-	});
-
-	it("should generate mix title from selected artist names", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-create-card"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-next-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-done-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-		});
-
-		// getMixTitle for single artist: "The Amplifiers mix"
-		expect(screen.getByTestId("mix-title")).toHaveTextContent("The Amplifiers mix");
-	});
-
-	// ========== Navigation ==========
-
-	it("should navigate back from step 2 to step 1", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-create-card"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-next-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-configure-back-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		expect(screen.queryByTestId("mix-step-configure")).not.toBeInTheDocument();
-	});
-
-	it("should navigate from result back to browse view", async () => {
-		const user = userEvent.setup();
-		setupSuccessfulMocks();
-
-		renderMixPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-create-card"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-		await user.click(screen.getByTestId("mix-next-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-done-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("mix-back-to-mixes-btn"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-		});
-
-		expect(screen.getByTestId("mix-your-mixes")).toBeInTheDocument();
-		expect(screen.queryByTestId("mix-step-result")).not.toBeInTheDocument();
 	});
 });
