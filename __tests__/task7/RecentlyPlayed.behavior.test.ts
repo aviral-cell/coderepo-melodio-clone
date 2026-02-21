@@ -626,115 +626,119 @@ describe("Recently Played History API", () => {
 	});
 
 	describe("History Limit Enforcement (FIFO)", () => {
-		let authToken: string;
-		let userId: string;
-		let trackIds: string[];
+		describe("Maximum Capacity", () => {
+			let authToken: string;
+			let userId: string;
+			let trackIds: string[];
 
-		beforeEach(async () => {
-			const userData = {
-				email: generateUniqueEmail("fifo-test"),
-				username: `fifotest_${Date.now()}`,
-				password: "Password123!",
-				displayName: "FIFO Test User",
-			};
-			const result = await registerAndLoginUser(userData);
-			authToken = result.token;
-			userId = result.userId;
+			beforeEach(async () => {
+				const userData = {
+					email: generateUniqueEmail("fifo-test"),
+					username: `fifotest_${Date.now()}`,
+					password: "Password123!",
+					displayName: "FIFO Test User",
+				};
+				const result = await registerAndLoginUser(userData);
+				authToken = result.token;
+				userId = result.userId;
 
-			trackIds = getSeededTrackIds(60);
+				trackIds = getSeededTrackIds(60);
+			});
+
+			it("should maintain maximum of 50 tracks using FIFO when adding new track", async () => {
+				for (let i = 0; i < 50; i++) {
+					await recordPlayViaApi(authToken, trackIds[i]);
+				}
+
+				const historyBefore = await request(app)
+					.get(`${HISTORY_API_BASE}/recently-played`)
+					.query({ limit: 50 })
+					.set("Authorization", `Bearer ${authToken}`);
+
+				expect(historyBefore.body.data.total).toBe(50);
+
+				const oldestTrackId = historyBefore.body.data.tracks[historyBefore.body.data.tracks.length - 1].id;
+
+				await recordPlayViaApi(authToken, trackIds[50]);
+
+				const historyAfter = await request(app)
+					.get(`${HISTORY_API_BASE}/recently-played`)
+					.query({ limit: 50 })
+					.set("Authorization", `Bearer ${authToken}`);
+
+				expect(historyAfter.body.data.total).toBe(50);
+
+				expect(historyAfter.body.data.tracks[0].id).toBe(trackIds[50]);
+
+				const allIds = historyAfter.body.data.tracks.map((t: { id: string }) => t.id);
+				expect(allIds).not.toContain(oldestTrackId);
+			}, 15000);
+
+			it("should remove oldest track when history exceeds 50", async () => {
+				for (let i = 0; i < 50; i++) {
+					await recordPlayViaApi(authToken, trackIds[i]);
+				}
+
+				const historyBefore = await request(app)
+					.get(`${HISTORY_API_BASE}/recently-played`)
+					.query({ limit: 50 })
+					.set("Authorization", `Bearer ${authToken}`);
+
+				const oldestTrackId = historyBefore.body.data.tracks[historyBefore.body.data.tracks.length - 1].id;
+
+				await recordPlayViaApi(authToken, trackIds[51]);
+
+				const response = await request(app)
+					.get(`${HISTORY_API_BASE}/recently-played`)
+					.query({ limit: 50 })
+					.set("Authorization", `Bearer ${authToken}`);
+
+				expect(response.body.data.tracks[0].id).toBe(trackIds[51]);
+
+				const allIds = response.body.data.tracks.map((t: { id: string }) => t.id);
+				expect(allIds).not.toContain(oldestTrackId);
+			}, 15000);
 		});
-
-		it("should maintain maximum of 50 tracks using FIFO when adding new track", async () => {
-			for (let i = 0; i < 50; i++) {
-				await recordPlayViaApi(authToken, trackIds[i]);
-			}
-
-			const historyBefore = await request(app)
-				.get(`${HISTORY_API_BASE}/recently-played`)
-				.query({ limit: 50 })
-				.set("Authorization", `Bearer ${authToken}`);
-
-			expect(historyBefore.body.data.total).toBe(50);
-
-			const oldestTrackId = historyBefore.body.data.tracks[historyBefore.body.data.tracks.length - 1].id;
-
-			await recordPlayViaApi(authToken, trackIds[50]);
-
-			const historyAfter = await request(app)
-				.get(`${HISTORY_API_BASE}/recently-played`)
-				.query({ limit: 50 })
-				.set("Authorization", `Bearer ${authToken}`);
-
-			expect(historyAfter.body.data.total).toBe(50);
-
-			expect(historyAfter.body.data.tracks[0].id).toBe(trackIds[50]);
-
-			const allIds = historyAfter.body.data.tracks.map((t: { id: string }) => t.id);
-			expect(allIds).not.toContain(oldestTrackId);
-		}, 15000);
-
-		it("should remove oldest track when history exceeds 50", async () => {
-			for (let i = 0; i < 50; i++) {
-				await recordPlayViaApi(authToken, trackIds[i]);
-			}
-
-			const historyBefore = await request(app)
-				.get(`${HISTORY_API_BASE}/recently-played`)
-				.query({ limit: 50 })
-				.set("Authorization", `Bearer ${authToken}`);
-
-			const oldestTrackId = historyBefore.body.data.tracks[historyBefore.body.data.tracks.length - 1].id;
-
-			await recordPlayViaApi(authToken, trackIds[51]);
-
-			const response = await request(app)
-				.get(`${HISTORY_API_BASE}/recently-played`)
-				.query({ limit: 50 })
-				.set("Authorization", `Bearer ${authToken}`);
-
-			expect(response.body.data.tracks[0].id).toBe(trackIds[51]);
-
-			const allIds = response.body.data.tracks.map((t: { id: string }) => t.id);
-			expect(allIds).not.toContain(oldestTrackId);
-		}, 15000);
 	});
 
 	describe("User Isolation", () => {
-		it("should isolate play history between different users", async () => {
-			const userData1 = {
-				email: generateUniqueEmail("user-isolation-1"),
-				username: `userisolation1_${Date.now()}`,
-				password: "Password123!",
-				displayName: "Isolation User 1",
-			};
-			const user1 = await registerAndLoginUser(userData1);
+		describe("Cross-User Data Separation", () => {
+			it("should isolate play history between different users", async () => {
+				const userData1 = {
+					email: generateUniqueEmail("user-isolation-1"),
+					username: `userisolation1_${Date.now()}`,
+					password: "Password123!",
+					displayName: "Isolation User 1",
+				};
+				const user1 = await registerAndLoginUser(userData1);
 
-			const userData2 = {
-				email: generateUniqueEmail("user-isolation-2"),
-				username: `userisolation2_${Date.now()}`,
-				password: "Password123!",
-				displayName: "Isolation User 2",
-			};
-			const user2 = await registerAndLoginUser(userData2);
+				const userData2 = {
+					email: generateUniqueEmail("user-isolation-2"),
+					username: `userisolation2_${Date.now()}`,
+					password: "Password123!",
+					displayName: "Isolation User 2",
+				};
+				const user2 = await registerAndLoginUser(userData2);
 
-			const tracks = await getTracksFromApi(user1.token, 10);
+				const tracks = await getTracksFromApi(user1.token, 10);
 
-			await recordPlayViaApi(user1.token, tracks[0].id);
-			await recordPlayViaApi(user2.token, tracks[1].id);
+				await recordPlayViaApi(user1.token, tracks[0].id);
+				await recordPlayViaApi(user2.token, tracks[1].id);
 
-			const user1History = await request(app)
-				.get(`${HISTORY_API_BASE}/recently-played`)
-				.set("Authorization", `Bearer ${user1.token}`);
+				const user1History = await request(app)
+					.get(`${HISTORY_API_BASE}/recently-played`)
+					.set("Authorization", `Bearer ${user1.token}`);
 
-			expect(user1History.body.data.tracks).toHaveLength(1);
-			expect(user1History.body.data.tracks[0].id).toBe(tracks[0].id);
+				expect(user1History.body.data.tracks).toHaveLength(1);
+				expect(user1History.body.data.tracks[0].id).toBe(tracks[0].id);
 
-			const user2History = await request(app)
-				.get(`${HISTORY_API_BASE}/recently-played`)
-				.set("Authorization", `Bearer ${user2.token}`);
+				const user2History = await request(app)
+					.get(`${HISTORY_API_BASE}/recently-played`)
+					.set("Authorization", `Bearer ${user2.token}`);
 
-			expect(user2History.body.data.tracks).toHaveLength(1);
-			expect(user2History.body.data.tracks[0].id).toBe(tracks[1].id);
+				expect(user2History.body.data.tracks).toHaveLength(1);
+				expect(user2History.body.data.tracks[0].id).toBe(tracks[1].id);
+			});
 		});
 	});
 });

@@ -404,73 +404,77 @@ describe("Subscription & Payment API", () => {
 	});
 
 	describe("Post-Payment Updates", () => {
-		it("should upgrade subscription plan to premium after payment", async () => {
-			const testEmail = `subscription-test-${testCounter}-f@hackerrank.com`;
-			const { token } = await createTestUser(app, testEmail, "Password123!");
+		describe("Subscription Upgrade", () => {
+			it("should upgrade subscription plan to premium after payment", async () => {
+				const testEmail = `subscription-test-${testCounter}-f@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
 
-			const paymentRequest = createValidPaymentRequest(9.99);
+				const paymentRequest = createValidPaymentRequest(9.99);
 
-			const res = await request(app)
-				.post(`${PAYMENT_BASE}/card`)
-				.set("Authorization", `Bearer ${token}`)
-				.send(paymentRequest);
+				const res = await request(app)
+					.post(`${PAYMENT_BASE}/card`)
+					.set("Authorization", `Bearer ${token}`)
+					.send(paymentRequest);
 
-			expect(res.status).toBe(200);
-			expect(res.body.success).toBe(true);
-			expect(res.body.data.subscription).toBeDefined();
-			expect(res.body.data.subscription.plan).toBe(SubscriptionPlan.PREMIUM);
+				expect(res.status).toBe(200);
+				expect(res.body.success).toBe(true);
+				expect(res.body.data.subscription).toBeDefined();
+				expect(res.body.data.subscription.plan).toBe(SubscriptionPlan.PREMIUM);
 
-			const subRes = await request(app)
-				.get(`${SUBSCRIPTION_BASE}`)
-				.set("Authorization", `Bearer ${token}`);
+				const subRes = await request(app)
+					.get(`${SUBSCRIPTION_BASE}`)
+					.set("Authorization", `Bearer ${token}`);
 
-			expect(subRes.status).toBe(200);
-			expect(subRes.body.data.plan).toBe(SubscriptionPlan.PREMIUM);
+				expect(subRes.status).toBe(200);
+				expect(subRes.body.data.plan).toBe(SubscriptionPlan.PREMIUM);
+			});
+
+			it("should update user subscription_status to premium after payment", async () => {
+				const testEmail = `subscription-test-${testCounter}-g@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
+
+				const paymentRequest = createValidPaymentRequest(9.99);
+
+				const res = await request(app)
+					.post(`${PAYMENT_BASE}/card`)
+					.set("Authorization", `Bearer ${token}`)
+					.send(paymentRequest);
+
+				expect(res.status).toBe(200);
+				expect(res.body.success).toBe(true);
+
+				const meRes = await request(app)
+					.get(`${AUTH_BASE}/me`)
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(meRes.status).toBe(200);
+				expect(meRes.body.data.subscriptionStatus).toBe(SubscriptionStatus.PREMIUM);
+			});
 		});
 
-		it("should update user subscription_status to premium after payment", async () => {
-			const testEmail = `subscription-test-${testCounter}-g@hackerrank.com`;
-			const { token } = await createTestUser(app, testEmail, "Password123!");
+		describe("Payment Record", () => {
+			it("should update payment status to completed after processing", async () => {
+				const testEmail = `subscription-test-${testCounter}-h@hackerrank.com`;
+				const { token } = await createTestUser(app, testEmail, "Password123!");
 
-			const paymentRequest = createValidPaymentRequest(9.99);
+				const paymentRequest = createValidPaymentRequest(9.99);
 
-			const res = await request(app)
-				.post(`${PAYMENT_BASE}/card`)
-				.set("Authorization", `Bearer ${token}`)
-				.send(paymentRequest);
+				const res = await request(app)
+					.post(`${PAYMENT_BASE}/card`)
+					.set("Authorization", `Bearer ${token}`)
+					.send(paymentRequest);
 
-			expect(res.status).toBe(200);
-			expect(res.body.success).toBe(true);
+				expect(res.status).toBe(200);
+				expect(res.body.success).toBe(true);
 
-			const meRes = await request(app)
-				.get(`${AUTH_BASE}/me`)
-				.set("Authorization", `Bearer ${token}`);
+				const historyRes = await request(app)
+					.get(`${PAYMENT_BASE}`)
+					.set("Authorization", `Bearer ${token}`);
 
-			expect(meRes.status).toBe(200);
-			expect(meRes.body.data.subscriptionStatus).toBe(SubscriptionStatus.PREMIUM);
-		});
-
-		it("should update payment status to completed after processing", async () => {
-			const testEmail = `subscription-test-${testCounter}-h@hackerrank.com`;
-			const { token } = await createTestUser(app, testEmail, "Password123!");
-
-			const paymentRequest = createValidPaymentRequest(9.99);
-
-			const res = await request(app)
-				.post(`${PAYMENT_BASE}/card`)
-				.set("Authorization", `Bearer ${token}`)
-				.send(paymentRequest);
-
-			expect(res.status).toBe(200);
-			expect(res.body.success).toBe(true);
-
-			const historyRes = await request(app)
-				.get(`${PAYMENT_BASE}`)
-				.set("Authorization", `Bearer ${token}`);
-
-			expect(historyRes.status).toBe(200);
-			expect(historyRes.body.data.payments).toHaveLength(1);
-			expect(historyRes.body.data.payments[0].status).toBe(PaymentStatus.COMPLETED);
+				expect(historyRes.status).toBe(200);
+				expect(historyRes.body.data.payments).toHaveLength(1);
+				expect(historyRes.body.data.payments[0].status).toBe(PaymentStatus.COMPLETED);
+			});
 		});
 	});
 });

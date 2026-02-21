@@ -23,7 +23,7 @@
 		"build:backend": "npm run build --workspace=backend",
 		"seed": "npm run seed --workspace=backend",
 		"test": "npm-run-all -c test:task1 test:task2 test:task3 test:task4 test:task5 test:task6 test:task7 test:task8 test:task9 test:task10 test:task11",
-		"test:task1": "cross-env JEST_JUNIT_OUTPUT_NAME=task1.xml jest --config=jest.config.js --testPathPattern=__tests__/task1 --passWithNoTests",
+		"test:task1": "cross-env JEST_JUNIT_OUTPUT_NAME=task1.xml jest --config=jest.config.js --testPathPattern=__tests__/task1/ --passWithNoTests",
 		"test:task2": "cross-env JEST_JUNIT_OUTPUT_NAME=task2.xml jest --config=jest.config.js --testPathPattern=__tests__/task2 --passWithNoTests",
 		"test:task3": "cross-env JEST_JUNIT_OUTPUT_NAME=task3.xml jest --config=jest.config.js --testPathPattern=__tests__/task3 --passWithNoTests",
 		"test:task4": "cross-env JEST_JUNIT_OUTPUT_NAME=task4.xml jest --config=jest.config.js --testPathPattern=__tests__/task4 --passWithNoTests",

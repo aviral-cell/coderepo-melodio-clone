@@ -49,7 +49,12 @@ jest.mock("@/shared/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 	formatNumber: (num: number) => num.toLocaleString(),
 	capitalize: (str: string) => str.charAt(0).toUpperCase() + str.slice(1),
-	getInitials: (name: string) => name.split(" ").map((n: string) => n[0]).join("").toUpperCase(),
+	getInitials: (name: string) =>
+		name
+			.split(" ")
+			.map((n: string) => n[0])
+			.join("")
+			.toUpperCase(),
 	preloadImages: jest.fn(),
 }));
 
@@ -814,17 +819,6 @@ function setupSuccessFetch(mockFetch: jest.Mock) {
 	});
 }
 
-function setupErrorFetch(mockFetch: jest.Mock) {
-	mockFetch.mockImplementation(() => {
-		return Promise.resolve({
-			ok: false,
-			status: 500,
-			headers: new Headers({ "content-type": "application/json" }),
-			json: () => Promise.resolve({ success: false, error: "Internal Server Error" }),
-		});
-	});
-}
-
 // ========== SETUP / TEARDOWN ==========
 
 const originalFetch = global.fetch;
@@ -832,7 +826,7 @@ const originalLocation = window.location;
 
 let mockFetch: jest.Mock;
 
-describe("Podcast Browser Behavior Tests", () => {
+describe("Podcast Browser", () => {
 	beforeAll(() => {
 		delete window.location;
 		window.location = {
@@ -865,434 +859,614 @@ describe("Podcast Browser Behavior Tests", () => {
 		jest.clearAllMocks();
 	});
 
-	it("should show loading skeletons initially", () => {
-		setupSuccessFetch(mockFetch);
+	// ========== BROWSE VIEW ==========
 
-		renderPodcastPage();
+	describe("Browse View", () => {
+		describe("Show Sorting", () => {
+			it("should sort all shows by newest episode date with most recent first", async () => {
+				setupSuccessFetch(mockFetch);
 
-		expect(screen.getByTestId("podcast-loading")).toBeInTheDocument();
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
+				});
+
+				const allShowsSection = screen.getByTestId("podcast-shows");
+				const showTitles = within(allShowsSection).getAllByText(
+					/Code & Coffee|Startup Stories|Behind the Album|Design Matters|Data Science Daily|The Indie Hacker|DevOps Decoded|Music Theory 101/,
+				);
+
+				// Sorted by latest episode date (most recent first):
+				// Music Theory 101 (Nov 13), DevOps Decoded (Oct 17), Data Science Daily (Aug 21),
+				// The Indie Hacker (Jul 27), Startup Stories (Jun 10), Design Matters (May 13),
+				// Behind the Album (Mar 25), Code & Coffee (Jan 25)
+				expect(showTitles[0]).toHaveTextContent("Music Theory 101");
+				expect(showTitles[1]).toHaveTextContent("DevOps Decoded");
+				expect(showTitles[2]).toHaveTextContent("Data Science Daily");
+				expect(showTitles[3]).toHaveTextContent("The Indie Hacker");
+				expect(showTitles[4]).toHaveTextContent("Startup Stories");
+				expect(showTitles[5]).toHaveTextContent("Design Matters");
+				expect(showTitles[6]).toHaveTextContent("Behind the Album");
+				expect(showTitles[7]).toHaveTextContent("Code & Coffee");
+			});
+		});
+
+		describe("Duration Display", () => {
+			it("should format show duration with hours and minutes for Code & Coffee", async () => {
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
+				});
+
+				// Code & Coffee totalDuration = 11300s => 3h 8m
+				const codeCoffeeDuration = screen.getByTestId("podcast-show-duration-album-podcast-1");
+				expect(codeCoffeeDuration).toHaveTextContent("3h 8m");
+			});
+
+			it("should format show duration correctly for Behind the Album", async () => {
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
+				});
+
+				// Behind the Album totalDuration = 13800s => 3h 50m
+				const behindAlbumDuration = screen.getByTestId("podcast-show-duration-album-podcast-3");
+				expect(behindAlbumDuration).toHaveTextContent("3h 50m");
+			});
+
+			it("should format show duration correctly for Design Matters", async () => {
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
+				});
+
+				// Design Matters totalDuration = 10000s => 2h 46m
+				const designMattersDuration = screen.getByTestId("podcast-show-duration-album-podcast-4");
+				expect(designMattersDuration).toHaveTextContent("2h 46m");
+			});
+		});
+
+		describe("Top Shows", () => {
+			it("should display exactly 5 shows in the top shows section", async () => {
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-top-shows")).toBeInTheDocument();
+				});
+
+				const topShowsSection = screen.getByTestId("podcast-top-shows");
+				const topShowCards = within(topShowsSection).getAllByText(
+					/Code & Coffee|Startup Stories|Behind the Album|Design Matters|Data Science Daily|The Indie Hacker|DevOps Decoded|Music Theory 101/,
+				);
+
+				expect(topShowCards).toHaveLength(5);
+			});
+
+			it("should sort top shows by total play count in descending order", async () => {
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-top-shows")).toBeInTheDocument();
+				});
+
+				const topShowsSection = screen.getByTestId("podcast-top-shows");
+				const topShowCards = within(topShowsSection).getAllByText(
+					/Code & Coffee|Startup Stories|Behind the Album|Design Matters|Data Science Daily|The Indie Hacker|DevOps Decoded|Music Theory 101/,
+				);
+
+				// Sorted by totalPlays desc: Behind the Album (40K), Design Matters (35K),
+				// Data Science Daily (30K), Code & Coffee (25K), The Indie Hacker (20K)
+				expect(topShowCards[0]).toHaveTextContent("Behind the Album");
+				expect(topShowCards[1]).toHaveTextContent("Design Matters");
+				expect(topShowCards[2]).toHaveTextContent("Data Science Daily");
+				expect(topShowCards[3]).toHaveTextContent("Code & Coffee");
+				expect(topShowCards[4]).toHaveTextContent("The Indie Hacker");
+			});
+		});
+
 	});
 
-	it("should display shows with titles and host names after loading", async () => {
-		setupSuccessFetch(mockFetch);
+	// ========== SHOW DETAIL VIEW ==========
 
-		renderPodcastPage();
+	describe("Show Detail View", () => {
+		describe("Episode Ordering", () => {
+			it("should display episodes sorted by track number in ascending order by default", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				const episodesSection = screen.getByTestId("podcast-episodes");
+				const episodeElements = within(episodesSection).getAllByTestId(/^podcast-episode-track-cc-/);
+
+				expect(episodeElements).toHaveLength(5);
+				expect(episodeElements[0]).toHaveAttribute("data-testid", "podcast-episode-track-cc-1");
+				expect(episodeElements[1]).toHaveAttribute("data-testid", "podcast-episode-track-cc-2");
+				expect(episodeElements[2]).toHaveAttribute("data-testid", "podcast-episode-track-cc-3");
+				expect(episodeElements[3]).toHaveAttribute("data-testid", "podcast-episode-track-cc-4");
+				expect(episodeElements[4]).toHaveAttribute("data-testid", "podcast-episode-track-cc-5");
+			});
+
+			it("should sort episodes newest first when latest sort is selected", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-sort-latest"));
+
+				const episodesSection = screen.getByTestId("podcast-episodes");
+				const episodeElements = within(episodesSection).getAllByTestId(/^podcast-episode-track-cc-/);
+
+				// Newest first by createdAt: cc-5 (Jan 25), cc-4 (Jan 24), cc-3 (Jan 23), cc-2 (Jan 22), cc-1 (Jan 21)
+				expect(episodeElements[0]).toHaveAttribute("data-testid", "podcast-episode-track-cc-5");
+				expect(episodeElements[1]).toHaveAttribute("data-testid", "podcast-episode-track-cc-4");
+				expect(episodeElements[2]).toHaveAttribute("data-testid", "podcast-episode-track-cc-3");
+				expect(episodeElements[3]).toHaveAttribute("data-testid", "podcast-episode-track-cc-2");
+				expect(episodeElements[4]).toHaveAttribute("data-testid", "podcast-episode-track-cc-1");
+			});
+
+			it("should sort episodes oldest first when oldest sort is selected", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-sort-oldest"));
+
+				const episodesSection = screen.getByTestId("podcast-episodes");
+				const episodeElements = within(episodesSection).getAllByTestId(/^podcast-episode-track-cc-/);
+
+				// Oldest first by createdAt: cc-1 (Jan 21), cc-2 (Jan 22), cc-3 (Jan 23), cc-4 (Jan 24), cc-5 (Jan 25)
+				expect(episodeElements[0]).toHaveAttribute("data-testid", "podcast-episode-track-cc-1");
+				expect(episodeElements[1]).toHaveAttribute("data-testid", "podcast-episode-track-cc-2");
+				expect(episodeElements[2]).toHaveAttribute("data-testid", "podcast-episode-track-cc-3");
+				expect(episodeElements[3]).toHaveAttribute("data-testid", "podcast-episode-track-cc-4");
+				expect(episodeElements[4]).toHaveAttribute("data-testid", "podcast-episode-track-cc-5");
+			});
 		});
 
-		expect(screen.getByTestId("podcast-show-title-album-podcast-1")).toHaveTextContent("Code & Coffee");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-2")).toHaveTextContent("Startup Stories");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-3")).toHaveTextContent("Behind the Album");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-4")).toHaveTextContent("Design Matters");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-5")).toHaveTextContent("Data Science Daily");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-6")).toHaveTextContent("The Indie Hacker");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-7")).toHaveTextContent("DevOps Decoded");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-8")).toHaveTextContent("Music Theory 101");
+		describe("Show Duration", () => {
+			it("should display formatted total duration as 3h 8m for Code & Coffee in show detail", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		expect(screen.getByTestId("podcast-show-host-album-podcast-1")).toHaveTextContent("Tech Talk Daily");
-		expect(screen.getByTestId("podcast-show-host-album-podcast-2")).toHaveTextContent("Tech Talk Daily");
-		expect(screen.getByTestId("podcast-show-host-album-podcast-3")).toHaveTextContent("Music Stories");
-		expect(screen.getByTestId("podcast-show-host-album-podcast-4")).toHaveTextContent("Creative Minds");
-		expect(screen.getByTestId("podcast-show-host-album-podcast-5")).toHaveTextContent("Tech Talk Daily");
-		expect(screen.getByTestId("podcast-show-host-album-podcast-6")).toHaveTextContent("Startup Radio");
-		expect(screen.getByTestId("podcast-show-host-album-podcast-7")).toHaveTextContent("Tech Talk Daily");
-		expect(screen.getByTestId("podcast-show-host-album-podcast-8")).toHaveTextContent("Music Stories");
-	});
+				renderPodcastPage();
 
-	it("should sort all shows by newest episode date (most recent first)", async () => {
-		setupSuccessFetch(mockFetch);
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
 
-		renderPodcastPage();
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				const durationElement = screen.getByTestId("podcast-show-detail-duration");
+				expect(durationElement).toHaveTextContent("3h 8m");
+			});
+
+			it("should display formatted total duration for Behind the Album in show detail", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-3"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				// Behind the Album totalDuration = 13800s => 3h 50m
+				const durationElement = screen.getByTestId("podcast-show-detail-duration");
+				expect(durationElement).toHaveTextContent("3h 50m");
+			});
 		});
 
-		const allShowsSection = screen.getByTestId("podcast-shows");
-		const showTitles = within(allShowsSection).getAllByText(
-			/Code & Coffee|Startup Stories|Behind the Album|Design Matters|Data Science Daily|The Indie Hacker|DevOps Decoded|Music Theory 101/,
-		);
+		describe("Episode Dates", () => {
+			it("should format episode dates with abbreviated month name for first episode", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		// Sorted by latest episode date (most recent first):
-		// Music Theory 101 (Nov 13), DevOps Decoded (Oct 17), Data Science Daily (Aug 21),
-		// The Indie Hacker (Jul 27), Startup Stories (Jun 10), Design Matters (May 13),
-		// Behind the Album (Mar 25), Code & Coffee (Jan 25)
-		expect(showTitles[0]).toHaveTextContent("Music Theory 101");
-		expect(showTitles[1]).toHaveTextContent("DevOps Decoded");
-		expect(showTitles[2]).toHaveTextContent("Data Science Daily");
-		expect(showTitles[3]).toHaveTextContent("The Indie Hacker");
-		expect(showTitles[4]).toHaveTextContent("Startup Stories");
-		expect(showTitles[5]).toHaveTextContent("Design Matters");
-		expect(showTitles[6]).toHaveTextContent("Behind the Album");
-		expect(showTitles[7]).toHaveTextContent("Code & Coffee");
-	});
+				renderPodcastPage();
 
-	it("should format duration correctly using Math.floor", async () => {
-		setupSuccessFetch(mockFetch);
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
 
-		renderPodcastPage();
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				expect(screen.getByTestId("podcast-episode-date-track-cc-1")).toHaveTextContent("Jan 21, 2024");
+			});
+
+			it("should format episode dates with abbreviated month name for last episode", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				expect(screen.getByTestId("podcast-episode-date-track-cc-5")).toHaveTextContent("Jan 25, 2024");
+			});
+
+			it("should format episode dates correctly for a different month", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-2"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				// Startup Stories Ep 1: 2024-06-06 => "Jun 6, 2024"
+				expect(screen.getByTestId("podcast-episode-date-track-ss-1")).toHaveTextContent("Jun 6, 2024");
+			});
 		});
 
-		// Code & Coffee totalDuration = 11300s => Math.floor(11300/3600)=3h, Math.floor((11300%3600)/60)=8m => "3h 8m"
-		const codeCoffeeDuration = screen.getByTestId("podcast-show-duration-album-podcast-1");
-		expect(codeCoffeeDuration).toHaveTextContent("3h 8m");
+		describe("Play Count Display", () => {
+			it("should display formatted play count as 25K for Code & Coffee", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		// Startup Stories totalDuration = 12100s => Math.floor(12100/3600)=3h, Math.floor((12100%3600)/60)=21m => "3h 21m"
-		const startupStoriesDuration = screen.getByTestId("podcast-show-duration-album-podcast-2");
-		expect(startupStoriesDuration).toHaveTextContent("3h 21m");
+				renderPodcastPage();
 
-		// Behind the Album totalDuration = 13800s => Math.floor(13800/3600)=3h, Math.floor((13800%3600)/60)=50m => "3h 50m"
-		const behindAlbumDuration = screen.getByTestId("podcast-show-duration-album-podcast-3");
-		expect(behindAlbumDuration).toHaveTextContent("3h 50m");
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
 
-		// Design Matters totalDuration = 10000s => Math.floor(10000/3600)=2h, Math.floor((10000%3600)/60)=46m => "2h 46m"
-		const designMattersDuration = screen.getByTestId("podcast-show-duration-album-podcast-4");
-		expect(designMattersDuration).toHaveTextContent("2h 46m");
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
-		// Data Science Daily totalDuration = 12000s => Math.floor(12000/3600)=3h, Math.floor((12000%3600)/60)=20m => "3h 20m"
-		const dataScienceDailyDuration = screen.getByTestId("podcast-show-duration-album-podcast-5");
-		expect(dataScienceDailyDuration).toHaveTextContent("3h 20m");
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
 
-		// The Indie Hacker totalDuration = 11000s => Math.floor(11000/3600)=3h, Math.floor((11000%3600)/60)=3m => "3h 3m"
-		const theIndieHackerDuration = screen.getByTestId("podcast-show-duration-album-podcast-6");
-		expect(theIndieHackerDuration).toHaveTextContent("3h 3m");
+				const playCountElement = screen.getByTestId("podcast-show-detail-play-count");
+				expect(playCountElement).toHaveTextContent("25K");
+			});
 
-		// DevOps Decoded totalDuration = 11000s => Math.floor(11000/3600)=3h, Math.floor((11000%3600)/60)=3m => "3h 3m"
-		const devOpsDecodedDuration = screen.getByTestId("podcast-show-duration-album-podcast-7");
-		expect(devOpsDecodedDuration).toHaveTextContent("3h 3m");
+			it("should display formatted play count as 40K for Behind the Album", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		// Music Theory 101 totalDuration = 10000s => Math.floor(10000/3600)=2h, Math.floor((10000%3600)/60)=46m => "2h 46m"
-		const musicTheory101Duration = screen.getByTestId("podcast-show-duration-album-podcast-8");
-		expect(musicTheory101Duration).toHaveTextContent("2h 46m");
-	});
+				renderPodcastPage();
 
-	it("should display correct episode count per show", async () => {
-		setupSuccessFetch(mockFetch);
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
 
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
-		});
-
-		const codeCoffeeCount = screen.getByTestId("podcast-show-episode-count-album-podcast-1");
-		expect(codeCoffeeCount).toHaveTextContent("5 episodes");
-
-		const startupStoriesCount = screen.getByTestId("podcast-show-episode-count-album-podcast-2");
-		expect(startupStoriesCount).toHaveTextContent("5 episodes");
-
-		const behindAlbumCount = screen.getByTestId("podcast-show-episode-count-album-podcast-3");
-		expect(behindAlbumCount).toHaveTextContent("5 episodes");
-
-		const designMattersCount = screen.getByTestId("podcast-show-episode-count-album-podcast-4");
-		expect(designMattersCount).toHaveTextContent("5 episodes");
-
-		const dataScienceDailyCount = screen.getByTestId("podcast-show-episode-count-album-podcast-5");
-		expect(dataScienceDailyCount).toHaveTextContent("5 episodes");
-
-		const theIndieHackerCount = screen.getByTestId("podcast-show-episode-count-album-podcast-6");
-		expect(theIndieHackerCount).toHaveTextContent("5 episodes");
-
-		const devOpsDecodedCount = screen.getByTestId("podcast-show-episode-count-album-podcast-7");
-		expect(devOpsDecodedCount).toHaveTextContent("5 episodes");
-
-		const musicTheory101Count = screen.getByTestId("podcast-show-episode-count-album-podcast-8");
-		expect(musicTheory101Count).toHaveTextContent("5 episodes");
-	});
-
-	it("should limit top shows to at most 5 and sort by popularity", async () => {
-		setupSuccessFetch(mockFetch);
-
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-top-shows")).toBeInTheDocument();
-		});
-
-		const topShowsSection = screen.getByTestId("podcast-top-shows");
-		const topShowCards = within(topShowsSection).getAllByText(
-			/Code & Coffee|Startup Stories|Behind the Album|Design Matters|Data Science Daily|The Indie Hacker|DevOps Decoded|Music Theory 101/,
-		);
-
-		// Exactly 5 top shows
-		expect(topShowCards).toHaveLength(5);
-
-		// Sorted by totalPlays desc: Behind the Album (40K), Design Matters (35K), Data Science Daily (30K), Code & Coffee (25K), The Indie Hacker (20K)
-		expect(topShowCards[0]).toHaveTextContent("Behind the Album");
-		expect(topShowCards[1]).toHaveTextContent("Design Matters");
-		expect(topShowCards[2]).toHaveTextContent("Data Science Daily");
-		expect(topShowCards[3]).toHaveTextContent("Code & Coffee");
-		expect(topShowCards[4]).toHaveTextContent("The Indie Hacker");
-	});
-
-	it("should only show podcast genre tracks (not music tracks)", async () => {
-		setupSuccessFetch(mockFetch);
-
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-shows")).toBeInTheDocument();
-		});
-
-		// Music album should NOT appear in the podcast shows
-		expect(screen.queryByText("Electric Storm")).not.toBeInTheDocument();
-		expect(screen.queryByText("The Amplifiers")).not.toBeInTheDocument();
-
-		expect(screen.getByTestId("podcast-show-title-album-podcast-1")).toHaveTextContent("Code & Coffee");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-2")).toHaveTextContent("Startup Stories");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-3")).toHaveTextContent("Behind the Album");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-4")).toHaveTextContent("Design Matters");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-5")).toHaveTextContent("Data Science Daily");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-6")).toHaveTextContent("The Indie Hacker");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-7")).toHaveTextContent("DevOps Decoded");
-		expect(screen.getByTestId("podcast-show-title-album-podcast-8")).toHaveTextContent("Music Theory 101");
-	});
-
-	it("should show error state when API fails", async () => {
-		setupErrorFetch(mockFetch);
-
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-error")).toBeInTheDocument();
-		});
-
-		expect(screen.getByTestId("podcast-error")).toHaveTextContent("Failed to load podcasts");
-	});
-});
-
-describe("Podcast Browser Interaction Tests", () => {
-	beforeAll(() => {
-		delete window.location;
-		window.location = {
-			...originalLocation,
-			protocol: "http:",
-			host: "localhost:3000",
-			hostname: "localhost",
-			port: "3000",
-			pathname: "/",
-			search: "",
-			hash: "",
-			href: "http://localhost:3000/",
-			origin: "http://localhost:3000",
-		} as Location;
-	});
-
-	afterAll(() => {
-		window.location = originalLocation;
-	});
-
-	beforeEach(() => {
-		mockFetch = jest.fn();
-		global.fetch = mockFetch;
-		localStorage.setItem("accessToken", "test-token");
-	});
-
-	afterEach(() => {
-		global.fetch = originalFetch;
-		localStorage.clear();
-		jest.clearAllMocks();
-	});
-
-	it("should display episodes in track number order when viewing a show", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
-
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
-		});
-
-		const episodesSection = screen.getByTestId("podcast-episodes");
-		const episodeElements = within(episodesSection).getAllByTestId(/^podcast-episode-track-cc-/);
-
-		expect(episodeElements).toHaveLength(5);
-		expect(episodeElements[0]).toHaveAttribute("data-testid", "podcast-episode-track-cc-1");
-		expect(episodeElements[1]).toHaveAttribute("data-testid", "podcast-episode-track-cc-2");
-		expect(episodeElements[2]).toHaveAttribute("data-testid", "podcast-episode-track-cc-3");
-		expect(episodeElements[3]).toHaveAttribute("data-testid", "podcast-episode-track-cc-4");
-		expect(episodeElements[4]).toHaveAttribute("data-testid", "podcast-episode-track-cc-5");
-	});
-
-	it("should display formatted total duration in show detail", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
+				await user.click(screen.getByTestId("podcast-show-album-podcast-3"));
 
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
-		});
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
 
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+				const playCountElement = screen.getByTestId("podcast-show-detail-play-count");
+				expect(playCountElement).toHaveTextContent("40K");
+			});
 
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
-		});
+			it("should display formatted play count as 5K for Music Theory 101", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		// Code & Coffee totalDuration = 11300s => 3h 8m
-		const durationElement = screen.getByTestId("podcast-show-detail-duration");
-		expect(durationElement).toHaveTextContent("3h 8m");
-	});
+				renderPodcastPage();
 
-	it("should display formatted episode dates in show detail", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
 
-		renderPodcastPage();
+				await user.click(screen.getByTestId("podcast-show-album-podcast-8"));
 
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
-		});
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
 
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
-		});
-
-		expect(screen.getByTestId("podcast-episode-date-track-cc-1")).toHaveTextContent("Jan 21, 2024");
-		expect(screen.getByTestId("podcast-episode-date-track-cc-5")).toHaveTextContent("Jan 25, 2024");
-	});
-
-	it("should show correct up-next episodes after selecting an episode", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
-
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("podcast-episode-track-cc-2"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
-		});
-
-		// Up Next should contain episodes AFTER the selected one (Ep 3, 4, 5)
-		const upNextSection = screen.getByTestId("podcast-up-next");
-		expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-3")).toBeInTheDocument();
-		expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-4")).toBeInTheDocument();
-		expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-5")).toBeInTheDocument();
-
-		// Episodes 1 and 2 should NOT appear in up-next
-		expect(within(upNextSection).queryByTestId("podcast-up-next-episode-track-cc-1")).not.toBeInTheDocument();
-		expect(within(upNextSection).queryByTestId("podcast-up-next-episode-track-cc-2")).not.toBeInTheDocument();
-	});
-
-	it("should start playback from first episode when clicking Play All", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
-
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("podcast-play-all"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-now-playing-track-cc-1")).toBeInTheDocument();
-		});
-	});
-
-	it("should play the correct episode when clicking its play button", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
-
-		renderPodcastPage();
-
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
-		});
-
-		await user.click(screen.getByTestId("podcast-play-episode-track-cc-3"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-now-playing-track-cc-3")).toBeInTheDocument();
+				const playCountElement = screen.getByTestId("podcast-show-detail-play-count");
+				expect(playCountElement).toHaveTextContent("5K");
+			});
 		});
 	});
 
-	it("should display formatted play count in show detail", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
+	// ========== EPISODE DETAIL VIEW ==========
 
-		renderPodcastPage();
+	describe("Episode Detail View", () => {
+		describe("Episode Description", () => {
+			it("should display the episode description text for first episode", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-episode-track-cc-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
+				});
+
+				const descriptionElement = screen.getByTestId("podcast-episode-description");
+				expect(descriptionElement).toHaveTextContent(
+					"Learn the basics of TypeScript and why it matters for modern development.",
+				);
+			});
+
+			it("should display the episode description text for a different episode", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-episode-track-cc-3"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
+				});
+
+				const descriptionElement = screen.getByTestId("podcast-episode-description");
+				expect(descriptionElement).toHaveTextContent(
+					"Best practices for Node.js server development and architecture.",
+				);
+			});
 		});
 
-		// Click on Code & Coffee show (totalPlays = 25000)
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+		describe("Up Next Episodes", () => {
+			it("should show episodes after the selected episode in up next section", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-episode-track-cc-2"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
+				});
+
+				// Up Next should contain episodes AFTER the selected one (Ep 3, 4, 5)
+				const upNextSection = screen.getByTestId("podcast-up-next");
+				expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-3")).toBeInTheDocument();
+				expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-4")).toBeInTheDocument();
+				expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-5")).toBeInTheDocument();
+
+				// Episodes 1 and 2 should NOT appear in up-next
+				expect(within(upNextSection).queryByTestId("podcast-up-next-episode-track-cc-1")).not.toBeInTheDocument();
+				expect(within(upNextSection).queryByTestId("podcast-up-next-episode-track-cc-2")).not.toBeInTheDocument();
+			});
+
+			it("should show no up next episodes when the last episode is selected", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-episode-track-cc-5"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
+				});
+
+				// Last episode has no up-next
+				const upNextSection = screen.getByTestId("podcast-up-next");
+				expect(within(upNextSection).queryByTestId(/podcast-up-next-episode/)).not.toBeInTheDocument();
+			});
+
+			it("should show all remaining episodes when the first episode is selected", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-episode-track-cc-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
+				});
+
+				// First episode selected → up-next should have episodes 2, 3, 4, 5
+				const upNextSection = screen.getByTestId("podcast-up-next");
+				expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-2")).toBeInTheDocument();
+				expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-3")).toBeInTheDocument();
+				expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-4")).toBeInTheDocument();
+				expect(within(upNextSection).getByTestId("podcast-up-next-episode-track-cc-5")).toBeInTheDocument();
+
+				// Episode 1 should NOT appear
+				expect(within(upNextSection).queryByTestId("podcast-up-next-episode-track-cc-1")).not.toBeInTheDocument();
+			});
 		});
-
-		// 25000 should be formatted as "25K"
-		const playCountElement = screen.getByTestId("podcast-show-detail-play-count");
-		expect(playCountElement).toHaveTextContent("25K");
 	});
 
-	it("should display episode description in episode detail view", async () => {
-		const user = userEvent.setup();
-		setupSuccessFetch(mockFetch);
+	// ========== PLAYBACK ==========
 
-		renderPodcastPage();
+	describe("Playback", () => {
+		describe("Play All", () => {
+			it("should start playback from first episode when clicking Play All", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		await waitFor(() => {
-			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-play-all"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-now-playing-track-cc-1")).toBeInTheDocument();
+				});
+			});
 		});
 
-		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+		describe("Play Single Episode", () => {
+			it("should play the correct episode when clicking play on episode 3", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
 
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-play-episode-track-cc-3"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-now-playing-track-cc-3")).toBeInTheDocument();
+				});
+			});
+
+			it("should play the correct episode when clicking play on the last episode", async () => {
+				const user = userEvent.setup();
+				setupSuccessFetch(mockFetch);
+
+				renderPodcastPage();
+
+				await waitFor(() => {
+					expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
+				});
+
+				await user.click(screen.getByTestId("podcast-play-episode-track-cc-5"));
+
+				await waitFor(() => {
+					expect(screen.getByTestId("podcast-now-playing-track-cc-5")).toBeInTheDocument();
+				});
+			});
 		});
-
-		await user.click(screen.getByTestId("podcast-episode-track-cc-1"));
-
-		await waitFor(() => {
-			expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
-		});
-
-		const descriptionElement = screen.getByTestId("podcast-episode-description");
-		expect(descriptionElement).toHaveTextContent(
-			"Learn the basics of TypeScript and why it matters for modern development.",
-		);
 	});
 });
