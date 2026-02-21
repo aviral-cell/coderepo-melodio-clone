@@ -7,6 +7,8 @@ import {
 	Music,
 	ChevronLeft,
 	ChevronRight,
+	ChevronUp,
+	ChevronDown,
 	Radio,
 	Crown,
 	Users,
@@ -55,6 +57,18 @@ export function Sidebar() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 	const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+	const [isNavExpanded, setIsNavExpanded] = useState(() => {
+		const stored = localStorage.getItem("melodio-nav-expanded");
+		return stored === null ? true : stored === "true";
+	});
+
+	const toggleNavExpanded = useCallback(() => {
+		setIsNavExpanded((prev) => {
+			const next = !prev;
+			localStorage.setItem("melodio-nav-expanded", String(next));
+			return next;
+		});
+	}, []);
 
 	const fetchPlaylists = useCallback(async () => {
 		if (!isAuthenticated) {
@@ -88,9 +102,10 @@ export function Sidebar() {
 				)}
 			>
 				<div className="flex items-center justify-center p-4">
-					<div
+					<Link
+						to="/"
 						className={cn(
-							"flex items-center gap-2",
+							"flex items-center gap-2 transition-opacity hover:opacity-80",
 							isCollapsed && "justify-center w-full"
 						)}
 					>
@@ -98,9 +113,25 @@ export function Sidebar() {
 						{!isCollapsed && (
 							<span className="text-xl font-bold text-white">Melodio</span>
 						)}
-					</div>
+					</Link>
 				</div>
 
+				{!isCollapsed && (
+					<button
+						type="button"
+						onClick={toggleNavExpanded}
+						className="flex items-center justify-between px-6 py-2 text-sm font-semibold text-melodio-text-subdued hover:text-white cursor-pointer transition-colors"
+					>
+						<span>Menu</span>
+						{isNavExpanded ? (
+							<ChevronUp className="h-4 w-4" />
+						) : (
+							<ChevronDown className="h-4 w-4" />
+						)}
+					</button>
+				)}
+
+				{(isNavExpanded || isCollapsed) && (
 				<nav className="px-3 space-y-1">
 						{navItems.map((item) => {
 						const Icon = item.icon;
@@ -189,10 +220,12 @@ export function Sidebar() {
 						</button>
 					)}
 				</nav>
+				)}
 
 				<div
 					className={cn(
-						"mt-6 flex-1 flex flex-col overflow-hidden px-3 min-h-0",
+						"flex-1 flex flex-col overflow-hidden px-3 min-h-0",
+						isNavExpanded ? "mt-6" : "mt-2",
 						isCollapsed && "hidden md:block"
 					)}
 				>
@@ -226,7 +259,7 @@ export function Sidebar() {
 						)}
 					</div>
 
-					<ScrollArea className="flex-1 min-h-0">
+					<ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block">
 						<div className="space-y-1 p-2">
 							{isLoading ? (
 								Array.from({ length: 5 }).map((_, index) => (
@@ -258,7 +291,7 @@ export function Sidebar() {
 											key={playlist._id}
 											to={`/playlist/${playlist._id}`}
 											className={cn(
-												"flex items-center gap-3 rounded-md p-2 transition-colors",
+												"flex items-center gap-3 rounded-md p-2 transition-colors min-w-0",
 												isActive
 													? "bg-melodio-light-gray"
 													: "hover:bg-melodio-light-gray/50",
@@ -270,8 +303,8 @@ export function Sidebar() {
 												<Music className="h-6 w-6 text-melodio-text-subdued" />
 											</div>
 											{!isCollapsed && (
-												<div className="min-w-0 flex-1">
-													<p className="truncate text-sm font-medium text-white">
+												<div className="min-w-0 flex-1 overflow-hidden">
+													<p className="line-clamp-2 break-all text-sm font-medium text-white">
 														{playlist.name}
 													</p>
 													<p className="truncate text-xs text-melodio-text-subdued">
@@ -339,7 +372,7 @@ export function Sidebar() {
 							Your Library
 						</SheetTitle>
 					</SheetHeader>
-					<ScrollArea className="h-[calc(100vh-80px)]">
+					<ScrollArea className="h-[calc(100vh-80px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
 						<div className="space-y-1 p-2">
 							{isLoading ? (
 								Array.from({ length: 5 }).map((_, index) => (
@@ -364,7 +397,7 @@ export function Sidebar() {
 											to={`/playlist/${playlist._id}`}
 											onClick={() => setIsMobileDrawerOpen(false)}
 											className={cn(
-												"flex items-center gap-3 rounded-md p-2 transition-colors",
+												"flex items-center gap-3 rounded-md p-2 transition-colors min-w-0",
 												isActive
 													? "bg-melodio-light-gray"
 													: "hover:bg-melodio-light-gray/50"
@@ -373,8 +406,8 @@ export function Sidebar() {
 											<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
 												<Music className="h-6 w-6 text-melodio-text-subdued" />
 											</div>
-											<div className="min-w-0 flex-1">
-												<p className="truncate text-sm font-medium text-white">
+											<div className="min-w-0 flex-1 overflow-hidden">
+												<p className="line-clamp-2 break-all text-sm font-medium text-white">
 													{playlist.name}
 												</p>
 												<p className="truncate text-xs text-melodio-text-subdued">

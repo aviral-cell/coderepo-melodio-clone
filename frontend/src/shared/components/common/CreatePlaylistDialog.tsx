@@ -178,6 +178,7 @@ export function CreatePlaylistDialog({
 								placeholder="My Awesome Playlist"
 								value={name}
 								onChange={(e) => setName(e.target.value)}
+								maxLength={50}
 								className="bg-melodio-light-gray"
 								autoFocus
 								data-testid="playlist-name-input"

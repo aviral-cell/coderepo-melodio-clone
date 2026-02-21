@@ -7,6 +7,44 @@ export interface AlbumWithPopulated extends Omit<Album, "artistId" | "artist"> {
 	tracks?: TrackWithPopulated[];
 }
 
+interface BackendAlbumResponse {
+	_id: string;
+	title: string;
+	artist?: {
+		_id: string;
+		name: string;
+		imageUrl?: string;
+	};
+	artistId?: {
+		_id: string;
+		name: string;
+		imageUrl?: string;
+	};
+	releaseDate: string;
+	coverImageUrl?: string;
+	totalTracks: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+function normalizeAlbum(raw: BackendAlbumResponse): AlbumWithPopulated {
+	const artistData = raw.artist ?? raw.artistId ?? { _id: "", name: "Unknown Artist" };
+	return {
+		_id: raw._id,
+		title: raw.title,
+		artistId: {
+			_id: artistData._id,
+			name: artistData.name,
+			imageUrl: artistData.imageUrl,
+		},
+		releaseDate: raw.releaseDate,
+		coverImageUrl: raw.coverImageUrl,
+		totalTracks: raw.totalTracks,
+		createdAt: raw.createdAt,
+		updatedAt: raw.updatedAt,
+	};
+}
+
 export interface AlbumQueryParams {
 	page?: number;
 	limit?: number;
@@ -37,19 +75,25 @@ export const albumsService = {
 		params?: AlbumQueryParams,
 	): Promise<PaginatedResponse<AlbumWithPopulated>> {
 		const queryString = buildSearchParams(params);
-		return apiService.get<PaginatedResponse<AlbumWithPopulated>>(
+		const response = await apiService.get<PaginatedResponse<BackendAlbumResponse>>(
 			`/api/albums${queryString}`,
 		);
+		return {
+			...response,
+			items: response.items.map(normalizeAlbum),
+		};
 	},
 
 	async getById(id: string): Promise<AlbumWithPopulated> {
-		return apiService.get<AlbumWithPopulated>(`/api/albums/${id}`);
+		const response = await apiService.get<BackendAlbumResponse>(`/api/albums/${id}`);
+		return normalizeAlbum(response);
 	},
 
 	async search(query: string): Promise<AlbumWithPopulated[]> {
-		return apiService.get<AlbumWithPopulated[]>(
+		const response = await apiService.get<BackendAlbumResponse[]>(
 			`/api/albums/search?q=${encodeURIComponent(query)}`,
 		);
+		return response.map(normalizeAlbum);
 	},
 };
 

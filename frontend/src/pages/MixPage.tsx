@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, type JSX } from "react";
-import { ArrowLeft, Plus, Music, Check, X, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, Plus, Music, Check, X, Loader2, Pencil, PlayCircle, PauseCircle } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/components/ui/dialog";
@@ -7,6 +7,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { AppImage } from "@/shared/components/common/AppImage";
 import { TrackCard } from "@/shared/components/common/TrackCard";
 import { useToast } from "@/shared/hooks/useToast";
+import { usePlayer } from "@/shared/contexts/PlayerContext";
 import { useMixCreator } from "@/shared/hooks/useMixCreator";
 import { mixService } from "@/shared/services/mix.service";
 import type { Mix, MixDetail } from "@/shared/services/mix.service";
@@ -69,6 +70,7 @@ function MixCoverGrid({ images, size = "sm" }: MixCoverGridProps): JSX.Element {
 
 export default function MixPage(): JSX.Element {
 	const { addToast } = useToast();
+	const { state: playerState, playTracks, togglePlayPause } = usePlayer();
 	const creator = useMixCreator();
 
 	const [view, setView] = useState<"browse" | "create" | "detail">("browse");
@@ -263,7 +265,7 @@ export default function MixPage(): JSX.Element {
 				<button
 					type="button"
 					onClick={() => setView("browse")}
-					className="mb-6 flex items-center gap-2 text-sm text-melodio-text-subdued transition-colors hover:text-white"
+					className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 					data-testid="mix-detail-back-btn"
 				>
 					<ArrowLeft className="h-4 w-4" />
@@ -282,6 +284,7 @@ export default function MixPage(): JSX.Element {
 									type="text"
 									value={renameValue}
 									onChange={(e) => setRenameValue(e.target.value)}
+									maxLength={50}
 									onKeyDown={(e) => {
 										if (e.key === "Enter") handleConfirmRename();
 										if (e.key === "Escape") handleCancelRename();
@@ -325,17 +328,44 @@ export default function MixPage(): JSX.Element {
 						<p className="mb-3 text-sm text-melodio-text-subdued">
 							{selectedMix.trackCount} tracks
 						</p>
-						<Button
-							variant="destructive"
-							size="sm"
+						<button
+							type="button"
 							onClick={() => requestDelete(selectedMix._id, selectedMix.title)}
+							className="flex items-center gap-1.5 rounded-full bg-red-500/20 px-4 py-1.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/30"
 							data-testid={`mix-delete-detail-${selectedMix._id}`}
 						>
-							<X className="mr-1 h-4 w-4" />
+							<X className="h-4 w-4" />
 							Delete
-						</Button>
+						</button>
 					</div>
 				</div>
+
+				{selectedMix.trackIds.length > 0 && (() => {
+					const isMixPlaying = playerState.isPlaying && selectedMix.trackIds.some((t) => t._id === playerState.currentTrack?._id);
+					return (
+						<div className="mb-6 flex items-center gap-4">
+							<button
+								type="button"
+								onClick={() => {
+									if (isMixPlaying) {
+										togglePlayPause();
+									} else {
+										playTracks(selectedMix.trackIds, 0);
+									}
+								}}
+								className="flex items-center gap-2 rounded-full bg-melodio-green px-5 py-1.5 text-sm font-semibold text-black transition-all hover:brightness-110"
+								data-testid="mix-detail-play-all-btn"
+							>
+								{isMixPlaying ? (
+									<PauseCircle className="h-4 w-4" />
+								) : (
+									<PlayCircle className="h-4 w-4" />
+								)}
+								{isMixPlaying ? "Pause" : "Play All"}
+							</button>
+						</div>
+					);
+				})()}
 
 				<div
 					data-testid="mix-detail-tracks"
@@ -357,7 +387,7 @@ export default function MixPage(): JSX.Element {
 						<button
 							type="button"
 							onClick={handleBackToMixes}
-							className="mb-6 flex items-center gap-2 text-sm text-melodio-text-subdued transition-colors hover:text-white"
+							className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 							data-testid="mix-select-back-btn"
 						>
 							<ArrowLeft className="h-4 w-4" />
@@ -423,7 +453,7 @@ export default function MixPage(): JSX.Element {
 						<button
 							type="button"
 							onClick={creator.prevStep}
-							className="mb-6 flex items-center gap-2 text-sm text-melodio-text-subdued transition-colors hover:text-white"
+							className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 							data-testid="mix-configure-back-btn"
 						>
 							<ArrowLeft className="h-4 w-4" />
@@ -516,7 +546,7 @@ export default function MixPage(): JSX.Element {
 						<button
 							type="button"
 							onClick={handleBackToMixes}
-							className="mb-6 flex items-center gap-2 text-sm text-melodio-text-subdued transition-colors hover:text-white"
+							className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 							data-testid="mix-back-to-mixes-btn"
 						>
 							<ArrowLeft className="h-4 w-4" />
@@ -632,10 +662,10 @@ export default function MixPage(): JSX.Element {
 										e.stopPropagation();
 										requestDelete(mix._id, mix.title);
 									}}
-									className="self-start rounded p-1 text-melodio-text-subdued opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
+									className="self-start rounded-full bg-red-500/20 p-1.5 text-red-400 opacity-0 transition-all hover:bg-red-500/30 group-hover:opacity-100"
 									aria-label={`Delete ${mix.title}`}
 								>
-									<X className="h-4 w-4" />
+									<X className="h-3.5 w-3.5" />
 								</button>
 							</div>
 						))}

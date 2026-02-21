@@ -131,7 +131,7 @@ export default function SubscriptionPage() {
 
 			<div className="grid gap-6 md:grid-cols-2">
 				{/* Current Plan Card */}
-				<Card className="border-melodio-light-gray bg-melodio-dark-gray">
+				<Card className="flex flex-col border-melodio-light-gray bg-melodio-dark-gray">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2 text-white">
 							{isPremium ? (
@@ -149,8 +149,8 @@ export default function SubscriptionPage() {
 								: "Limited features"}
 						</CardDescription>
 					</CardHeader>
-					<CardContent>
-						<div className="space-y-4">
+					<CardContent className="flex-1">
+						<div className="flex h-full flex-col space-y-4">
 							{isPremium && subscription ? (
 								<>
 									<div className="space-y-3">
@@ -214,7 +214,7 @@ export default function SubscriptionPage() {
 										</p>
 									) : (
 										<Button
-											className="mt-6 w-full bg-melodio-green text-black hover:bg-melodio-green/90"
+											className="mt-auto w-full bg-melodio-green text-black hover:bg-melodio-green/90"
 											onClick={() => setIsPaymentModalOpen(true)}
 											data-testid="subscription-upgrade-btn"
 										>
@@ -230,7 +230,7 @@ export default function SubscriptionPage() {
 
 				{/* Premium Benefits Card (for free users) / Payment History (for premium) */}
 				{!isPremium && !isFamilyMember ? (
-					<Card className="border-melodio-green bg-gradient-to-br from-melodio-dark-gray to-melodio-light-gray">
+					<Card className="flex flex-col border-melodio-green bg-gradient-to-br from-melodio-dark-gray to-melodio-light-gray">
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2 text-white">
 								<Crown className="h-5 w-5 text-melodio-green" />
@@ -240,7 +240,7 @@ export default function SubscriptionPage() {
 								Unlock all features for just ${PREMIUM_PRICE}/month
 							</CardDescription>
 						</CardHeader>
-						<CardContent>
+						<CardContent className="flex-1 flex flex-col">
 							<ul className="space-y-3">
 								{PREMIUM_FEATURES.map((feature) => (
 									<li
@@ -254,7 +254,7 @@ export default function SubscriptionPage() {
 							</ul>
 
 							<Button
-								className="mt-6 w-full bg-melodio-green text-black hover:bg-melodio-green/90"
+								className="mt-auto w-full bg-melodio-green text-black hover:bg-melodio-green/90"
 								onClick={() => setIsPaymentModalOpen(true)}
 								data-testid="subscription-upgrade-premium-btn"
 							>

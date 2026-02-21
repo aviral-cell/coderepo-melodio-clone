@@ -175,7 +175,7 @@ function SortableTrackItem({
 
 			<span className="hidden truncate text-sm text-melodio-text-subdued sm:block">{albumTitle}</span>
 
-			<span className="text-sm text-melodio-text-subdued">
+			<span className="text-right text-sm text-melodio-text-subdued">
 				{formatTime(track.durationInSeconds)}
 			</span>
 
@@ -656,6 +656,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 									type="text"
 									value={editName}
 									onChange={(e) => setEditName(e.target.value)}
+									maxLength={50}
 									className="bg-melodio-light-gray"
 								/>
 							</div>
@@ -732,6 +733,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 							value={copyName}
 							onChange={(e) => setCopyName(e.target.value)}
 							placeholder="Enter playlist name"
+							maxLength={50}
 							className="mt-2 bg-melodio-light-gray"
 							data-testid="playlist-copy-name-input"
 						/>

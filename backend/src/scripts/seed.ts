@@ -10,6 +10,7 @@ import { Track } from "../features/tracks/track.model.js";
 import { Playlist } from "../features/playlists/playlist.model.js";
 import { Subscription } from "../features/subscription/subscription.model.js";
 import { SubscriptionPlan } from "../features/subscription/subscription.types.js";
+import { Mix } from "../features/mixes/mix.model.js";
 import { initConfig } from "../shared/config/index.js";
 
 const config = initConfig();
@@ -422,6 +423,7 @@ async function clearDatabase(): Promise<void> {
 		Track.deleteMany({}),
 		Playlist.deleteMany({}),
 		Subscription.deleteMany({}),
+		Mix.deleteMany({}),
 	]);
 
 	console.log("Existing data cleared.");
@@ -548,6 +550,57 @@ async function seedPlaylists(): Promise<number> {
 	return 1;
 }
 
+async function seedMixes(): Promise<number> {
+	console.log("Creating mixes...");
+
+	const owner = await User.findOne({ email: "alex.morgan@melodio.com" });
+	if (!owner) {
+		console.log("  Warning: No user found for mix ownership");
+		return 0;
+	}
+
+	const rockArtist = await Artist.findOne({ name: "The Amplifiers" });
+	const jazzArtist = await Artist.findOne({ name: "Blue Note Quartet" });
+
+	if (!rockArtist || !jazzArtist) {
+		console.log("  Warning: Required artists not found for seeding mixes");
+		return 0;
+	}
+
+	const rockTracks = await Track.find({ artist_id: rockArtist._id })
+		.limit(10)
+		.select("_id");
+	const jazzTracks = await Track.find({ artist_id: jazzArtist._id })
+		.limit(10)
+		.select("_id");
+
+	const trackIds = [
+		...rockTracks.map((t) => t._id as Types.ObjectId),
+		...jazzTracks.map((t) => t._id as Types.ObjectId),
+	];
+
+	const mix = await Mix.create({
+		user_id: owner._id,
+		title: `${rockArtist.name} and ${jazzArtist.name} mix`,
+		artist_ids: [rockArtist._id.toString(), jazzArtist._id.toString()],
+		config: {
+			variety: "medium",
+			discovery: "blend",
+			filters: [],
+		},
+		track_ids: trackIds,
+		cover_images: [
+			rockArtist.image_url ?? "",
+			jazzArtist.image_url ?? "",
+		].filter(Boolean),
+		track_count: trackIds.length,
+	});
+
+	console.log(`  Created mix: ${mix.title} (${trackIds.length} tracks)`);
+
+	return 1;
+}
+
 async function seed(): Promise<void> {
 	try {
 		console.log("Connecting to MongoDB...");
@@ -562,6 +615,8 @@ async function seed(): Promise<void> {
 
 		const playlistCount = await seedPlaylists();
 
+		const mixCount = await seedMixes();
+
 		console.log("\n========================================");
 		console.log("Seeding completed successfully!");
 		console.log("========================================");
@@ -571,6 +626,7 @@ async function seed(): Promise<void> {
 		console.log(`Users created: ${userCount}`);
 		console.log(`Subscriptions created: ${subscriptionCount}`);
 		console.log(`Playlists created: ${playlistCount}`);
+		console.log(`Mixes created: ${mixCount}`);
 		console.log("========================================");
 		console.log("\nTest Users:");
 		console.log("  Email: alex.morgan@melodio.com | Password: password123");

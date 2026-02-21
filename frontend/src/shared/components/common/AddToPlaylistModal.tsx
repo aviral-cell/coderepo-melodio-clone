@@ -120,7 +120,7 @@ export function AddToPlaylistModal({
 					</DialogDescription>
 				</DialogHeader>
 
-				<div className="py-4">
+				<div className="overflow-hidden py-4">
 					{isLoading ? (
 						<div className="flex items-center justify-center py-8">
 							<Loader2 className="h-6 w-6 animate-spin text-melodio-text-subdued" />
@@ -136,7 +136,7 @@ export function AddToPlaylistModal({
 							</p>
 						</div>
 					) : (
-						<ScrollArea className="max-h-[300px]">
+						<ScrollArea className="max-h-[300px] [&_[data-radix-scroll-area-viewport]>div]:!block">
 							<div className="space-y-1">
 								{playlists.map((playlist) => {
 									const isAdding = addingToPlaylistId === playlist._id;

@@ -85,7 +85,7 @@ export default function PodcastPage(): JSX.Element {
 					<button
 						data-testid="podcast-back-to-show"
 						onClick={handleBackToShow}
-						className="mb-6 flex items-center gap-2 text-sm text-melodio-text-subdued transition-colors hover:text-white"
+						className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 					>
 						<ArrowLeft className="h-4 w-4" />
 						Back to {selectedShow.album.title}
@@ -184,7 +184,7 @@ export default function PodcastPage(): JSX.Element {
 					<button
 						data-testid="podcast-back-to-shows"
 						onClick={handleBackToShows}
-						className="mb-6 flex items-center gap-2 text-sm text-melodio-text-subdued transition-colors hover:text-white"
+						className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 					>
 						<ArrowLeft className="h-4 w-4" />
 						Back to shows
@@ -248,11 +248,27 @@ export default function PodcastPage(): JSX.Element {
 						))}
 						<button
 							data-testid="podcast-play-all"
-							onClick={handlePlayAll}
+							onClick={() => {
+								const isShowPlaying = showEpisodes.some((ep) => ep._id === currentlyPlayingId) && isPlaying;
+								if (isShowPlaying) {
+									handlePauseEpisode();
+								} else {
+									handlePlayAll();
+								}
+							}}
 							className="ml-auto flex items-center gap-2 rounded-full bg-melodio-green px-5 py-1.5 text-sm font-semibold text-black transition-all hover:brightness-110"
 						>
-							<PlayCircle className="h-4 w-4" />
-							Play All
+							{showEpisodes.some((ep) => ep._id === currentlyPlayingId) && isPlaying ? (
+								<>
+									<PauseCircle className="h-4 w-4" />
+									Pause All
+								</>
+							) : (
+								<>
+									<PlayCircle className="h-4 w-4" />
+									Play All
+								</>
+							)}
 						</button>
 					</div>
 
@@ -397,11 +413,6 @@ export default function PodcastPage(): JSX.Element {
 									alt={show.album.title}
 									className="h-full w-full object-cover"
 								/>
-								<div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-									<div className="flex h-8 w-8 items-center justify-center rounded-full bg-melodio-green shadow-xl hover:scale-105 hover:bg-melodio-green-dark transition-transform">
-										<Play className="h-3.5 w-3.5 fill-black text-black ml-0.5" />
-									</div>
-								</div>
 							</div>
 							<div className="flex min-w-0 flex-1 flex-col justify-center">
 								<p
