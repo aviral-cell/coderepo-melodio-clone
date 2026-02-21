@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type JSX } from "react";
+import { useState, useCallback, type JSX } from "react";
 import { ArrowLeft, Plus, Music, Check, X, Loader2, Pencil, PlayCircle, PauseCircle } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -74,30 +74,11 @@ export default function MixPage(): JSX.Element {
 	const creator = useMixCreator();
 
 	const [view, setView] = useState<"browse" | "create" | "detail">("browse");
-	const [mixes, setMixes] = useState<Mix[]>([]);
-	const [isMixesLoading, setIsMixesLoading] = useState(true);
 	const [selectedMix, setSelectedMix] = useState<MixDetail | null>(null);
 	const [isDetailLoading, setIsDetailLoading] = useState(false);
-	const [isSaving, setIsSaving] = useState(false);
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [renameValue, setRenameValue] = useState("");
 	const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; title: string } | null>(null);
-
-	const fetchMixes = useCallback(async () => {
-		try {
-			setIsMixesLoading(true);
-			const result = await mixService.getAll();
-			setMixes(result);
-		} catch {
-			addToast({ type: "error", message: "Failed to load mixes" });
-		} finally {
-			setIsMixesLoading(false);
-		}
-	}, [addToast]);
-
-	useEffect(() => {
-		fetchMixes();
-	}, [fetchMixes]);
 
 	const handleViewMix = useCallback(
 		async (mix: Mix) => {
@@ -124,7 +105,7 @@ export default function MixPage(): JSX.Element {
 			setDeleteConfirm(null);
 			try {
 				await mixService.delete(id);
-				setMixes((prev) => prev.filter((m) => m._id !== id));
+				creator.removeSavedMix(id);
 				if (selectedMix?._id === id) {
 					setSelectedMix(null);
 					setView("browse");
@@ -134,7 +115,7 @@ export default function MixPage(): JSX.Element {
 				addToast({ type: "error", message: "Failed to delete mix" });
 			}
 		},
-		[selectedMix, addToast],
+		[selectedMix, addToast, creator],
 	);
 
 	const handleStartRename = useCallback(() => {
@@ -149,17 +130,13 @@ export default function MixPage(): JSX.Element {
 		try {
 			await mixService.rename(selectedMix._id, renameValue.trim());
 			setSelectedMix({ ...selectedMix, title: renameValue.trim() });
-			setMixes((prev) =>
-				prev.map((m) =>
-					m._id === selectedMix._id ? { ...m, title: renameValue.trim() } : m,
-				),
-			);
+			creator.updateSavedMixTitle(selectedMix._id, renameValue.trim());
 			setIsRenaming(false);
 			addToast({ type: "success", message: "Mix renamed" });
 		} catch {
 			addToast({ type: "error", message: "Failed to rename mix" });
 		}
-	}, [selectedMix, renameValue, addToast]);
+	}, [selectedMix, renameValue, addToast, creator]);
 
 	const handleCancelRename = useCallback(() => {
 		setIsRenaming(false);
@@ -172,29 +149,19 @@ export default function MixPage(): JSX.Element {
 
 	const handleDone = useCallback(async () => {
 		const generatedTracks = creator.generateAndAdvance();
-
-		setIsSaving(true);
 		try {
-			await mixService.create({
-				title: creator.mixTitle,
-				artistIds: creator.selectedArtistIds,
-				config: creator.config,
-				trackIds: generatedTracks.map((t) => t._id),
-				coverImages: creator.coverImages,
-			});
+			await creator.saveMix(generatedTracks.map((t) => t._id));
 			addToast({ type: "success", message: "Mix saved" });
 		} catch {
 			addToast({ type: "error", message: "Failed to save mix" });
-		} finally {
-			setIsSaving(false);
 		}
 	}, [creator, addToast]);
 
 	const handleBackToMixes = useCallback(async () => {
 		setView("browse");
 		creator.reset();
-		await fetchMixes();
-	}, [creator, fetchMixes]);
+		await creator.fetchMixes();
+	}, [creator]);
 
 	if (creator.isLoading || isDetailLoading) {
 		return (
@@ -523,8 +490,8 @@ export default function MixPage(): JSX.Element {
 						</section>
 
 						<div className="flex justify-end">
-							<Button data-testid="mix-done-btn" onClick={handleDone} disabled={isSaving}>
-								{isSaving ? (
+							<Button data-testid="mix-done-btn" onClick={handleDone} disabled={creator.isSaving}>
+								{creator.isSaving ? (
 									<>
 										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 										Saving...
@@ -612,7 +579,7 @@ export default function MixPage(): JSX.Element {
 
 			<section data-testid="mix-your-mixes">
 				<h2 className="mb-5 text-xl font-semibold text-white">Your Mixes</h2>
-				{isMixesLoading ? (
+				{creator.isMixesLoading ? (
 					<div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 						{[...Array(3)].map((_, i) => (
 							<div key={i} className="flex gap-4 rounded-lg bg-melodio-dark-gray/50 p-3">
@@ -624,13 +591,13 @@ export default function MixPage(): JSX.Element {
 							</div>
 						))}
 					</div>
-				) : mixes.length === 0 ? (
+				) : creator.savedMixes.length === 0 ? (
 					<div className="py-8 text-center">
 						<p className="text-melodio-text-subdued">No mixes yet. Create your first one!</p>
 					</div>
 				) : (
 					<div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-						{mixes.map((mix) => (
+						{creator.savedMixes.map((mix) => (
 							<div
 								key={mix._id}
 								data-testid={`mix-card-${mix._id}`}

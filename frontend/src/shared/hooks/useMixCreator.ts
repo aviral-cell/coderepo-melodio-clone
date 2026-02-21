@@ -1,5 +1,7 @@
 import { useState, useEffect, useReducer, useMemo, useCallback } from "react";
 import { tracksService, artistsService } from "@/shared/services";
+import { mixService } from "@/shared/services/mix.service";
+import type { Mix } from "@/shared/services/mix.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 import {
 	type MixConfig,
@@ -136,11 +138,21 @@ export interface UseMixCreatorReturn {
 	prevStep: () => void;
 	reset: () => void;
 	generateAndAdvance: () => TrackWithPopulated[];
+	savedMixes: Mix[];
+	isMixesLoading: boolean;
+	isSaving: boolean;
+	fetchMixes: () => Promise<void>;
+	saveMix: (trackIds: string[]) => Promise<Mix>;
+	removeSavedMix: (id: string) => void;
+	updateSavedMixTitle: (id: string, title: string) => void;
 }
 
 export function useMixCreator(): UseMixCreatorReturn {
 	const [state, dispatch] = useReducer(mixReducer, initialState);
 	const [hasFetched, setHasFetched] = useState(false);
+	const [savedMixes, setSavedMixes] = useState<Mix[]>([]);
+	const [isMixesLoading, setIsMixesLoading] = useState(true);
+	const [isSaving, setIsSaving] = useState(false);
 
 	useEffect(() => {
 		if (hasFetched) return;
@@ -181,6 +193,22 @@ export function useMixCreator(): UseMixCreatorReturn {
 
 		fetchData();
 	}, [hasFetched]);
+
+	const fetchMixes = useCallback(async () => {
+		setIsMixesLoading(true);
+		try {
+			const result = await mixService.getAll();
+			setSavedMixes(result);
+		} catch {
+			setSavedMixes([]);
+		} finally {
+			setIsMixesLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		fetchMixes();
+	}, [fetchMixes]);
 
 	const selectedArtists = useMemo(
 		() => state.allArtists.filter((a) => state.selectedArtistIds.includes(a.id)),
@@ -231,6 +259,33 @@ export function useMixCreator(): UseMixCreatorReturn {
 		dispatch({ type: "RESET" });
 	}, []);
 
+	const saveMix = useCallback(
+		async (trackIds: string[]): Promise<Mix> => {
+			setIsSaving(true);
+			try {
+				const result = await mixService.create({
+					title: mixTitle,
+					artistIds: state.selectedArtistIds,
+					config: state.config,
+					trackIds,
+					coverImages,
+				});
+				return result;
+			} finally {
+				setIsSaving(false);
+			}
+		},
+		[mixTitle, state.selectedArtistIds, state.config, coverImages],
+	);
+
+	const removeSavedMix = useCallback((id: string) => {
+		setSavedMixes((prev) => prev.filter((m) => m._id !== id));
+	}, []);
+
+	const updateSavedMixTitle = useCallback((id: string, title: string) => {
+		setSavedMixes((prev) => prev.map((m) => (m._id === id ? { ...m, title } : m)));
+	}, []);
+
 	const canProceed = state.selectedArtistIds.length > 0;
 
 	return {
@@ -251,5 +306,12 @@ export function useMixCreator(): UseMixCreatorReturn {
 		prevStep,
 		reset,
 		generateAndAdvance,
+		savedMixes,
+		isMixesLoading,
+		isSaving,
+		fetchMixes,
+		saveMix,
+		removeSavedMix,
+		updateSavedMixTitle,
 	};
 }
