@@ -475,9 +475,7 @@ function setupSuccessfulMocks() {
 	mockMixCreate.mockResolvedValue(mockSavedMixes[0]);
 }
 
-// ========== TESTS ==========
-
-describe("Create Mix", () => {
+describe("Music Discovery", () => {
 	beforeAll(() => {
 		delete window.location;
 		window.location = {
@@ -511,542 +509,448 @@ describe("Create Mix", () => {
 	// ========== PAGE LOADING ==========
 
 	describe("Page Loading", () => {
-		describe("Loading State", () => {
-			it("should show loading state initially", () => {
-				mockTracksGetAll.mockReturnValue(new Promise(() => { }));
-				mockArtistsGetAll.mockReturnValue(new Promise(() => { }));
-				mockMixGetAll.mockResolvedValue([]);
-
-				renderMixPage();
-
-				expect(screen.getByTestId("mix-page")).toBeInTheDocument();
-				expect(screen.getByText("Mix")).toBeInTheDocument();
-				expect(screen.queryByTestId("mix-create-card")).not.toBeInTheDocument();
-			});
-		});
-
 		describe("Error State", () => {
-			it("should show error state when track API fails", async () => {
+			it("should show error state when API fails", async () => {
 				mockTracksGetAll.mockRejectedValue(new Error("Network error"));
+				mockAlbumsGetAll.mockRejectedValue(new Error("Network error"));
 				mockArtistsGetAll.mockRejectedValue(new Error("Network error"));
-				mockMixGetAll.mockResolvedValue([]);
 
-				renderMixPage();
+				renderDiscoveryPage();
 
 				await waitFor(() => {
-					expect(screen.getByText("Network error")).toBeInTheDocument();
+					expect(screen.getByTestId("discovery-error")).toBeInTheDocument();
 				});
 
-				expect(screen.queryByTestId("mix-create-card")).not.toBeInTheDocument();
+				expect(screen.queryByTestId("discovery-loading")).not.toBeInTheDocument();
+				expect(screen.queryByTestId("discovery-new-this-week")).not.toBeInTheDocument();
+			});
+		});
+
+	});
+
+	// ========== NEW THIS WEEK ==========
+
+	describe("New This Week", () => {
+		describe("Track Display", () => {
+			it("should display tracks in New This Week section", async () => {
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-new-this-week")).toBeInTheDocument();
+				});
+
+				// All tracks have createdAt set to "now", so they should all appear in New This Week
+				const newThisWeekSection = screen.getByTestId("discovery-new-this-week");
+				const trackElements = within(newThisWeekSection).getAllByTestId(/^discovery-new-track-/);
+				expect(trackElements.length).toBe(allMockTracks.length);
 			});
 		});
 	});
 
-	// ========== BROWSE VIEW ==========
+	// ========== LANGUAGE FILTERING ==========
 
-	describe("Browse View", () => {
-		describe("Saved Mixes Display", () => {
-			it("should display saved mixes in Your Mixes grid", async () => {
+	describe("Language Filtering", () => {
+		describe("Language Chips Display", () => {
+			it("should display language filter chips", async () => {
 				setupSuccessfulMocks();
 
-				renderMixPage();
+				renderDiscoveryPage();
 
 				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+					expect(screen.getByTestId("discovery-popular-language")).toBeInTheDocument();
 				});
 
-				expect(screen.getByTestId("mix-card-mix-1")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-card-mix-2")).toBeInTheDocument();
+				// Verify the language chips container exists
+				expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
 
-				expect(screen.getByText("The Amplifiers and Neon Dreams mix")).toBeInTheDocument();
-				expect(screen.getByText("Blue Note Quartet mix")).toBeInTheDocument();
+				// Verify each language chip is present (lowercased in data-testid)
+				const expectedLanguages = ["english", "korean", "french", "german", "spanish", "chinese"];
+				for (const lang of expectedLanguages) {
+					expect(screen.getByTestId(`discovery-language-chip-${lang}`)).toBeInTheDocument();
+				}
+			});
+		});
+
+		describe("Language Selection", () => {
+			it("should filter tracks when a language chip is selected", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
+				});
+
+				// Click "Korean" chip -- Korean maps to "pop" genre (2 pop tracks)
+				await user.click(screen.getByTestId("discovery-language-chip-korean"));
+
+				// Heading should change to "Popular in Korean"
+				const languageSection = screen.getByTestId("discovery-popular-language");
+				await waitFor(() => {
+					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Korean");
+				});
+
+				// Should show only the 2 pop tracks (Korean maps to pop)
+				const languageTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
+				expect(languageTracks).toHaveLength(2);
+			});
+
+			it("should filter tracks when French language chip is selected", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
+				});
+
+				// Click "French" chip -- French maps to "jazz" genre (2 jazz tracks)
+				await user.click(screen.getByTestId("discovery-language-chip-french"));
+
+				const languageSection = screen.getByTestId("discovery-popular-language");
+				await waitFor(() => {
+					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in French");
+				});
+
+				// Should show only the 2 jazz tracks (French maps to jazz)
+				const frenchTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
+				expect(frenchTracks).toHaveLength(2);
+			});
+		});
+
+		describe("Language Deselection", () => {
+			it("should deselect language chip and show all tracks when clicking same chip again", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
+				});
+
+				// Click Korean to select
+				await user.click(screen.getByTestId("discovery-language-chip-korean"));
+
+				const languageSection = screen.getByTestId("discovery-popular-language");
+				await waitFor(() => {
+					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Korean");
+				});
+
+				// Click Korean again to deselect
+				await user.click(screen.getByTestId("discovery-language-chip-korean"));
+
+				// Heading should revert to "Popular in Language"
+				await waitFor(() => {
+					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Language");
+				});
+
+				// All tracks should be shown again
+				const languageTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
+				expect(languageTracks).toHaveLength(allMockTracks.length);
 			});
 		});
 	});
 
-	// ========== STEP 1 - ARTIST SELECTION ==========
+	// ========== GENRE FILTERING ==========
 
-	describe("Step 1 - Artist Selection", () => {
-		describe("Artist Grid", () => {
-			it("should display artist grid when entering create flow", async () => {
-				const user = userEvent.setup();
+	describe("Genre Filtering", () => {
+		describe("Genre Chips Display", () => {
+			it("should display genre filter chips with display names", async () => {
 				setupSuccessfulMocks();
 
-				renderMixPage();
+				renderDiscoveryPage();
 
 				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+					expect(screen.getByTestId("discovery-popular-genre")).toBeInTheDocument();
 				});
 
-				await user.click(screen.getByTestId("mix-create-card"));
+				// Verify the genre chips container exists
+				expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
+				// Verify each genre chip is present (using raw genre key, lowercased)
+				const expectedGenres = ["rock", "r-and-b", "pop", "jazz", "electronic", "hip-hop", "classical"];
+				for (const genre of expectedGenres) {
+					expect(screen.getByTestId(`discovery-genre-chip-${genre}`)).toBeInTheDocument();
+				}
 
-				expect(screen.getByTestId("mix-artists-grid")).toBeInTheDocument();
-				expect(screen.getByText("Pick your artists")).toBeInTheDocument();
-
-				expect(screen.getByTestId("mix-artist-artist-rock-1")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-artist-artist-pop-1")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-artist-artist-jazz-1")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-artist-artist-electronic-1")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-artist-artist-hiphop-1")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-artist-artist-rnb-1")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-artist-artist-classical-1")).toBeInTheDocument();
+				// Verify display names are rendered as text on the chips
+				const genreChipsContainer = screen.getByTestId("discovery-genre-chips");
+				expect(within(genreChipsContainer).getByText("Rock")).toBeInTheDocument();
+				expect(within(genreChipsContainer).getByText("R&B")).toBeInTheDocument();
+				expect(within(genreChipsContainer).getByText("Pop")).toBeInTheDocument();
+				expect(within(genreChipsContainer).getByText("Jazz")).toBeInTheDocument();
+				expect(within(genreChipsContainer).getByText("Electronic")).toBeInTheDocument();
+				expect(within(genreChipsContainer).getByText("Hip-Hop")).toBeInTheDocument();
+				expect(within(genreChipsContainer).getByText("Classical")).toBeInTheDocument();
 			});
 		});
 
-		describe("Artist Toggle", () => {
-			it("should toggle artist selection with checkmark on click", async () => {
+		describe("Genre Selection", () => {
+			it("should filter tracks when a genre chip is selected", async () => {
 				const user = userEvent.setup();
 				setupSuccessfulMocks();
 
-				renderMixPage();
+				renderDiscoveryPage();
 
 				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
+					expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
 				});
 
-				await user.click(screen.getByTestId("mix-create-card"));
+				// Click "Rock" chip -- should filter to only rock tracks (2)
+				await user.click(screen.getByTestId("discovery-genre-chip-rock"));
+
+				const genreSection = screen.getByTestId("discovery-popular-genre");
+				await waitFor(() => {
+					expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Rock");
+				});
+
+				const genreTracks = within(genreSection).getAllByTestId(/^discovery-genre-track-/);
+				expect(genreTracks).toHaveLength(2);
+			});
+		});
+
+		describe("Genre Deselection", () => {
+			it("should deselect genre chip when clicking same chip again", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
 
 				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
+					expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
 				});
 
-				const artistButton = screen.getByTestId("mix-artist-artist-rock-1");
+				// Click Rock to select
+				await user.click(screen.getByTestId("discovery-genre-chip-rock"));
 
-				// Initially no checkmark (Check icon rendered via bg-melodio-green)
-				expect(within(artistButton).queryByText((_, element) => element?.classList?.contains("bg-melodio-green"))).toBeFalsy();
+				const genreSection = screen.getByTestId("discovery-popular-genre");
+				await waitFor(() => {
+					expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Rock");
+				});
+
+				// Click Rock again to deselect
+				await user.click(screen.getByTestId("discovery-genre-chip-rock"));
+
+				// Heading should revert to "Popular in Genre"
+				await waitFor(() => {
+					expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Genre");
+				});
+
+				// All tracks should be shown again
+				const genreTracks = within(genreSection).getAllByTestId(/^discovery-genre-track-/);
+				expect(genreTracks).toHaveLength(allMockTracks.length);
+			});
+		});
+	});
+
+	// ========== ERA FILTERING ==========
+
+	describe("Era Filtering", () => {
+		describe("Era Chips Display", () => {
+			it("should display era filter chips", async () => {
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-jump-back-in")).toBeInTheDocument();
+				});
+
+				// Verify the era chips container exists
+				expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
+
+				// Verify each era chip is present (lowercased in data-testid)
+				const expectedEras = ["2020's", "2010's", "2000's", "90's", "80's"];
+				for (const era of expectedEras) {
+					expect(screen.getByTestId(`discovery-era-chip-${era.toLowerCase()}`)).toBeInTheDocument();
+				}
+			});
+		});
+
+		describe("Era Selection", () => {
+			it("should filter tracks by era when an era chip is selected", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
+				});
+
+				// Click "90's" chip -- jazz (1995) and r-and-b (1998) albums fall in 90's era = 4 tracks
+				await user.click(screen.getByTestId("discovery-era-chip-90's"));
+
+				const eraSection = screen.getByTestId("discovery-jump-back-in");
+				await waitFor(() => {
+					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*90's/);
+				});
+
+				const eraTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
+				expect(eraTracks).toHaveLength(4);
+			});
+
+			it("should filter to 2010's era showing rock and pop tracks", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
+				});
+
+				// Click "2010's" chip -- rock (2012) and pop (2015) albums fall in 2010's era = 4 tracks
+				await user.click(screen.getByTestId("discovery-era-chip-2010's"));
+
+				const eraSection = screen.getByTestId("discovery-jump-back-in");
+				await waitFor(() => {
+					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*2010's/);
+				});
+
+				const era2010sTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
+				expect(era2010sTracks).toHaveLength(4);
+			});
+		});
+
+		describe("Era Deselection", () => {
+			it("should deselect era chip when clicking same chip again", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
+				});
+
+				// Click 90's to select
+				await user.click(screen.getByTestId("discovery-era-chip-90's"));
+
+				const eraSection = screen.getByTestId("discovery-jump-back-in");
+				await waitFor(() => {
+					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*90's/);
+				});
+
+				// Click 90's again to deselect
+				await user.click(screen.getByTestId("discovery-era-chip-90's"));
+
+				// Heading should revert to "Jump Back In"
+				await waitFor(() => {
+					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent("Jump Back In");
+				});
+
+				// All tracks should be shown again
+				const eraTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
+				expect(eraTracks).toHaveLength(allMockTracks.length);
+			});
+		});
+	});
+
+	// ========== TOP ARTISTS ==========
+
+	describe("Top Artists", () => {
+		describe("Artist Ranking", () => {
+			it("should display top artists in ranked order", async () => {
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-top-artists")).toBeInTheDocument();
+				});
+
+				const topArtistsSection = screen.getByTestId("discovery-top-artists");
+
+				// Verify artist rows exist
+				const artistRows = within(topArtistsSection).getAllByTestId(/^discovery-artist-/);
+				expect(artistRows.length).toBe(allMockArtists.length);
+
+				// Artists should be ordered by followerCount descending
+				// The first artist element should be artist-pop-1 (500K followers)
+				expect(artistRows[0]).toHaveAttribute("data-testid", "discovery-artist-artist-pop-1");
+				// The last should be artist-classical-1 (100K followers)
+				expect(artistRows[artistRows.length - 1]).toHaveAttribute(
+					"data-testid",
+					"discovery-artist-artist-classical-1",
+				);
+
+				// Verify that names and follower counts are shown
+				expect(within(topArtistsSection).getByText("Neon Dreams")).toBeInTheDocument();
+				expect(within(topArtistsSection).getByText("500K followers")).toBeInTheDocument();
+				expect(within(topArtistsSection).getByText("Vienna Philharmonic")).toBeInTheDocument();
+				expect(within(topArtistsSection).getByText("100K followers")).toBeInTheDocument();
+			});
+		});
+
+		describe("Artist Navigation", () => {
+			it("should navigate to artist detail page when clicking a top artist", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPageWithLocation();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-top-artists")).toBeInTheDocument();
+				});
+
+				// Verify initial location
+				expect(screen.getByTestId("location-display")).toHaveTextContent("/discover");
+
+				// Click the first artist (Neon Dreams, artist-pop-1 — highest follower count)
+				const firstArtist = screen.getByTestId("discovery-artist-artist-pop-1");
+				await user.click(firstArtist);
+
+				// Should navigate to /artist/artist-pop-1
+				await waitFor(() => {
+					expect(screen.getByTestId("location-display")).toHaveTextContent("/artist/artist-pop-1");
+				});
+			});
+		});
+	});
+
+	// ========== VISUAL INDICATORS ==========
+
+	describe("Visual Indicators", () => {
+		describe("Selected Chip Highlight", () => {
+			it("should highlight selected chip with ring classes", async () => {
+				const user = userEvent.setup();
+				setupSuccessfulMocks();
+
+				renderDiscoveryPage();
+
+				await waitFor(() => {
+					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
+				});
+
+				const koreanChip = screen.getByTestId("discovery-language-chip-korean");
+
+				// Before selection, chip should NOT have the active ring classes
+				expect(koreanChip.className).not.toMatch(/ring-2/);
+				expect(koreanChip.className).not.toMatch(/ring-melodio-green/);
 
 				// Click to select
-				await user.click(artistButton);
+				await user.click(koreanChip);
 
-				// After selecting, the checkmark overlay should appear (div with bg-black/40)
+				// After selection, chip should have the active ring classes
 				await waitFor(() => {
-					const overlay = artistButton.querySelector(".bg-black\\/40");
-					expect(overlay).toBeTruthy();
+					expect(koreanChip.className).toMatch(/ring-2/);
+					expect(koreanChip.className).toMatch(/ring-melodio-green/);
 				});
 
 				// Click again to deselect
-				await user.click(artistButton);
+				await user.click(koreanChip);
 
+				// After deselection, ring classes should be gone
 				await waitFor(() => {
-					const overlay = artistButton.querySelector(".bg-black\\/40");
-					expect(overlay).toBeFalsy();
+					expect(koreanChip.className).not.toMatch(/ring-2/);
+					expect(koreanChip.className).not.toMatch(/ring-melodio-green/);
 				});
-			});
-		});
-
-		describe("Next Button State", () => {
-			it("should enable Next button after selecting an artist", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("mix-next-btn")).toBeDisabled();
-
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-next-btn")).not.toBeDisabled();
-				});
-			});
-		});
-	});
-
-	// ========== STEP 2 - CONFIGURE MIX ==========
-
-	describe("Step 2 - Configure Mix", () => {
-		describe("Configuration Options", () => {
-			it("should show variety, discovery, and filter options on step 2", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				// Select an artist and proceed
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				expect(screen.getByText("Adjust your mix")).toBeInTheDocument();
-
-				// Variety options
-				expect(screen.getByTestId("mix-variety-low")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-variety-medium")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-variety-high")).toBeInTheDocument();
-
-				// Discovery options
-				expect(screen.getByTestId("mix-discovery-familiar")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-discovery-blend")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-discovery-discover")).toBeInTheDocument();
-
-				// Filter options
-				expect(screen.getByTestId("mix-filters")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-popular")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-deep-cuts")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-new-releases")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-pump-up")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-chill")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-upbeat")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-downbeat")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-filter-focus")).toBeInTheDocument();
-			});
-		});
-
-		describe("Filter Toggle", () => {
-			it("should toggle filter selection", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				const popularFilter = screen.getByTestId("mix-filter-popular");
-
-				// Initially outline variant (not selected)
-				// Click to select
-				await user.click(popularFilter);
-
-				// Click again to deselect (toggle)
-				await user.click(popularFilter);
-
-				// No assertion on variant since cn mock just joins strings,
-				// but we verify clicking does not throw and toggles without error
-				expect(popularFilter).toBeInTheDocument();
-			});
-		});
-	});
-
-	// ========== STEP 3 - MIX RESULT ==========
-
-	describe("Step 3 - Mix Result", () => {
-		describe("Mix Generation", () => {
-			it("should generate mix and show tracks on Done click", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-done-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("mix-result-tracks")).toBeInTheDocument();
-				expect(screen.getByTestId("mix-title")).toBeInTheDocument();
-
-				// mixService.create should have been called
-				expect(mockMixCreate).toHaveBeenCalled();
-			});
-		});
-
-		describe("Track Limit", () => {
-			it("should limit generated mix to 20 tracks", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				// Select all artists for maximum track pool
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-artist-artist-pop-1"));
-				await user.click(screen.getByTestId("mix-artist-artist-jazz-1"));
-				await user.click(screen.getByTestId("mix-artist-artist-electronic-1"));
-				await user.click(screen.getByTestId("mix-artist-artist-hiphop-1"));
-				await user.click(screen.getByTestId("mix-artist-artist-rnb-1"));
-				await user.click(screen.getByTestId("mix-artist-artist-classical-1"));
-
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				// Set variety to high to include all tracks
-				await user.click(screen.getByTestId("mix-variety-high"));
-
-				await user.click(screen.getByTestId("mix-done-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-				});
-
-				// We have 14 tracks total (7 artists x 2 tracks each), all under 20 limit
-				// The mix should contain all 14 since they all score > 0
-				const resultTracks = screen.getByTestId("mix-result-tracks");
-				const trackCards = resultTracks.children;
-				expect(trackCards.length).toBeLessThanOrEqual(20);
-				expect(trackCards.length).toBe(14);
-			});
-		});
-
-		describe("Variety Low Filter", () => {
-			it("should show only selected artist tracks with variety low", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				// Select only The Amplifiers (rock, 2 tracks)
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				// Set variety to "low" which filters out non-selected artists
-				await user.click(screen.getByTestId("mix-variety-low"));
-
-				await user.click(screen.getByTestId("mix-done-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-				});
-
-				// With variety "low", scoreTrack returns 0 for non-selected artists
-				// Selected artist tracks should rank first in the generated mix
-				const resultTracks = screen.getByTestId("mix-result-tracks");
-				const trackCards = resultTracks.children;
-				expect(trackCards.length).toBeGreaterThanOrEqual(2);
-
-				// Verify the first two tracks are from The Amplifiers (the selected artist)
-				const firstTrackTitle = within(trackCards[0] as HTMLElement).getByText("Thunder Road");
-				const secondTrackTitle = within(trackCards[1] as HTMLElement).getByText("Lightning Strike");
-				expect(firstTrackTitle).toBeInTheDocument();
-				expect(secondTrackTitle).toBeInTheDocument();
-			});
-		});
-
-		describe("Mix Title Generation", () => {
-			it("should generate mix title from selected artist names", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				// Select The Amplifiers
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-done-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-				});
-
-				// getMixTitle for single artist: "The Amplifiers mix"
-				expect(screen.getByTestId("mix-title")).toHaveTextContent("The Amplifiers mix");
-			});
-
-			it("should generate mix title from multiple selected artist names", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				// Select The Amplifiers and Neon Dreams (2 artists)
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-artist-artist-pop-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-done-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-				});
-
-				// getMixTitle for two artists: "The Amplifiers and Neon Dreams mix"
-				expect(screen.getByTestId("mix-title")).toHaveTextContent("The Amplifiers and Neon Dreams mix");
-			});
-		});
-	});
-
-	// ========== NAVIGATION ==========
-
-	describe("Navigation", () => {
-		describe("Back to Artist Selection", () => {
-			it("should navigate back from step 2 to step 1", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				// Click back button on configure step
-				await user.click(screen.getByTestId("mix-configure-back-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				expect(screen.queryByTestId("mix-step-configure")).not.toBeInTheDocument();
-			});
-		});
-
-		describe("Back to Browse View", () => {
-			it("should navigate from result back to browse view", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				renderMixPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("mix-done-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-				});
-
-				// Click "Back to Mixes" button on result step
-				await user.click(screen.getByTestId("mix-back-to-mixes-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("mix-your-mixes")).toBeInTheDocument();
-				expect(screen.queryByTestId("mix-step-result")).not.toBeInTheDocument();
 			});
 		});
 	});
