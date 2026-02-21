@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "./useDebounce";
 import { searchService } from "../services/search.service";
 import type { TrackWithPopulated } from "../types/player.types";
-import { getImageUrl, preloadImages } from "../utils";
+import { getImageUrl, preloadImages } from "../utils/imageUtils";
 
 interface UseSearchReturn {
 	tracks: TrackWithPopulated[];

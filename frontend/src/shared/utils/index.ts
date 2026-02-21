@@ -74,32 +74,7 @@ export function getInitials(name: string): string {
 		.slice(0, 2);
 }
 
-export const DEFAULT_IMAGE = "/melodio.svg";
-
-const preloadedUrls = new Set<string>();
-
-export function preloadImages(urls: (string | null | undefined)[]): void {
-	urls.forEach((url) => {
-		if (url && !preloadedUrls.has(url)) {
-			preloadedUrls.add(url);
-			const link = document.createElement("link");
-			link.rel = "preload";
-			link.as = "image";
-			link.href = url;
-			document.head.appendChild(link);
-		}
-	});
-}
-
-export function getImageUrl(path: string | undefined | null): string {
-	if (!path) return DEFAULT_IMAGE;
-	if (path.startsWith("http://") || path.startsWith("https://")) {
-		return path;
-	}
-	const baseUrl = import.meta.env.VITE_IMAGE_URL || "";
-	const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-	return `${baseUrl}${normalizedPath}`;
-}
+export { DEFAULT_IMAGE, preloadImages, getImageUrl, configureImageBaseUrl } from "./imageUtils";
 
 interface BackendTrackResponse {
 	id: string;

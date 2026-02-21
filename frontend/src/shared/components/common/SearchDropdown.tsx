@@ -3,7 +3,8 @@ import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { AppImage } from "@/shared/components/common/AppImage";
-import { formatDuration, getImageUrl } from "@/shared/utils";
+import { formatDuration } from "@/shared/utils";
+import { getImageUrl } from "@/shared/utils/imageUtils";
 import { useSearch } from "@/shared/hooks/useSearch";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 
