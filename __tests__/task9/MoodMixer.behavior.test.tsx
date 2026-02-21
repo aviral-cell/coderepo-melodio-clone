@@ -272,7 +272,6 @@ const originalLocation = window.location;
 
 let mockFetch: jest.Mock;
 
-// Import the mocked service so we can control its return value
 import { tracksService } from "@/shared/services";
 
 const mockGetAll = tracksService.getAll as jest.Mock;
@@ -311,7 +310,6 @@ describe("Mood Mixer Behavior Tests", () => {
 	});
 
 	it("should show loading state initially", () => {
-		// Mock tracksService.getAll to never resolve (pending promise)
 		mockGetAll.mockReturnValue(new Promise(() => {}));
 
 		renderMoodMixerPage();
@@ -372,7 +370,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 		});
 
-		// Click Energetic chip
 		await user.click(screen.getByTestId("mood-chip-energetic"));
 
 		// Energetic = rock + electronic = 4 tracks
@@ -382,7 +379,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(trackItems).toHaveLength(4);
 		});
 
-		// Verify description is shown
 		expect(screen.getByTestId("mood-description")).toHaveTextContent("High-energy tracks to get you moving");
 
 		// Only Energetic heading should be visible
@@ -403,7 +399,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 		});
 
-		// Click Chill chip
 		await user.click(screen.getByTestId("mood-chip-chill"));
 
 		// Chill = jazz = 2 tracks
@@ -413,7 +408,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(trackItems).toHaveLength(2);
 		});
 
-		// Verify description
 		expect(screen.getByTestId("mood-description")).toHaveTextContent("Relaxing vibes to unwind");
 
 		// Only Chill heading should be visible
@@ -434,7 +428,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 		});
 
-		// Click Happy chip
 		await user.click(screen.getByTestId("mood-chip-happy"));
 
 		// Happy = pop = 2 tracks
@@ -444,7 +437,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(trackItems).toHaveLength(2);
 		});
 
-		// Verify description
 		expect(screen.getByTestId("mood-description")).toHaveTextContent("Feel-good tunes to brighten your day");
 
 		// Only Happy heading should be visible
@@ -465,7 +457,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 		});
 
-		// Click Focus chip
 		await user.click(screen.getByTestId("mood-chip-focus"));
 
 		// Focus = electronic + jazz = 4 tracks
@@ -475,7 +466,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(trackItems).toHaveLength(4);
 		});
 
-		// Verify description
 		expect(screen.getByTestId("mood-description")).toHaveTextContent("Instrumental beats to help you concentrate");
 
 		// Only Focus heading should be visible
@@ -496,7 +486,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 		});
 
-		// Click Party chip
 		await user.click(screen.getByTestId("mood-chip-party"));
 
 		// Party = pop + hip-hop = 4 tracks
@@ -506,7 +495,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(trackItems).toHaveLength(4);
 		});
 
-		// Verify description
 		expect(screen.getByTestId("mood-description")).toHaveTextContent("Bangers to get the party started");
 
 		// Only Party heading should be visible
@@ -527,7 +515,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 		});
 
-		// Click Energetic chip to select
 		await user.click(screen.getByTestId("mood-chip-energetic"));
 
 		await waitFor(() => {
@@ -536,23 +523,20 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(trackItems).toHaveLength(4);
 		});
 
-		// Click Energetic chip again to deselect
 		await user.click(screen.getByTestId("mood-chip-energetic"));
 
-		// All 16 track elements should be visible again (across all mood sections)
+		// All 16 tracks visible again across all mood sections
 		await waitFor(() => {
 			const tracksContainer = screen.getByTestId("mood-tracks");
 			const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
 			expect(trackItems).toHaveLength(16);
 		});
 
-		// All 5 mood headings should be visible
 		const tracksContainer = screen.getByTestId("mood-tracks");
 		for (const heading of ALL_MOOD_HEADINGS) {
 			expect(within(tracksContainer).getByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
 		}
 
-		// Description should disappear
 		expect(screen.queryByTestId("mood-description")).not.toBeInTheDocument();
 	});
 
@@ -566,7 +550,7 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 		});
 
-		// Click Happy chip first -> 2 tracks (pop)
+		// Happy = pop = 2 tracks
 		await user.click(screen.getByTestId("mood-chip-happy"));
 
 		await waitFor(() => {
@@ -577,7 +561,7 @@ describe("Mood Mixer Behavior Tests", () => {
 
 		expect(screen.getByTestId("mood-description")).toHaveTextContent("Feel-good tunes to brighten your day");
 
-		// Click Party chip -> 4 tracks (pop + hip-hop)
+		// Party = pop + hip-hop = 4 tracks
 		await user.click(screen.getByTestId("mood-chip-party"));
 
 		await waitFor(() => {
@@ -586,7 +570,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(trackItems).toHaveLength(4);
 		});
 
-		// Verify description changed to Party
 		expect(screen.getByTestId("mood-description")).toHaveTextContent("Bangers to get the party started");
 	});
 
@@ -599,7 +582,6 @@ describe("Mood Mixer Behavior Tests", () => {
 			expect(screen.queryByTestId("mood-loading")).not.toBeInTheDocument();
 		});
 
-		// Each mood chip tile should contain an img element
 		const moodChipIds = [
 			"mood-chip-energetic",
 			"mood-chip-chill",
@@ -645,24 +627,20 @@ describe("Mood Mixer Behavior Tests", () => {
 
 		const energeticChip = screen.getByTestId("mood-chip-energetic");
 
-		// Before selection, chip should NOT have the active ring classes
 		expect(energeticChip.className).not.toMatch(/ring-2/);
 		expect(energeticChip.className).not.toMatch(/ring-melodio-green/);
 
-		// Click to select
 		await user.click(energeticChip);
 
-		// After selection, chip should have the active ring classes
-		// cn() mock joins truthy class strings, so "ring-2 ring-melodio-green" will be present
+		// Selected chip should have active ring classes
 		await waitFor(() => {
 			expect(energeticChip.className).toMatch(/ring-2/);
 			expect(energeticChip.className).toMatch(/ring-melodio-green/);
 		});
 
-		// Click again to deselect
 		await user.click(energeticChip);
 
-		// After deselection, ring classes should be gone
+		// Deselected chip should lose ring classes
 		await waitFor(() => {
 			expect(energeticChip.className).not.toMatch(/ring-2/);
 			expect(energeticChip.className).not.toMatch(/ring-melodio-green/);

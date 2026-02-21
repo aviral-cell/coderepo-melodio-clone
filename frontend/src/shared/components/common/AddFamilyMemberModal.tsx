@@ -41,7 +41,7 @@ function validateEmail(value: string): string | undefined {
 }
 
 function validateAge(value: string): string | undefined {
-	if (!value) return undefined; // Age is optional
+	if (!value) return undefined;
 	const age = parseInt(value, 10);
 	if (isNaN(age)) return "Age must be a number";
 	if (age < 0 || age > 150) return "Invalid age";

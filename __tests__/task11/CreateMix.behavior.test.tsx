@@ -616,19 +616,16 @@ describe("Create Mix Behavior Tests", () => {
 
 		const artistButton = screen.getByTestId("mix-artist-artist-rock-1");
 
-		// Initially no checkmark (Check icon rendered via bg-melodio-green)
 		expect(within(artistButton).queryByText((_, element) => element?.classList?.contains("bg-melodio-green"))).toBeFalsy();
 
-		// Click to select
 		await user.click(artistButton);
 
-		// After selecting, the checkmark overlay should appear (div with bg-black/40)
+		// Checkmark overlay should appear when selected
 		await waitFor(() => {
 			const overlay = artistButton.querySelector(".bg-black\\/40");
 			expect(overlay).toBeTruthy();
 		});
 
-		// Click again to deselect
 		await user.click(artistButton);
 
 		await waitFor(() => {
@@ -699,7 +696,6 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
 		});
 
-		// Select an artist and proceed
 		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
 		await user.click(screen.getByTestId("mix-next-btn"));
 
@@ -756,15 +752,9 @@ describe("Create Mix Behavior Tests", () => {
 
 		const popularFilter = screen.getByTestId("mix-filter-popular");
 
-		// Initially outline variant (not selected)
-		// Click to select
+		await user.click(popularFilter);
 		await user.click(popularFilter);
 
-		// Click again to deselect (toggle)
-		await user.click(popularFilter);
-
-		// No assertion on variant since cn mock just joins strings,
-		// but we verify clicking does not throw and toggles without error
 		expect(popularFilter).toBeInTheDocument();
 	});
 
@@ -801,8 +791,6 @@ describe("Create Mix Behavior Tests", () => {
 
 		expect(screen.getByTestId("mix-result-tracks")).toBeInTheDocument();
 		expect(screen.getByTestId("mix-title")).toBeInTheDocument();
-
-		// mixService.create should have been called
 		expect(mockMixCreate).toHaveBeenCalled();
 	});
 
@@ -822,7 +810,6 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
 		});
 
-		// Select all artists for maximum track pool
 		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
 		await user.click(screen.getByTestId("mix-artist-artist-pop-1"));
 		await user.click(screen.getByTestId("mix-artist-artist-jazz-1"));
@@ -837,7 +824,6 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
 		});
 
-		// Set variety to high to include all tracks
 		await user.click(screen.getByTestId("mix-variety-high"));
 
 		await user.click(screen.getByTestId("mix-done-btn"));
@@ -846,8 +832,7 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
 		});
 
-		// We have 14 tracks total (7 artists x 2 tracks each), all under 20 limit
-		// The mix should contain all 14 since they all score > 0
+		// 14 total tracks (7 artists x 2), all under 20 limit
 		const resultTracks = screen.getByTestId("mix-result-tracks");
 		const trackCards = resultTracks.children;
 		expect(trackCards.length).toBeLessThanOrEqual(20);
@@ -870,7 +855,7 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
 		});
 
-		// Select only The Amplifiers (rock, 2 tracks)
+		// Select The Amplifiers only (rock, 2 tracks)
 		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
 		await user.click(screen.getByTestId("mix-next-btn"));
 
@@ -878,7 +863,7 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
 		});
 
-		// Set variety to "low" which filters out non-selected artists
+		// Variety "low" = only selected artist tracks score > 0
 		await user.click(screen.getByTestId("mix-variety-low"));
 
 		await user.click(screen.getByTestId("mix-done-btn"));
@@ -887,8 +872,7 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
 		});
 
-		// With variety "low", scoreTrack returns 0 for non-selected artists
-		// Selected artist tracks should rank first in the generated mix
+		// Selected artist tracks should rank first
 		const resultTracks = screen.getByTestId("mix-result-tracks");
 		const trackCards = resultTracks.children;
 		expect(trackCards.length).toBeGreaterThanOrEqual(2);
@@ -916,7 +900,6 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
 		});
 
-		// Select The Amplifiers
 		await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
 		await user.click(screen.getByTestId("mix-next-btn"));
 
@@ -959,7 +942,6 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
 		});
 
-		// Click back button on configure step
 		await user.click(screen.getByTestId("mix-configure-back-btn"));
 
 		await waitFor(() => {
@@ -998,7 +980,6 @@ describe("Create Mix Behavior Tests", () => {
 			expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
 		});
 
-		// Click "Back to Mixes" button on result step
 		await user.click(screen.getByTestId("mix-back-to-mixes-btn"));
 
 		await waitFor(() => {

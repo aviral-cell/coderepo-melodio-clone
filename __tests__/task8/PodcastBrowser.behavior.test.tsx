@@ -882,7 +882,6 @@ describe("Podcast Browser Behavior Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Verify show titles in the All Shows section via data-testid selectors
 		expect(screen.getByTestId("podcast-show-title-album-podcast-1")).toHaveTextContent("Code & Coffee");
 		expect(screen.getByTestId("podcast-show-title-album-podcast-2")).toHaveTextContent("Startup Stories");
 		expect(screen.getByTestId("podcast-show-title-album-podcast-3")).toHaveTextContent("Behind the Album");
@@ -892,7 +891,6 @@ describe("Podcast Browser Behavior Tests", () => {
 		expect(screen.getByTestId("podcast-show-title-album-podcast-7")).toHaveTextContent("DevOps Decoded");
 		expect(screen.getByTestId("podcast-show-title-album-podcast-8")).toHaveTextContent("Music Theory 101");
 
-		// Verify host names in the All Shows section via data-testid selectors
 		expect(screen.getByTestId("podcast-show-host-album-podcast-1")).toHaveTextContent("Tech Talk Daily");
 		expect(screen.getByTestId("podcast-show-host-album-podcast-2")).toHaveTextContent("Tech Talk Daily");
 		expect(screen.getByTestId("podcast-show-host-album-podcast-3")).toHaveTextContent("Music Stories");
@@ -1045,7 +1043,6 @@ describe("Podcast Browser Behavior Tests", () => {
 		expect(screen.queryByText("Electric Storm")).not.toBeInTheDocument();
 		expect(screen.queryByText("The Amplifiers")).not.toBeInTheDocument();
 
-		// Podcast shows should appear (use data-testid to avoid duplicate text matches)
 		expect(screen.getByTestId("podcast-show-title-album-podcast-1")).toHaveTextContent("Code & Coffee");
 		expect(screen.getByTestId("podcast-show-title-album-podcast-2")).toHaveTextContent("Startup Stories");
 		expect(screen.getByTestId("podcast-show-title-album-podcast-3")).toHaveTextContent("Behind the Album");
@@ -1112,14 +1109,12 @@ describe("Podcast Browser Interaction Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Click on Code & Coffee show
 		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
 		});
 
-		// Verify episodes are listed in track number order inside the episodes section
 		const episodesSection = screen.getByTestId("podcast-episodes");
 		const episodeElements = within(episodesSection).getAllByTestId(/^podcast-episode-track-cc-/);
 
@@ -1141,7 +1136,6 @@ describe("Podcast Browser Interaction Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Click on Code & Coffee show
 		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
 		await waitFor(() => {
@@ -1163,14 +1157,12 @@ describe("Podcast Browser Interaction Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Click on Code & Coffee show
 		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
 		});
 
-		// Verify formatted dates for first and last episodes
 		expect(screen.getByTestId("podcast-episode-date-track-cc-1")).toHaveTextContent("Jan 21, 2024");
 		expect(screen.getByTestId("podcast-episode-date-track-cc-5")).toHaveTextContent("Jan 25, 2024");
 	});
@@ -1185,14 +1177,12 @@ describe("Podcast Browser Interaction Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Click on Code & Coffee show
 		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
 		});
 
-		// Click on episode 2
 		await user.click(screen.getByTestId("podcast-episode-track-cc-2"));
 
 		await waitFor(() => {
@@ -1220,17 +1210,14 @@ describe("Podcast Browser Interaction Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Click on Code & Coffee show
 		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
 		});
 
-		// Click Play All
 		await user.click(screen.getByTestId("podcast-play-all"));
 
-		// First episode should be now playing
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-now-playing-track-cc-1")).toBeInTheDocument();
 		});
@@ -1246,17 +1233,14 @@ describe("Podcast Browser Interaction Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Click on Code & Coffee show
 		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
 		});
 
-		// Click play on episode 3
 		await user.click(screen.getByTestId("podcast-play-episode-track-cc-3"));
 
-		// Episode 3 should be now playing
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-now-playing-track-cc-3")).toBeInTheDocument();
 		});
@@ -1294,21 +1278,18 @@ describe("Podcast Browser Interaction Tests", () => {
 			expect(screen.queryByTestId("podcast-loading")).not.toBeInTheDocument();
 		});
 
-		// Click on Code & Coffee show
 		await user.click(screen.getByTestId("podcast-show-album-podcast-1"));
 
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-selected-show")).toBeInTheDocument();
 		});
 
-		// Click on episode 1
 		await user.click(screen.getByTestId("podcast-episode-track-cc-1"));
 
 		await waitFor(() => {
 			expect(screen.getByTestId("podcast-selected-episode")).toBeInTheDocument();
 		});
 
-		// Verify description is displayed
 		const descriptionElement = screen.getByTestId("podcast-episode-description");
 		expect(descriptionElement).toHaveTextContent(
 			"Learn the basics of TypeScript and why it matters for modern development.",

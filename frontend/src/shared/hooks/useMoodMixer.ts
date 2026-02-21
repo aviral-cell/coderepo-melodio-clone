@@ -32,7 +32,6 @@ export function useMoodMixer(): UseMoodMixerReturn {
 				const response = await tracksService.getAll({ limit: 100 });
 				setAllTracks(response.items);
 			} catch (err) {
-				// silently handle
 			} finally {
 				setIsLoading(false);
 			}

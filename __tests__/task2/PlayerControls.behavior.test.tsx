@@ -311,7 +311,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 				jest.advanceTimersByTime(100);
 			});
 
-			// BEFORE: Verify player is working
+			// Verify initial state
 			expect(getCurrentTrackTitle()).toBe("Track 1");
 			expectIconType(getPlayPauseButton(), "pause");
 
@@ -354,7 +354,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 				jest.advanceTimersByTime(100);
 			});
 
-			// BEFORE: Verify player is working
+			// Verify initial state
 			expect(getCurrentTrackTitle()).toBe("Track 2");
 			expectIconType(getPlayPauseButton(), "pause");
 
@@ -394,7 +394,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 				jest.advanceTimersByTime(100);
 			});
 
-			// BEFORE: Verify player is working
+			// Verify initial state
 			expect(getCurrentTrackTitle()).toBe("Track 1");
 			expectIconType(getPlayPauseButton(), "pause");
 
@@ -432,7 +432,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 				jest.advanceTimersByTime(100);
 			});
 
-			// BEFORE: Verify player is working
+			// Verify initial state
 			expect(getCurrentTrackTitle()).toBe("Track 1");
 			expectIconType(getPlayPauseButton(), "pause");
 
@@ -482,7 +482,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 			await user.click(playPauseButton);
 			expectIconType(playPauseButton, "play");
 
-			// Verify time doesn't advance while paused
+			// Time should NOT advance while paused
 			await act(async () => {
 				jest.advanceTimersByTime(2000);
 			});
@@ -492,7 +492,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 			await user.click(playPauseButton);
 			expectIconType(playPauseButton, "pause");
 
-			// Verify time advances after resume
+			// Time should advance after resume
 			await act(async () => {
 				jest.advanceTimersByTime(1000);
 			});
@@ -525,7 +525,7 @@ describe("PlayerBar Controls Behavior Tests", () => {
 			await user.click(shuffleButton);
 			expectButtonToBeActive(shuffleButton);
 
-			// Current track unchanged after enabling
+			// Current track unchanged after enabling shuffle
 			expect(getCurrentTrackTitle()).toBe("Track 1");
 
 			// Let track end

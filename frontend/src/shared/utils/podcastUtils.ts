@@ -10,8 +10,6 @@ export interface PodcastShow {
 	totalPlays: number;
 }
 
-// ===== BROWSE VIEW FUNCTIONS (correct on both branches) =====
-
 export function groupEpisodesByShow(
 	tracks: TrackWithPopulated[],
 	albums: AlbumWithPopulated[],
@@ -73,8 +71,6 @@ export function getTopShows(shows: PodcastShow[], limit: number): PodcastShow[] 
 		.sort((a, b) => b.totalPlays - a.totalPlays)
 		.slice(0, limit);
 }
-
-// ===== INTERACTION FUNCTIONS (buggy on base, correct on solution) =====
 
 export function sortEpisodesByOrder(
 	episodes: TrackWithPopulated[],
