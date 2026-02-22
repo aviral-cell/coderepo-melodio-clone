@@ -14,6 +14,7 @@ import { paymentRoutes } from "./features/payment/payment.routes.js";
 import { familyRoutes } from "./features/family/family.routes.js";
 import { historyRoutes } from "./features/history/history.routes.js";
 import { mixRoutes } from "./features/mixes/mixes.routes.js";
+import { concertRoutes } from "./features/concerts/concerts.routes.js";
 
 const getPublicDir = (): string => {
 	if (typeof __dirname !== "undefined") {
@@ -68,6 +69,7 @@ export function createApp(): Application {
 	app.use("/api/family", familyRoutes);
 	app.use("/api/history", historyRoutes);
 	app.use("/api/mixes", mixRoutes);
+	app.use("/api/concerts", concertRoutes);
 
 	app.use(notFoundHandler);
 

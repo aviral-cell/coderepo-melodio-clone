@@ -11,6 +11,7 @@ import { Playlist } from "../features/playlists/playlist.model.js";
 import { Subscription } from "../features/subscription/subscription.model.js";
 import { SubscriptionPlan } from "../features/subscription/subscription.types.js";
 import { Mix } from "../features/mixes/mix.model.js";
+import { Concert } from "../features/concerts/concert.model.js";
 import { initConfig } from "../shared/config/index.js";
 
 const config = initConfig();
@@ -424,6 +425,7 @@ async function clearDatabase(): Promise<void> {
 		Playlist.deleteMany({}),
 		Subscription.deleteMany({}),
 		Mix.deleteMany({}),
+		Concert.deleteMany({}),
 	]);
 
 	console.log("Existing data cleared.");
@@ -601,6 +603,66 @@ async function seedMixes(): Promise<number> {
 	return 1;
 }
 
+function toVenueSlug(venue: string): string {
+	return venue
+		.toLowerCase()
+		.replace(/[^a-z0-9\s-]/g, "")
+		.replace(/\s+/g, "-");
+}
+
+async function seedConcerts(): Promise<number> {
+	console.log("Creating concerts...");
+
+	const concertData = [
+		{ city: "New York", artistName: "The Amplifiers", venue: "Madison Square Garden", date: "2026-03-15", time: "19:30" },
+		{ city: "New York", artistName: "Blue Note Quartet", venue: "Blue Note Jazz Club", date: "2026-05-22", time: "20:00" },
+		{ city: "New York", artistName: "Urban Beats", venue: "Barclays Center", date: "2026-07-10", time: "19:00" },
+		{ city: "New York", artistName: "Pacific Symphony", venue: "Carnegie Hall", date: "2026-10-05", time: "19:30" },
+		{ city: "Las Vegas", artistName: "Neon Dreams", venue: "T-Mobile Arena", date: "2026-04-12", time: "21:00" },
+		{ city: "Las Vegas", artistName: "Synthwave Collective", venue: "The Venetian Theatre", date: "2026-06-28", time: "20:00" },
+		{ city: "Las Vegas", artistName: "Velvet Grooves", venue: "MGM Grand Garden", date: "2026-08-15", time: "21:00" },
+		{ city: "Las Vegas", artistName: "The Amplifiers", venue: "Allegiant Stadium", date: "2026-11-20", time: "19:00" },
+		{ city: "Los Angeles", artistName: "Urban Beats", venue: "The Forum", date: "2026-03-08", time: "19:00" },
+		{ city: "Los Angeles", artistName: "Neon Dreams", venue: "Hollywood Bowl", date: "2026-06-05", time: "20:00" },
+		{ city: "Los Angeles", artistName: "Pacific Symphony", venue: "Walt Disney Concert Hall", date: "2026-09-18", time: "19:30" },
+		{ city: "Los Angeles", artistName: "Velvet Grooves", venue: "Crypto.com Arena", date: "2026-12-12", time: "20:00" },
+		{ city: "Chicago", artistName: "Blue Note Quartet", venue: "Chicago Theatre", date: "2026-04-25", time: "19:30" },
+		{ city: "Chicago", artistName: "Synthwave Collective", venue: "United Center", date: "2026-07-30", time: "20:00" },
+		{ city: "Chicago", artistName: "The Amplifiers", venue: "Soldier Field", date: "2026-10-22", time: "18:00" },
+		{ city: "Miami", artistName: "Neon Dreams", venue: "Kaseya Center", date: "2026-05-03", time: "20:00" },
+		{ city: "Miami", artistName: "Urban Beats", venue: "Hard Rock Stadium", date: "2026-08-08", time: "19:00" },
+		{ city: "Miami", artistName: "Velvet Grooves", venue: "Bayfront Park Amphitheater", date: "2026-11-14", time: "19:30" },
+	];
+
+	let concertCount = 0;
+
+	for (const data of concertData) {
+		const artist = await Artist.findOne({ name: data.artistName });
+		if (!artist) {
+			console.log(`  Warning: Artist "${data.artistName}" not found, skipping concert at ${data.venue}`);
+			continue;
+		}
+
+		const venueSlug = toVenueSlug(data.venue);
+
+		await Concert.create({
+			artist_id: artist._id,
+			venue: data.venue,
+			city: data.city,
+			date: new Date(data.date),
+			time: data.time,
+			cover_image: `/images/concerts/${venueSlug}.jpg`,
+			max_tickets_per_user: 6,
+			tickets: [],
+		});
+
+		concertCount++;
+	}
+
+	console.log(`  Created ${concertCount} concerts`);
+	return concertCount;
+}
+
 async function seed(): Promise<void> {
 	try {
 		console.log("Connecting to MongoDB...");
@@ -617,6 +679,8 @@ async function seed(): Promise<void> {
 
 		const mixCount = await seedMixes();
 
+		const concertCount = await seedConcerts();
+
 		console.log("\n========================================");
 		console.log("Seeding completed successfully!");
 		console.log("========================================");
@@ -627,6 +691,7 @@ async function seed(): Promise<void> {
 		console.log(`Subscriptions created: ${subscriptionCount}`);
 		console.log(`Playlists created: ${playlistCount}`);
 		console.log(`Mixes created: ${mixCount}`);
+		console.log(`Concerts created: ${concertCount}`);
 		console.log("========================================");
 		console.log("\nTest Users:");
 		console.log("  Email: alex.morgan@melodio.com | Password: password123");

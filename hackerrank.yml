@@ -10,6 +10,7 @@
 #     - backend/jest.config.js
 #     - backend/src/scripts/seed.ts
 #     - backend/src/shared/config/index.ts
+#     - __tests__/task12/**
 #   ide_config:
 #     default_open_files:
 #       - frontend/src/app/routes.tsx

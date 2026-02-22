@@ -18,6 +18,8 @@ import MoodMixerPage from "@/pages/MoodMixerPage";
 import MixPage from "@/pages/MixPage";
 import DiscoveryPage from "@/pages/DiscoveryPage";
 import ArtistDetailPage from "@/pages/ArtistDetailPage";
+import ConcertsPage from "@/pages/ConcertsPage";
+import ConcertDetailPage from "@/pages/ConcertDetailPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
@@ -156,6 +158,14 @@ export const router = createBrowserRouter([
 					{
 						path: "mix",
 						element: <MixPage />,
+					},
+					{
+						path: "concerts",
+						element: <ConcertsPage />,
+					},
+					{
+						path: "concerts/:id",
+						element: <ConcertDetailPage />,
 					},
 				],
 			},

@@ -53,3 +53,9 @@ export {
 	type MixDetail,
 	type CreateMixInput,
 } from "./mix.service";
+export {
+	concertService,
+	type Concert,
+	type ConcertTicket,
+	type BuyTicketsResponse,
+} from "./concert.service";

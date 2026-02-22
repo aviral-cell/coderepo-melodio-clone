@@ -17,6 +17,7 @@ import {
 	Smile,
 	Compass,
 	Disc3,
+	CalendarDays,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -43,6 +44,7 @@ const navItems = [
 	{ href: "/podcasts", label: "Podcasts", icon: Headphones },
 	{ href: "/mood", label: "Mood Mixer", icon: Smile },
 	{ href: "/mix", label: "Mix", icon: Disc3 },
+	{ href: "/concerts", label: "Concerts", icon: CalendarDays },
 ];
 
 export function Sidebar() {
