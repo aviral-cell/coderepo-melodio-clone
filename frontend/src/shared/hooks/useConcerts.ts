@@ -21,8 +21,6 @@ import {
 	getArtistTracksForConcert,
 } from "@/shared/utils/concertUtils";
 
-// ===== useConcertListing =====
-
 interface UseConcertListingReturn {
 	concerts: Concert[];
 	artists: Artist[];
@@ -154,8 +152,6 @@ export function useConcertListing(): UseConcertListingReturn {
 	};
 }
 
-// ===== useConcertDetail =====
-
 interface UseConcertDetailReturn {
 	concert: Concert | null;
 	userTicketCount: number;
@@ -253,7 +249,6 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 				setTicketQuantity(1);
 			}
 		} catch (_err) {
-			// silently handle
 		}
 	}, [concert, userTicketCount, ticketQuantity]);
 

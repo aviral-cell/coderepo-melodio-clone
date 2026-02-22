@@ -12,8 +12,6 @@ interface AlbumLike {
 	updatedAt: string;
 }
 
-// ===== TYPES =====
-
 export interface Concert {
 	_id: string;
 	artistId: Artist | { _id: string; name: string; imageUrl: string };
@@ -49,8 +47,6 @@ export interface TicketDisplayItem {
 	date: string;
 }
 
-// ===== CONSTANTS =====
-
 export const CONCERT_CITIES = [
 	"New York",
 	"Las Vegas",
@@ -60,8 +56,6 @@ export const CONCERT_CITIES = [
 ] as const;
 
 export const MAX_TICKETS_PER_USER = 6;
-
-// ===== BROWSE FUNCTIONS (correct on BOTH branches) =====
 
 export function getUpcomingConcerts(concerts: Concert[]): Concert[] {
 	const now = new Date();
@@ -82,8 +76,6 @@ export function getMonthOptions(): { value: number; label: string }[] {
 		...months.map((label, i) => ({ value: i + 1, label })),
 	];
 }
-
-// ===== INTERACTION FUNCTIONS (solution versions) =====
 
 export function sortConcertsByDate(
 	concerts: Concert[],
