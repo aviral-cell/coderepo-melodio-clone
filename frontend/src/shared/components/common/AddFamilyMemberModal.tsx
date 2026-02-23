@@ -250,6 +250,7 @@ export function AddFamilyMemberModal({
 						<Button
 							type="button"
 							variant="ghost"
+							className="rounded-full"
 							onClick={handleClose}
 							disabled={isSubmitting}
 							data-testid="family-member-cancel-btn"
@@ -259,7 +260,7 @@ export function AddFamilyMemberModal({
 						<Button
 							type="submit"
 							disabled={isSubmitting || !name.trim() || !email.trim()}
-							className="bg-melodio-green text-black hover:bg-melodio-green/90"
+							className="rounded-full bg-melodio-green text-black hover:bg-melodio-green/90"
 							data-testid="family-member-submit-btn"
 						>
 							{isSubmitting ? "Adding..." : "Add Member"}

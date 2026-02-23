@@ -108,7 +108,7 @@ export function PlayerBar() {
 							variant="ghost"
 							size="icon"
 							className={cn(
-								"h-8 w-8",
+								"h-8 w-8 rounded-full",
 								shuffleEnabled
 									? "text-melodio-green"
 									: "text-melodio-text-subdued hover:text-white"
@@ -123,7 +123,7 @@ export function PlayerBar() {
 						<Button
 							variant="ghost"
 							size="icon"
-							className="h-8 w-8 text-melodio-text-subdued hover:text-white"
+							className="h-8 w-8 rounded-full text-melodio-text-subdued hover:text-white"
 							onClick={previous}
 							data-testid="previous-button"
 						>
@@ -147,7 +147,7 @@ export function PlayerBar() {
 						<Button
 							variant="ghost"
 							size="icon"
-							className="h-8 w-8 text-melodio-text-subdued hover:text-white"
+							className="h-8 w-8 rounded-full text-melodio-text-subdued hover:text-white"
 							onClick={next}
 							data-testid="next-button"
 						>
@@ -158,7 +158,7 @@ export function PlayerBar() {
 							variant="ghost"
 							size="icon"
 							className={cn(
-								"h-8 w-8",
+								"h-8 w-8 rounded-full",
 								repeatMode !== "off"
 									? "text-melodio-green"
 									: "text-melodio-text-subdued hover:text-white"
@@ -198,7 +198,7 @@ export function PlayerBar() {
 					<Button
 						variant="ghost"
 						size="icon"
-						className="h-8 w-8 text-melodio-text-subdued hover:text-white"
+						className="h-8 w-8 rounded-full text-melodio-text-subdued hover:text-white"
 						onClick={toggleQueue}
 					>
 						<ListMusic className="h-5 w-5" />

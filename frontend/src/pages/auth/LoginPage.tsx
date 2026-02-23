@@ -79,7 +79,7 @@ export default function LoginPage() {
 						/>
 					</div>
 
-					<Button type="submit" className="w-full" disabled={isSubmitting}>
+					<Button type="submit" className="w-full rounded-full" disabled={isSubmitting}>
 						{isSubmitting ? "Logging in..." : "Log In"}
 					</Button>
 				</form>

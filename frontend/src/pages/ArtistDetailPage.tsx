@@ -7,23 +7,15 @@ import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { TrackCard } from "@/shared/components/common/TrackCard";
 import { AppImage } from "@/shared/components/common/AppImage";
+import { HalfStarRating } from "@/shared/components/common/HalfStarRating";
+import { FollowButton } from "@/shared/components/common/FollowButton";
 import { artistsService } from "@/shared/services";
 import { tracksService } from "@/shared/services";
 import { getImageUrl } from "@/shared/utils";
+import { formatFollowerCount } from "@/shared/utils/ratingUtils";
+import { useArtistInteraction } from "@/shared/hooks/useArtistInteraction";
 import type { Artist } from "@/shared/types";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
-
-function formatFollowerCount(count: number): string {
-	if (count >= 1_000_000) {
-		const value = count / 1_000_000;
-		return value % 1 === 0 ? `${value}M` : `${value.toFixed(1)}M`;
-	}
-	if (count >= 1_000) {
-		const value = count / 1_000;
-		return value % 1 === 0 ? `${value}K` : `${value.toFixed(1)}K`;
-	}
-	return count.toString();
-}
 
 export default function ArtistDetailPage(): JSX.Element {
 	const { id } = useParams<{ id: string }>();
@@ -32,6 +24,17 @@ export default function ArtistDetailPage(): JSX.Element {
 	const [tracks, setTracks] = useState<TrackWithPopulated[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	const {
+		isFollowing,
+		userRating,
+		isLoading: isInteractionLoading,
+		handleToggleFollow,
+		handleRate,
+		formattedRating,
+		formattedFollowers,
+		followerCount,
+	} = useArtistInteraction(id || "");
 
 	const fetchArtistData = useCallback(async () => {
 		if (!id) return;
@@ -84,7 +87,7 @@ export default function ArtistDetailPage(): JSX.Element {
 			<div className="p-8">
 				<Button
 					variant="ghost"
-					className="mb-4 text-melodio-text-subdued hover:text-white"
+					className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 					onClick={() => navigate(-1)}
 				>
 					<ChevronLeft className="mr-2 h-4 w-4" />
@@ -97,11 +100,15 @@ export default function ArtistDetailPage(): JSX.Element {
 		);
 	}
 
+	const displayFollowers = !isInteractionLoading && followerCount > 0
+		? formattedFollowers
+		: formatFollowerCount(artist.followerCount);
+
 	return (
 		<div className="p-8">
 			<Button
 				variant="ghost"
-				className="mb-4 text-melodio-text-subdued hover:text-white"
+				className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 				onClick={() => navigate(-1)}
 			>
 				<ChevronLeft className="mr-2 h-4 w-4" />
@@ -116,16 +123,33 @@ export default function ArtistDetailPage(): JSX.Element {
 						className="h-full w-full object-cover"
 					/>
 				</div>
-				<div>
+				<div className="flex flex-col gap-2">
 					<h1 className="text-3xl font-bold text-white">{artist.name}</h1>
-					<p className="text-melodio-text-subdued">
-						{formatFollowerCount(artist.followerCount)} followers
-					</p>
 					{artist.genres && artist.genres.length > 0 && (
-						<p className="mt-1 text-sm text-melodio-text-subdued">
-							{artist.genres.map((g) => g.charAt(0).toUpperCase() + g.slice(1)).join(", ")}
+						<p className="text-sm text-melodio-text-subdued">
+							{artist.genres.map((g) => g.charAt(0).toUpperCase() + g.slice(1)).join(" \u2022 ")}
 						</p>
 					)}
+					<div className="flex items-center gap-4">
+						<p className="text-melodio-text-subdued">
+							{displayFollowers} followers
+						</p>
+						<FollowButton
+							isFollowing={isFollowing}
+							onToggle={handleToggleFollow}
+							isLoading={isInteractionLoading}
+						/>
+					</div>
+					<div className="flex items-center gap-3">
+						<HalfStarRating
+							value={userRating}
+							onChange={handleRate}
+							size="md"
+						/>
+						<span className="text-sm text-melodio-text-subdued">
+							{formattedRating}
+						</span>
+					</div>
 				</div>
 			</div>
 

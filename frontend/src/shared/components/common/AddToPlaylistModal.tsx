@@ -195,6 +195,7 @@ export function AddToPlaylistModal({
 					<Button
 						type="button"
 						variant="ghost"
+						className="rounded-full"
 						onClick={handleClose}
 						disabled={!!addingToPlaylistId}
 					>

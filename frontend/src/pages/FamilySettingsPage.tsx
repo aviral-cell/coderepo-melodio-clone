@@ -144,7 +144,7 @@ export default function FamilySettingsPage() {
 						{isPrimaryAccount && remainingSlots > 0 && (
 							<Button
 								onClick={() => setIsAddModalOpen(true)}
-								className="w-full bg-melodio-green text-black hover:bg-melodio-green/90 sm:w-auto"
+								className="w-full rounded-full bg-melodio-green text-black hover:bg-melodio-green/90 sm:w-auto"
 								data-testid="family-add-member-btn"
 							>
 								<UserPlus className="mr-2 h-4 w-4" />
@@ -165,7 +165,7 @@ export default function FamilySettingsPage() {
 									</p>
 									<Button
 										onClick={() => setIsAddModalOpen(true)}
-										className="bg-melodio-green text-black hover:bg-melodio-green/90"
+										className="rounded-full bg-melodio-green text-black hover:bg-melodio-green/90"
 										data-testid="family-add-first-member-btn"
 									>
 										<UserPlus className="mr-2 h-4 w-4" />
@@ -225,7 +225,7 @@ export default function FamilySettingsPage() {
 												size="icon"
 												onClick={() => handleRemoveMember(member._id)}
 												disabled={removingMemberId === member._id}
-												className="shrink-0 text-red-400 hover:bg-red-500/10 hover:text-red-500"
+												className="shrink-0 rounded-full text-red-400 hover:bg-red-500/10 hover:text-red-500"
 												data-testid={`family-remove-member-${member._id}-btn`}
 											>
 												{removingMemberId === member._id ? (

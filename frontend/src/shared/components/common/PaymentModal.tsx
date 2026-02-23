@@ -351,6 +351,7 @@ export function PaymentModal({
 						<Button
 							type="button"
 							variant="ghost"
+							className="rounded-full"
 							onClick={handleClose}
 							disabled={isSubmitting}
 							data-testid="payment-cancel-btn"
@@ -360,7 +361,7 @@ export function PaymentModal({
 						<Button
 							type="submit"
 							disabled={isSubmitting}
-							className="bg-melodio-green text-black hover:bg-melodio-green/90"
+							className="rounded-full bg-melodio-green text-black hover:bg-melodio-green/90"
 							data-testid="payment-submit-btn"
 						>
 							{isSubmitting ? "Processing..." : `Pay $${price.toFixed(2)}`}

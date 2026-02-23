@@ -1,0 +1,57 @@
+import type { LikedTrackItem } from "@/shared/services/track-like.service";
+
+export type LikedSortOption = "recent" | "title" | "artist" | "duration";
+
+export function sortLikedTracks(tracks: LikedTrackItem[], sortBy: LikedSortOption): LikedTrackItem[] {
+	const sorted = [...tracks];
+
+	switch (sortBy) {
+		case "recent":
+			sorted.sort((a, b) => new Date(b.likedAt).getTime() - new Date(a.likedAt).getTime());
+			break;
+		case "title":
+			sorted.sort((a, b) => a.title.localeCompare(b.title));
+			break;
+		case "artist":
+			sorted.sort((a, b) => {
+				const artistA = typeof a.artistId === "object" ? a.artistId.name : "";
+				const artistB = typeof b.artistId === "object" ? b.artistId.name : "";
+				return artistA.localeCompare(artistB);
+			});
+			break;
+		case "duration":
+			sorted.sort((a, b) => a.durationInSeconds - b.durationInSeconds);
+			break;
+	}
+
+	return sorted;
+}
+
+export function getLikedTrackStats(
+	likedIds: Set<string>,
+	dislikedIds: Set<string>,
+): { likedCount: number; dislikedCount: number; totalReactions: number } {
+	return {
+		likedCount: likedIds.size,
+		dislikedCount: dislikedIds.size,
+		totalReactions: likedIds.size + dislikedIds.size,
+	};
+}
+
+export function isTrackLiked(trackId: string, likedIds: Set<string>): boolean {
+	return likedIds.has(trackId);
+}
+
+export function isTrackDisliked(trackId: string, dislikedIds: Set<string>): boolean {
+	return dislikedIds.has(trackId);
+}
+
+export function getReactionForTrack(
+	trackId: string,
+	likedIds: Set<string>,
+	dislikedIds: Set<string>,
+): "like" | "dislike" | null {
+	if (likedIds.has(trackId)) return "like";
+	if (dislikedIds.has(trackId)) return "dislike";
+	return null;
+}

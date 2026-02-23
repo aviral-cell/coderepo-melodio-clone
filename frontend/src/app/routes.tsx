@@ -20,6 +20,7 @@ import DiscoveryPage from "@/pages/DiscoveryPage";
 import ArtistDetailPage from "@/pages/ArtistDetailPage";
 import ConcertsPage from "@/pages/ConcertsPage";
 import ConcertDetailPage from "@/pages/ConcertDetailPage";
+import LikedTracksPage from "@/pages/LikedTracksPage";
 import { ProtectedRoute } from "@/shared/components/common/ProtectedRoute";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 
@@ -134,6 +135,10 @@ export const router = createBrowserRouter([
 					{
 						path: "recently-played",
 						element: <RecentlyPlayedPage />,
+					},
+					{
+						path: "liked",
+						element: <LikedTracksPage />,
 					},
 					{
 						path: "subscription",

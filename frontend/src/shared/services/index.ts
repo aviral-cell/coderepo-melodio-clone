@@ -59,3 +59,12 @@ export {
 	type ConcertTicket,
 	type BuyTicketsResponse,
 } from "./concert.service";
+export { artistInteractionService } from "./artist-interaction.service";
+export {
+	trackLikeService,
+	type LikeStatusResponse,
+	type LikeActionResponse,
+	type LikedIdsResponse,
+	type LikedTrackItem,
+	type LikedTracksResponse,
+} from "./track-like.service";

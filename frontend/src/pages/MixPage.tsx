@@ -192,7 +192,7 @@ export default function MixPage(): JSX.Element {
 				<h1 className="mb-8 text-3xl font-bold text-white">Mix</h1>
 				<div className="py-12 text-center text-red-400">
 					<p>{creator.error}</p>
-					<Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
+					<Button variant="outline" className="mt-4 rounded-full" onClick={() => window.location.reload()}>
 						Retry
 					</Button>
 				</div>
@@ -210,11 +210,12 @@ export default function MixPage(): JSX.Element {
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="gap-2 sm:gap-0">
-					<Button variant="outline" onClick={() => setDeleteConfirm(null)} data-testid="mix-delete-cancel">
+					<Button variant="outline" className="rounded-full" onClick={() => setDeleteConfirm(null)} data-testid="mix-delete-cancel">
 						Cancel
 					</Button>
 					<Button
 						variant="destructive"
+						className="rounded-full"
 						onClick={() => deleteConfirm && handleDeleteMix(deleteConfirm.id)}
 						data-testid="mix-delete-confirm"
 					>
@@ -402,6 +403,7 @@ export default function MixPage(): JSX.Element {
 						<div className="mt-8 flex justify-end">
 							<Button
 								data-testid="mix-next-btn"
+								className="rounded-full"
 								disabled={!creator.canProceed}
 								onClick={creator.nextStep}
 							>
@@ -440,7 +442,7 @@ export default function MixPage(): JSX.Element {
 										data-testid={`mix-variety-${level}`}
 										variant={creator.config.variety === level ? "default" : "outline"}
 										onClick={() => creator.updateConfig({ variety: level })}
-										className="capitalize"
+										className="rounded-full capitalize"
 									>
 										{level}
 									</Button>
@@ -459,7 +461,7 @@ export default function MixPage(): JSX.Element {
 										data-testid={`mix-discovery-${level}`}
 										variant={creator.config.discovery === level ? "default" : "outline"}
 										onClick={() => creator.updateConfig({ discovery: level })}
-										className="capitalize"
+										className="rounded-full capitalize"
 									>
 										{level}
 									</Button>
@@ -479,6 +481,7 @@ export default function MixPage(): JSX.Element {
 										<Button
 											key={filter}
 											data-testid={testId}
+											className="rounded-full"
 											variant={isSelected ? "default" : "outline"}
 											onClick={() => creator.toggleFilter(filter)}
 										>
@@ -490,7 +493,7 @@ export default function MixPage(): JSX.Element {
 						</section>
 
 						<div className="flex justify-end">
-							<Button data-testid="mix-done-btn" onClick={handleDone} disabled={creator.isSaving}>
+							<Button data-testid="mix-done-btn" className="rounded-full" onClick={handleDone} disabled={creator.isSaving}>
 								{creator.isSaving ? (
 									<>
 										<Loader2 className="mr-2 h-4 w-4 animate-spin" />

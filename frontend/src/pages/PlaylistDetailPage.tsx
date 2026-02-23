@@ -184,7 +184,7 @@ function SortableTrackItem({
 					<Button
 						variant="ghost"
 						size="icon"
-						className="h-8 w-8 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+						className="h-8 w-8 rounded-full transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
 					>
 						<MoreHorizontal className="h-4 w-4 text-melodio-text-subdued" />
 					</Button>
@@ -543,7 +543,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 						variant="outline"
 						size="sm"
 						onClick={openCopyDialog}
-						className="gap-2"
+						className="gap-2 rounded-full"
 						data-testid="playlist-copy-btn"
 					>
 						<Copy className="h-4 w-4" />
@@ -555,7 +555,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 							<Button
 								variant="ghost"
 								size="icon"
-								className="h-10 w-10 text-melodio-text-subdued hover:text-white"
+								className="h-10 w-10 rounded-full text-melodio-text-subdued hover:text-white"
 							>
 								<MoreHorizontal className="h-6 w-6" />
 							</Button>
@@ -677,12 +677,13 @@ export default function PlaylistDetailPage(): JSX.Element {
 							<Button
 								type="button"
 								variant="ghost"
+								className="rounded-full"
 								onClick={() => setIsEditDialogOpen(false)}
 								disabled={isSubmitting}
 							>
 								Cancel
 							</Button>
-							<Button type="submit" disabled={isSubmitting || !editName.trim()}>
+							<Button type="submit" className="rounded-full" disabled={isSubmitting || !editName.trim()}>
 								{isSubmitting ? "Saving..." : "Save"}
 							</Button>
 						</DialogFooter>
@@ -703,6 +704,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 						<Button
 							type="button"
 							variant="ghost"
+							className="rounded-full"
 							onClick={() => setIsDeleteDialogOpen(false)}
 							disabled={isSubmitting}
 						>
@@ -710,6 +712,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 						</Button>
 						<Button
 							variant="destructive"
+							className="rounded-full"
 							onClick={handleDelete}
 							disabled={isSubmitting}
 						>
@@ -741,12 +744,14 @@ export default function PlaylistDetailPage(): JSX.Element {
 					<DialogFooter>
 						<Button
 							variant="outline"
+							className="rounded-full"
 							onClick={() => setCopyDialogOpen(false)}
 							data-testid="playlist-copy-cancel-btn"
 						>
 							Cancel
 						</Button>
 						<Button
+							className="rounded-full"
 							onClick={handleCopyPlaylist}
 							disabled={copying}
 							data-testid="playlist-copy-submit-btn"

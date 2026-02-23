@@ -11,8 +11,7 @@ import { EmptyState } from "@/shared/components/common/EmptyState";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
 import { useToast } from "@/shared/hooks/useToast";
 import { historyService, type RecentlyPlayedTrack } from "@/shared/services/history.service";
-import type { TrackWithPopulated } from "@/shared/types/player.types";
-import { formatDuration, getImageUrl, preloadImages } from "@/shared/utils";
+import { formatDuration, getImageUrl, preloadImages, toTrackWithPopulated } from "@/shared/utils";
 
 function formatRelativeTime(dateString: string): string {
 	const date = new Date(dateString);
@@ -44,29 +43,6 @@ function formatRelativeTime(dateString: string): string {
 		day: "numeric",
 		year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
 	}).format(date);
-}
-
-function toTrackWithPopulated(track: RecentlyPlayedTrack): TrackWithPopulated {
-	return {
-		_id: track.id,
-		title: track.title,
-		durationInSeconds: track.durationInSeconds,
-		coverImageUrl: track.coverImageUrl,
-		trackNumber: 0,
-		genre: "",
-		playCount: 0,
-		createdAt: "",
-		updatedAt: "",
-		artistId: {
-			_id: track.artist.id,
-			name: track.artist.name,
-		},
-		albumId: {
-			_id: track.album.id,
-			title: track.album.title,
-			coverImageUrl: track.coverImageUrl,
-		},
-	};
 }
 
 export default function RecentlyPlayedPage(): JSX.Element {
@@ -173,7 +149,7 @@ export default function RecentlyPlayedPage(): JSX.Element {
 						variant="outline"
 						onClick={handleClearHistory}
 						disabled={isClearing}
-						className="border-melodio-light-gray text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white"
+						className="rounded-full border-melodio-light-gray text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white"
 						data-testid="recently-played-clear-btn"
 					>
 						<Trash2 className="mr-2 h-4 w-4" />

@@ -61,35 +61,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 		}
 	}, [state.currentTrack?._id]);
 
-	const saveToRecentlyPlayed = useCallback((track: TrackWithPopulated) => {
-		try {
-			const STORAGE_KEY = "melodio_clone_recently_played";
-			const MAX_RECENT = 10;
-			const stored = localStorage.getItem(STORAGE_KEY);
-			const recent: TrackWithPopulated[] = stored ? JSON.parse(stored) : [];
-			const filtered = recent.filter((t) => t._id !== track._id);
-			const updated = [track, ...filtered].slice(0, MAX_RECENT);
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-		} catch {
-		}
-	}, []);
-
 	const playTrack = useCallback(
 		(track: TrackWithPopulated) => {
 			dispatch({ type: "PLAY_TRACK", payload: track });
-			saveToRecentlyPlayed(track);
 		},
-		[saveToRecentlyPlayed]
+		[]
 	);
 
 	const playTracks = useCallback(
 		(tracks: TrackWithPopulated[], startIndex = 0) => {
 			dispatch({ type: "PLAY_TRACKS", payload: { tracks, startIndex } });
-			if (tracks[startIndex]) {
-				saveToRecentlyPlayed(tracks[startIndex]);
-			}
 		},
-		[saveToRecentlyPlayed]
+		[]
 	);
 
 	const togglePlayPause = useCallback(() => {

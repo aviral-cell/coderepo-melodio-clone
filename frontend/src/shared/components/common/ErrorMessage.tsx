@@ -29,7 +29,7 @@ export function ErrorMessage({
 					variant="outline"
 					size="sm"
 					onClick={onRetry}
-					className="mt-4"
+					className="mt-4 rounded-full"
 				>
 					Try Again
 				</Button>

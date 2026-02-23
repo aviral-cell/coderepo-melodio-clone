@@ -214,7 +214,7 @@ export default function SubscriptionPage() {
 										</p>
 									) : (
 										<Button
-											className="mt-auto w-full bg-melodio-green text-black hover:bg-melodio-green/90"
+											className="mt-auto w-full rounded-full bg-melodio-green text-black hover:bg-melodio-green/90"
 											onClick={() => setIsPaymentModalOpen(true)}
 											data-testid="subscription-upgrade-btn"
 										>
@@ -254,7 +254,7 @@ export default function SubscriptionPage() {
 							</ul>
 
 							<Button
-								className="mt-auto w-full bg-melodio-green text-black hover:bg-melodio-green/90"
+								className="mt-auto w-full rounded-full bg-melodio-green text-black hover:bg-melodio-green/90"
 								onClick={() => setIsPaymentModalOpen(true)}
 								data-testid="subscription-upgrade-premium-btn"
 							>

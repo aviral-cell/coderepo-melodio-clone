@@ -73,7 +73,7 @@ export default function GenrePage(): JSX.Element {
 					<div className="mb-6">
 						<Button
 							variant="ghost"
-							className="mb-4 text-melodio-green hover:text-melodio-green-dark hover:underline"
+							className="mb-4 rounded-full text-melodio-green hover:text-melodio-green-dark hover:underline"
 							onClick={handleBackClick}
 						>
 							<ChevronLeft className="mr-2 h-4 w-4" />

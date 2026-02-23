@@ -138,7 +138,7 @@ function SortableQueueItem({
 				<Button
 					variant="ghost"
 					size="icon"
-					className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+					className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
 					onClick={onRemove}
 					aria-label="Remove from queue"
 				>
@@ -206,7 +206,7 @@ export function QueuePanel() {
 				<Button
 					variant="ghost"
 					size="icon"
-					className="h-8 w-8 text-melodio-text-subdued hover:text-white"
+					className="h-8 w-8 rounded-full text-melodio-text-subdued hover:text-white"
 					onClick={toggleQueue}
 					aria-label="Close queue"
 				>
@@ -273,7 +273,7 @@ export function QueuePanel() {
 								<Button
 									variant="ghost"
 									size="sm"
-									className="h-auto px-2 py-1 text-xs text-melodio-text-subdued hover:text-white"
+									className="h-auto rounded-full px-2 py-1 text-xs text-melodio-text-subdued hover:text-white"
 									onClick={clearQueue}
 								>
 									Clear

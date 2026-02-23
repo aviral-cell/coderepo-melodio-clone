@@ -5,8 +5,10 @@ import path from "path";
 import { errorMiddleware, notFoundHandler } from "./shared/middleware/error.middleware.js";
 import { sanitizeBody } from "./shared/middleware/validation.middleware.js";
 import { authRoutes } from "./features/auth/auth.routes.js";
+import { artistInteractionRoutes } from "./features/artists/artist-interaction.routes.js";
 import { artistRoutes } from "./features/artists/artists.routes.js";
 import { albumRoutes } from "./features/albums/albums.routes.js";
+import { trackLikeRoutes } from "./features/tracks/track-like.routes.js";
 import { trackRoutes } from "./features/tracks/tracks.routes.js";
 import { playlistRoutes } from "./features/playlists/playlists.routes.js";
 import { subscriptionRoutes } from "./features/subscription/subscription.routes.js";
@@ -59,8 +61,10 @@ export function createApp(): Application {
 	});
 
 	app.use("/api/auth", authRoutes);
+	app.use("/api/artists", artistInteractionRoutes);
 	app.use("/api/artists", artistRoutes);
 	app.use("/api/albums", albumRoutes);
+	app.use("/api/tracks", trackLikeRoutes);
 	app.use("/api/tracks", trackRoutes);
 	app.use("/api/playlists", playlistRoutes);
 	app.use("/api/subscription", subscriptionRoutes);

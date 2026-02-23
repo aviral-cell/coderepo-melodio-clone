@@ -75,6 +75,10 @@ export function getInitials(name: string): string {
 }
 
 export { DEFAULT_IMAGE, preloadImages, getImageUrl, configureImageBaseUrl } from "./imageUtils";
+export { toTrackWithPopulated } from "./history.utils";
+export { roundToHalfStar, getStarState, formatRatingDisplay, formatFollowerCount } from "./ratingUtils";
+export { sortLikedTracks, getLikedTrackStats, isTrackLiked, isTrackDisliked, getReactionForTrack } from "./likedTracksUtils";
+export type { LikedSortOption } from "./likedTracksUtils";
 
 interface BackendTrackResponse {
 	id: string;

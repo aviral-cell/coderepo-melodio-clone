@@ -131,7 +131,7 @@ interface TopArtistsSectionProps {
 
 function TopArtistsSection({ artists, onArtistClick }: TopArtistsSectionProps): JSX.Element {
 	return (
-		<div data-testid="discovery-top-artists" className="grid gap-3 md:grid-cols-2">
+		<div data-testid="discovery-top-artists" className="grid gap-3 md:grid-cols-3">
 			{artists.map((artist, idx) => (
 				<div
 					key={artist._id}

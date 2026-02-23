@@ -102,6 +102,8 @@ export default function AlbumDetailPage(): JSX.Element {
 
 	const artistName =
 		typeof album.artistId === "object" ? album.artistId.name : "Unknown Artist";
+	const artistId =
+		typeof album.artistId === "object" ? album.artistId._id : null;
 
 	const totalDuration = tracks.reduce((sum, track) => sum + track.durationInSeconds, 0);
 	const releaseYear = new Date(album.releaseDate).getFullYear();
@@ -135,7 +137,16 @@ export default function AlbumDetailPage(): JSX.Element {
 						<p className="text-sm font-medium text-white">Album</p>
 						<h1 className="mb-4 text-2xl font-bold text-white sm:mb-6 sm:text-5xl">{album.title}</h1>
 						<div className="flex flex-wrap items-center justify-center gap-1 text-sm sm:justify-start sm:gap-2">
-							<span className="font-semibold text-white">{artistName}</span>
+							{artistId ? (
+								<Link
+									to={`/artist/${artistId}`}
+									className="font-semibold text-white hover:underline"
+								>
+									{artistName}
+								</Link>
+							) : (
+								<span className="font-semibold text-white">{artistName}</span>
+							)}
 							<span className="text-melodio-text-subdued">-</span>
 							<span className="text-melodio-text-subdued">{releaseYear}</span>
 							<span className="text-melodio-text-subdued">-</span>

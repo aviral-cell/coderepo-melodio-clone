@@ -6,8 +6,8 @@ import { TrackCard } from "@/shared/components/common/TrackCard";
 import { AlbumCard } from "@/shared/components/common/AlbumCard";
 import { PlaylistCard } from "@/shared/components/common/PlaylistCard";
 import { tracksService, albumsService, playlistsService } from "@/shared/services";
-import { getImageUrl, preloadImages } from "@/shared/utils";
-import { useRecentlyPlayed } from "@/shared/hooks/useRecentlyPlayed";
+import { getImageUrl, preloadImages, toTrackWithPopulated } from "@/shared/utils";
+import { historyService } from "@/shared/services/history.service";
 import { useToast } from "@/shared/hooks/useToast";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 import type { AlbumWithPopulated } from "@/shared/services/albums.service";
@@ -15,8 +15,9 @@ import type { Playlist } from "@/shared/types";
 
 export default function HomePage(): JSX.Element {
 	const { addToast } = useToast();
-	const { recentTracks } = useRecentlyPlayed();
 
+	const [recentTracks, setRecentTracks] = useState<TrackWithPopulated[]>([]);
+	const [isLoadingRecent, setIsLoadingRecent] = useState(true);
 	const [recommendedTracks, setRecommendedTracks] = useState<TrackWithPopulated[]>([]);
 	const [tracks, setTracks] = useState<TrackWithPopulated[]>([]);
 	const [albums, setAlbums] = useState<AlbumWithPopulated[]>([]);
@@ -85,9 +86,26 @@ export default function HomePage(): JSX.Element {
 			}
 		};
 
+		const fetchRecentlyPlayed = async () => {
+			try {
+				const response = await historyService.getRecentlyPlayed(5);
+				const converted = response.tracks.map(toTrackWithPopulated);
+				preloadImages(converted.map((t) => getImageUrl(t.coverImageUrl || (typeof t.albumId === "object" ? t.albumId.coverImageUrl : undefined))));
+				setRecentTracks(converted);
+			} catch (error) {
+				addToast({
+					type: "error",
+					message: error instanceof Error ? error.message : "Failed to load recently played",
+				});
+			} finally {
+				setIsLoadingRecent(false);
+			}
+		};
+
 		fetchTracks();
 		fetchAlbums();
 		fetchPlaylists();
+		fetchRecentlyPlayed();
 	}, [addToast]);
 
 	const getGreeting = () => {
@@ -126,14 +144,26 @@ export default function HomePage(): JSX.Element {
 				)}
 			</section>
 
-			{recentTracks.length > 0 && (
+			{(isLoadingRecent || recentTracks.length > 0) && (
 				<section className="mb-8">
 					<h2 className="mb-4 text-xl font-bold text-white">Recently played</h2>
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
-						{recentTracks.slice(0, 5).map((track) => (
-							<TrackCard key={track._id} track={track} />
-						))}
-					</div>
+					{isLoadingRecent ? (
+						<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+							{Array.from({ length: 5 }).map((_, index) => (
+								<div key={index} className="rounded-md bg-melodio-dark-gray p-4">
+									<Skeleton className="mb-4 aspect-square w-full rounded-md" />
+									<Skeleton className="mb-2 h-4 w-3/4" />
+									<Skeleton className="h-3 w-1/2" />
+								</div>
+							))}
+						</div>
+					) : (
+						<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+							{recentTracks.map((track) => (
+								<TrackCard key={track._id} track={track} />
+							))}
+						</div>
+					)}
 				</section>
 			)}
 

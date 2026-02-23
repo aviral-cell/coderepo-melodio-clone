@@ -127,7 +127,7 @@ export function CreatePlaylistDialog({
 						</div>
 						<Link to="/subscription" onClick={() => onOpenChange(false)}>
 							<Button
-								className="bg-melodio-green text-black hover:bg-melodio-green/90"
+								className="rounded-full bg-melodio-green text-black hover:bg-melodio-green/90"
 								data-testid="playlist-limit-upgrade-btn"
 							>
 								<Crown className="mr-2 h-4 w-4" />
@@ -139,6 +139,7 @@ export function CreatePlaylistDialog({
 						<Button
 							type="button"
 							variant="ghost"
+							className="rounded-full"
 							onClick={handleClose}
 						>
 							Close
@@ -206,6 +207,7 @@ export function CreatePlaylistDialog({
 						<Button
 							type="button"
 							variant="ghost"
+							className="rounded-full"
 							onClick={handleClose}
 							disabled={isSubmitting}
 							data-testid="playlist-cancel-btn"
@@ -214,6 +216,7 @@ export function CreatePlaylistDialog({
 						</Button>
 						<Button
 							type="submit"
+							className="rounded-full"
 							disabled={isSubmitting || !name.trim()}
 							data-testid="playlist-create-btn"
 						>

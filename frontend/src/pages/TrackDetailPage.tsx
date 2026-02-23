@@ -3,6 +3,7 @@ import type { JSX } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router";
 import { Play, Pause, Clock3, Plus, MoreHorizontal, ListPlus } from "lucide-react";
+import { LikeDislikeButtons } from "@/shared/components/common/LikeDislikeButtons";
 
 import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
@@ -115,6 +116,8 @@ export default function TrackDetailPage(): JSX.Element {
 		typeof track.albumId === "object" ? track.albumId.title : "Unknown Album";
 	const albumId =
 		typeof track.albumId === "object" ? track.albumId._id : null;
+	const artistId =
+		typeof track.artistId === "object" ? track.artistId._id : null;
 
 	const isCurrentTrack = state.currentTrack?._id === track._id;
 	const isPlaying = isCurrentTrack && state.isPlaying;
@@ -145,7 +148,16 @@ export default function TrackDetailPage(): JSX.Element {
 						<p className="text-sm font-medium text-white">Song</p>
 						<h1 className="mb-4 text-2xl font-bold text-white sm:text-5xl">{track.title}</h1>
 						<div className="flex items-center gap-2 text-sm">
-							<span className="font-semibold text-white">{artistName}</span>
+							{artistId ? (
+								<Link
+									to={`/artist/${artistId}`}
+									className="font-semibold text-white hover:underline"
+								>
+									{artistName}
+								</Link>
+							) : (
+								<span className="font-semibold text-white">{artistName}</span>
+							)}
 							<span className="text-melodio-text-subdued">-</span>
 							{albumId ? (
 								<Link
@@ -184,6 +196,8 @@ export default function TrackDetailPage(): JSX.Element {
 							<Play className="h-8 w-8 fill-black text-black ml-0.5" fill="black" />
 						)}
 					</Button>
+
+					<LikeDislikeButtons trackId={track._id} size="md" />
 
 					<Button
 						size="icon"
