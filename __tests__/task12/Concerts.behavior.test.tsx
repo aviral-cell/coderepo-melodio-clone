@@ -359,7 +359,7 @@ describe("Live Music Concerts", () => {
 		}
 
 		describe("Sort Order", () => {
-			it("12.1 - should display upcoming concerts sorted descending by date with furthest future first", async () => {
+			it("should display upcoming concerts sorted descending by date with furthest future first", async () => {
 				setupListingMocks();
 
 				render(
@@ -387,7 +387,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Month Filter", () => {
-			it("12.2 - should filter concerts to March only when March is selected", async () => {
+			it("should filter concerts to March only when March is selected", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -415,7 +415,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.queryByTestId("concerts-card-c4")).not.toBeInTheDocument();
 			});
 
-			it("12.3 - should filter concerts to April only when April is selected", async () => {
+			it("should filter concerts to April only when April is selected", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -440,7 +440,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concerts-card-c2")).toBeInTheDocument();
 			});
 
-			it("12.4 - should show no concerts when November is selected (no events in November)", async () => {
+			it("should show no concerts when November is selected (no events in November)", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -464,7 +464,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByText("No concerts found for this month.")).toBeInTheDocument();
 			});
 
-			it("12.5 - should filter concerts to October showing only c4", async () => {
+			it("should filter concerts to October showing only c4", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -489,7 +489,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concerts-card-c4")).toBeInTheDocument();
 			});
 
-			it("12.6 - should filter concerts to December showing only c6", async () => {
+			it("should filter concerts to December showing only c6", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -514,7 +514,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concerts-card-c6")).toBeInTheDocument();
 			});
 
-			it("12.7 - should filter concerts to May showing only c5", async () => {
+			it("should filter concerts to May showing only c5", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -539,7 +539,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concerts-card-c5")).toBeInTheDocument();
 			});
 
-			it("12.8 - should have an 'All' option (value 0) in the month dropdown", async () => {
+			it("should have an 'All' option (value 0) in the month dropdown", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -560,7 +560,7 @@ describe("Live Music Concerts", () => {
 				});
 			});
 
-			it("12.9 - should show all upcoming concerts when 'All' is selected after filtering by month", async () => {
+			it("should show all upcoming concerts when 'All' is selected after filtering by month", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -593,7 +593,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("City Filter", () => {
-			it("12.10 - should show only New York artists when New York chip is clicked", async () => {
+			it("should show only New York artists when New York chip is clicked", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -619,7 +619,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.queryByTestId("concerts-artist-a5")).not.toBeInTheDocument();
 			});
 
-			it("12.11 - should show only Los Angeles artists when Los Angeles chip is clicked", async () => {
+			it("should show only Los Angeles artists when Los Angeles chip is clicked", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
@@ -647,7 +647,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Date Badge Format", () => {
-			it("12.12 - should display month abbreviation first and day number second for c1 (Mar 15)", async () => {
+			it("should display month abbreviation first and day number second for c1 (Mar 15)", async () => {
 				setupListingMocks();
 
 				render(
@@ -665,7 +665,7 @@ describe("Live Music Concerts", () => {
 				expect(badge.children[1]).toHaveTextContent("15");
 			});
 
-			it("12.13 - should display month abbreviation first and day number second for c6 (Dec 12)", async () => {
+			it("should display month abbreviation first and day number second for c6 (Dec 12)", async () => {
 				setupListingMocks();
 
 				render(
@@ -685,7 +685,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Time Format", () => {
-			it("12.14 - should display c1 time '19:30' as '7:30 PM' in 12-hour format", async () => {
+			it("should display c1 time '19:30' as '7:30 PM' in 12-hour format", async () => {
 				setupListingMocks();
 
 				render(
@@ -701,7 +701,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concerts-card-time-c1")).toHaveTextContent("7:30 PM");
 			});
 
-			it("12.15 - should display c4 time '18:00' as '6:00 PM' in 12-hour format", async () => {
+			it("should display c4 time '18:00' as '6:00 PM' in 12-hour format", async () => {
 				setupListingMocks();
 
 				render(
@@ -717,7 +717,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concerts-card-time-c4")).toHaveTextContent("6:00 PM");
 			});
 
-			it("12.16 - should display c5 time '20:00' as '8:00 PM' in 12-hour format", async () => {
+			it("should display c5 time '20:00' as '8:00 PM' in 12-hour format", async () => {
 				setupListingMocks();
 
 				render(
@@ -735,7 +735,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Past Concert Filtering", () => {
-			it("12.17 - should not display past concerts in the upcoming listing", async () => {
+			it("should not display past concerts in the upcoming listing", async () => {
 				setupListingMocks();
 
 				render(
@@ -831,7 +831,7 @@ describe("Live Music Concerts", () => {
 		}
 
 		describe("Detail Display", () => {
-			it("12.18 - should display the concert date in 'Mon Day' format (Mar 15)", async () => {
+			it("should display the concert date in 'Mon Day' format (Mar 15)", async () => {
 				setupDetailMocks();
 
 				render(
@@ -847,7 +847,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concert-detail-date")).toHaveTextContent("Mar 15");
 			});
 
-			it("12.19 - should display the concert time in 12-hour format (7:30 PM)", async () => {
+			it("should display the concert time in 12-hour format (7:30 PM)", async () => {
 				setupDetailMocks();
 
 				render(
@@ -863,7 +863,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("7:30 PM");
 			});
 
-			it("12.20 - should format midnight '00:00' as '12:00 AM'", async () => {
+			it("should format midnight '00:00' as '12:00 AM'", async () => {
 				const midnightConcert = createMockConcert(
 					"c-midnight",
 					"a1",
@@ -888,7 +888,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("12:00 AM");
 			});
 
-			it("12.21 - should format noon '12:00' as '12:00 PM'", async () => {
+			it("should format noon '12:00' as '12:00 PM'", async () => {
 				const noonConcert = createMockConcert(
 					"c-noon",
 					"a2",
@@ -915,7 +915,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Artist Albums", () => {
-			it("12.22 - should show exactly 1 album for artist a1 (The Amplifiers)", async () => {
+			it("should show exactly 1 album for artist a1 (The Amplifiers)", async () => {
 				setupDetailMocks();
 
 				render(
@@ -933,7 +933,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.getByTestId("concert-detail-album-alb1")).toBeInTheDocument();
 			});
 
-			it("12.23 - should not show albums from other artists (alb2, alb3)", async () => {
+			it("should not show albums from other artists (alb2, alb3)", async () => {
 				setupDetailMocks();
 
 				render(
@@ -952,7 +952,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Artist Tracks", () => {
-			it("12.24 - should show exactly 2 tracks for artist a1 (The Amplifiers)", async () => {
+			it("should show exactly 2 tracks for artist a1 (The Amplifiers)", async () => {
 				setupDetailMocks();
 
 				render(
@@ -969,7 +969,7 @@ describe("Live Music Concerts", () => {
 				expect(trackItems).toHaveLength(2);
 			});
 
-			it("12.25 - should not show tracks from other artists (t3, t4)", async () => {
+			it("should not show tracks from other artists (t3, t4)", async () => {
 				setupDetailMocks();
 
 				render(
@@ -988,7 +988,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Buy Ticket Dialog", () => {
-			it("12.26 - should open buy ticket dialog when buy button is clicked", async () => {
+			it("should open buy ticket dialog when buy button is clicked", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
@@ -1009,7 +1009,7 @@ describe("Live Music Concerts", () => {
 				});
 			});
 
-			it("12.27 - should show available tickets remaining when dialog opens", async () => {
+			it("should show available tickets remaining when dialog opens", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
@@ -1030,7 +1030,7 @@ describe("Live Music Concerts", () => {
 				});
 			});
 
-			it("12.28 - should increment ticket quantity when plus button is clicked", async () => {
+			it("should increment ticket quantity when plus button is clicked", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
@@ -1057,7 +1057,7 @@ describe("Live Music Concerts", () => {
 				});
 			});
 
-			it("12.29 - should disable decrement button when quantity is at minimum (1)", async () => {
+			it("should disable decrement button when quantity is at minimum (1)", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
@@ -1080,7 +1080,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Ticket Purchase", () => {
-			it("12.30 - should update ticket count to 1/6 after purchasing a single ticket", async () => {
+			it("should update ticket count to 1/6 after purchasing a single ticket", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
@@ -1109,7 +1109,7 @@ describe("Live Music Concerts", () => {
 				});
 			});
 
-			it("12.31 - should update ticket count to 2/6 after purchasing 2 tickets", async () => {
+			it("should update ticket count to 2/6 after purchasing 2 tickets", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
@@ -1144,7 +1144,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("Ticket Limits", () => {
-			it("12.32 - should hide buy button and show 6/6 when user has reached ticket limit", async () => {
+			it("should hide buy button and show 6/6 when user has reached ticket limit", async () => {
 				const maxedConcert = createMockConcert(
 					"c1",
 					"a1",
@@ -1184,7 +1184,7 @@ describe("Live Music Concerts", () => {
 				expect(screen.queryByTestId("concert-detail-buy-btn")).not.toBeInTheDocument();
 			});
 
-			it("12.33 - should show 3/6 tickets and keep buy button visible when user has 3 tickets", async () => {
+			it("should show 3/6 tickets and keep buy button visible when user has 3 tickets", async () => {
 				const partialConcert = createMockConcert(
 					"c1",
 					"a1",
@@ -1220,7 +1220,7 @@ describe("Live Music Concerts", () => {
 		});
 
 		describe("View Tickets Dialog", () => {
-			it("12.34 - should open view tickets dialog when view tickets button is clicked", async () => {
+			it("should open view tickets dialog when view tickets button is clicked", async () => {
 				const ticketsData = [
 					{
 						userId: "user-1",
@@ -1261,7 +1261,7 @@ describe("Live Music Concerts", () => {
 				});
 			});
 
-			it("12.35 - should display ticket cards with correct ticket codes", async () => {
+			it("should display ticket cards with correct ticket codes", async () => {
 				const ticketsData = [
 					{
 						userId: "user-1",
