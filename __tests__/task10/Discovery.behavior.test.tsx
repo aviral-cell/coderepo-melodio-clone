@@ -6,9 +6,9 @@
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
 
-import MixPage from "@/pages/MixPage";
+import DiscoveryPage from "@/pages/DiscoveryPage";
 import { PlayerProvider } from "@/shared/contexts/PlayerContext";
 import { PlaylistProvider } from "@/shared/contexts/PlaylistContext";
 import { ToastProvider } from "@/shared/hooks/useToast";
@@ -24,15 +24,6 @@ jest.mock("@/shared/services", () => ({
 	},
 	artistsService: {
 		getAll: jest.fn(),
-	},
-}));
-
-jest.mock("@/shared/services/mix.service", () => ({
-	mixService: {
-		create: jest.fn(),
-		getAll: jest.fn(),
-		getById: jest.fn(),
-		delete: jest.fn(),
 	},
 }));
 
@@ -104,8 +95,8 @@ function createMockTrack(overrides: Record<string, unknown> = {}) {
 		trackNumber: 1,
 		genre: "rock",
 		playCount: 1000,
-		createdAt: "2024-01-20T00:00:00.000Z",
-		updatedAt: "2024-01-20T00:00:00.000Z",
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
 		coverImageUrl: "/cover.jpg",
 		artistId: {
 			_id: "artist-1",
@@ -117,6 +108,20 @@ function createMockTrack(overrides: Record<string, unknown> = {}) {
 			title: "Test Album",
 			coverImageUrl: "/cover.jpg",
 		},
+		...overrides,
+	};
+}
+
+function createMockAlbum(overrides: Record<string, unknown> = {}) {
+	return {
+		_id: `album-${Math.random().toString(36).substring(2, 9)}`,
+		title: "Test Album",
+		releaseDate: "2023-01-01T00:00:00.000Z",
+		coverImageUrl: "/cover.jpg",
+		totalTracks: 5,
+		createdAt: "2023-01-01T00:00:00.000Z",
+		updatedAt: "2023-01-01T00:00:00.000Z",
+		artistId: { _id: "artist-1", name: "Test Artist", imageUrl: "/artist.jpg" },
 		...overrides,
 	};
 }
@@ -139,7 +144,7 @@ function createMockArtist(overrides: Record<string, unknown> = {}) {
 
 const now = new Date().toISOString();
 
-// Rock tracks (2)
+// Rock tracks (2) - linked to album-rock-1 (2012, "2010's" era)
 const rockTracks = [
 	createMockTrack({
 		_id: "track-rock-1",
@@ -167,7 +172,7 @@ const rockTracks = [
 	}),
 ];
 
-// Pop tracks (2)
+// Pop tracks (2) - linked to album-pop-1 (2015, "2010's" era)
 const popTracks = [
 	createMockTrack({
 		_id: "track-pop-1",
@@ -195,7 +200,7 @@ const popTracks = [
 	}),
 ];
 
-// Jazz tracks (2)
+// Jazz tracks (2) - linked to album-jazz-1 (1995, "90's" era)
 const jazzTracks = [
 	createMockTrack({
 		_id: "track-jazz-1",
@@ -223,7 +228,7 @@ const jazzTracks = [
 	}),
 ];
 
-// Electronic tracks (2)
+// Electronic tracks (2) - linked to album-electronic-1 (2003, "2000's" era)
 const electronicTracks = [
 	createMockTrack({
 		_id: "track-electronic-1",
@@ -251,7 +256,7 @@ const electronicTracks = [
 	}),
 ];
 
-// Hip-hop tracks (2)
+// Hip-hop tracks (2) - linked to album-hiphop-1 (2023, "2020's" era)
 const hipHopTracks = [
 	createMockTrack({
 		_id: "track-hiphop-1",
@@ -279,7 +284,7 @@ const hipHopTracks = [
 	}),
 ];
 
-// R&B tracks (2)
+// R&B tracks (2) - linked to album-rnb-1 (1998, "90's" era)
 const rnbTracks = [
 	createMockTrack({
 		_id: "track-rnb-1",
@@ -307,7 +312,7 @@ const rnbTracks = [
 	}),
 ];
 
-// Classical tracks (2)
+// Classical tracks (2) - linked to album-classical-1 (1985, "80's" era)
 const classicalTracks = [
 	createMockTrack({
 		_id: "track-classical-1",
@@ -345,30 +350,59 @@ const allMockTracks = [
 	...classicalTracks,
 ];
 
-const allMockArtists = [
-	createMockArtist({
-		_id: "artist-rock-1",
-		name: "The Amplifiers",
-		genres: ["rock"],
-		followerCount: 250000,
+// Albums with matching _id values and specific releaseDates for era testing
+const allMockAlbums = [
+	createMockAlbum({
+		_id: "album-rock-1",
+		title: "Electric Storm",
+		releaseDate: "2012-06-15T00:00:00.000Z",
+		artistId: { _id: "artist-rock-1", name: "The Amplifiers", imageUrl: "/artist-rock.jpg" },
 	}),
+	createMockAlbum({
+		_id: "album-pop-1",
+		title: "Neon Nights",
+		releaseDate: "2015-03-20T00:00:00.000Z",
+		artistId: { _id: "artist-pop-1", name: "Neon Dreams", imageUrl: "/artist-pop.jpg" },
+	}),
+	createMockAlbum({
+		_id: "album-jazz-1",
+		title: "Midnight Sessions",
+		releaseDate: "1995-11-10T00:00:00.000Z",
+		artistId: { _id: "artist-jazz-1", name: "Blue Note Quartet", imageUrl: "/artist-jazz.jpg" },
+	}),
+	createMockAlbum({
+		_id: "album-electronic-1",
+		title: "Digital Horizon",
+		releaseDate: "2003-08-25T00:00:00.000Z",
+		artistId: { _id: "artist-electronic-1", name: "Synthwave Collective", imageUrl: "/artist-electronic.jpg" },
+	}),
+	createMockAlbum({
+		_id: "album-hiphop-1",
+		title: "Street Anthems",
+		releaseDate: "2023-01-15T00:00:00.000Z",
+		artistId: { _id: "artist-hiphop-1", name: "Urban Beats", imageUrl: "/artist-hiphop.jpg" },
+	}),
+	createMockAlbum({
+		_id: "album-rnb-1",
+		title: "Satin Sheets",
+		releaseDate: "1998-07-04T00:00:00.000Z",
+		artistId: { _id: "artist-rnb-1", name: "Velvet Voice", imageUrl: "/artist-rnb.jpg" },
+	}),
+	createMockAlbum({
+		_id: "album-classical-1",
+		title: "Timeless Classics",
+		releaseDate: "1985-04-12T00:00:00.000Z",
+		artistId: { _id: "artist-classical-1", name: "Vienna Philharmonic", imageUrl: "/artist-classical.jpg" },
+	}),
+];
+
+// Artists with different followerCounts for Top Artists ordering
+const allMockArtists = [
 	createMockArtist({
 		_id: "artist-pop-1",
 		name: "Neon Dreams",
 		genres: ["pop"],
 		followerCount: 500000,
-	}),
-	createMockArtist({
-		_id: "artist-jazz-1",
-		name: "Blue Note Quartet",
-		genres: ["jazz"],
-		followerCount: 150000,
-	}),
-	createMockArtist({
-		_id: "artist-electronic-1",
-		name: "Synthwave Collective",
-		genres: ["electronic"],
-		followerCount: 300000,
 	}),
 	createMockArtist({
 		_id: "artist-hiphop-1",
@@ -377,10 +411,28 @@ const allMockArtists = [
 		followerCount: 400000,
 	}),
 	createMockArtist({
+		_id: "artist-electronic-1",
+		name: "Synthwave Collective",
+		genres: ["electronic"],
+		followerCount: 300000,
+	}),
+	createMockArtist({
+		_id: "artist-rock-1",
+		name: "The Amplifiers",
+		genres: ["rock"],
+		followerCount: 250000,
+	}),
+	createMockArtist({
 		_id: "artist-rnb-1",
 		name: "Velvet Voice",
 		genres: ["r-and-b"],
 		followerCount: 200000,
+	}),
+	createMockArtist({
+		_id: "artist-jazz-1",
+		name: "Blue Note Quartet",
+		genres: ["jazz"],
+		followerCount: 150000,
 	}),
 	createMockArtist({
 		_id: "artist-classical-1",
@@ -390,9 +442,20 @@ const allMockArtists = [
 	}),
 ];
 
+// Paginated responses matching backend shape
 const mockTracksResponse = {
 	items: allMockTracks,
 	total: allMockTracks.length,
+	page: 1,
+	limit: 100,
+	totalPages: 1,
+	hasNext: false,
+	hasPrev: false,
+};
+
+const mockAlbumsResponse = {
+	items: allMockAlbums,
+	total: allMockAlbums.length,
 	page: 1,
 	limit: 100,
 	totalPages: 1,
@@ -410,35 +473,11 @@ const mockArtistsResponse = {
 	hasPrev: false,
 };
 
-// Saved mixes for "Your Mixes" section
-const mockSavedMixes = [
-	{
-		_id: "mix-1",
-		title: "The Amplifiers and Neon Dreams mix",
-		artistIds: ["artist-rock-1", "artist-pop-1"],
-		config: { variety: "medium", discovery: "blend", filters: [] },
-		trackIds: ["track-rock-1", "track-pop-1"],
-		coverImages: ["/artist-rock.jpg", "/artist-pop.jpg"],
-		trackCount: 2,
-		createdAt: "2024-06-15T00:00:00.000Z",
-	},
-	{
-		_id: "mix-2",
-		title: "Blue Note Quartet mix",
-		artistIds: ["artist-jazz-1"],
-		config: { variety: "low", discovery: "familiar", filters: ["Chill"] },
-		trackIds: ["track-jazz-1", "track-jazz-2"],
-		coverImages: ["/artist-jazz.jpg"],
-		trackCount: 2,
-		createdAt: "2024-07-20T00:00:00.000Z",
-	},
-];
-
 // ========== TEST WRAPPER ==========
 
 function TestWrapper({ children }: { children: React.ReactNode }) {
 	return (
-		<MemoryRouter initialEntries={["/mix"]}>
+		<MemoryRouter initialEntries={["/discover"]}>
 			<ToastProvider>
 				<PlayerProvider>
 					<PlaylistProvider>{children}</PlaylistProvider>
@@ -448,31 +487,51 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 	);
 }
 
-function renderMixPage() {
+function renderDiscoveryPage() {
 	return render(
 		<TestWrapper>
-			<MixPage />
+			<DiscoveryPage />
 		</TestWrapper>,
+	);
+}
+
+function LocationDisplay() {
+	const location = useLocation();
+	return <div data-testid="location-display">{location.pathname}</div>;
+}
+
+function renderDiscoveryPageWithLocation() {
+	return render(
+		<MemoryRouter initialEntries={["/discover"]}>
+			<ToastProvider>
+				<PlayerProvider>
+					<PlaylistProvider>
+						<DiscoveryPage />
+						<LocationDisplay />
+					</PlaylistProvider>
+				</PlayerProvider>
+			</ToastProvider>
+		</MemoryRouter>,
 	);
 }
 
 // ========== SETUP / TEARDOWN ==========
 
+const originalFetch = global.fetch;
 const originalLocation = window.location;
 
-import { tracksService, artistsService } from "@/shared/services";
-import { mixService } from "@/shared/services/mix.service";
+let mockFetch: jest.Mock;
+
+import { tracksService, albumsService, artistsService } from "@/shared/services";
 
 const mockTracksGetAll = tracksService.getAll as jest.Mock;
+const mockAlbumsGetAll = albumsService.getAll as jest.Mock;
 const mockArtistsGetAll = artistsService.getAll as jest.Mock;
-const mockMixGetAll = mixService.getAll as jest.Mock;
-const mockMixCreate = mixService.create as jest.Mock;
 
 function setupSuccessfulMocks() {
 	mockTracksGetAll.mockResolvedValue(mockTracksResponse);
+	mockAlbumsGetAll.mockResolvedValue(mockAlbumsResponse);
 	mockArtistsGetAll.mockResolvedValue(mockArtistsResponse);
-	mockMixGetAll.mockResolvedValue(mockSavedMixes);
-	mockMixCreate.mockResolvedValue(mockSavedMixes[0]);
 }
 
 describe("Music Discovery", () => {
@@ -489,7 +548,6 @@ describe("Music Discovery", () => {
 			hash: "",
 			href: "http://localhost:3000/",
 			origin: "http://localhost:3000",
-			reload: jest.fn(),
 		} as Location;
 	});
 
@@ -498,10 +556,13 @@ describe("Music Discovery", () => {
 	});
 
 	beforeEach(() => {
+		mockFetch = jest.fn();
+		global.fetch = mockFetch;
 		localStorage.setItem("accessToken", "test-token");
 	});
 
 	afterEach(() => {
+		global.fetch = originalFetch;
 		localStorage.clear();
 		jest.clearAllMocks();
 	});
