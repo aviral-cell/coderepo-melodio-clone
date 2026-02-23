@@ -140,8 +140,9 @@ export default function PodcastPage(): JSX.Element {
 						</div>
 					</div>
 
+					<section data-testid="podcast-up-next">
 					{upNextEpisodes.length > 0 && (
-						<section data-testid="podcast-up-next">
+						<>
 							<h3 className="mb-4 text-lg font-semibold text-white">Up Next</h3>
 							<div className="space-y-2">
 								{upNextEpisodes.map((episode) => (
@@ -170,8 +171,9 @@ export default function PodcastPage(): JSX.Element {
 									</div>
 								))}
 							</div>
-						</section>
+						</>
 					)}
+				</section>
 				</div>
 			</div>
 		);
