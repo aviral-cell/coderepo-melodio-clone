@@ -7,20 +7,20 @@ export function sortLikedTracks(tracks: LikedTrackItem[], sortBy: LikedSortOptio
 
 	switch (sortBy) {
 		case "recent":
-			sorted.sort((a, b) => new Date(b.likedAt).getTime() - new Date(a.likedAt).getTime());
+			sorted.sort((a, b) => new Date(b.likedAt || 0).getTime() - new Date(a.likedAt || 0).getTime());
 			break;
 		case "title":
-			sorted.sort((a, b) => a.title.localeCompare(b.title));
+			sorted.sort((a, b) => (a.title ?? "").localeCompare(b.title ?? ""));
 			break;
 		case "artist":
 			sorted.sort((a, b) => {
-				const artistA = typeof a.artistId === "object" ? a.artistId.name : "";
-				const artistB = typeof b.artistId === "object" ? b.artistId.name : "";
+				const artistA = typeof a.artistId === "object" ? (a.artistId?.name ?? "") : "";
+				const artistB = typeof b.artistId === "object" ? (b.artistId?.name ?? "") : "";
 				return artistA.localeCompare(artistB);
 			});
 			break;
 		case "duration":
-			sorted.sort((a, b) => a.durationInSeconds - b.durationInSeconds);
+			sorted.sort((a, b) => (a.durationInSeconds ?? 0) - (b.durationInSeconds ?? 0));
 			break;
 	}
 
