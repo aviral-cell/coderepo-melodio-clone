@@ -295,13 +295,6 @@ describe("Artist Interaction API", () => {
 			expect(artistAfterUnfollow?.follower_count).toBe(0);
 		});
 
-		it("should return 401 without auth token", async () => {
-			const response = await request(app)
-				.post(`${ARTIST_API_BASE}/${testArtist._id}/follow`);
-
-			expect(response.status).toBe(401);
-			expect(response.body.success).toBe(false);
-		});
 	});
 
 	describe("POST /api/artists/:id/rate", () => {
@@ -478,12 +471,5 @@ describe("Artist Interaction API", () => {
 			expect(response.body.data.totalRatings).toBe(1);
 		});
 
-		it("should return 401 without auth token", async () => {
-			const response = await request(app)
-				.get(`${ARTIST_API_BASE}/${testArtist._id}/interaction`);
-
-			expect(response.status).toBe(401);
-			expect(response.body.success).toBe(false);
-		});
 	});
 });

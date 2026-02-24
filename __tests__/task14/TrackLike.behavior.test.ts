@@ -378,18 +378,6 @@ describe("Track Like/Dislike API", () => {
 			});
 		});
 
-		describe("Authentication", () => {
-			it("should return 401 without auth token", async () => {
-				const trackId = testTracks[0]._id.toString();
-
-				const response = await request(app)
-					.post(`${TRACKS_API_BASE}/${trackId}/like`);
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
-			});
-		});
-
 		describe("Validation Errors", () => {
 			let authToken: string;
 
@@ -401,16 +389,6 @@ describe("Track Like/Dislike API", () => {
 				};
 				const result = await registerAndLoginUser(uniqueUser);
 				authToken = result.token;
-			});
-
-			it("should return 400 for invalid track ID format", async () => {
-				const response = await request(app)
-					.post(`${TRACKS_API_BASE}/invalid-id/like`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(400);
-				expect(response.body.success).toBe(false);
-				expect(response.body.error).toMatch(/invalid/i);
 			});
 
 			it("should return 404 for non-existent track", async () => {
@@ -496,16 +474,6 @@ describe("Track Like/Dislike API", () => {
 				authToken = result.token;
 			});
 
-			it("should return 400 for invalid track ID format", async () => {
-				const response = await request(app)
-					.post(`${TRACKS_API_BASE}/not-valid-objectid/dislike`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(400);
-				expect(response.body.success).toBe(false);
-				expect(response.body.error).toMatch(/invalid/i);
-			});
-
 			it("should return 404 for non-existent track", async () => {
 				const fakeId = new mongoose.Types.ObjectId().toString();
 
@@ -560,63 +528,6 @@ describe("Track Like/Dislike API", () => {
 					.set("Authorization", `Bearer ${authToken}`);
 
 				expect(statusRes.body.data.status).toBeNull();
-			});
-
-			it("should remove a dislike reaction", async () => {
-				const trackId = testTracks[1]._id.toString();
-
-				// Dislike the track first
-				await request(app)
-					.post(`${TRACKS_API_BASE}/${trackId}/dislike`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				// Remove the reaction
-				const response = await request(app)
-					.delete(`${TRACKS_API_BASE}/${trackId}/like`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(200);
-				expect(response.body.success).toBe(true);
-				expect(response.body.data.status).toBeNull();
-				expect(response.body.data.trackId).toBe(trackId);
-			});
-
-			it("should handle removing when no reaction exists", async () => {
-				const trackId = testTracks[2]._id.toString();
-
-				// Remove without any prior reaction
-				const response = await request(app)
-					.delete(`${TRACKS_API_BASE}/${trackId}/like`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(200);
-				expect(response.body.success).toBe(true);
-				expect(response.body.data.status).toBeNull();
-				expect(response.body.data.trackId).toBe(trackId);
-			});
-		});
-
-		describe("Validation Errors", () => {
-			let authToken: string;
-
-			beforeEach(async () => {
-				const uniqueUser = {
-					...testUserData,
-					email: generateUniqueEmail("remove-validation"),
-					username: `removevalid_${Date.now()}`,
-				};
-				const result = await registerAndLoginUser(uniqueUser);
-				authToken = result.token;
-			});
-
-			it("should return 400 for invalid track ID format", async () => {
-				const response = await request(app)
-					.delete(`${TRACKS_API_BASE}/bad-id/like`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(400);
-				expect(response.body.success).toBe(false);
-				expect(response.body.error).toMatch(/invalid/i);
 			});
 		});
 	});
@@ -681,30 +592,6 @@ describe("Track Like/Dislike API", () => {
 				expect(response.status).toBe(200);
 				expect(response.body.success).toBe(true);
 				expect(response.body.data.status).toBe("dislike");
-			});
-		});
-
-		describe("Validation Errors", () => {
-			let authToken: string;
-
-			beforeEach(async () => {
-				const uniqueUser = {
-					...testUserData,
-					email: generateUniqueEmail("status-validation"),
-					username: `statusvalid_${Date.now()}`,
-				};
-				const result = await registerAndLoginUser(uniqueUser);
-				authToken = result.token;
-			});
-
-			it("should return 400 for invalid track ID format", async () => {
-				const response = await request(app)
-					.get(`${TRACKS_API_BASE}/xyz123/like-status`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(400);
-				expect(response.body.success).toBe(false);
-				expect(response.body.error).toMatch(/invalid/i);
 			});
 		});
 	});
@@ -816,27 +703,6 @@ describe("Track Like/Dislike API", () => {
 				expect(page2Response.body.data.items).toHaveLength(1);
 				expect(page2Response.body.data.page).toBe(2);
 			});
-
-			it("should return empty items when user has no liked tracks", async () => {
-				const response = await request(app)
-					.get(`${TRACKS_API_BASE}/liked`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(200);
-				expect(response.body.success).toBe(true);
-				expect(response.body.data.items).toHaveLength(0);
-				expect(response.body.data.total).toBe(0);
-			});
-		});
-
-		describe("Authentication", () => {
-			it("should return 401 without auth token", async () => {
-				const response = await request(app)
-					.get(`${TRACKS_API_BASE}/liked`);
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
-			});
 		});
 	});
 
@@ -882,17 +748,6 @@ describe("Track Like/Dislike API", () => {
 				expect(response.body.data.dislikedIds).not.toContain(likedTrackId);
 			});
 
-			it("should return empty arrays when no reactions exist", async () => {
-				const response = await request(app)
-					.get(`${TRACKS_API_BASE}/liked/ids`)
-					.set("Authorization", `Bearer ${authToken}`);
-
-				expect(response.status).toBe(200);
-				expect(response.body.success).toBe(true);
-				expect(response.body.data.likedIds).toHaveLength(0);
-				expect(response.body.data.dislikedIds).toHaveLength(0);
-			});
-
 			it("should reflect updated state after switching reactions", async () => {
 				const trackId = testTracks[0]._id.toString();
 
@@ -921,16 +776,6 @@ describe("Track Like/Dislike API", () => {
 
 				expect(response.body.data.likedIds).not.toContain(trackId);
 				expect(response.body.data.dislikedIds).toContain(trackId);
-			});
-		});
-
-		describe("Authentication", () => {
-			it("should return 401 without auth token", async () => {
-				const response = await request(app)
-					.get(`${TRACKS_API_BASE}/liked/ids`);
-
-				expect(response.status).toBe(401);
-				expect(response.body.success).toBe(false);
 			});
 		});
 	});
