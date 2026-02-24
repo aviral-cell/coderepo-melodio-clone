@@ -1,7 +1,6 @@
 /**
  * @jest-environment node
  */
-// @ts-nocheck
 
 import * as dotenv from "dotenv";
 import * as path from "path";
@@ -322,8 +321,6 @@ describe("Track Like/Dislike API", () => {
 		await User.deleteMany({});
 	});
 
-	// ========== POST /api/tracks/:id/like ==========
-
 	describe("POST /api/tracks/:id/like", () => {
 		describe("Success Cases", () => {
 			let authToken: string;
@@ -404,8 +401,6 @@ describe("Track Like/Dislike API", () => {
 			});
 		});
 	});
-
-	// ========== POST /api/tracks/:id/dislike ==========
 
 	describe("POST /api/tracks/:id/dislike", () => {
 		describe("Success Cases", () => {
@@ -488,8 +483,6 @@ describe("Track Like/Dislike API", () => {
 		});
 	});
 
-	// ========== DELETE /api/tracks/:id/like ==========
-
 	describe("DELETE /api/tracks/:id/like", () => {
 		describe("Success Cases", () => {
 			let authToken: string;
@@ -531,8 +524,6 @@ describe("Track Like/Dislike API", () => {
 			});
 		});
 	});
-
-	// ========== GET /api/tracks/:id/like-status ==========
 
 	describe("GET /api/tracks/:id/like-status", () => {
 		describe("Success Cases", () => {
@@ -595,8 +586,6 @@ describe("Track Like/Dislike API", () => {
 			});
 		});
 	});
-
-	// ========== GET /api/tracks/liked ==========
 
 	describe("GET /api/tracks/liked", () => {
 		describe("Success Cases", () => {
@@ -705,8 +694,6 @@ describe("Track Like/Dislike API", () => {
 			});
 		});
 	});
-
-	// ========== GET /api/tracks/liked/ids ==========
 
 	describe("GET /api/tracks/liked/ids", () => {
 		describe("Success Cases", () => {
