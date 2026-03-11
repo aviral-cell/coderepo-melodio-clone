@@ -48,6 +48,7 @@ interface NavItem {
 interface NavGroup {
 	key: string;
 	label: string;
+	icon: typeof Home;
 	items: NavItem[];
 }
 
@@ -55,6 +56,7 @@ const NAV_GROUPS: NavGroup[] = [
 	{
 		key: "browse",
 		label: "Browse",
+		icon: Compass,
 		items: [
 			{ href: "/", label: "Home", icon: Home },
 			{ href: "/genre", label: "Genre", icon: Radio },
@@ -64,6 +66,7 @@ const NAV_GROUPS: NavGroup[] = [
 	{
 		key: "experience",
 		label: "Experience",
+		icon: Headphones,
 		items: [
 			{ href: "/podcasts", label: "Podcasts", icon: Headphones },
 			{ href: "/mood", label: "Mood Mixer", icon: Smile },
@@ -74,6 +77,7 @@ const NAV_GROUPS: NavGroup[] = [
 	{
 		key: "personal",
 		label: "Personal",
+		icon: Crown,
 		items: [
 			{ href: "/subscription", label: "Subscription", icon: Crown, testId: "sidebar-subscription-link" },
 			{ href: "/settings/family", label: "Family", icon: Users, testId: "sidebar-family-link" },
@@ -107,7 +111,7 @@ export function Sidebar() {
 	const [playlists, setPlaylists] = useState<Playlist[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-	const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+	const [openDrawer, setOpenDrawer] = useState<string | null>(null);
 	const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(getGroupExpandedDefault);
 
 	const toggleGroup = useCallback((groupKey: string) => {
@@ -141,7 +145,42 @@ export function Sidebar() {
 		setPlaylists((prev) => [newPlaylist, ...prev]);
 	};
 
-	const renderNavLink = (item: NavItem) => {
+	const renderNavLink = (item: NavItem, inDrawer = false) => {
+		const Icon = item.icon;
+		const isActive = pathname === item.href;
+
+		let label: React.ReactNode = item.label;
+		if (item.href === "/subscription" && isPremium) {
+			label = (
+				<span className="flex items-center gap-2">
+					Subscription
+					<span className="rounded-full bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-medium text-yellow-500">
+						PRO
+					</span>
+				</span>
+			);
+		}
+
+		return (
+			<Link
+				key={item.href}
+				to={item.href}
+				onClick={inDrawer ? () => setOpenDrawer(null) : undefined}
+				className={cn(
+					"flex items-center gap-4 rounded-md px-3 py-2.5 text-sm font-semibold transition-colors",
+					isActive
+						? "text-white bg-melodio-light-gray/50"
+						: "text-melodio-text-subdued hover:text-white hover:bg-melodio-light-gray/30",
+				)}
+				data-testid={item.testId}
+			>
+				<Icon className={cn("h-5 w-5 flex-shrink-0", item.href === "/subscription" && isPremium && "text-yellow-500")} />
+				{label}
+			</Link>
+		);
+	};
+
+	const renderExpandedNavLink = (item: NavItem) => {
 		const Icon = item.icon;
 		const isActive = pathname === item.href;
 
@@ -166,19 +205,16 @@ export function Sidebar() {
 					isActive
 						? "text-white"
 						: "text-melodio-text-subdued hover:text-white",
-					isCollapsed && "justify-center px-2"
 				)}
-				title={isCollapsed ? item.label : undefined}
 				data-testid={item.testId}
 			>
 				<Icon className={cn("h-6 w-6 flex-shrink-0", item.href === "/subscription" && isPremium && "text-yellow-500")} />
-				{!isCollapsed && label}
+				{label}
 			</Link>
 		);
 	};
 
 	const renderGroupHeader = (groupKey: string, label: string) => {
-		if (isCollapsed) return null;
 		const isExpanded = expandedGroups[groupKey] ?? true;
 		return (
 			<button
@@ -201,18 +237,40 @@ export function Sidebar() {
 		return (
 			<div key={group.key}>
 				{renderGroupHeader(group.key, group.label)}
-				{(isExpanded || isCollapsed) && (
-					<ScrollArea className="max-h-[20vh]">
-						<div className="space-y-0.5">
-							{group.items.map(renderNavLink)}
-						</div>
-					</ScrollArea>
+				{isExpanded && (
+					<div className="space-y-0.5">
+						{group.items.map((item) => renderExpandedNavLink(item))}
+					</div>
 				)}
 			</div>
 		);
 	};
 
+	const renderCollapsedSectionButton = (group: NavGroup) => {
+		const SectionIcon = group.icon;
+		const hasActiveRoute = group.items.some((item) => pathname === item.href);
+
+		return (
+			<button
+				key={group.key}
+				type="button"
+				onClick={() => setOpenDrawer(group.key)}
+				className={cn(
+					"flex w-full items-center justify-center rounded-md px-2 py-3 transition-colors cursor-pointer",
+					hasActiveRoute
+						? "text-white"
+						: "text-melodio-text-subdued hover:text-white"
+				)}
+				title={group.label}
+			>
+				<SectionIcon className="h-6 w-6 flex-shrink-0" />
+			</button>
+		);
+	};
+
 	const isLibraryExpanded = expandedGroups.library ?? true;
+
+	const activeDrawerGroup = NAV_GROUPS.find((g) => g.key === openDrawer);
 
 	return (
 		<>
@@ -237,114 +295,95 @@ export function Sidebar() {
 					</Link>
 				</div>
 
-				<nav className="flex-shrink-0 px-3 space-y-3">
-					{NAV_GROUPS.map(renderNavGroup)}
-
-					{isCollapsed && (
+				{isCollapsed ? (
+					<nav className="flex-shrink-0 px-3 space-y-1">
+						{NAV_GROUPS.map(renderCollapsedSectionButton)}
 						<button
 							type="button"
-							onClick={() => setIsMobileDrawerOpen(true)}
-							className="flex w-full items-center justify-center rounded-md px-2 py-3 text-sm font-semibold transition-colors text-melodio-text-subdued hover:text-white md:hidden"
+							onClick={() => setOpenDrawer("library")}
+							className={cn(
+								"flex w-full items-center justify-center rounded-md px-2 py-3 transition-colors cursor-pointer",
+								pathname.startsWith("/playlist/")
+									? "text-white"
+									: "text-melodio-text-subdued hover:text-white"
+							)}
 							title="Your Library"
 						>
 							<Library className="h-6 w-6 flex-shrink-0" />
 						</button>
-					)}
-				</nav>
+					</nav>
+				) : (
+					<ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block [&_[data-radix-scroll-area-scrollbar]]:w-0.5">
+						<nav className="px-3 space-y-3">
+							{NAV_GROUPS.map(renderNavGroup)}
+						</nav>
 
-				<div
-					className={cn(
-						"flex flex-col flex-1 min-h-0 px-3 mt-3",
-						isCollapsed && "hidden md:flex"
-					)}
-				>
-					<div
-						className={cn(
-							"flex items-center px-2 py-1.5 flex-shrink-0",
-							isCollapsed ? "justify-center" : "justify-between"
-						)}
-					>
-						{!isCollapsed ? (
-							<button
-								type="button"
-								onClick={() => toggleGroup("library")}
-								className="flex flex-1 items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-melodio-text-subdued/60 hover:text-melodio-text-subdued cursor-pointer transition-colors"
-							>
-								<span className="flex items-center gap-2">
-									<Library className="h-4 w-4 flex-shrink-0" />
-									Your Library
-								</span>
-								<div className="flex items-center gap-1">
-									{isLibraryExpanded ? (
-										<ChevronUp className="h-3 w-3" />
-									) : (
-										<ChevronDown className="h-3 w-3" />
-									)}
-								</div>
-							</button>
-						) : (
-							<div className="flex items-center justify-center">
-								<Library className="h-6 w-6 flex-shrink-0 text-melodio-text-subdued" />
+						<div className="px-3 mt-3">
+							<div className="flex items-center px-2 py-1.5 justify-between">
+								<button
+									type="button"
+									onClick={() => toggleGroup("library")}
+									className="flex flex-1 items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-melodio-text-subdued/60 hover:text-melodio-text-subdued cursor-pointer transition-colors"
+								>
+									<span className="flex items-center gap-2">
+										<Library className="h-4 w-4 flex-shrink-0" />
+										Your Library
+									</span>
+									<div className="flex items-center gap-1">
+										{isLibraryExpanded ? (
+											<ChevronUp className="h-3 w-3" />
+										) : (
+											<ChevronDown className="h-3 w-3" />
+										)}
+									</div>
+								</button>
+								<Button
+									variant="ghost"
+									size="icon"
+									className="ml-1 h-6 w-6 rounded-full text-melodio-text-subdued hover:text-white"
+									onClick={() => setIsCreateDialogOpen(true)}
+									aria-label="Create playlist"
+								>
+									<Plus className="h-3.5 w-3.5" />
+								</Button>
 							</div>
-						)}
-						{!isCollapsed && (
-							<Button
-								variant="ghost"
-								size="icon"
-								className="ml-1 h-6 w-6 rounded-full text-melodio-text-subdued hover:text-white"
-								onClick={() => setIsCreateDialogOpen(true)}
-								aria-label="Create playlist"
-							>
-								<Plus className="h-3.5 w-3.5" />
-							</Button>
-						)}
-					</div>
 
-					{(isLibraryExpanded || isCollapsed) && (
-						<ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block [&_[data-radix-scroll-area-scrollbar]]:w-0.5">
-							<div className="space-y-1 p-2">
-								{isLoading ? (
-									Array.from({ length: 5 }).map((_, index) => (
-										<div
-											key={index}
-											className={cn(
-												"flex items-center gap-3 rounded-md p-2",
-												isCollapsed && "justify-center"
-											)}
-										>
-											<Skeleton className="h-12 w-12 rounded flex-shrink-0" />
-											{!isCollapsed && (
+							{isLibraryExpanded && (
+								<div className="space-y-1 p-2">
+									{isLoading ? (
+										Array.from({ length: 5 }).map((_, index) => (
+											<div
+												key={index}
+												className="flex items-center gap-3 rounded-md p-2"
+											>
+												<Skeleton className="h-12 w-12 rounded flex-shrink-0" />
 												<div className="flex-1">
 													<Skeleton className="mb-1 h-4 w-3/4" />
 													<Skeleton className="h-3 w-1/2" />
 												</div>
-											)}
-										</div>
-									))
-								) : playlists.length > 0 ? (
-									playlists.map((playlist) => {
-										const isActive = pathname === `/playlist/${playlist._id}`;
-										const trackCount = Array.isArray(playlist.trackIds)
-											? playlist.trackIds.length
-											: 0;
+											</div>
+										))
+									) : playlists.length > 0 ? (
+										playlists.map((playlist) => {
+											const isActive = pathname === `/playlist/${playlist._id}`;
+											const trackCount = Array.isArray(playlist.trackIds)
+												? playlist.trackIds.length
+												: 0;
 
-										return (
-											<Link
-												key={playlist._id}
-												to={`/playlist/${playlist._id}`}
-												className={cn(
-													"flex items-center gap-3 rounded-md p-2 transition-colors min-w-0",
-													isActive
-														? "bg-melodio-light-gray"
-														: "hover:bg-melodio-light-gray/50",
-													isCollapsed && "justify-center"
-												)}
-												title={isCollapsed ? playlist.name : undefined}
-											>
-												<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
-													<Music className="h-6 w-6 text-melodio-text-subdued" />
-												</div>
-												{!isCollapsed && (
+											return (
+												<Link
+													key={playlist._id}
+													to={`/playlist/${playlist._id}`}
+													className={cn(
+														"flex items-center gap-3 rounded-md p-2 transition-colors min-w-0",
+														isActive
+															? "bg-melodio-light-gray"
+															: "hover:bg-melodio-light-gray/50",
+													)}
+												>
+													<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
+														<Music className="h-6 w-6 text-melodio-text-subdued" />
+													</div>
 													<div className="min-w-0 flex-1 overflow-hidden">
 														<p className="line-clamp-2 break-all text-sm font-medium text-white">
 															{playlist.name}
@@ -354,31 +393,31 @@ export function Sidebar() {
 															{trackCount === 1 ? "track" : "tracks"}
 														</p>
 													</div>
-												)}
-											</Link>
-										);
-									})
-								) : !isCollapsed ? (
-									<div className="px-3 py-4 text-center">
-										<p className="mb-2 text-sm font-semibold text-white">
-											Create your first playlist
-										</p>
-										<p className="mb-4 text-xs text-melodio-text-subdued">
-											It&apos;s easy, we&apos;ll help you
-										</p>
-										<Button
-											size="sm"
-											onClick={() => setIsCreateDialogOpen(true)}
-											className="rounded-full bg-white text-black hover:bg-gray-200"
-										>
-											Create playlist
-										</Button>
-									</div>
-								) : null}
-							</div>
-						</ScrollArea>
-					)}
-				</div>
+												</Link>
+											);
+										})
+									) : (
+										<div className="px-3 py-4 text-center">
+											<p className="mb-2 text-sm font-semibold text-white">
+												Create your first playlist
+											</p>
+											<p className="mb-4 text-xs text-melodio-text-subdued">
+												It&apos;s easy, we&apos;ll help you
+											</p>
+											<Button
+												size="sm"
+												onClick={() => setIsCreateDialogOpen(true)}
+												className="rounded-full bg-white text-black hover:bg-gray-200"
+											>
+												Create playlist
+											</Button>
+										</div>
+									)}
+								</div>
+							)}
+						</div>
+					</ScrollArea>
+				)}
 
 				<div className="mt-auto p-3 hidden">
 					<div
@@ -407,7 +446,27 @@ export function Sidebar() {
 				onSuccess={handlePlaylistCreated}
 			/>
 
-			<Sheet open={isMobileDrawerOpen} onOpenChange={setIsMobileDrawerOpen}>
+			{/* Nav section drawers (Browse, Experience, Personal) */}
+			<Sheet open={activeDrawerGroup !== undefined} onOpenChange={(open) => !open && setOpenDrawer(null)}>
+				<SheetContent side="left" className="w-[280px] p-0">
+					{activeDrawerGroup && (
+						<>
+							<SheetHeader className="p-4 border-b border-melodio-light-gray">
+								<SheetTitle className="flex items-center gap-2">
+									<activeDrawerGroup.icon className="h-5 w-5" />
+									{activeDrawerGroup.label}
+								</SheetTitle>
+							</SheetHeader>
+							<div className="space-y-1 p-3">
+								{activeDrawerGroup.items.map((item) => renderNavLink(item, true))}
+							</div>
+						</>
+					)}
+				</SheetContent>
+			</Sheet>
+
+			{/* Library drawer */}
+			<Sheet open={openDrawer === "library"} onOpenChange={(open) => !open && setOpenDrawer(null)}>
 				<SheetContent side="left" className="w-[280px] p-0">
 					<SheetHeader className="p-4 border-b border-melodio-light-gray">
 						<SheetTitle className="flex items-center gap-2">
@@ -438,7 +497,7 @@ export function Sidebar() {
 										<Link
 											key={playlist._id}
 											to={`/playlist/${playlist._id}`}
-											onClick={() => setIsMobileDrawerOpen(false)}
+											onClick={() => setOpenDrawer(null)}
 											className={cn(
 												"flex items-center gap-3 rounded-md p-2 transition-colors min-w-0",
 												isActive
@@ -472,7 +531,7 @@ export function Sidebar() {
 									<Button
 										size="sm"
 										onClick={() => {
-											setIsMobileDrawerOpen(false);
+											setOpenDrawer(null);
 											setIsCreateDialogOpen(true);
 										}}
 										className="rounded-full bg-white text-black hover:bg-gray-200"
