@@ -15,7 +15,7 @@ export function AlbumCard({ album, className }: AlbumCardProps) {
 	const navigate = useNavigate();
 
 	const releaseYear = album.releaseDate
-		? new Date(album.releaseDate).getFullYear()
+		? new Date(album.releaseDate).getUTCFullYear()
 		: null;
 
 	const artistName =

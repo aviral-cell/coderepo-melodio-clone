@@ -36,7 +36,10 @@ export default function LikedTracksPage(): JSX.Element {
 		sortBy,
 		handleSortChange,
 		isLoadingTracks,
+		isLoadingMore,
+		pagination,
 		fetchLikedTracks,
+		loadMore,
 		isLiked,
 	} = useLikedTracks();
 
@@ -111,7 +114,7 @@ export default function LikedTracksPage(): JSX.Element {
 									key={option.value}
 									onClick={() => handleSortChange(option.value)}
 									className={cn(
-										"cursor-pointer hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white",
+										"hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white",
 										sortBy === option.value
 											? "text-melodio-green"
 											: "text-white",
@@ -135,6 +138,12 @@ export default function LikedTracksPage(): JSX.Element {
 				/>
 			) : (
 				<div data-testid="liked-tracks-list">
+					{pagination.total > 0 && (
+						<div className="mb-3 text-sm text-melodio-text-subdued">
+							Showing {visibleTracks.length} of {pagination.total} tracks
+						</div>
+					)}
+
 					<div className="mb-2 hidden grid-cols-[16px_4fr_2fr_1fr_auto] gap-4 border-b border-melodio-light-gray px-4 pb-2 text-melodio-text-subdued sm:grid">
 						<span className="text-sm">#</span>
 						<span className="text-sm">Title</span>
@@ -229,6 +238,20 @@ export default function LikedTracksPage(): JSX.Element {
 							</div>
 						);
 					})}
+
+					{pagination.page < pagination.totalPages && (
+						<div className="mt-4 flex justify-center">
+							<Button
+								variant="outline"
+								onClick={loadMore}
+								disabled={isLoadingMore}
+								className="rounded-full border-melodio-light-gray text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white"
+								data-testid="liked-tracks-load-more-btn"
+							>
+								{isLoadingMore ? "Loading..." : "Load More"}
+							</Button>
+						</div>
+					)}
 				</div>
 			)}
 		</div>

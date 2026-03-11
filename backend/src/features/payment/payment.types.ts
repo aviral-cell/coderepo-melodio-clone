@@ -62,7 +62,6 @@ export interface ProcessCardPaymentRequest {
 export interface ProcessCardPaymentResponse {
 	success: boolean;
 	paymentId: string;
-	transactionId: string;
 	message: string;
 	subscription: {
 		plan: string;

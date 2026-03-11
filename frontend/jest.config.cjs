@@ -3,7 +3,7 @@ module.exports = {
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 	roots: ["<rootDir>/src", "<rootDir>/../__tests__"],
 	testMatch: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
-	testPathIgnorePatterns: ["/node_modules/", "search\\.service\\.test\\.ts$"],
+	testPathIgnorePatterns: ["/node_modules/", "search\\.behavior\\.test\\.ts$"],
 	moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 	collectCoverageFrom: [
 		"src/**/*.{ts,tsx}",

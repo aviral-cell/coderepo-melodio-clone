@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { albumsService } from "./albums.service.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
@@ -32,7 +32,6 @@ export const albumsController = {
 	async getAll(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { page, limit } = parsePaginationParams(req.query as Record<string, unknown>);
@@ -48,14 +47,13 @@ export const albumsController = {
 
 			sendSuccess(res, result);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async search(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const query = req.query["q"] as string | undefined;
@@ -63,14 +61,13 @@ export const albumsController = {
 
 			sendSuccess(res, result);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -89,7 +86,7 @@ export const albumsController = {
 
 			sendSuccess(res, album);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

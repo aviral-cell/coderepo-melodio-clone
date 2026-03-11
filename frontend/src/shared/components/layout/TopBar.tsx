@@ -138,7 +138,7 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 						<DropdownMenuSeparator className="bg-melodio-light-gray" />
 						<Link to="/subscription">
 							<DropdownMenuItem
-								className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+								className="text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
 								data-testid="topbar-subscription-link"
 							>
 								<Crown className="mr-2 h-4 w-4" />
@@ -147,7 +147,7 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 						</Link>
 						<Link to="/settings/family">
 							<DropdownMenuItem
-								className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+								className="text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
 								data-testid="topbar-family-settings-link"
 							>
 								<Users className="mr-2 h-4 w-4" />
@@ -158,7 +158,7 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 						<DropdownMenuSeparator className="bg-melodio-light-gray" />
 						<DropdownMenuItem
 							onClick={handleLogout}
-							className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+							className="text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
 							data-testid="topbar-logout-btn"
 						>
 							<LogOut className="mr-2 h-4 w-4" />

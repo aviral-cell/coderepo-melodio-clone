@@ -48,7 +48,7 @@ function validateExpiryYear(value: string): string | undefined {
 	if (!value) return "Expiry year is required";
 	if (!/^\d{2}$/.test(value)) return "Invalid year (YY format)";
 	const year = parseInt(value, 10);
-	const currentYear = new Date().getFullYear() % 100;
+	const currentYear = new Date().getUTCFullYear() % 100;
 	if (year < currentYear) return "Card has expired";
 	return undefined;
 }
@@ -106,8 +106,8 @@ export function PaymentModal({
 
 		if (!newErrors.expiryMonth && !newErrors.expiryYear) {
 			const now = new Date();
-			const currentYear = now.getFullYear() % 100;
-			const currentMonth = now.getMonth() + 1;
+			const currentYear = now.getUTCFullYear() % 100;
+			const currentMonth = now.getUTCMonth() + 1;
 			const year = parseInt(expiryYear, 10);
 			const month = parseInt(expiryMonth, 10);
 

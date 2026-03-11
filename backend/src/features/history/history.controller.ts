@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { historyService } from "./history.service.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
@@ -7,7 +7,6 @@ export const historyController = {
 	async recordPlay(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user!.userId;
@@ -29,33 +28,34 @@ export const historyController = {
 				throw error;
 			}
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getRecentlyPlayed(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user!.userId;
 			const limitParam = req.query["limit"];
 			const limit =
 				typeof limitParam === "string" ? parseInt(limitParam, 10) : 20;
+			const offsetParam = req.query["offset"];
+			const offset =
+				typeof offsetParam === "string" ? parseInt(offsetParam, 10) : 0;
 
-			const result = await historyService.getRecentlyPlayed(userId, limit);
+			const result = await historyService.getRecentlyPlayed(userId, limit, offset);
 
 			sendSuccess(res, result);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async clearHistory(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user!.userId;
@@ -64,7 +64,7 @@ export const historyController = {
 
 			sendSuccess(res, { cleared: true }, "History cleared successfully");
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

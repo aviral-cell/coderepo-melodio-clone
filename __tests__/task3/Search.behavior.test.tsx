@@ -137,7 +137,7 @@ const originalLocation = window.location;
 
 let mockFetch: jest.Mock;
 
-describe("Search Feature - Behavior Tests", () => {
+describe("Search Feature", () => {
 	beforeAll(() => {
 		delete (window as { location?: Location }).location;
 		window.location = {

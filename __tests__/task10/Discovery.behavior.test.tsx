@@ -30,7 +30,7 @@ jest.mock("@/shared/services", () => ({
 jest.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
-		user: { _id: "user-1", email: "test@hackerrank.com", name: "Test User" },
+		user: { _id: "user-1", email: "test@melodio.com", name: "Test User" },
 		isAuthenticated: true,
 		isLoading: false,
 		login: jest.fn(),
@@ -144,7 +144,6 @@ function createMockArtist(overrides: Record<string, unknown> = {}) {
 
 const now = new Date().toISOString();
 
-// Rock tracks (2) - linked to album-rock-1 (2012, "2010's" era)
 const rockTracks = [
 	createMockTrack({
 		_id: "track-rock-1",
@@ -172,7 +171,6 @@ const rockTracks = [
 	}),
 ];
 
-// Pop tracks (2) - linked to album-pop-1 (2015, "2010's" era)
 const popTracks = [
 	createMockTrack({
 		_id: "track-pop-1",
@@ -200,7 +198,6 @@ const popTracks = [
 	}),
 ];
 
-// Jazz tracks (2) - linked to album-jazz-1 (1995, "90's" era)
 const jazzTracks = [
 	createMockTrack({
 		_id: "track-jazz-1",
@@ -228,7 +225,6 @@ const jazzTracks = [
 	}),
 ];
 
-// Electronic tracks (2) - linked to album-electronic-1 (2003, "2000's" era)
 const electronicTracks = [
 	createMockTrack({
 		_id: "track-electronic-1",
@@ -256,7 +252,6 @@ const electronicTracks = [
 	}),
 ];
 
-// Hip-hop tracks (2) - linked to album-hiphop-1 (2023, "2020's" era)
 const hipHopTracks = [
 	createMockTrack({
 		_id: "track-hiphop-1",
@@ -284,7 +279,6 @@ const hipHopTracks = [
 	}),
 ];
 
-// R&B tracks (2) - linked to album-rnb-1 (1998, "90's" era)
 const rnbTracks = [
 	createMockTrack({
 		_id: "track-rnb-1",
@@ -312,7 +306,6 @@ const rnbTracks = [
 	}),
 ];
 
-// Classical tracks (2) - linked to album-classical-1 (1985, "80's" era)
 const classicalTracks = [
 	createMockTrack({
 		_id: "track-classical-1",
@@ -350,7 +343,6 @@ const allMockTracks = [
 	...classicalTracks,
 ];
 
-// Albums with matching _id values and specific releaseDates for era testing
 const allMockAlbums = [
 	createMockAlbum({
 		_id: "album-rock-1",
@@ -396,7 +388,6 @@ const allMockAlbums = [
 	}),
 ];
 
-// Artists with different followerCounts for Top Artists ordering
 const allMockArtists = [
 	createMockArtist({
 		_id: "artist-pop-1",
@@ -442,7 +433,6 @@ const allMockArtists = [
 	}),
 ];
 
-// Paginated responses matching backend shape
 const mockTracksResponse = {
 	items: allMockTracks,
 	total: allMockTracks.length,
@@ -567,451 +557,396 @@ describe("Music Discovery", () => {
 		jest.clearAllMocks();
 	});
 
-	// ========== PAGE LOADING ==========
-
 	describe("Page Loading", () => {
-		describe("Error State", () => {
-			it("should show error state when API fails", async () => {
-				mockTracksGetAll.mockRejectedValue(new Error("Network error"));
-				mockAlbumsGetAll.mockRejectedValue(new Error("Network error"));
-				mockArtistsGetAll.mockRejectedValue(new Error("Network error"));
+		it("should show error state when API fails", async () => {
+			// Mock all API calls to reject
+			mockTracksGetAll.mockRejectedValue(new Error("Network error"));
+			mockAlbumsGetAll.mockRejectedValue(new Error("Network error"));
+			mockArtistsGetAll.mockRejectedValue(new Error("Network error"));
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-error")).toBeInTheDocument();
-				});
-
-				expect(screen.queryByTestId("discovery-loading")).not.toBeInTheDocument();
-				expect(screen.queryByTestId("discovery-new-this-week")).not.toBeInTheDocument();
+			// Verify error state displayed
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-error")).toBeInTheDocument();
 			});
+
+			// Verify loading and content not shown
+			expect(screen.queryByTestId("discovery-loading")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("discovery-new-this-week")).not.toBeInTheDocument();
 		});
-
 	});
-
-	// ========== NEW THIS WEEK ==========
 
 	describe("New This Week", () => {
-		describe("Track Display", () => {
-			it("should display tracks in New This Week section", async () => {
-				setupSuccessfulMocks();
+		it("should display new tracks this week", async () => {
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-new-this-week")).toBeInTheDocument();
-				});
-
-				// All tracks have createdAt set to "now", so they should all appear in New This Week
-				const newThisWeekSection = screen.getByTestId("discovery-new-this-week");
-				const trackElements = within(newThisWeekSection).getAllByTestId(/^discovery-new-track-/);
-				expect(trackElements.length).toBe(allMockTracks.length);
+			// Wait for new this week section
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-new-this-week")).toBeInTheDocument();
 			});
+
+			// Verify all tracks displayed
+			const newThisWeekSection = screen.getByTestId("discovery-new-this-week");
+			const trackElements = within(newThisWeekSection).getAllByTestId(/^discovery-new-track-/);
+			expect(trackElements.length).toBe(allMockTracks.length);
 		});
 	});
-
-	// ========== LANGUAGE FILTERING ==========
 
 	describe("Language Filtering", () => {
-		describe("Language Chips Display", () => {
-			it("should display language filter chips", async () => {
-				setupSuccessfulMocks();
+		it("should display language filter chips", async () => {
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-popular-language")).toBeInTheDocument();
-				});
+			// Wait for language section
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-popular-language")).toBeInTheDocument();
+			});
 
-				// Verify the language chips container exists
+			// Verify language chips container present
+			expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
+
+			// Verify all language chips rendered
+			const expectedLanguages = ["english", "korean", "french", "german", "spanish", "chinese"];
+			for (const lang of expectedLanguages) {
+				expect(screen.getByTestId(`discovery-language-chip-${lang}`)).toBeInTheDocument();
+			}
+		});
+
+		it("should filter tracks by language", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
+
+			// Render discovery page
+			renderDiscoveryPage();
+
+			// Wait for language chips
+			await waitFor(() => {
 				expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
-
-				// Verify each language chip is present (lowercased in data-testid)
-				const expectedLanguages = ["english", "korean", "french", "german", "spanish", "chinese"];
-				for (const lang of expectedLanguages) {
-					expect(screen.getByTestId(`discovery-language-chip-${lang}`)).toBeInTheDocument();
-				}
 			});
+
+			// Click Korean language chip
+			await user.click(screen.getByTestId("discovery-language-chip-korean"));
+
+			// Verify heading updated to Korean
+			const languageSection = screen.getByTestId("discovery-popular-language");
+			await waitFor(() => {
+				expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Korean");
+			});
+
+			// Verify filtered to 2 tracks
+			const languageTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
+			expect(languageTracks).toHaveLength(2);
 		});
 
-		describe("Language Selection", () => {
-			it("should filter tracks when a language chip is selected", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+		it("should deselect language and show all tracks", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
-				});
-
-				// Click "Korean" chip -- Korean maps to "pop" genre (2 pop tracks)
-				await user.click(screen.getByTestId("discovery-language-chip-korean"));
-
-				// Heading should change to "Popular in Korean"
-				const languageSection = screen.getByTestId("discovery-popular-language");
-				await waitFor(() => {
-					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Korean");
-				});
-
-				// Should show only the 2 pop tracks (Korean maps to pop)
-				const languageTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
-				expect(languageTracks).toHaveLength(2);
+			// Wait for language chips
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
 			});
 
-			it("should filter tracks when French language chip is selected", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+			// Select Korean language
+			await user.click(screen.getByTestId("discovery-language-chip-korean"));
 
-				renderDiscoveryPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
-				});
-
-				// Click "French" chip -- French maps to "jazz" genre (2 jazz tracks)
-				await user.click(screen.getByTestId("discovery-language-chip-french"));
-
-				const languageSection = screen.getByTestId("discovery-popular-language");
-				await waitFor(() => {
-					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in French");
-				});
-
-				// Should show only the 2 jazz tracks (French maps to jazz)
-				const frenchTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
-				expect(frenchTracks).toHaveLength(2);
+			// Verify filtered to Korean
+			const languageSection = screen.getByTestId("discovery-popular-language");
+			await waitFor(() => {
+				expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Korean");
 			});
-		});
 
-		describe("Language Deselection", () => {
-			it("should deselect language chip and show all tracks when clicking same chip again", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+			// Deselect Korean language
+			await user.click(screen.getByTestId("discovery-language-chip-korean"));
 
-				renderDiscoveryPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
-				});
-
-				// Click Korean to select
-				await user.click(screen.getByTestId("discovery-language-chip-korean"));
-
-				const languageSection = screen.getByTestId("discovery-popular-language");
-				await waitFor(() => {
-					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Korean");
-				});
-
-				// Click Korean again to deselect
-				await user.click(screen.getByTestId("discovery-language-chip-korean"));
-
-				// Heading should revert to "Popular in Language"
-				await waitFor(() => {
-					expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Language");
-				});
-
-				// All tracks should be shown again
-				const languageTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
-				expect(languageTracks).toHaveLength(allMockTracks.length);
+			// Verify heading reset to default
+			await waitFor(() => {
+				expect(within(languageSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Language");
 			});
+
+			// Verify all tracks restored
+			const languageTracks = within(languageSection).getAllByTestId(/^discovery-language-track-/);
+			expect(languageTracks).toHaveLength(allMockTracks.length);
 		});
 	});
-
-	// ========== GENRE FILTERING ==========
 
 	describe("Genre Filtering", () => {
-		describe("Genre Chips Display", () => {
-			it("should display genre filter chips with display names", async () => {
-				setupSuccessfulMocks();
+		it("should display genre filter chips", async () => {
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-popular-genre")).toBeInTheDocument();
-				});
+			// Wait for genre section
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-popular-genre")).toBeInTheDocument();
+			});
 
-				// Verify the genre chips container exists
+			// Verify genre chips container present
+			expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
+
+			// Verify all genre chip test IDs
+			const expectedGenres = ["rock", "r-and-b", "pop", "jazz", "electronic", "hip-hop", "classical"];
+			for (const genre of expectedGenres) {
+				expect(screen.getByTestId(`discovery-genre-chip-${genre}`)).toBeInTheDocument();
+			}
+
+			// Verify genre chip display labels
+			const genreChipsContainer = screen.getByTestId("discovery-genre-chips");
+			expect(within(genreChipsContainer).getByText("Rock")).toBeInTheDocument();
+			expect(within(genreChipsContainer).getByText("R&B")).toBeInTheDocument();
+			expect(within(genreChipsContainer).getByText("Pop")).toBeInTheDocument();
+			expect(within(genreChipsContainer).getByText("Jazz")).toBeInTheDocument();
+			expect(within(genreChipsContainer).getByText("Electronic")).toBeInTheDocument();
+			expect(within(genreChipsContainer).getByText("Hip-Hop")).toBeInTheDocument();
+			expect(within(genreChipsContainer).getByText("Classical")).toBeInTheDocument();
+		});
+
+		it("should filter tracks by genre", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
+
+			// Render discovery page
+			renderDiscoveryPage();
+
+			// Wait for genre chips
+			await waitFor(() => {
 				expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
-
-				// Verify each genre chip is present (using raw genre key, lowercased)
-				const expectedGenres = ["rock", "r-and-b", "pop", "jazz", "electronic", "hip-hop", "classical"];
-				for (const genre of expectedGenres) {
-					expect(screen.getByTestId(`discovery-genre-chip-${genre}`)).toBeInTheDocument();
-				}
-
-				// Verify display names are rendered as text on the chips
-				const genreChipsContainer = screen.getByTestId("discovery-genre-chips");
-				expect(within(genreChipsContainer).getByText("Rock")).toBeInTheDocument();
-				expect(within(genreChipsContainer).getByText("R&B")).toBeInTheDocument();
-				expect(within(genreChipsContainer).getByText("Pop")).toBeInTheDocument();
-				expect(within(genreChipsContainer).getByText("Jazz")).toBeInTheDocument();
-				expect(within(genreChipsContainer).getByText("Electronic")).toBeInTheDocument();
-				expect(within(genreChipsContainer).getByText("Hip-Hop")).toBeInTheDocument();
-				expect(within(genreChipsContainer).getByText("Classical")).toBeInTheDocument();
 			});
+
+			// Click Rock genre chip
+			await user.click(screen.getByTestId("discovery-genre-chip-rock"));
+
+			// Verify heading updated to Rock
+			const genreSection = screen.getByTestId("discovery-popular-genre");
+			await waitFor(() => {
+				expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Rock");
+			});
+
+			// Verify filtered to 2 rock tracks
+			const genreTracks = within(genreSection).getAllByTestId(/^discovery-genre-track-/);
+			expect(genreTracks).toHaveLength(2);
 		});
 
-		describe("Genre Selection", () => {
-			it("should filter tracks when a genre chip is selected", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+		it("should deselect genre and show all tracks", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
-				});
-
-				// Click "Rock" chip -- should filter to only rock tracks (2)
-				await user.click(screen.getByTestId("discovery-genre-chip-rock"));
-
-				const genreSection = screen.getByTestId("discovery-popular-genre");
-				await waitFor(() => {
-					expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Rock");
-				});
-
-				const genreTracks = within(genreSection).getAllByTestId(/^discovery-genre-track-/);
-				expect(genreTracks).toHaveLength(2);
+			// Wait for genre chips
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
 			});
-		});
 
-		describe("Genre Deselection", () => {
-			it("should deselect genre chip when clicking same chip again", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+			// Select Rock genre
+			await user.click(screen.getByTestId("discovery-genre-chip-rock"));
 
-				renderDiscoveryPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-genre-chips")).toBeInTheDocument();
-				});
-
-				// Click Rock to select
-				await user.click(screen.getByTestId("discovery-genre-chip-rock"));
-
-				const genreSection = screen.getByTestId("discovery-popular-genre");
-				await waitFor(() => {
-					expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Rock");
-				});
-
-				// Click Rock again to deselect
-				await user.click(screen.getByTestId("discovery-genre-chip-rock"));
-
-				// Heading should revert to "Popular in Genre"
-				await waitFor(() => {
-					expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Genre");
-				});
-
-				// All tracks should be shown again
-				const genreTracks = within(genreSection).getAllByTestId(/^discovery-genre-track-/);
-				expect(genreTracks).toHaveLength(allMockTracks.length);
+			// Verify filtered to Rock
+			const genreSection = screen.getByTestId("discovery-popular-genre");
+			await waitFor(() => {
+				expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Rock");
 			});
+
+			// Deselect Rock genre
+			await user.click(screen.getByTestId("discovery-genre-chip-rock"));
+
+			// Verify heading reset to default
+			await waitFor(() => {
+				expect(within(genreSection).getByRole("heading", { level: 2 })).toHaveTextContent("Popular in Genre");
+			});
+
+			// Verify all tracks restored
+			const genreTracks = within(genreSection).getAllByTestId(/^discovery-genre-track-/);
+			expect(genreTracks).toHaveLength(allMockTracks.length);
 		});
 	});
-
-	// ========== ERA FILTERING ==========
 
 	describe("Era Filtering", () => {
-		describe("Era Chips Display", () => {
-			it("should display era filter chips", async () => {
-				setupSuccessfulMocks();
+		it("should display era filter chips", async () => {
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-jump-back-in")).toBeInTheDocument();
-				});
+			// Wait for jump back in section
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-jump-back-in")).toBeInTheDocument();
+			});
 
-				// Verify the era chips container exists
+			// Verify era chips container present
+			expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
+
+			// Verify all era chips rendered
+			const expectedEras = ["2020's", "2010's", "2000's", "90's", "80's"];
+			for (const era of expectedEras) {
+				expect(screen.getByTestId(`discovery-era-chip-${era.toLowerCase()}`)).toBeInTheDocument();
+			}
+		});
+
+		it("should filter tracks by era", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
+
+			// Render discovery page
+			renderDiscoveryPage();
+
+			// Wait for era chips
+			await waitFor(() => {
 				expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
-
-				// Verify each era chip is present (lowercased in data-testid)
-				const expectedEras = ["2020's", "2010's", "2000's", "90's", "80's"];
-				for (const era of expectedEras) {
-					expect(screen.getByTestId(`discovery-era-chip-${era.toLowerCase()}`)).toBeInTheDocument();
-				}
 			});
+
+			// Click 90's era chip
+			await user.click(screen.getByTestId("discovery-era-chip-90's"));
+
+			// Verify heading updated to 90's
+			const eraSection = screen.getByTestId("discovery-jump-back-in");
+			await waitFor(() => {
+				expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*90's/);
+			});
+
+			// Verify filtered to 4 tracks from 90's
+			const eraTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
+			expect(eraTracks).toHaveLength(4);
 		});
 
-		describe("Era Selection", () => {
-			it("should filter tracks by era when an era chip is selected", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+		it("should deselect era and show all tracks", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
-				});
-
-				// Click "90's" chip -- jazz (1995) and r-and-b (1998) albums fall in 90's era = 4 tracks
-				await user.click(screen.getByTestId("discovery-era-chip-90's"));
-
-				const eraSection = screen.getByTestId("discovery-jump-back-in");
-				await waitFor(() => {
-					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*90's/);
-				});
-
-				const eraTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
-				expect(eraTracks).toHaveLength(4);
+			// Wait for era chips
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
 			});
 
-			it("should filter to 2010's era showing rock and pop tracks", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+			// Select 90's era
+			await user.click(screen.getByTestId("discovery-era-chip-90's"));
 
-				renderDiscoveryPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
-				});
-
-				// Click "2010's" chip -- rock (2012) and pop (2015) albums fall in 2010's era = 4 tracks
-				await user.click(screen.getByTestId("discovery-era-chip-2010's"));
-
-				const eraSection = screen.getByTestId("discovery-jump-back-in");
-				await waitFor(() => {
-					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*2010's/);
-				});
-
-				const era2010sTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
-				expect(era2010sTracks).toHaveLength(4);
+			// Verify filtered to 90's
+			const eraSection = screen.getByTestId("discovery-jump-back-in");
+			await waitFor(() => {
+				expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*90's/);
 			});
-		});
 
-		describe("Era Deselection", () => {
-			it("should deselect era chip when clicking same chip again", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+			// Deselect 90's era
+			await user.click(screen.getByTestId("discovery-era-chip-90's"));
 
-				renderDiscoveryPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-era-chips")).toBeInTheDocument();
-				});
-
-				// Click 90's to select
-				await user.click(screen.getByTestId("discovery-era-chip-90's"));
-
-				const eraSection = screen.getByTestId("discovery-jump-back-in");
-				await waitFor(() => {
-					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent(/Jump Back In.*90's/);
-				});
-
-				// Click 90's again to deselect
-				await user.click(screen.getByTestId("discovery-era-chip-90's"));
-
-				// Heading should revert to "Jump Back In"
-				await waitFor(() => {
-					expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent("Jump Back In");
-				});
-
-				// All tracks should be shown again
-				const eraTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
-				expect(eraTracks).toHaveLength(allMockTracks.length);
+			// Verify heading reset to default
+			await waitFor(() => {
+				expect(within(eraSection).getByRole("heading", { level: 2 })).toHaveTextContent("Jump Back In");
 			});
+
+			// Verify all tracks restored
+			const eraTracks = within(eraSection).getAllByTestId(/^discovery-era-track-/);
+			expect(eraTracks).toHaveLength(allMockTracks.length);
 		});
 	});
-
-	// ========== TOP ARTISTS ==========
 
 	describe("Top Artists", () => {
-		describe("Artist Ranking", () => {
-			it("should display top artists in ranked order", async () => {
-				setupSuccessfulMocks();
+		it("should display top artists ranked by followers", async () => {
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-top-artists")).toBeInTheDocument();
-				});
-
-				const topArtistsSection = screen.getByTestId("discovery-top-artists");
-
-				// Verify artist rows exist
-				const artistRows = within(topArtistsSection).getAllByTestId(/^discovery-artist-/);
-				expect(artistRows.length).toBe(allMockArtists.length);
-
-				// Artists should be ordered by followerCount descending
-				// The first artist element should be artist-pop-1 (500K followers)
-				expect(artistRows[0]).toHaveAttribute("data-testid", "discovery-artist-artist-pop-1");
-				// The last should be artist-classical-1 (100K followers)
-				expect(artistRows[artistRows.length - 1]).toHaveAttribute(
-					"data-testid",
-					"discovery-artist-artist-classical-1",
-				);
-
-				// Verify that names and follower counts are shown
-				expect(within(topArtistsSection).getByText("Neon Dreams")).toBeInTheDocument();
-				expect(within(topArtistsSection).getByText("500K followers")).toBeInTheDocument();
-				expect(within(topArtistsSection).getByText("Vienna Philharmonic")).toBeInTheDocument();
-				expect(within(topArtistsSection).getByText("100K followers")).toBeInTheDocument();
+			// Wait for top artists section
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-top-artists")).toBeInTheDocument();
 			});
+
+			// Get all artist rows
+			const topArtistsSection = screen.getByTestId("discovery-top-artists");
+			const artistRows = within(topArtistsSection).getAllByTestId(/^discovery-artist-/);
+			expect(artistRows.length).toBe(allMockArtists.length);
+
+			// Verify sorted by followers descending
+			expect(artistRows[0]).toHaveAttribute("data-testid", "discovery-artist-artist-pop-1");
+			expect(artistRows[artistRows.length - 1]).toHaveAttribute(
+				"data-testid",
+				"discovery-artist-artist-classical-1",
+			);
+
+			// Verify artist details displayed
+			expect(within(topArtistsSection).getByText("Neon Dreams")).toBeInTheDocument();
+			expect(within(topArtistsSection).getByText("500K followers")).toBeInTheDocument();
+			expect(within(topArtistsSection).getByText("Vienna Philharmonic")).toBeInTheDocument();
+			expect(within(topArtistsSection).getByText("100K followers")).toBeInTheDocument();
 		});
 
-		describe("Artist Navigation", () => {
-			it("should navigate to artist detail page when clicking a top artist", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+		it("should navigate to artist page on click", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
 
-				renderDiscoveryPageWithLocation();
+			// Render discovery page with location tracking
+			renderDiscoveryPageWithLocation();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-top-artists")).toBeInTheDocument();
-				});
+			// Wait for top artists section
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-top-artists")).toBeInTheDocument();
+			});
 
-				// Verify initial location
-				expect(screen.getByTestId("location-display")).toHaveTextContent("/discover");
+			// Verify initial location
+			expect(screen.getByTestId("location-display")).toHaveTextContent("/discover");
 
-				// Click the first artist (Neon Dreams, artist-pop-1 — highest follower count)
-				const firstArtist = screen.getByTestId("discovery-artist-artist-pop-1");
-				await user.click(firstArtist);
+			// Click on first artist
+			const firstArtist = screen.getByTestId("discovery-artist-artist-pop-1");
+			await user.click(firstArtist);
 
-				// Should navigate to /artist/artist-pop-1
-				await waitFor(() => {
-					expect(screen.getByTestId("location-display")).toHaveTextContent("/artist/artist-pop-1");
-				});
+			// Verify navigated to artist page
+			await waitFor(() => {
+				expect(screen.getByTestId("location-display")).toHaveTextContent("/artist/artist-pop-1");
 			});
 		});
 	});
 
-	// ========== VISUAL INDICATORS ==========
-
 	describe("Visual Indicators", () => {
-		describe("Selected Chip Highlight", () => {
-			it("should highlight selected chip with ring classes", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
+		it("should highlight selected chip", async () => {
+			const user = userEvent.setup();
+			setupSuccessfulMocks();
 
-				renderDiscoveryPage();
+			// Render discovery page
+			renderDiscoveryPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
-				});
+			// Wait for language chips
+			await waitFor(() => {
+				expect(screen.getByTestId("discovery-language-chips")).toBeInTheDocument();
+			});
 
-				const koreanChip = screen.getByTestId("discovery-language-chip-korean");
+			// Verify chip not highlighted initially
+			const koreanChip = screen.getByTestId("discovery-language-chip-korean");
+			expect(koreanChip.className).not.toMatch(/ring-2/);
+			expect(koreanChip.className).not.toMatch(/ring-melodio-green/);
 
-				// Before selection, chip should NOT have the active ring classes
+			// Click Korean chip
+			await user.click(koreanChip);
+
+			// Verify chip highlighted with ring
+			await waitFor(() => {
+				expect(koreanChip.className).toMatch(/ring-2/);
+				expect(koreanChip.className).toMatch(/ring-melodio-green/);
+			});
+
+			// Deselect Korean chip
+			await user.click(koreanChip);
+
+			// Verify highlight removed
+			await waitFor(() => {
 				expect(koreanChip.className).not.toMatch(/ring-2/);
 				expect(koreanChip.className).not.toMatch(/ring-melodio-green/);
-
-				// Click to select
-				await user.click(koreanChip);
-
-				// After selection, chip should have the active ring classes
-				await waitFor(() => {
-					expect(koreanChip.className).toMatch(/ring-2/);
-					expect(koreanChip.className).toMatch(/ring-melodio-green/);
-				});
-
-				// Click again to deselect
-				await user.click(koreanChip);
-
-				// After deselection, ring classes should be gone
-				await waitFor(() => {
-					expect(koreanChip.className).not.toMatch(/ring-2/);
-					expect(koreanChip.className).not.toMatch(/ring-melodio-green/);
-				});
 			});
 		});
 	});

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useToast } from "@/shared/hooks/useToast";
 import { tracksService, albumsService, artistsService } from "@/shared/services";
 import type { AlbumWithPopulated } from "@/shared/services/albums.service";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
@@ -174,6 +175,7 @@ interface UseConcertDetailReturn {
 
 export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 	const { user } = useAuth();
+	const { addToast } = useToast();
 	const userId = user?._id || "";
 
 	const [concert, setConcert] = useState<Concert | null>(null);
@@ -247,10 +249,12 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 				setUserTickets(data.data.userTickets || []);
 				setShowBuyDialog(false);
 				setTicketQuantity(1);
+				addToast({ type: "success", message: "Tickets purchased successfully!" });
 			}
 		} catch (_err) {
+			addToast({ type: "error", message: "Failed to purchase tickets" });
 		}
-	}, [concert, userTicketCount, ticketQuantity]);
+	}, [concert, userTicketCount, ticketQuantity, addToast]);
 
 	const concertAlbums = useMemo(() => {
 		if (!concert) return [];

@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { familyService, FamilyError } from "./family.service.js";
 import { validateFamilyMemberRequest, FamilyMemberDto } from "./family.dto.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
@@ -8,7 +8,6 @@ export const familyController = {
 	async addFamilyMember(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
@@ -32,14 +31,13 @@ export const familyController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getFamilyMembers(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
@@ -56,14 +54,13 @@ export const familyController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async removeFamilyMember(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
@@ -87,7 +84,7 @@ export const familyController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

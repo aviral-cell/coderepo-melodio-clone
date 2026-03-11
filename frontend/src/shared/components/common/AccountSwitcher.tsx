@@ -88,7 +88,7 @@ export function AccountSwitcher() {
 		return (
 			<DropdownMenuSub>
 				<DropdownMenuSubTrigger
-					className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+					className="text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
 					data-testid="account-switcher-trigger"
 				>
 					<Users className="mr-2 h-4 w-4" />
@@ -100,7 +100,7 @@ export function AccountSwitcher() {
 							handleSwitchAccount(user.primaryAccountId!, "Primary Account")
 						}
 						disabled={isSwitching}
-						className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+						className="text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
 						data-testid="account-switch-to-primary-btn"
 					>
 						<UserCircle className="mr-2 h-4 w-4" />
@@ -118,7 +118,7 @@ export function AccountSwitcher() {
 	return (
 		<DropdownMenuSub>
 			<DropdownMenuSubTrigger
-				className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+				className="text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
 				data-testid="account-switcher-trigger"
 			>
 				<Users className="mr-2 h-4 w-4" />
@@ -140,7 +140,7 @@ export function AccountSwitcher() {
 								handleSwitchAccount(account._id, account.displayName)
 							}
 							disabled={isSwitching}
-							className="cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
+							className="text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white focus:bg-melodio-light-gray focus:text-white"
 							data-testid={`account-switch-to-${account._id}-btn`}
 						>
 							<div className="flex items-center gap-2">

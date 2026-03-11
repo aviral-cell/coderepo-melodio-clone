@@ -41,7 +41,7 @@ function formatRelativeTime(dateString: string): string {
 	return new Intl.DateTimeFormat("en-US", {
 		month: "short",
 		day: "numeric",
-		year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+		year: date.getUTCFullYear() !== now.getUTCFullYear() ? "numeric" : undefined,
 	}).format(date);
 }
 
@@ -49,16 +49,21 @@ export default function RecentlyPlayedPage(): JSX.Element {
 	const { state, playTrack, togglePlayPause } = usePlayer();
 	const { addToast } = useToast();
 
+	const PAGE_SIZE = 20;
+
 	const [tracks, setTracks] = useState<RecentlyPlayedTrack[]>([]);
+	const [total, setTotal] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const [isClearing, setIsClearing] = useState(false);
 
 	const fetchRecentlyPlayed = useCallback(async () => {
 		try {
 			setIsLoading(true);
-			const response = await historyService.getRecentlyPlayed(50);
+			const response = await historyService.getRecentlyPlayed(PAGE_SIZE, 0);
 			preloadImages(response.tracks.map((t) => getImageUrl(t.coverImageUrl)));
 			setTracks(response.tracks);
+			setTotal(response.total);
 		} catch (error) {
 			addToast({
 				type: "error",
@@ -73,11 +78,29 @@ export default function RecentlyPlayedPage(): JSX.Element {
 		fetchRecentlyPlayed();
 	}, [fetchRecentlyPlayed]);
 
+	const handleLoadMore = async () => {
+		try {
+			setIsLoadingMore(true);
+			const response = await historyService.getRecentlyPlayed(PAGE_SIZE, tracks.length);
+			preloadImages(response.tracks.map((t) => getImageUrl(t.coverImageUrl)));
+			setTracks((prev) => [...prev, ...response.tracks]);
+			setTotal(response.total);
+		} catch (error) {
+			addToast({
+				type: "error",
+				message: error instanceof Error ? error.message : "Failed to load more tracks",
+			});
+		} finally {
+			setIsLoadingMore(false);
+		}
+	};
+
 	const handleClearHistory = async () => {
 		try {
 			setIsClearing(true);
 			await historyService.clearHistory();
 			setTracks([]);
+			setTotal(0);
 			addToast({
 				type: "success",
 				message: "Play history cleared",
@@ -94,7 +117,7 @@ export default function RecentlyPlayedPage(): JSX.Element {
 
 	const handleTrackPlay = (track: RecentlyPlayedTrack) => {
 		const normalizedTrack = toTrackWithPopulated(track);
-		if (state.currentTrack?._id === track.id) {
+		if (state.currentTrack?._id === track.id && state.isPlaying) {
 			togglePlayPause();
 		} else {
 			playTrack(normalizedTrack);
@@ -176,6 +199,12 @@ export default function RecentlyPlayedPage(): JSX.Element {
 							<Clock className="h-4 w-4" />
 						</span>
 					</div>
+
+					{total > 0 && (
+						<div className="mb-3 text-sm text-melodio-text-subdued">
+							Showing {tracks.length} of {total} tracks
+						</div>
+					)}
 
 					{tracks.map((track, index) => {
 						const isCurrentTrack = state.currentTrack?._id === track.id;
@@ -268,6 +297,20 @@ export default function RecentlyPlayedPage(): JSX.Element {
 							</div>
 						);
 					})}
+
+					{tracks.length < total && (
+						<div className="mt-4 flex justify-center">
+							<Button
+								variant="outline"
+								onClick={handleLoadMore}
+								disabled={isLoadingMore}
+								className="rounded-full border-melodio-light-gray text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white"
+								data-testid="recently-played-load-more-btn"
+							>
+								{isLoadingMore ? "Loading..." : "Load More"}
+							</Button>
+						</div>
+					)}
 				</div>
 			)}
 		</div>

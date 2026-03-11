@@ -316,7 +316,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 	const handleTrackPlay = (track: TrackWithPopulated, index: number) => {
 		if (!playlist || !playlist.tracks) return;
 
-		if (state.currentTrack?._id === track._id) {
+		if (state.currentTrack?._id === track._id && state.isPlaying) {
 			togglePlayPause();
 		} else {
 			playTracks(playlist.tracks, index);

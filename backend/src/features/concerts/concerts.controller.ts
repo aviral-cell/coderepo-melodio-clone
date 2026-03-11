@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { concertsService, ConcertError } from "./concerts.service.js";
 import {
 	sendSuccess,
@@ -11,7 +11,6 @@ export const concertsController = {
 	async list(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const monthParam = req.query.month;
@@ -25,14 +24,13 @@ export const concertsController = {
 			const concerts = await concertsService.getUpcoming(month, city);
 			sendSuccess(res, concerts);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -51,14 +49,13 @@ export const concertsController = {
 
 			sendSuccess(res, concert);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async buyTickets(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -91,14 +88,13 @@ export const concertsController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getUserTickets(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -116,7 +112,7 @@ export const concertsController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

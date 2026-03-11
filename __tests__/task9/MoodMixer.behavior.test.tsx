@@ -24,7 +24,7 @@ jest.mock("@/shared/services", () => ({
 jest.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
-		user: { _id: "user-1", email: "test@hackerrank.com", name: "Test User" },
+		user: { _id: "user-1", email: "test@melodio.com", name: "Test User" },
 		isAuthenticated: true,
 		isLoading: false,
 		login: jest.fn(),
@@ -102,7 +102,6 @@ function createMockTrack(overrides: Record<string, unknown> = {}) {
 
 // ========== MOCK DATA ==========
 
-// Rock tracks (2)
 const rockTracks = [
 	createMockTrack({
 		_id: "track-rock-1",
@@ -126,7 +125,6 @@ const rockTracks = [
 	}),
 ];
 
-// Pop tracks (2)
 const popTracks = [
 	createMockTrack({
 		_id: "track-pop-1",
@@ -150,7 +148,6 @@ const popTracks = [
 	}),
 ];
 
-// Jazz tracks (2)
 const jazzTracks = [
 	createMockTrack({
 		_id: "track-jazz-1",
@@ -174,7 +171,6 @@ const jazzTracks = [
 	}),
 ];
 
-// Electronic tracks (2)
 const electronicTracks = [
 	createMockTrack({
 		_id: "track-electronic-1",
@@ -198,7 +194,6 @@ const electronicTracks = [
 	}),
 ];
 
-// Hip-hop tracks (2)
 const hipHopTracks = [
 	createMockTrack({
 		_id: "track-hiphop-1",
@@ -240,7 +235,6 @@ const mockTracksResponse = {
 	hasPrev: false,
 };
 
-// Mood headings expected in the page (capitalized mood names)
 const ALL_MOOD_HEADINGS = ["Energetic", "Chill", "Happy", "Focus", "Party"];
 
 // ========== TEST WRAPPER ==========
@@ -309,286 +303,154 @@ describe("Mood Mixer", () => {
 		jest.clearAllMocks();
 	});
 
-	// ========== TRACK DISPLAY ==========
-
 	describe("Track Display", () => {
-		describe("All Mood Sections", () => {
-			it("should display all mood sections when no mood is selected", async () => {
-				mockGetAll.mockResolvedValue(mockTracksResponse);
+		it("should display all mood sections by default", async () => {
+			mockGetAll.mockResolvedValue(mockTracksResponse);
 
-				renderMoodMixerPage();
+			// Render mood mixer page
+			renderMoodMixerPage();
 
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-tracks")).toBeInTheDocument();
-				});
+			// Wait for tracks to load
+			await waitFor(() => {
+				expect(screen.getByTestId("mood-tracks")).toBeInTheDocument();
+			});
 
-				// With per-mood carousels, tracks appear in multiple sections due to shared genres:
-				// Energetic [rock, electronic] = 4, Chill [jazz] = 2, Happy [pop] = 2,
-				// Focus [electronic, jazz] = 4, Party [pop, hip-hop] = 4 => total 16
+			// Verify all 16 tracks displayed
+			const tracksContainer = screen.getByTestId("mood-tracks");
+			const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
+			expect(trackItems).toHaveLength(16);
+
+			// Verify all mood section headings present
+			for (const heading of ALL_MOOD_HEADINGS) {
+				expect(within(tracksContainer).getByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
+			}
+
+			// Verify no mood description shown
+			expect(screen.queryByTestId("mood-description")).not.toBeInTheDocument();
+		});
+	});
+
+	describe("Mood Filtering", () => {
+		it.each([
+			["energetic", 4, "High-energy tracks to get you moving", "Energetic"],
+			["chill", 2, "Relaxing vibes to unwind", "Chill"],
+			["happy", 2, "Feel-good tunes to brighten your day", "Happy"],
+			["focus", 4, "Instrumental beats to help you concentrate", "Focus"],
+			["party", 4, "Bangers to get the party started", "Party"],
+		])("should filter tracks when %s mood is selected", async (chipId, trackCount, description, heading) => {
+			const user = userEvent.setup();
+			mockGetAll.mockResolvedValue(mockTracksResponse);
+
+			// Render mood mixer page
+			renderMoodMixerPage();
+
+			// Wait for mood chips to load
+			await waitFor(() => {
+				expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
+			});
+
+			// Click mood chip
+			await user.click(screen.getByTestId(`mood-chip-${chipId}`));
+
+			// Verify filtered track count
+			await waitFor(() => {
+				const tracksContainer = screen.getByTestId("mood-tracks");
+				const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
+				expect(trackItems).toHaveLength(trackCount);
+			});
+
+			// Verify mood description displayed
+			expect(screen.getByTestId("mood-description")).toHaveTextContent(description);
+
+			// Verify only selected mood heading shown
+			const tracksContainer = screen.getByTestId("mood-tracks");
+			expect(within(tracksContainer).getByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
+			for (const h of ALL_MOOD_HEADINGS.filter((m) => m !== heading)) {
+				expect(within(tracksContainer).queryByRole("heading", { name: h, level: 2 })).not.toBeInTheDocument();
+			}
+		});
+	});
+
+	describe("Mood Toggle", () => {
+		it("should deselect mood and show all sections", async () => {
+			const user = userEvent.setup();
+			mockGetAll.mockResolvedValue(mockTracksResponse);
+
+			// Render mood mixer page
+			renderMoodMixerPage();
+
+			// Wait for mood chips to load
+			await waitFor(() => {
+				expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
+			});
+
+			// Select energetic mood
+			await user.click(screen.getByTestId("mood-chip-energetic"));
+
+			// Verify filtered to 4 tracks
+			await waitFor(() => {
+				const tracksContainer = screen.getByTestId("mood-tracks");
+				const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
+				expect(trackItems).toHaveLength(4);
+			});
+
+			// Deselect energetic mood
+			await user.click(screen.getByTestId("mood-chip-energetic"));
+
+			// Verify all 16 tracks restored
+			await waitFor(() => {
 				const tracksContainer = screen.getByTestId("mood-tracks");
 				const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
 				expect(trackItems).toHaveLength(16);
-
-				// All 5 mood section headings should be visible
-				for (const heading of ALL_MOOD_HEADINGS) {
-					expect(within(tracksContainer).getByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
-				}
-
-				// Mood description should NOT be visible when no mood selected
-				expect(screen.queryByTestId("mood-description")).not.toBeInTheDocument();
 			});
+
+			// Verify all mood headings restored
+			const tracksContainer = screen.getByTestId("mood-tracks");
+			for (const heading of ALL_MOOD_HEADINGS) {
+				expect(within(tracksContainer).getByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
+			}
+
+			// Verify no mood description shown
+			expect(screen.queryByTestId("mood-description")).not.toBeInTheDocument();
 		});
 
-	});
+		it("should switch between moods", async () => {
+			const user = userEvent.setup();
+			mockGetAll.mockResolvedValue(mockTracksResponse);
 
-	// ========== MOOD FILTERING ==========
+			// Render mood mixer page
+			renderMoodMixerPage();
 
-	describe("Mood Filtering", () => {
-		describe("Energetic Mood", () => {
-			it("should filter to Energetic section when selected", async () => {
-				const user = userEvent.setup();
-				mockGetAll.mockResolvedValue(mockTracksResponse);
-
-				renderMoodMixerPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
-				});
-
-				// Click Energetic chip
-				await user.click(screen.getByTestId("mood-chip-energetic"));
-
-				// Energetic = rock + electronic = 4 tracks
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(4);
-				});
-
-				// Verify description is shown
-				expect(screen.getByTestId("mood-description")).toHaveTextContent("High-energy tracks to get you moving");
-
-				// Only Energetic heading should be visible
-				const tracksContainer = screen.getByTestId("mood-tracks");
-				expect(within(tracksContainer).getByRole("heading", { name: "Energetic", level: 2 })).toBeInTheDocument();
-				for (const heading of ALL_MOOD_HEADINGS.filter((h) => h !== "Energetic")) {
-					expect(within(tracksContainer).queryByRole("heading", { name: heading, level: 2 })).not.toBeInTheDocument();
-				}
+			// Wait for mood chips to load
+			await waitFor(() => {
+				expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
 			});
-		});
 
-		describe("Chill Mood", () => {
-			it("should filter to Chill section when selected", async () => {
-				const user = userEvent.setup();
-				mockGetAll.mockResolvedValue(mockTracksResponse);
+			// Select happy mood
+			await user.click(screen.getByTestId("mood-chip-happy"));
 
-				renderMoodMixerPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
-				});
-
-				// Click Chill chip
-				await user.click(screen.getByTestId("mood-chip-chill"));
-
-				// Chill = jazz = 2 tracks
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(2);
-				});
-
-				// Verify description
-				expect(screen.getByTestId("mood-description")).toHaveTextContent("Relaxing vibes to unwind");
-
-				// Only Chill heading should be visible
+			// Verify 2 happy tracks shown
+			await waitFor(() => {
 				const tracksContainer = screen.getByTestId("mood-tracks");
-				expect(within(tracksContainer).getByRole("heading", { name: "Chill", level: 2 })).toBeInTheDocument();
-				for (const heading of ALL_MOOD_HEADINGS.filter((h) => h !== "Chill")) {
-					expect(within(tracksContainer).queryByRole("heading", { name: heading, level: 2 })).not.toBeInTheDocument();
-				}
+				const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
+				expect(trackItems).toHaveLength(2);
 			});
-		});
 
-		describe("Happy Mood", () => {
-			it("should filter to Happy section when selected", async () => {
-				const user = userEvent.setup();
-				mockGetAll.mockResolvedValue(mockTracksResponse);
+			// Verify happy description
+			expect(screen.getByTestId("mood-description")).toHaveTextContent("Feel-good tunes to brighten your day");
 
-				renderMoodMixerPage();
+			// Switch to party mood
+			await user.click(screen.getByTestId("mood-chip-party"));
 
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
-				});
-
-				// Click Happy chip
-				await user.click(screen.getByTestId("mood-chip-happy"));
-
-				// Happy = pop = 2 tracks
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(2);
-				});
-
-				// Verify description
-				expect(screen.getByTestId("mood-description")).toHaveTextContent("Feel-good tunes to brighten your day");
-
-				// Only Happy heading should be visible
+			// Verify 4 party tracks shown
+			await waitFor(() => {
 				const tracksContainer = screen.getByTestId("mood-tracks");
-				expect(within(tracksContainer).getByRole("heading", { name: "Happy", level: 2 })).toBeInTheDocument();
-				for (const heading of ALL_MOOD_HEADINGS.filter((h) => h !== "Happy")) {
-					expect(within(tracksContainer).queryByRole("heading", { name: heading, level: 2 })).not.toBeInTheDocument();
-				}
+				const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
+				expect(trackItems).toHaveLength(4);
 			});
-		});
 
-		describe("Focus Mood", () => {
-			it("should filter to Focus section when selected", async () => {
-				const user = userEvent.setup();
-				mockGetAll.mockResolvedValue(mockTracksResponse);
-
-				renderMoodMixerPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
-				});
-
-				// Click Focus chip
-				await user.click(screen.getByTestId("mood-chip-focus"));
-
-				// Focus = electronic + jazz = 4 tracks
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(4);
-				});
-
-				// Verify description
-				expect(screen.getByTestId("mood-description")).toHaveTextContent("Instrumental beats to help you concentrate");
-
-				// Only Focus heading should be visible
-				const tracksContainer = screen.getByTestId("mood-tracks");
-				expect(within(tracksContainer).getByRole("heading", { name: "Focus", level: 2 })).toBeInTheDocument();
-				for (const heading of ALL_MOOD_HEADINGS.filter((h) => h !== "Focus")) {
-					expect(within(tracksContainer).queryByRole("heading", { name: heading, level: 2 })).not.toBeInTheDocument();
-				}
-			});
-		});
-
-		describe("Party Mood", () => {
-			it("should filter to Party section when selected", async () => {
-				const user = userEvent.setup();
-				mockGetAll.mockResolvedValue(mockTracksResponse);
-
-				renderMoodMixerPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
-				});
-
-				// Click Party chip
-				await user.click(screen.getByTestId("mood-chip-party"));
-
-				// Party = pop + hip-hop = 4 tracks
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(4);
-				});
-
-				// Verify description
-				expect(screen.getByTestId("mood-description")).toHaveTextContent("Bangers to get the party started");
-
-				// Only Party heading should be visible
-				const tracksContainer = screen.getByTestId("mood-tracks");
-				expect(within(tracksContainer).getByRole("heading", { name: "Party", level: 2 })).toBeInTheDocument();
-				for (const heading of ALL_MOOD_HEADINGS.filter((h) => h !== "Party")) {
-					expect(within(tracksContainer).queryByRole("heading", { name: heading, level: 2 })).not.toBeInTheDocument();
-				}
-			});
+			// Verify party description
+			expect(screen.getByTestId("mood-description")).toHaveTextContent("Bangers to get the party started");
 		});
 	});
-
-	// ========== MOOD TOGGLE ==========
-
-	describe("Mood Toggle", () => {
-		describe("Deselect Mood", () => {
-			it("should deselect mood and show all sections when clicking same chip again", async () => {
-				const user = userEvent.setup();
-				mockGetAll.mockResolvedValue(mockTracksResponse);
-
-				renderMoodMixerPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
-				});
-
-				// Click Energetic chip to select
-				await user.click(screen.getByTestId("mood-chip-energetic"));
-
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(4);
-				});
-
-				// Click Energetic chip again to deselect
-				await user.click(screen.getByTestId("mood-chip-energetic"));
-
-				// All 16 track elements should be visible again (across all mood sections)
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(16);
-				});
-
-				// All 5 mood headings should be visible
-				const tracksContainer = screen.getByTestId("mood-tracks");
-				for (const heading of ALL_MOOD_HEADINGS) {
-					expect(within(tracksContainer).getByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
-				}
-
-				// Description should disappear
-				expect(screen.queryByTestId("mood-description")).not.toBeInTheDocument();
-			});
-		});
-
-		describe("Switch Between Moods", () => {
-			it("should switch between moods correctly", async () => {
-				const user = userEvent.setup();
-				mockGetAll.mockResolvedValue(mockTracksResponse);
-
-				renderMoodMixerPage();
-
-				await waitFor(() => {
-					expect(screen.getByTestId("mood-chips")).toBeInTheDocument();
-				});
-
-				// Click Happy chip first -> 2 tracks (pop)
-				await user.click(screen.getByTestId("mood-chip-happy"));
-
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(2);
-				});
-
-				expect(screen.getByTestId("mood-description")).toHaveTextContent("Feel-good tunes to brighten your day");
-
-				// Click Party chip -> 4 tracks (pop + hip-hop)
-				await user.click(screen.getByTestId("mood-chip-party"));
-
-				await waitFor(() => {
-					const tracksContainer = screen.getByTestId("mood-tracks");
-					const trackItems = within(tracksContainer).getAllByTestId(/^mood-track-/);
-					expect(trackItems).toHaveLength(4);
-				});
-
-				// Verify description changed to Party
-				expect(screen.getByTestId("mood-description")).toHaveTextContent("Bangers to get the party started");
-			});
-		});
-	});
-
 });

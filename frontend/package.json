@@ -1,8 +1,8 @@
 {
-	"name": "frontend",
+	"name": "melodio-frontend",
 	"version": "1.0.0",
 	"type": "module",
-	"description": "Melodio Music Player Frontend",
+	"description": "Melodio Music Player App - Frontend",
 	"scripts": {
 		"dev": "vite --port 3000",
 		"build": "tsc && vite build",

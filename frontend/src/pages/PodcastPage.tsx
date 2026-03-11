@@ -1,6 +1,7 @@
 import type { JSX } from "react";
-import { Clock, PlayCircle, PauseCircle, ArrowLeft, Play } from "lucide-react";
+import { Clock, PlayCircle, PauseCircle, ChevronLeft, Play } from "lucide-react";
 import { AppImage } from "@/shared/components/common/AppImage";
+import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { usePodcastBrowser } from "@/shared/hooks/usePodcastBrowser";
 import { formatEpisodeDuration } from "@/shared/utils/podcastUtils";
@@ -82,14 +83,15 @@ export default function PodcastPage(): JSX.Element {
 		return (
 			<div className="p-6" data-testid="podcast-page">
 				<div data-testid="podcast-selected-episode">
-					<button
-						data-testid="podcast-back-to-show"
+					<Button
+						variant="ghost"
+						className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 						onClick={handleBackToShow}
-						className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
+						data-testid="podcast-back-to-show"
 					>
-						<ArrowLeft className="h-4 w-4" />
+						<ChevronLeft className="mr-2 h-4 w-4" />
 						Back to {selectedShow.album.title}
-					</button>
+					</Button>
 
 					<div className="mb-8 flex flex-col items-center gap-6 sm:flex-row sm:items-start">
 						<div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-lg shadow-2xl sm:h-64 sm:w-64">
@@ -183,14 +185,15 @@ export default function PodcastPage(): JSX.Element {
 		return (
 			<div className="p-6" data-testid="podcast-page">
 				<div data-testid="podcast-selected-show">
-					<button
-						data-testid="podcast-back-to-shows"
+					<Button
+						variant="ghost"
+						className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 						onClick={handleBackToShows}
-						className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
+						data-testid="podcast-back-to-shows"
 					>
-						<ArrowLeft className="h-4 w-4" />
+						<ChevronLeft className="mr-2 h-4 w-4" />
 						Back to shows
-					</button>
+					</Button>
 
 					<div className="mb-8 flex flex-col items-center gap-6 sm:flex-row sm:items-end">
 						<div className="relative h-48 w-48 shrink-0 overflow-hidden rounded-lg shadow-2xl sm:h-52 sm:w-52">

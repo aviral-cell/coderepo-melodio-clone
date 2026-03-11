@@ -186,7 +186,7 @@ export function QueuePanel() {
 	};
 
 	const handleTrackPlay = (track: TrackWithPopulated) => {
-		if (currentTrack?._id === track._id) {
+		if (currentTrack?._id === track._id && isPlaying) {
 			togglePlayPause();
 		} else {
 			playTrack(track);

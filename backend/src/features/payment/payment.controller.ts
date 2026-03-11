@@ -1,5 +1,4 @@
-import { Response, NextFunction } from "express";
-import mongoose, { ClientSession } from "mongoose";
+import { Response } from "express";
 import { paymentService, PaymentError } from "./payment.service.js";
 import { validateCardPaymentRequest } from "./payment.dto.js";
 import { ProcessCardPaymentRequest } from "./payment.types.js";
@@ -11,26 +10,11 @@ import { AccountType } from "../users/user.model.js";
 
 const IDEMPOTENCY_CACHE_TTL = 3600;
 
-async function isReplicaSet(): Promise<boolean> {
-	try {
-		const admin = mongoose.connection.db?.admin();
-		if (!admin) return false;
-		const result = await admin.command({ replSetGetStatus: 1 });
-		return result && result.ok === 1;
-	} catch {
-		return false;
-	}
-}
-
 export const paymentController = {
 	async processCardPayment(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
-		let session: ClientSession | null = null;
-		const useTransactions = await isReplicaSet();
-
 		try {
 			const userId = req.user?.userId;
 			if (!userId) {
@@ -59,56 +43,35 @@ export const paymentController = {
 
 			const body = req.body as ProcessCardPaymentRequest;
 
-			if (useTransactions) {
-				session = await mongoose.startSession();
-				session.startTransaction();
-			}
+			const result = await paymentService.processCardPayment(
+				userId,
+				body.subscriptionPrice,
+				body.cardDetails,
+				idempotencyKey || null,
+			);
 
-			try {
-				const result = await paymentService.processCardPayment(
-					userId,
-					body.subscriptionPrice,
-					body.cardDetails,
-					idempotencyKey || null,
-					session,
+			if (idempotencyKey) {
+				cacheService.set(
+					`payment:${idempotencyKey}`,
+					{ success: true, data: result },
+					IDEMPOTENCY_CACHE_TTL,
 				);
-
-				if (session) {
-					await session.commitTransaction();
-				}
-
-				if (idempotencyKey) {
-					cacheService.set(
-						`payment:${idempotencyKey}`,
-						{ success: true, data: result },
-						IDEMPOTENCY_CACHE_TTL,
-					);
-				}
-
-				sendSuccess(res, result);
-			} catch (error) {
-				if (session) {
-					await session.abortTransaction();
-				}
-				throw error;
 			}
+
+			sendSuccess(res, result);
 		} catch (error) {
 			if (error instanceof PaymentError) {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
-		} finally {
-			if (session) {
-				await session.endSession();
-			}
+			const message = error instanceof Error ? error.message : "An error occurred";
+			res.status(500).json({ success: false, error: message });
 		}
 	},
 
 	async getPaymentHistory(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
@@ -137,7 +100,8 @@ export const paymentController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			const message = error instanceof Error ? error.message : "An error occurred";
+			res.status(500).json({ success: false, error: message });
 		}
 	},
 };

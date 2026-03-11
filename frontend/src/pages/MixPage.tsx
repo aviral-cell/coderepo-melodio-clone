@@ -1,5 +1,5 @@
 import { useState, useCallback, type JSX } from "react";
-import { ArrowLeft, Plus, Music, Check, X, Loader2, Pencil, PlayCircle, PauseCircle } from "lucide-react";
+import { ChevronLeft, Plus, Music, Check, X, Loader2, Pencil, PlayCircle, PauseCircle } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/components/ui/dialog";
@@ -230,15 +230,15 @@ export default function MixPage(): JSX.Element {
 		return (
 			<div className="p-6" data-testid="mix-detail-view">
 				{deleteDialog}
-				<button
-					type="button"
+				<Button
+					variant="ghost"
+					className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 					onClick={() => setView("browse")}
-					className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 					data-testid="mix-detail-back-btn"
 				>
-					<ArrowLeft className="h-4 w-4" />
+					<ChevronLeft className="mr-2 h-4 w-4" />
 					Back to mixes
-				</button>
+				</Button>
 
 				<div className="mb-8 flex flex-col items-center gap-6 sm:flex-row sm:items-end">
 					<MixCoverGrid images={selectedMix.coverImages} size="lg" />
@@ -352,15 +352,15 @@ export default function MixPage(): JSX.Element {
 			return (
 				<div className="p-6" data-testid="mix-create-view">
 					<div data-testid="mix-step-select">
-						<button
-							type="button"
+						<Button
+							variant="ghost"
+							className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 							onClick={handleBackToMixes}
-							className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 							data-testid="mix-select-back-btn"
 						>
-							<ArrowLeft className="h-4 w-4" />
+							<ChevronLeft className="mr-2 h-4 w-4" />
 							Back to mixes
-						</button>
+						</Button>
 
 						<h2 className="mb-6 text-2xl font-bold text-white">Pick your artists</h2>
 
@@ -419,15 +419,15 @@ export default function MixPage(): JSX.Element {
 			return (
 				<div className="p-6" data-testid="mix-create-view">
 					<div data-testid="mix-step-configure">
-						<button
-							type="button"
+						<Button
+							variant="ghost"
+							className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 							onClick={creator.prevStep}
-							className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 							data-testid="mix-configure-back-btn"
 						>
-							<ArrowLeft className="h-4 w-4" />
+							<ChevronLeft className="mr-2 h-4 w-4" />
 							Back
-						</button>
+						</Button>
 
 						<h2 className="mb-6 text-2xl font-bold text-white">Adjust your mix</h2>
 
@@ -513,15 +513,15 @@ export default function MixPage(): JSX.Element {
 			return (
 				<div className="p-6" data-testid="mix-create-view">
 					<div data-testid="mix-step-result">
-						<button
-							type="button"
+						<Button
+							variant="ghost"
+							className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
 							onClick={handleBackToMixes}
-							className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 							data-testid="mix-back-to-mixes-btn"
 						>
-							<ArrowLeft className="h-4 w-4" />
+							<ChevronLeft className="mr-2 h-4 w-4" />
 							Back to mixes
-						</button>
+						</Button>
 
 						<div className="mb-8 flex flex-col items-center gap-6 sm:flex-row sm:items-end">
 							<MixCoverGrid images={creator.coverImages} size="lg" />

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { authService, AuthError } from "./auth.service.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
@@ -9,7 +9,7 @@ function isValidEmail(email: string): boolean {
 }
 
 export const authController = {
-	async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async register(req: Request, res: Response): Promise<void> {
 		try {
 			const { email, username, password, displayName } = req.body as {
 				email?: string;
@@ -56,11 +56,11 @@ export const authController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
-	async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async login(req: Request, res: Response): Promise<void> {
 		try {
 			const { email, password } = req.body as {
 				email?: string;
@@ -85,11 +85,11 @@ export const authController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
-	async getMe(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+	async getMe(req: AuthenticatedRequest, res: Response): Promise<void> {
 		try {
 			const userId = req.user?.userId;
 			if (!userId) {
@@ -105,14 +105,13 @@ export const authController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async switchAccount(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
@@ -141,7 +140,7 @@ export const authController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

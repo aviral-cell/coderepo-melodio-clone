@@ -65,7 +65,7 @@ export default function TrackDetailPage(): JSX.Element {
 
 	const handlePlay = () => {
 		if (!track) return;
-		if (state.currentTrack?._id === track._id) {
+		if (state.currentTrack?._id === track._id && state.isPlaying) {
 			togglePlayPause();
 		} else {
 			playTrack(track);
@@ -226,14 +226,14 @@ export default function TrackDetailPage(): JSX.Element {
 						>
 							<DropdownMenuItem
 								onClick={handleAddToQueue}
-								className="cursor-pointer text-white hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white"
+								className="text-white hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white"
 							>
 								<ListPlus className="mr-2 h-4 w-4" />
 								Add to queue
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => setIsPlaylistModalOpen(true)}
-								className="cursor-pointer text-white hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white"
+								className="text-white hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:text-white"
 							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add to playlist

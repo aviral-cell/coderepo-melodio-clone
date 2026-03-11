@@ -18,6 +18,7 @@ export interface PlayerState {
 	repeatMode: RepeatMode;
 	volume: number;
 	isQueueOpen: boolean;
+	playCount: number;
 }
 
 export type PlayerAction =

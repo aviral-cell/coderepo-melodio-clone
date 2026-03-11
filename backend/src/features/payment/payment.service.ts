@@ -1,4 +1,4 @@
-import mongoose, { ClientSession } from "mongoose";
+import mongoose from "mongoose";
 import { Payment } from "./payment.model.js";
 import {
 	IPaymentDocument,
@@ -34,19 +34,12 @@ function transformPayment(payment: IPaymentDocument): PaymentResponse {
 	};
 }
 
-function generateTransactionId(): string {
-	const timestamp = Date.now();
-	const random = Math.random().toString(36).substring(2, 10);
-	return `txn_card_${timestamp}_${random}`;
-}
-
 export const paymentService = {
 	async processCardPayment(
 		userId: string,
 		amount: number,
 		cardDetails: CardDetails,
 		idempotencyKey: string | null,
-		session: ClientSession | null,
 	): Promise<ProcessCardPaymentResponse> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 		const cardLast4 = cardDetails.cardNumber.slice(-4);
@@ -55,8 +48,6 @@ export const paymentService = {
 		if (isAlreadyPremium) {
 			throw new PaymentError("Already subscribed to premium", 400);
 		}
-
-		const sessionOpts = session ? { session } : {};
 
 		const createdPayments = await Payment.create(
 			[
@@ -69,7 +60,7 @@ export const paymentService = {
 					timestamp: new Date(),
 				},
 			],
-			sessionOpts,
+			{},
 		);
 
 		const payment = createdPayments[0];
@@ -82,7 +73,7 @@ export const paymentService = {
 			await Payment.findByIdAndUpdate(
 				payment._id,
 				{ status: PaymentStatus.FAILED },
-				sessionOpts,
+				{},
 			).exec();
 
 			throw new PaymentError("Card charge failed", 400);
@@ -91,24 +82,20 @@ export const paymentService = {
 		await Payment.findByIdAndUpdate(
 			payment._id,
 			{ status: PaymentStatus.COMPLETED },
-			sessionOpts,
+			{},
 		).exec();
 
-		const subscription = await subscriptionService.upgradeToPremium(
-			userId,
-			session || undefined,
-		);
+		const subscription = await subscriptionService.upgradeToPremium(userId);
 
 		await User.findByIdAndUpdate(
 			userObjectId,
 			{ subscription_status: SubscriptionStatus.PREMIUM },
-			sessionOpts,
+			{},
 		).exec();
 
 		return {
 			success: true,
 			paymentId: payment._id.toString(),
-			transactionId: generateTransactionId(),
 			message: "Payment successful",
 			subscription: {
 				plan: subscription.plan,
@@ -121,7 +108,7 @@ export const paymentService = {
 	async chargeCard(
 		cardDetails: CardDetails,
 		amount: number,
-	): Promise<{ success: boolean; transactionId?: string; error?: string }> {
+	): Promise<{ success: boolean; error?: string }> {
 		if (!/^\d{16}$/.test(cardDetails.cardNumber)) {
 			return { success: false, error: "Invalid card number format" };
 		}
@@ -144,7 +131,6 @@ export const paymentService = {
 
 		return {
 			success: true,
-			transactionId: generateTransactionId(),
 		};
 	},
 

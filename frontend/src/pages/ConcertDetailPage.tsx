@@ -1,6 +1,6 @@
 import { useRef, type JSX } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus, Minus, Ticket } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight, Plus, Minus, Ticket } from "lucide-react";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -95,6 +95,7 @@ function TrackCarousel({ tracks, testIdPrefix }: TrackCarouselProps): JSX.Elemen
 
 export default function ConcertDetailPage(): JSX.Element {
 	const { id } = useParams<{ id: string }>();
+	const navigate = useNavigate();
 	const concertId = id || "";
 
 	const {
@@ -170,14 +171,15 @@ export default function ConcertDetailPage(): JSX.Element {
 
 	return (
 		<div className="p-6" data-testid="concert-detail-page">
-			<Link
-				to="/concerts"
+			<Button
+				variant="ghost"
+				className="mb-4 rounded-full text-melodio-text-subdued hover:text-white"
+				onClick={() => navigate("/concerts")}
 				data-testid="concert-detail-back"
-				className="mb-6 flex items-center gap-2 text-sm font-medium text-melodio-green transition-colors hover:text-melodio-green-dark hover:underline"
 			>
-				<ArrowLeft className="h-4 w-4" />
+				<ChevronLeft className="mr-2 h-4 w-4" />
 				Back to concerts
-			</Link>
+			</Button>
 
 			{/* Concert Info Section */}
 			<div className="mb-8 flex flex-col items-center gap-6 sm:flex-row sm:items-start">

@@ -54,12 +54,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 	}, [state.isPlaying, state.currentTrack]);
 
 	useEffect(() => {
-		if (state.currentTrack) {
+		if (state.currentTrack && state.playCount > 0) {
 			historyService.recordPlay(state.currentTrack._id).catch((error) => {
 				console.error("Failed to record play:", error);
 			});
 		}
-	}, [state.currentTrack?._id]);
+	}, [state.playCount]);
 
 	const playTrack = useCallback(
 		(track: TrackWithPopulated) => {

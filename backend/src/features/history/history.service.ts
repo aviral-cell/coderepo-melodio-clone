@@ -141,12 +141,15 @@ export const historyService = {
 	async getRecentlyPlayed(
 		userId: string,
 		limit: number = 20,
+		offset: number = 0,
 	): Promise<RecentlyPlayedResponse> {
 		const effectiveLimit = Math.min(Math.max(limit, 1), 50);
+		const effectiveOffset = Math.max(offset, 0);
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 
 		const history = await PlayHistory.find({ user_id: userObjectId })
 			.sort({ played_at: -1 })
+			.skip(effectiveOffset)
 			.limit(effectiveLimit)
 			.populate<{ track_id: PopulatedTrack }>({
 				path: "track_id",

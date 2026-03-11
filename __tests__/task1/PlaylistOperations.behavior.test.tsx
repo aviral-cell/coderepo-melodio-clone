@@ -20,7 +20,7 @@ jest.mock("@/shared/hooks/useImageColor", () => ({
 jest.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
-		user: { _id: "user-1", email: "test@hackerrank.com", name: "Test User" },
+		user: { _id: "user-1", email: "test@melodio.com", name: "Test User" },
 		isAuthenticated: true,
 		isLoading: false,
 		login: jest.fn(),
@@ -164,7 +164,7 @@ const originalLocation = window.location;
 
 let mockFetch: jest.Mock;
 
-describe("Playlist Operations Behavior Tests", () => {
+describe("Playlist Operations", () => {
 	beforeAll(() => {
 		delete window.location;
 		window.location = {

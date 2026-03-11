@@ -84,8 +84,8 @@ function validateExpiryDate(
 	expiryYear: string,
 ): PaymentValidationError | null {
 	const currentDate = new Date();
-	const currentYear = currentDate.getFullYear() % 100;
-	const currentMonth = currentDate.getMonth() + 1;
+	const currentYear = currentDate.getUTCFullYear() % 100;
+	const currentMonth = currentDate.getUTCMonth() + 1;
 
 	const expYear = parseInt(expiryYear, 10);
 	const expMonth = parseInt(expiryMonth, 10);

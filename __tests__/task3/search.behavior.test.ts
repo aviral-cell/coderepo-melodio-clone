@@ -7,136 +7,30 @@ import * as path from "path";
 dotenv.config({ path: path.resolve(__dirname, "../../backend/.env") });
 
 import request from "supertest";
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose from "mongoose";
 import { Application } from "express";
 import { createApp } from "../../backend/src/app";
 import { loadConfig, Config } from "../../backend/src/shared/config";
+import { User } from "../../backend/src/features/users/user.model";
+import { Artist } from "../../backend/src/features/artists/artist.model";
+import { Album } from "../../backend/src/features/albums/album.model";
+import { Track } from "../../backend/src/features/tracks/track.model";
 
 const config: Config = loadConfig(true);
 const API_BASE = "/api/tracks/search";
 const AUTH_BASE = "/api/auth";
 
-interface IUser {
-	email: string;
-	username: string;
-	password_hash: string;
-	display_name: string;
-	avatar_url?: string;
-	created_at: Date;
-	updated_at: Date;
-}
-
-interface IUserDocument extends IUser, Document {
-	_id: mongoose.Types.ObjectId;
-}
-
-const userSchema = new Schema<IUserDocument>(
-	{
-		email: { type: String, required: true, unique: true, trim: true, lowercase: true },
-		username: { type: String, required: true, unique: true, trim: true },
-		password_hash: { type: String, required: true },
-		display_name: { type: String, required: true, trim: true },
-		avatar_url: { type: String },
-	},
-	{ timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
-);
-
-interface IArtist {
-	name: string;
-	bio?: string;
-	image_url?: string;
-	genres: string[];
-	follower_count: number;
-	created_at: Date;
-	updated_at: Date;
-}
-
-interface IArtistDocument extends IArtist, Document {
-	_id: mongoose.Types.ObjectId;
-}
-
-const artistSchema = new Schema<IArtistDocument>(
-	{
-		name: { type: String, required: true, trim: true },
-		bio: { type: String, trim: true },
-		image_url: { type: String },
-		genres: { type: [String], required: true, default: [] },
-		follower_count: { type: Number, default: 0, min: 0 },
-	},
-	{ timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
-);
-
-interface IAlbum {
-	title: string;
-	artist_id: mongoose.Types.ObjectId;
-	release_date: Date;
-	cover_image_url?: string;
-	total_tracks: number;
-	created_at: Date;
-	updated_at: Date;
-}
-
-interface IAlbumDocument extends IAlbum, Document {
-	_id: mongoose.Types.ObjectId;
-}
-
-const albumSchema = new Schema<IAlbumDocument>(
-	{
-		title: { type: String, required: true, trim: true },
-		artist_id: { type: Schema.Types.ObjectId, ref: "Artist", required: true },
-		release_date: { type: Date, required: true },
-		cover_image_url: { type: String },
-		total_tracks: { type: Number, required: true, min: 1 },
-	},
-	{ timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
-);
-
-interface ITrack {
-	title: string;
-	artist_id: mongoose.Types.ObjectId;
-	album_id: mongoose.Types.ObjectId;
-	duration_in_seconds: number;
-	track_number: number;
-	genre: string;
-	play_count: number;
-	cover_image_url?: string;
-	created_at: Date;
-	updated_at: Date;
-}
-
-interface ITrackDocument extends ITrack, Document {
-	_id: mongoose.Types.ObjectId;
-}
-
-const trackSchema = new Schema<ITrackDocument>(
-	{
-		title: { type: String, required: true, trim: true },
-		artist_id: { type: Schema.Types.ObjectId, ref: "Artist", required: true },
-		album_id: { type: Schema.Types.ObjectId, ref: "Album", required: true },
-		duration_in_seconds: { type: Number, required: true, min: 1 },
-		track_number: { type: Number, required: true, min: 1 },
-		genre: { type: String, required: true, trim: true, lowercase: true },
-		play_count: { type: Number, default: 0, min: 0 },
-		cover_image_url: { type: String },
-	},
-	{ timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
-);
-
-let User: mongoose.Model<IUserDocument>;
-let Artist: mongoose.Model<IArtistDocument>;
-let Album: mongoose.Model<IAlbumDocument>;
-let Track: mongoose.Model<ITrackDocument>;
 let app: Application;
 let authToken: string;
 
 const testUser = {
-	email: "searchtest@hackerrank.com",
+	email: "searchtest@melodio.com",
 	username: "searchtestuser",
 	password: "Password123!",
 	displayName: "Search Test User",
 };
 
-async function createTestArtist(name: string, genre: string): Promise<IArtistDocument> {
+async function createTestArtist(name: string, genre: string) {
 	return Artist.create({
 		name,
 		bio: `Bio for ${name}`,
@@ -149,7 +43,7 @@ async function createTestArtist(name: string, genre: string): Promise<IArtistDoc
 async function createTestAlbum(
 	title: string,
 	artistId: mongoose.Types.ObjectId,
-): Promise<IAlbumDocument> {
+) {
 	return Album.create({
 		title,
 		artist_id: artistId,
@@ -165,7 +59,7 @@ async function createTestTrack(
 	albumId: mongoose.Types.ObjectId,
 	genre: string,
 	trackNumber = 1,
-): Promise<ITrackDocument> {
+) {
 	return Track.create({
 		title,
 		artist_id: artistId,
@@ -181,11 +75,6 @@ async function createTestTrack(
 describe("Search Service", () => {
 	beforeAll(async () => {
 		await mongoose.connect(config.mongodbUri);
-
-		User = mongoose.models.User || mongoose.model<IUserDocument>("User", userSchema);
-		Artist = mongoose.models.Artist || mongoose.model<IArtistDocument>("Artist", artistSchema);
-		Album = mongoose.models.Album || mongoose.model<IAlbumDocument>("Album", albumSchema);
-		Track = mongoose.models.Track || mongoose.model<ITrackDocument>("Track", trackSchema);
 
 		app = createApp();
 
@@ -218,21 +107,25 @@ describe("Search Service", () => {
 	});
 
 	describe("GET /api/tracks/search", () => {
-		it("should return track search results with populated artist and album info", async () => {
+		it("should search tracks by title prefix with artist and album data", async () => {
+			// Seed test artist, album, and tracks
 			const artist = await createTestArtist("Thunder Band", "rock");
 			const album = await createTestAlbum("Thunder Album", artist._id);
 			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
 			await createTestTrack("Thunder Strike", artist._id, album._id, "rock", 2);
 
+			// Search tracks by title prefix
 			const res = await request(app)
 				.get(`${API_BASE}?q=Thunder`)
 				.set("Authorization", `Bearer ${authToken}`);
 
+			// Verify search returns results
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 			expect(Array.isArray(res.body.data)).toBe(true);
 			expect(res.body.data.length).toBeGreaterThan(0);
 
+			// Verify response includes populated artist and album data
 			const track = res.body.data[0];
 			expect(track).toHaveProperty("id");
 			expect(track).toHaveProperty("title");
@@ -245,6 +138,7 @@ describe("Search Service", () => {
 		});
 
 		it("should use prefix-based matching (case-insensitive)", async () => {
+			// Seed tracks with varied prefixes
 			const artist = await createTestArtist("Test Artist", "rock");
 			const album = await createTestAlbum("Test Album", artist._id);
 			await createTestTrack("Thunder Road", artist._id, album._id, "rock");
@@ -252,14 +146,17 @@ describe("Search Service", () => {
 			await createTestTrack("Thunderstorm", artist._id, album._id, "rock", 3);
 			await createTestTrack("Lightning Bolt", artist._id, album._id, "rock", 4);
 
+			// Search with lowercase prefix
 			const res = await request(app)
 				.get(`${API_BASE}?q=thunder`)
 				.set("Authorization", `Bearer ${authToken}`);
 
+			// Verify only prefix-matched tracks returned
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 			expect(res.body.data.length).toBe(3);
 
+			// Verify correct tracks included and non-matching excluded
 			const titles = res.body.data.map((t: { title: string }) => t.title);
 			expect(titles).toContain("Thunder Road");
 			expect(titles).toContain("Thunder Strike");
@@ -267,7 +164,8 @@ describe("Search Service", () => {
 			expect(titles).not.toContain("Lightning Bolt");
 		});
 
-		it("should limit results to maximum 5 tracks", async () => {
+		it("should limit search results to 5 tracks", async () => {
+			// Seed 10 tracks with same prefix
 			const artist = await createTestArtist("Test Artist", "rock");
 			const album = await createTestAlbum("Test Album", artist._id);
 
@@ -275,10 +173,12 @@ describe("Search Service", () => {
 				await createTestTrack(`Thunder Song ${i}`, artist._id, album._id, "rock", i);
 			}
 
+			// Search for all matching tracks
 			const res = await request(app)
 				.get(`${API_BASE}?q=Thunder`)
 				.set("Authorization", `Bearer ${authToken}`);
 
+			// Verify results capped at 5
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 			expect(res.body.data.length).toBe(5);

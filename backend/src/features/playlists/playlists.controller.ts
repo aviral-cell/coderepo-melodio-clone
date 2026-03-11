@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { playlistsService, PlaylistError } from "./playlists.service.js";
 import {
 	sendSuccess,
@@ -11,21 +11,19 @@ export const playlistsController = {
 	async getAll(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user!.userId;
 			const playlists = await playlistsService.findByOwnerId(userId);
 			sendSuccess(res, playlists);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -50,14 +48,13 @@ export const playlistsController = {
 
 			sendSuccess(res, result.playlist);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async create(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user!.userId;
@@ -81,14 +78,13 @@ export const playlistsController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async update(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -119,14 +115,13 @@ export const playlistsController = {
 
 			sendSuccess(res, result.playlist);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async delete(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -151,14 +146,13 @@ export const playlistsController = {
 
 			res.status(204).send();
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async addTrack(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -194,14 +188,13 @@ export const playlistsController = {
 
 			sendSuccess(res, result.playlist);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async removeTrack(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id, trackId } = req.params;
@@ -231,14 +224,13 @@ export const playlistsController = {
 
 			sendSuccess(res, result.playlist);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async reorderTracks(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -285,14 +277,13 @@ export const playlistsController = {
 
 			sendSuccess(res, result.playlist);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async copyPlaylist(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -312,7 +303,7 @@ export const playlistsController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

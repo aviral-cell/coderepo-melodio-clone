@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { mixesService, MixError } from "./mixes.service.js";
 import {
 	sendSuccess,
@@ -11,7 +11,6 @@ export const mixesController = {
 	async create(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user!.userId;
@@ -53,28 +52,26 @@ export const mixesController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getAll(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user!.userId;
 			const mixes = await mixesService.getUserMixes(userId);
 			sendSuccess(res, mixes);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -92,14 +89,13 @@ export const mixesController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async rename(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -123,14 +119,13 @@ export const mixesController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async delete(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -148,7 +143,7 @@ export const mixesController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

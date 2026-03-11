@@ -99,7 +99,7 @@ export const concertsService = {
 		}
 
 		if (month && month >= 1 && month <= 12) {
-			const year = new Date().getFullYear();
+			const year = new Date().getUTCFullYear();
 			const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
 			const endOfMonth = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 

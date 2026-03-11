@@ -1,7 +1,7 @@
 {
-	"name": "backend",
+	"name": "melodio-backend",
 	"version": "1.0.0",
-	"description": "Melodio Music Player Backend API",
+	"description": "Melodio Music Player API - Backend",
 	"main": "dist/server.js",
 	"scripts": {
 		"dev": "tsx watch src/server.ts",

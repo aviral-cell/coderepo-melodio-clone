@@ -22,8 +22,8 @@ export interface RecentlyPlayedResponse {
 }
 
 export const historyService = {
-	async getRecentlyPlayed(limit: number = 20): Promise<RecentlyPlayedResponse> {
-		return apiService.get<RecentlyPlayedResponse>(`/api/history/recently-played?limit=${limit}`);
+	async getRecentlyPlayed(limit: number = 20, offset: number = 0): Promise<RecentlyPlayedResponse> {
+		return apiService.get<RecentlyPlayedResponse>(`/api/history/recently-played?limit=${limit}&offset=${offset}`);
 	},
 
 	async recordPlay(trackId: string): Promise<void> {

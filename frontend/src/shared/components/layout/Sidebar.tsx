@@ -237,150 +237,148 @@ export function Sidebar() {
 					</Link>
 				</div>
 
-				<ScrollArea className="flex-1 min-h-0">
-					<nav className="px-3 space-y-3">
-						{NAV_GROUPS.map(renderNavGroup)}
+				<nav className="flex-shrink-0 px-3 space-y-3">
+					{NAV_GROUPS.map(renderNavGroup)}
 
-						{isCollapsed && (
-							<button
-								type="button"
-								onClick={() => setIsMobileDrawerOpen(true)}
-								className="flex w-full items-center justify-center rounded-md px-2 py-3 text-sm font-semibold transition-colors text-melodio-text-subdued hover:text-white md:hidden"
-								title="Your Library"
-							>
-								<Library className="h-6 w-6 flex-shrink-0" />
-							</button>
-						)}
-					</nav>
+					{isCollapsed && (
+						<button
+							type="button"
+							onClick={() => setIsMobileDrawerOpen(true)}
+							className="flex w-full items-center justify-center rounded-md px-2 py-3 text-sm font-semibold transition-colors text-melodio-text-subdued hover:text-white md:hidden"
+							title="Your Library"
+						>
+							<Library className="h-6 w-6 flex-shrink-0" />
+						</button>
+					)}
+				</nav>
 
+				<div
+					className={cn(
+						"flex flex-col flex-1 min-h-0 px-3 mt-3",
+						isCollapsed && "hidden md:flex"
+					)}
+				>
 					<div
 						className={cn(
-							"flex flex-col px-3 min-h-0 mt-3",
-							isCollapsed && "hidden md:block"
+							"flex items-center px-2 py-1.5 flex-shrink-0",
+							isCollapsed ? "justify-center" : "justify-between"
 						)}
 					>
-						<div
-							className={cn(
-								"flex items-center px-2 py-1.5 flex-shrink-0",
-								isCollapsed ? "justify-center" : "justify-between"
-							)}
-						>
-							{!isCollapsed ? (
-								<button
-									type="button"
-									onClick={() => toggleGroup("library")}
-									className="flex flex-1 items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-melodio-text-subdued/60 hover:text-melodio-text-subdued cursor-pointer transition-colors"
-								>
-									<span className="flex items-center gap-2">
-										<Library className="h-4 w-4 flex-shrink-0" />
-										Your Library
-									</span>
-									<div className="flex items-center gap-1">
-										{isLibraryExpanded ? (
-											<ChevronUp className="h-3 w-3" />
-										) : (
-											<ChevronDown className="h-3 w-3" />
-										)}
-									</div>
-								</button>
-							) : (
-								<div className="flex items-center justify-center">
-									<Library className="h-6 w-6 flex-shrink-0 text-melodio-text-subdued" />
+						{!isCollapsed ? (
+							<button
+								type="button"
+								onClick={() => toggleGroup("library")}
+								className="flex flex-1 items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-melodio-text-subdued/60 hover:text-melodio-text-subdued cursor-pointer transition-colors"
+							>
+								<span className="flex items-center gap-2">
+									<Library className="h-4 w-4 flex-shrink-0" />
+									Your Library
+								</span>
+								<div className="flex items-center gap-1">
+									{isLibraryExpanded ? (
+										<ChevronUp className="h-3 w-3" />
+									) : (
+										<ChevronDown className="h-3 w-3" />
+									)}
 								</div>
-							)}
-							{!isCollapsed && (
-								<Button
-									variant="ghost"
-									size="icon"
-									className="ml-1 h-6 w-6 rounded-full text-melodio-text-subdued hover:text-white"
-									onClick={() => setIsCreateDialogOpen(true)}
-									aria-label="Create playlist"
-								>
-									<Plus className="h-3.5 w-3.5" />
-								</Button>
-							)}
-						</div>
-
-						{(isLibraryExpanded || isCollapsed) && (
-							<ScrollArea className="max-h-[30vh] [&_[data-radix-scroll-area-viewport]>div]:!block">
-								<div className="space-y-1 p-2">
-									{isLoading ? (
-										Array.from({ length: 5 }).map((_, index) => (
-											<div
-												key={index}
-												className={cn(
-													"flex items-center gap-3 rounded-md p-2",
-													isCollapsed && "justify-center"
-												)}
-											>
-												<Skeleton className="h-12 w-12 rounded flex-shrink-0" />
-												{!isCollapsed && (
-													<div className="flex-1">
-														<Skeleton className="mb-1 h-4 w-3/4" />
-														<Skeleton className="h-3 w-1/2" />
-													</div>
-												)}
-											</div>
-										))
-									) : playlists.length > 0 ? (
-										playlists.map((playlist) => {
-											const isActive = pathname === `/playlist/${playlist._id}`;
-											const trackCount = Array.isArray(playlist.trackIds)
-												? playlist.trackIds.length
-												: 0;
-
-											return (
-												<Link
-													key={playlist._id}
-													to={`/playlist/${playlist._id}`}
-													className={cn(
-														"flex items-center gap-3 rounded-md p-2 transition-colors min-w-0",
-														isActive
-															? "bg-melodio-light-gray"
-															: "hover:bg-melodio-light-gray/50",
-														isCollapsed && "justify-center"
-													)}
-													title={isCollapsed ? playlist.name : undefined}
-												>
-													<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
-														<Music className="h-6 w-6 text-melodio-text-subdued" />
-													</div>
-													{!isCollapsed && (
-														<div className="min-w-0 flex-1 overflow-hidden">
-															<p className="line-clamp-2 break-all text-sm font-medium text-white">
-																{playlist.name}
-															</p>
-															<p className="truncate text-xs text-melodio-text-subdued">
-																Playlist - {trackCount}{" "}
-																{trackCount === 1 ? "track" : "tracks"}
-															</p>
-														</div>
-													)}
-												</Link>
-											);
-										})
-									) : !isCollapsed ? (
-										<div className="px-3 py-4 text-center">
-											<p className="mb-2 text-sm font-semibold text-white">
-												Create your first playlist
-											</p>
-											<p className="mb-4 text-xs text-melodio-text-subdued">
-												It&apos;s easy, we&apos;ll help you
-											</p>
-											<Button
-												size="sm"
-												onClick={() => setIsCreateDialogOpen(true)}
-												className="rounded-full bg-white text-black hover:bg-gray-200"
-											>
-												Create playlist
-											</Button>
-										</div>
-									) : null}
-								</div>
-							</ScrollArea>
+							</button>
+						) : (
+							<div className="flex items-center justify-center">
+								<Library className="h-6 w-6 flex-shrink-0 text-melodio-text-subdued" />
+							</div>
+						)}
+						{!isCollapsed && (
+							<Button
+								variant="ghost"
+								size="icon"
+								className="ml-1 h-6 w-6 rounded-full text-melodio-text-subdued hover:text-white"
+								onClick={() => setIsCreateDialogOpen(true)}
+								aria-label="Create playlist"
+							>
+								<Plus className="h-3.5 w-3.5" />
+							</Button>
 						)}
 					</div>
-				</ScrollArea>
+
+					{(isLibraryExpanded || isCollapsed) && (
+						<ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block [&_[data-radix-scroll-area-scrollbar]]:w-0.5">
+							<div className="space-y-1 p-2">
+								{isLoading ? (
+									Array.from({ length: 5 }).map((_, index) => (
+										<div
+											key={index}
+											className={cn(
+												"flex items-center gap-3 rounded-md p-2",
+												isCollapsed && "justify-center"
+											)}
+										>
+											<Skeleton className="h-12 w-12 rounded flex-shrink-0" />
+											{!isCollapsed && (
+												<div className="flex-1">
+													<Skeleton className="mb-1 h-4 w-3/4" />
+													<Skeleton className="h-3 w-1/2" />
+												</div>
+											)}
+										</div>
+									))
+								) : playlists.length > 0 ? (
+									playlists.map((playlist) => {
+										const isActive = pathname === `/playlist/${playlist._id}`;
+										const trackCount = Array.isArray(playlist.trackIds)
+											? playlist.trackIds.length
+											: 0;
+
+										return (
+											<Link
+												key={playlist._id}
+												to={`/playlist/${playlist._id}`}
+												className={cn(
+													"flex items-center gap-3 rounded-md p-2 transition-colors min-w-0",
+													isActive
+														? "bg-melodio-light-gray"
+														: "hover:bg-melodio-light-gray/50",
+													isCollapsed && "justify-center"
+												)}
+												title={isCollapsed ? playlist.name : undefined}
+											>
+												<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
+													<Music className="h-6 w-6 text-melodio-text-subdued" />
+												</div>
+												{!isCollapsed && (
+													<div className="min-w-0 flex-1 overflow-hidden">
+														<p className="line-clamp-2 break-all text-sm font-medium text-white">
+															{playlist.name}
+														</p>
+														<p className="truncate text-xs text-melodio-text-subdued">
+															Playlist - {trackCount}{" "}
+															{trackCount === 1 ? "track" : "tracks"}
+														</p>
+													</div>
+												)}
+											</Link>
+										);
+									})
+								) : !isCollapsed ? (
+									<div className="px-3 py-4 text-center">
+										<p className="mb-2 text-sm font-semibold text-white">
+											Create your first playlist
+										</p>
+										<p className="mb-4 text-xs text-melodio-text-subdued">
+											It&apos;s easy, we&apos;ll help you
+										</p>
+										<Button
+											size="sm"
+											onClick={() => setIsCreateDialogOpen(true)}
+											className="rounded-full bg-white text-black hover:bg-gray-200"
+										>
+											Create playlist
+										</Button>
+									</div>
+								) : null}
+							</div>
+						</ScrollArea>
+					)}
+				</div>
 
 				<div className="mt-auto p-3 hidden">
 					<div

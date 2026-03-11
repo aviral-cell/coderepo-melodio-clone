@@ -65,7 +65,7 @@ export default function AlbumDetailPage(): JSX.Element {
 	};
 
 	const handleTrackPlay = (track: TrackWithPopulated, index: number) => {
-		if (state.currentTrack?._id === track._id) {
+		if (state.currentTrack?._id === track._id && state.isPlaying) {
 			togglePlayPause();
 		} else {
 			playTracks(tracks, index);
@@ -106,7 +106,7 @@ export default function AlbumDetailPage(): JSX.Element {
 		typeof album.artistId === "object" ? album.artistId._id : null;
 
 	const totalDuration = tracks.reduce((sum, track) => sum + track.durationInSeconds, 0);
-	const releaseYear = new Date(album.releaseDate).getFullYear();
+	const releaseYear = new Date(album.releaseDate).getUTCFullYear();
 
 	const isAlbumPlaying =
 		state.isPlaying && tracks.some((t) => t._id === state.currentTrack?._id);

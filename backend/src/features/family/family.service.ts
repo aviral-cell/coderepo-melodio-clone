@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { User, IUserDocument, AccountType, SubscriptionStatus } from "../users/user.model.js";
+import { User, IUserDocument, AccountType } from "../users/user.model.js";
 import { FamilyMemberDto } from "./family.dto.js";
 
 export class FamilyError extends Error {
@@ -20,7 +20,6 @@ export interface FamilyMemberResponse {
 	accountType: AccountType;
 	primaryAccountId: string;
 	isActive: boolean;
-	subscriptionStatus: SubscriptionStatus;
 	createdAt: string;
 }
 
@@ -33,7 +32,6 @@ function transformFamilyMember(user: IUserDocument): FamilyMemberResponse {
 		accountType: user.account_type,
 		primaryAccountId: user.primary_account_id?.toString() || "",
 		isActive: user.is_active,
-		subscriptionStatus: user.subscription_status,
 		createdAt: user.created_at.toISOString(),
 	};
 }
@@ -95,7 +93,6 @@ export const familyService = {
 			account_type: AccountType.FAMILY_MEMBER,
 			primary_account_id: primaryUserObjectId,
 			is_active: true,
-			subscription_status: primaryUser.subscription_status,
 		});
 
 		return transformFamilyMember(familyMember);

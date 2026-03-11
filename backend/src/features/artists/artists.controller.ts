@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { artistsService } from "./artists.service.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
@@ -32,7 +32,6 @@ export const artistsController = {
 	async getAll(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { page, limit } = parsePaginationParams(req.query as Record<string, unknown>);
@@ -40,14 +39,13 @@ export const artistsController = {
 
 			sendSuccess(res, result);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async search(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const query = req.query["q"] as string | undefined;
@@ -55,14 +53,13 @@ export const artistsController = {
 
 			sendSuccess(res, result);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 
 	async getById(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const { id } = req.params;
@@ -81,7 +78,7 @@ export const artistsController = {
 
 			sendSuccess(res, artist);
 		} catch (error) {
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

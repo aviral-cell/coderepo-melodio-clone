@@ -1,4 +1,4 @@
-import mongoose, { ClientSession } from "mongoose";
+import mongoose from "mongoose";
 import { Subscription } from "./subscription.model.js";
 import {
 	FREE_PLAYLIST_LIMIT,
@@ -71,13 +71,12 @@ export const subscriptionService = {
 
 	async upgradeToPremium(
 		userId: string,
-		session?: ClientSession,
 	): Promise<ISubscriptionDocument> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 
 		const now = new Date();
 		const oneMonthFromNow = new Date(now);
-		oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
+		oneMonthFromNow.setUTCMonth(oneMonthFromNow.getUTCMonth() + 1);
 
 		const updateData = {
 			plan: SubscriptionPlan.PREMIUM,
@@ -86,7 +85,7 @@ export const subscriptionService = {
 			auto_renew: true,
 		};
 
-		const options = session ? { new: true, upsert: true, session } : { new: true, upsert: true };
+		const options = { new: true, upsert: true };
 
 		const subscription = await Subscription.findOneAndUpdate(
 			{ user_id: userObjectId },

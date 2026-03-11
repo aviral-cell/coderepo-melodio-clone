@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { subscriptionService, SubscriptionError } from "./subscription.service.js";
 import { sendSuccess, sendError } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
@@ -9,7 +9,6 @@ export const subscriptionController = {
 	async getSubscription(
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction,
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
@@ -44,7 +43,7 @@ export const subscriptionController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			next(error);
+			res.status(500).json({ success: false, error: "An error occurred" });
 		}
 	},
 };

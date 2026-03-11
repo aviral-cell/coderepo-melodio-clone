@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
 import { sendSuccess, sendError, isValidObjectId } from "../../shared/utils/index.js";
 import { artistInteractionService } from "./artist-interaction.service.js";
@@ -6,7 +6,6 @@ import { artistInteractionService } from "./artist-interaction.service.js";
 async function toggleFollow(
 	req: AuthenticatedRequest,
 	res: Response,
-	next: NextFunction,
 ): Promise<void> {
 	try {
 		const artistId = req.params["id"];
@@ -29,14 +28,13 @@ async function toggleFollow(
 			sendError(res, "Artist not found", 404);
 			return;
 		}
-		next(error);
+		res.status(500).json({ success: false, error: "An error occurred" });
 	}
 }
 
 async function rateArtist(
 	req: AuthenticatedRequest,
 	res: Response,
-	next: NextFunction,
 ): Promise<void> {
 	try {
 		const artistId = req.params["id"];
@@ -70,14 +68,13 @@ async function rateArtist(
 			sendError(res, "Artist not found", 404);
 			return;
 		}
-		next(error);
+		res.status(500).json({ success: false, error: "An error occurred" });
 	}
 }
 
 async function getInteraction(
 	req: AuthenticatedRequest,
 	res: Response,
-	next: NextFunction,
 ): Promise<void> {
 	try {
 		const artistId = req.params["id"];
@@ -100,7 +97,7 @@ async function getInteraction(
 			sendError(res, "Artist not found", 404);
 			return;
 		}
-		next(error);
+		res.status(500).json({ success: false, error: "An error occurred" });
 	}
 }
 

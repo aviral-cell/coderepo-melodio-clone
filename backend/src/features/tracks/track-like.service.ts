@@ -1,69 +1,14 @@
-import mongoose from "mongoose";
 import { Track } from "./track.model.js";
 import { TrackLike } from "./track-like.model.js";
-import { PopulatedArtist, PopulatedAlbum } from "./tracks.service.js";
 import { PaginatedResponse, PaginationParams } from "../../shared/types/index.js";
 import { calculatePagination } from "../../shared/utils/index.js";
-
-interface LikeActionResult {
-	status: "like" | "dislike" | null;
-	trackId: string;
-}
-
-interface LikeStatusResult {
-	status: "like" | "dislike" | null;
-}
-
-interface LikedIdsResult {
-	likedIds: string[];
-	dislikedIds: string[];
-}
-
-interface LikedTrackResponse {
-	_id: string;
-	title: string;
-	durationInSeconds: number;
-	trackNumber: number;
-	genre: string;
-	playCount: number;
-	coverImageUrl?: string;
-	description: string;
-	createdAt: Date;
-	updatedAt: Date;
-	artistId: {
-		_id: string;
-		name: string;
-		imageUrl?: string;
-	};
-	albumId: {
-		_id: string;
-		title: string;
-		coverImageUrl?: string;
-	};
-	likedAt: Date;
-}
-
-interface PopulatedTrackLike {
-	_id: mongoose.Types.ObjectId;
-	user_id: mongoose.Types.ObjectId;
-	track_id: {
-		_id: mongoose.Types.ObjectId;
-		title: string;
-		duration_in_seconds: number;
-		track_number: number;
-		genre: string;
-		play_count: number;
-		cover_image_url?: string;
-		description: string;
-		created_at: Date;
-		updated_at: Date;
-		artist_id: PopulatedArtist | null;
-		album_id: PopulatedAlbum | null;
-	} | null;
-	type: "like" | "dislike";
-	created_at: Date;
-	updated_at: Date;
-}
+import {
+	LikeActionResult,
+	LikeStatusResult,
+	LikedIdsResult,
+	LikedTrackResponse,
+	PopulatedTrackLike,
+} from "./track-like.types.js";
 
 export const trackLikeService = {
 	async likeTrack(userId: string, trackId: string): Promise<LikeActionResult> {

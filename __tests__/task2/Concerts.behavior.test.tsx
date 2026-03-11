@@ -82,6 +82,15 @@ jest.mock("@/shared/contexts/PlayerContext", () => ({
 	}),
 }));
 
+jest.mock("@/shared/hooks/useToast", () => ({
+	ToastProvider: ({ children }: { children: React.ReactNode }) => children,
+	useToast: () => ({
+		toasts: [],
+		addToast: jest.fn(),
+		removeToast: jest.fn(),
+	}),
+}));
+
 jest.mock("@/lib/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 }));
@@ -172,13 +181,15 @@ function createPaginatedResponse(items: any[]) {
 
 // ========== MOCK DATA ==========
 
+const FUTURE_YEAR = new Date().getUTCFullYear() + 2;
+
 const mockConcerts = [
-	createMockConcert("c1", "a1", "The Amplifiers", "Madison Square Garden", "New York", "2026-03-15", "19:30"),
-	createMockConcert("c2", "a2", "Neon Dreams", "T-Mobile Arena", "Las Vegas", "2026-04-12", "21:00"),
-	createMockConcert("c3", "a3", "Urban Beats", "The Forum", "Los Angeles", "2026-03-08", "19:00"),
-	createMockConcert("c4", "a1", "The Amplifiers", "Soldier Field", "Chicago", "2026-10-22", "18:00"),
-	createMockConcert("c5", "a4", "Blue Note Quartet", "Blue Note Jazz Club", "New York", "2026-05-22", "20:00"),
-	createMockConcert("c6", "a5", "Velvet Grooves", "Crypto.com Arena", "Los Angeles", "2026-12-12", "20:00"),
+	createMockConcert("c1", "a1", "The Amplifiers", "Madison Square Garden", "New York", `${FUTURE_YEAR}-03-15`, "19:30"),
+	createMockConcert("c2", "a2", "Neon Dreams", "T-Mobile Arena", "Las Vegas", `${FUTURE_YEAR}-04-12`, "21:00"),
+	createMockConcert("c3", "a3", "Urban Beats", "The Forum", "Los Angeles", `${FUTURE_YEAR}-03-08`, "19:00"),
+	createMockConcert("c4", "a1", "The Amplifiers", "Soldier Field", "Chicago", `${FUTURE_YEAR}-10-22`, "18:00"),
+	createMockConcert("c5", "a4", "Blue Note Quartet", "Blue Note Jazz Club", "New York", `${FUTURE_YEAR}-05-22`, "20:00"),
+	createMockConcert("c6", "a5", "Velvet Grooves", "Crypto.com Arena", "Los Angeles", `${FUTURE_YEAR}-12-12`, "20:00"),
 	createMockConcert("c7", "a3", "Urban Beats", "House of Blues", "Chicago", "2024-06-15", "15:00"),
 ];
 
@@ -335,9 +346,7 @@ describe("Live Music Concerts", () => {
 		jest.clearAllMocks();
 	});
 
-	// ========== CONCERTS PAGE (LISTING) TESTS ==========
-
-	describe("ConcertsPage", () => {
+	describe("Concerts Page", () => {
 		function setupListingMocks() {
 			mockFetch.mockImplementation((url: string) => {
 				if (url.includes("/api/concerts")) {
@@ -358,233 +367,130 @@ describe("Live Music Concerts", () => {
 			mockGetAllArtists.mockResolvedValue(createPaginatedResponse(mockArtists));
 		}
 
-		describe("Sort Order", () => {
-			it("should display upcoming concerts sorted descending by date with furthest future first", async () => {
-				setupListingMocks();
+		it("should sort upcoming concerts by date descending", async () => {
+			setupListingMocks();
 
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
+			// Render concerts page
+			render(
+				<ListingWrapper>
+					<ConcertsPage />
+				</ListingWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
-				});
-
-				const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
-				const cardIds = concertCards.map((card) => card.getAttribute("data-testid"));
-
-				expect(cardIds).toEqual([
-					"concerts-card-c6",
-					"concerts-card-c4",
-					"concerts-card-c5",
-					"concerts-card-c2",
-					"concerts-card-c1",
-					"concerts-card-c3",
-				]);
+			// Wait for upcoming section
+			await waitFor(() => {
+				expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
 			});
+
+			// Get concert card IDs
+			const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
+			const cardIds = concertCards.map((card) => card.getAttribute("data-testid"));
+
+			// Verify sorted by date descending
+			expect(cardIds).toEqual([
+				"concerts-card-c6",
+				"concerts-card-c4",
+				"concerts-card-c5",
+				"concerts-card-c2",
+				"concerts-card-c1",
+				"concerts-card-c3",
+			]);
 		});
 
 		describe("Month Filter", () => {
-			it("should filter concerts to March only when March is selected", async () => {
+			it("should filter concerts by month", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
+				// Render concerts page
 				render(
 					<ListingWrapper>
 						<ConcertsPage />
 					</ListingWrapper>,
 				);
 
+				// Wait for upcoming section
 				await waitFor(() => {
 					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
 				});
 
+				// Open month filter and select March
 				await user.click(screen.getByTestId("concerts-month-filter"));
 				await user.click(screen.getByTestId("concerts-month-option-3"));
 
+				// Verify filtered to 2 March concerts
 				await waitFor(() => {
 					const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
 					expect(concertCards).toHaveLength(2);
 				});
 
+				// Verify correct concerts shown and others hidden
 				expect(screen.getByTestId("concerts-card-c1")).toBeInTheDocument();
 				expect(screen.getByTestId("concerts-card-c3")).toBeInTheDocument();
 				expect(screen.queryByTestId("concerts-card-c2")).not.toBeInTheDocument();
 				expect(screen.queryByTestId("concerts-card-c4")).not.toBeInTheDocument();
 			});
 
-			it("should filter concerts to April only when April is selected", async () => {
+			it("should show empty state for month with no concerts", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
+				// Render concerts page
 				render(
 					<ListingWrapper>
 						<ConcertsPage />
 					</ListingWrapper>,
 				);
 
+				// Wait for upcoming section
 				await waitFor(() => {
 					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
 				});
 
-				await user.click(screen.getByTestId("concerts-month-filter"));
-				await user.click(screen.getByTestId("concerts-month-option-4"));
-
-				await waitFor(() => {
-					const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
-					expect(concertCards).toHaveLength(1);
-				});
-
-				expect(screen.getByTestId("concerts-card-c2")).toBeInTheDocument();
-			});
-
-			it("should show no concerts when November is selected (no events in November)", async () => {
-				setupListingMocks();
-				const user = userEvent.setup();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
-				});
-
+				// Open month filter and select November
 				await user.click(screen.getByTestId("concerts-month-filter"));
 				await user.click(screen.getByTestId("concerts-month-option-11"));
 
+				// Verify no concert cards shown
 				await waitFor(() => {
 					expect(screen.queryAllByTestId(/^concerts-card-c\d$/)).toHaveLength(0);
 				});
 
+				// Verify empty state message
 				expect(screen.getByText("No concerts found for this month.")).toBeInTheDocument();
 			});
 
-			it("should filter concerts to October showing only c4", async () => {
+			it("should show all concerts when All is selected", async () => {
 				setupListingMocks();
 				const user = userEvent.setup();
 
+				// Render concerts page
 				render(
 					<ListingWrapper>
 						<ConcertsPage />
 					</ListingWrapper>,
 				);
 
+				// Wait for upcoming section
 				await waitFor(() => {
 					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
 				});
 
-				await user.click(screen.getByTestId("concerts-month-filter"));
-				await user.click(screen.getByTestId("concerts-month-option-10"));
-
-				await waitFor(() => {
-					const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
-					expect(concertCards).toHaveLength(1);
-				});
-
-				expect(screen.getByTestId("concerts-card-c4")).toBeInTheDocument();
-			});
-
-			it("should filter concerts to December showing only c6", async () => {
-				setupListingMocks();
-				const user = userEvent.setup();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concerts-month-filter"));
-				await user.click(screen.getByTestId("concerts-month-option-12"));
-
-				await waitFor(() => {
-					const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
-					expect(concertCards).toHaveLength(1);
-				});
-
-				expect(screen.getByTestId("concerts-card-c6")).toBeInTheDocument();
-			});
-
-			it("should filter concerts to May showing only c5", async () => {
-				setupListingMocks();
-				const user = userEvent.setup();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concerts-month-filter"));
-				await user.click(screen.getByTestId("concerts-month-option-5"));
-
-				await waitFor(() => {
-					const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
-					expect(concertCards).toHaveLength(1);
-				});
-
-				expect(screen.getByTestId("concerts-card-c5")).toBeInTheDocument();
-			});
-
-			it("should have an 'All' option (value 0) in the month dropdown", async () => {
-				setupListingMocks();
-				const user = userEvent.setup();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concerts-month-filter"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-month-option-0")).toBeInTheDocument();
-				});
-			});
-
-			it("should show all upcoming concerts when 'All' is selected after filtering by month", async () => {
-				setupListingMocks();
-				const user = userEvent.setup();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
-				});
-
+				// Filter by March first
 				await user.click(screen.getByTestId("concerts-month-filter"));
 				await user.click(screen.getByTestId("concerts-month-option-3"));
 
+				// Verify filtered to 2 concerts
 				await waitFor(() => {
 					const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
 					expect(concertCards).toHaveLength(2);
 				});
 
+				// Select "All" to clear filter
 				await user.click(screen.getByTestId("concerts-month-filter"));
 				await user.click(screen.getByTestId("concerts-month-option-0"));
 
+				// Verify all 6 concerts restored
 				await waitFor(() => {
 					const concertCards = screen.getAllByTestId(/^concerts-card-c\d$/);
 					expect(concertCards).toHaveLength(6);
@@ -592,170 +498,98 @@ describe("Live Music Concerts", () => {
 			});
 		});
 
-		describe("City Filter", () => {
-			it("should show only New York artists when New York chip is clicked", async () => {
-				setupListingMocks();
-				const user = userEvent.setup();
+		it("should display date badge with month and day", async () => {
+			setupListingMocks();
 
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
+			// Render concerts page
+			render(
+				<ListingWrapper>
+					<ConcertsPage />
+				</ListingWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-city-chips")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concerts-city-chip-new-york"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-artist-a1")).toBeInTheDocument();
-					expect(screen.getByTestId("concerts-artist-a4")).toBeInTheDocument();
-				});
-
-				expect(screen.queryByTestId("concerts-artist-a2")).not.toBeInTheDocument();
-				expect(screen.queryByTestId("concerts-artist-a3")).not.toBeInTheDocument();
-				expect(screen.queryByTestId("concerts-artist-a5")).not.toBeInTheDocument();
+			// Wait for date badge to render
+			await waitFor(() => {
+				expect(screen.getByTestId("concerts-card-date-c1")).toBeInTheDocument();
 			});
 
-			it("should show only Los Angeles artists when Los Angeles chip is clicked", async () => {
-				setupListingMocks();
-				const user = userEvent.setup();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-city-chips")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concerts-city-chip-los-angeles"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-artist-a3")).toBeInTheDocument();
-					expect(screen.getByTestId("concerts-artist-a5")).toBeInTheDocument();
-				});
-
-				expect(screen.queryByTestId("concerts-artist-a1")).not.toBeInTheDocument();
-				expect(screen.queryByTestId("concerts-artist-a2")).not.toBeInTheDocument();
-				expect(screen.queryByTestId("concerts-artist-a4")).not.toBeInTheDocument();
-			});
+			// Verify month and day displayed
+			const badge = screen.getByTestId("concerts-card-date-c1");
+			expect(badge.children[0]).toHaveTextContent("Mar");
+			expect(badge.children[1]).toHaveTextContent("15");
 		});
 
-		describe("Date Badge Format", () => {
-			it("should display month abbreviation first and day number second for c1 (Mar 15)", async () => {
-				setupListingMocks();
+		it("should display time in 12-hour format", async () => {
+			setupListingMocks();
 
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
+			// Render concerts page
+			render(
+				<ListingWrapper>
+					<ConcertsPage />
+				</ListingWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-card-date-c1")).toBeInTheDocument();
-				});
-
-				const badge = screen.getByTestId("concerts-card-date-c1");
-				expect(badge.children[0]).toHaveTextContent("Mar");
-				expect(badge.children[1]).toHaveTextContent("15");
+			// Wait for time element to render
+			await waitFor(() => {
+				expect(screen.getByTestId("concerts-card-time-c1")).toBeInTheDocument();
 			});
 
-			it("should display month abbreviation first and day number second for c6 (Dec 12)", async () => {
-				setupListingMocks();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-card-date-c6")).toBeInTheDocument();
-				});
-
-				const badge = screen.getByTestId("concerts-card-date-c6");
-				expect(badge.children[0]).toHaveTextContent("Dec");
-				expect(badge.children[1]).toHaveTextContent("12");
-			});
+			// Verify 12-hour format
+			expect(screen.getByTestId("concerts-card-time-c1")).toHaveTextContent("7:30 PM");
 		});
 
-		describe("Time Format", () => {
-			it("should display c1 time '19:30' as '7:30 PM' in 12-hour format", async () => {
-				setupListingMocks();
+		it("should exclude past concerts", async () => {
+			setupListingMocks();
 
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
+			// Render concerts page
+			render(
+				<ListingWrapper>
+					<ConcertsPage />
+				</ListingWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-card-time-c1")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concerts-card-time-c1")).toHaveTextContent("7:30 PM");
+			// Wait for upcoming section
+			await waitFor(() => {
+				expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
 			});
 
-			it("should display c4 time '18:00' as '6:00 PM' in 12-hour format", async () => {
-				setupListingMocks();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-card-time-c4")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concerts-card-time-c4")).toHaveTextContent("6:00 PM");
-			});
-
-			it("should display c5 time '20:00' as '8:00 PM' in 12-hour format", async () => {
-				setupListingMocks();
-
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-card-time-c5")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concerts-card-time-c5")).toHaveTextContent("8:00 PM");
-			});
+			// Verify past concert excluded
+			expect(screen.queryByTestId("concerts-card-c7")).not.toBeInTheDocument();
 		});
 
-		describe("Past Concert Filtering", () => {
-			it("should not display past concerts in the upcoming listing", async () => {
-				setupListingMocks();
+		it("should filter artists by city", async () => {
+			setupListingMocks();
+			const user = userEvent.setup();
 
-				render(
-					<ListingWrapper>
-						<ConcertsPage />
-					</ListingWrapper>,
-				);
+			// Render concerts page
+			render(
+				<ListingWrapper>
+					<ConcertsPage />
+				</ListingWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concerts-upcoming")).toBeInTheDocument();
-				});
-
-				expect(screen.queryByTestId("concerts-card-c7")).not.toBeInTheDocument();
+			// Wait for city chips
+			await waitFor(() => {
+				expect(screen.getByTestId("concerts-city-chips")).toBeInTheDocument();
 			});
+
+			// Click New York city chip
+			await user.click(screen.getByTestId("concerts-city-chip-new-york"));
+
+			// Verify artists in New York shown
+			await waitFor(() => {
+				expect(screen.getByTestId("concerts-artist-a1")).toBeInTheDocument();
+				expect(screen.getByTestId("concerts-artist-a4")).toBeInTheDocument();
+			});
+
+			// Verify artists not in New York hidden
+			expect(screen.queryByTestId("concerts-artist-a2")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("concerts-artist-a3")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("concerts-artist-a5")).not.toBeInTheDocument();
 		});
 	});
 
-	// ========== CONCERT DETAIL PAGE TESTS ==========
-
-	describe("ConcertDetailPage", () => {
+	describe("Concert Detail Page", () => {
 		const detailConcert = createMockConcert(
 			"c1",
 			"a1",
@@ -830,321 +664,267 @@ describe("Live Music Concerts", () => {
 			mockGetAllTracks.mockResolvedValue(createPaginatedResponse(mockTracks));
 		}
 
-		describe("Detail Display", () => {
-			it("should display the concert date in 'Mon Day' format (Mar 15)", async () => {
-				setupDetailMocks();
+		it("should display concert date in short format", async () => {
+			setupDetailMocks();
 
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
+			// Render concert detail page
+			render(
+				<DetailWrapper concertId="c1">
+					<ConcertDetailPage />
+				</DetailWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-date")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concert-detail-date")).toHaveTextContent("Mar 15");
+			// Wait for date element
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-date")).toBeInTheDocument();
 			});
 
-			it("should display the concert time in 12-hour format (7:30 PM)", async () => {
-				setupDetailMocks();
-
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-time")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("7:30 PM");
-			});
-
-			it("should format midnight '00:00' as '12:00 AM'", async () => {
-				const midnightConcert = createMockConcert(
-					"c-midnight",
-					"a1",
-					"The Amplifiers",
-					"Late Night Venue",
-					"New York",
-					"2026-06-01",
-					"00:00",
-				);
-				setupDetailMocks(midnightConcert);
-
-				render(
-					<DetailWrapper concertId="c-midnight">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-time")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("12:00 AM");
-			});
-
-			it("should format noon '12:00' as '12:00 PM'", async () => {
-				const noonConcert = createMockConcert(
-					"c-noon",
-					"a2",
-					"Neon Dreams",
-					"Noon Stage",
-					"Los Angeles",
-					"2026-07-04",
-					"12:00",
-				);
-				setupDetailMocks(noonConcert);
-
-				render(
-					<DetailWrapper concertId="c-noon">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-time")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("12:00 PM");
-			});
+			// Verify short date format
+			expect(screen.getByTestId("concert-detail-date")).toHaveTextContent("Mar 15");
 		});
 
-		describe("Artist Albums", () => {
-			it("should show exactly 1 album for artist a1 (The Amplifiers)", async () => {
-				setupDetailMocks();
+		it("should display detail time in 12-hour format", async () => {
+			setupDetailMocks();
 
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
+			// Render concert detail page
+			render(
+				<DetailWrapper concertId="c1">
+					<ConcertDetailPage />
+				</DetailWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-albums")).toBeInTheDocument();
-				});
-
-				const albumItems = screen.getAllByTestId(/^concert-detail-album-/);
-				expect(albumItems).toHaveLength(1);
-				expect(screen.getByTestId("concert-detail-album-alb1")).toBeInTheDocument();
+			// Wait for time element
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-time")).toBeInTheDocument();
 			});
 
-			it("should not show albums from other artists (alb2, alb3)", async () => {
-				setupDetailMocks();
-
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-albums")).toBeInTheDocument();
-				});
-
-				expect(screen.queryByTestId("concert-detail-album-alb2")).not.toBeInTheDocument();
-				expect(screen.queryByTestId("concert-detail-album-alb3")).not.toBeInTheDocument();
-			});
+			// Verify 12-hour format
+			expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("7:30 PM");
 		});
 
-		describe("Artist Tracks", () => {
-			it("should show exactly 2 tracks for artist a1 (The Amplifiers)", async () => {
-				setupDetailMocks();
+		it("should format midnight '00:00' as '12:00 AM'", async () => {
+			// Create concert at midnight
+			const midnightConcert = createMockConcert(
+				"c-midnight",
+				"a1",
+				"The Amplifiers",
+				"Late Night Venue",
+				"New York",
+				"2026-06-01",
+				"00:00",
+			);
+			setupDetailMocks(midnightConcert);
 
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
+			// Render concert detail page
+			render(
+				<DetailWrapper concertId="c-midnight">
+					<ConcertDetailPage />
+				</DetailWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-tracks")).toBeInTheDocument();
-				});
-
-				const trackItems = screen.getAllByTestId(/^concert-detail-track-/);
-				expect(trackItems).toHaveLength(2);
+			// Wait for time element
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-time")).toBeInTheDocument();
 			});
 
-			it("should not show tracks from other artists (t3, t4)", async () => {
-				setupDetailMocks();
+			// Verify midnight formatted as 12:00 AM
+			expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("12:00 AM");
+		});
 
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
+		it("should format noon '12:00' as '12:00 PM'", async () => {
+			// Create concert at noon
+			const noonConcert = createMockConcert(
+				"c-noon",
+				"a2",
+				"Neon Dreams",
+				"Noon Stage",
+				"Los Angeles",
+				"2026-07-04",
+				"12:00",
+			);
+			setupDetailMocks(noonConcert);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-tracks")).toBeInTheDocument();
-				});
+			// Render concert detail page
+			render(
+				<DetailWrapper concertId="c-noon">
+					<ConcertDetailPage />
+				</DetailWrapper>,
+			);
 
-				expect(screen.queryByTestId("concert-detail-track-t3")).not.toBeInTheDocument();
-				expect(screen.queryByTestId("concert-detail-track-t4")).not.toBeInTheDocument();
+			// Wait for time element
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-time")).toBeInTheDocument();
 			});
+
+			// Verify noon formatted as 12:00 PM
+			expect(screen.getByTestId("concert-detail-time")).toHaveTextContent("12:00 PM");
+		});
+
+		it("should show albums for the concert artist", async () => {
+			setupDetailMocks();
+
+			// Render concert detail page
+			render(
+				<DetailWrapper concertId="c1">
+					<ConcertDetailPage />
+				</DetailWrapper>,
+			);
+
+			// Wait for albums section
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-albums")).toBeInTheDocument();
+			});
+
+			// Verify artist's album displayed
+			const albumItems = screen.getAllByTestId(/^concert-detail-album-/);
+			expect(albumItems).toHaveLength(1);
+			expect(screen.getByTestId("concert-detail-album-alb1")).toBeInTheDocument();
+		});
+
+		it("should show tracks for the concert artist", async () => {
+			setupDetailMocks();
+
+			// Render concert detail page
+			render(
+				<DetailWrapper concertId="c1">
+					<ConcertDetailPage />
+				</DetailWrapper>,
+			);
+
+			// Wait for tracks section
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-tracks")).toBeInTheDocument();
+			});
+
+			// Verify artist's tracks displayed
+			const trackItems = screen.getAllByTestId(/^concert-detail-track-/);
+			expect(trackItems).toHaveLength(2);
 		});
 
 		describe("Buy Ticket Dialog", () => {
-			it("should open buy ticket dialog when buy button is clicked", async () => {
+			it("should show available tickets in dialog", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
+				// Render concert detail page
 				render(
 					<DetailWrapper concertId="c1">
 						<ConcertDetailPage />
 					</DetailWrapper>,
 				);
 
+				// Wait for buy button
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
 				});
 
+				// Open buy dialog
 				await user.click(screen.getByTestId("concert-detail-buy-btn"));
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-buy-dialog")).toBeInTheDocument();
-				});
-			});
-
-			it("should show available tickets remaining when dialog opens", async () => {
-				setupDetailMocks();
-				const user = userEvent.setup();
-
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concert-detail-buy-btn"));
-
+				// Verify available ticket count
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-buy-available")).toHaveTextContent(/Available: 6 tickets remaining/i);
 				});
 			});
 
-			it("should increment ticket quantity when plus button is clicked", async () => {
+			it("should increment ticket quantity", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
+				// Render concert detail page
 				render(
 					<DetailWrapper concertId="c1">
 						<ConcertDetailPage />
 					</DetailWrapper>,
 				);
 
+				// Wait for buy button
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
 				});
 
+				// Open buy dialog
 				await user.click(screen.getByTestId("concert-detail-buy-btn"));
 
+				// Verify initial quantity is 1
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-buy-quantity")).toHaveTextContent("1");
 				});
 
+				// Click increment
 				await user.click(screen.getByTestId("concert-buy-increment"));
 
+				// Verify quantity increased to 2
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-buy-quantity")).toHaveTextContent("2");
 				});
 			});
 
-			it("should disable decrement button when quantity is at minimum (1)", async () => {
+			it("should disable decrement at minimum", async () => {
 				setupDetailMocks();
 				const user = userEvent.setup();
 
+				// Render concert detail page
 				render(
 					<DetailWrapper concertId="c1">
 						<ConcertDetailPage />
 					</DetailWrapper>,
 				);
 
+				// Wait for buy button
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
 				});
 
+				// Open buy dialog
 				await user.click(screen.getByTestId("concert-detail-buy-btn"));
 
+				// Verify decrement disabled at minimum quantity
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-buy-decrement")).toBeDisabled();
 				});
 			});
 		});
 
-		describe("Ticket Purchase", () => {
-			it("should update ticket count to 1/6 after purchasing a single ticket", async () => {
-				setupDetailMocks();
-				const user = userEvent.setup();
+		it("should update ticket count after purchase", async () => {
+			setupDetailMocks();
+			const user = userEvent.setup();
 
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
+			// Render concert detail page
+			render(
+				<DetailWrapper concertId="c1">
+					<ConcertDetailPage />
+				</DetailWrapper>,
+			);
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
-				});
-
-				expect(screen.getByTestId("concert-detail-ticket-count")).toHaveTextContent("0/6 tickets");
-
-				await user.click(screen.getByTestId("concert-detail-buy-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-buy-dialog")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concert-buy-confirm"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-ticket-count")).toHaveTextContent("1/6 tickets");
-				});
+			// Wait for buy button
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
 			});
 
-			it("should update ticket count to 2/6 after purchasing 2 tickets", async () => {
-				setupDetailMocks();
-				const user = userEvent.setup();
+			// Verify initial ticket count
+			expect(screen.getByTestId("concert-detail-ticket-count")).toHaveTextContent("0/6 tickets");
 
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
+			// Open buy dialog
+			await user.click(screen.getByTestId("concert-detail-buy-btn"));
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
-				});
+			// Wait for dialog
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-buy-dialog")).toBeInTheDocument();
+			});
 
-				await user.click(screen.getByTestId("concert-detail-buy-btn"));
+			// Confirm purchase
+			await user.click(screen.getByTestId("concert-buy-confirm"));
 
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-buy-dialog")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concert-buy-increment"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-buy-quantity")).toHaveTextContent("2");
-				});
-
-				await user.click(screen.getByTestId("concert-buy-confirm"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-ticket-count")).toHaveTextContent("2/6 tickets");
-				});
+			// Verify ticket count updated
+			await waitFor(() => {
+				expect(screen.getByTestId("concert-detail-ticket-count")).toHaveTextContent("1/6 tickets");
 			});
 		});
 
 		describe("Ticket Limits", () => {
-			it("should hide buy button and show 6/6 when user has reached ticket limit", async () => {
+			it("should hide buy button at ticket limit", async () => {
+				// Create concert with max tickets purchased
 				const maxedConcert = createMockConcert(
 					"c1",
 					"a1",
@@ -1171,20 +951,24 @@ describe("Live Music Concerts", () => {
 
 				setupDetailMocks(maxedConcert);
 
+				// Render concert detail page
 				render(
 					<DetailWrapper concertId="c1">
 						<ConcertDetailPage />
 					</DetailWrapper>,
 				);
 
+				// Verify ticket count at max
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-detail-ticket-count")).toHaveTextContent("6/6 tickets");
 				});
 
+				// Verify buy button hidden
 				expect(screen.queryByTestId("concert-detail-buy-btn")).not.toBeInTheDocument();
 			});
 
-			it("should show 3/6 tickets and keep buy button visible when user has 3 tickets", async () => {
+			it("should show buy button with partial tickets", async () => {
+				// Create concert with some tickets purchased
 				const partialConcert = createMockConcert(
 					"c1",
 					"a1",
@@ -1205,63 +989,26 @@ describe("Live Music Concerts", () => {
 
 				setupDetailMocks(partialConcert);
 
+				// Render concert detail page
 				render(
 					<DetailWrapper concertId="c1">
 						<ConcertDetailPage />
 					</DetailWrapper>,
 				);
 
+				// Verify partial ticket count
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-detail-ticket-count")).toHaveTextContent("3/6 tickets");
 				});
 
+				// Verify buy button still visible
 				expect(screen.getByTestId("concert-detail-buy-btn")).toBeInTheDocument();
 			});
 		});
 
 		describe("View Tickets Dialog", () => {
-			it("should open view tickets dialog when view tickets button is clicked", async () => {
-				const ticketsData = [
-					{
-						userId: "user-1",
-						quantity: 2,
-						ticketCodes: ["CONC-00c1-abc123", "CONC-00c1-def456"],
-						purchasedAt: "2026-01-15T10:00:00Z",
-					},
-				];
-
-				const concertWithTickets = createMockConcert(
-					"c1",
-					"a1",
-					"The Amplifiers",
-					"Madison Square Garden",
-					"New York",
-					"2026-03-15",
-					"19:30",
-					ticketsData,
-				);
-
-				setupDetailMocks(concertWithTickets, ticketsData);
-				const user = userEvent.setup();
-
-				render(
-					<DetailWrapper concertId="c1">
-						<ConcertDetailPage />
-					</DetailWrapper>,
-				);
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-detail-view-tickets-btn")).toBeInTheDocument();
-				});
-
-				await user.click(screen.getByTestId("concert-detail-view-tickets-btn"));
-
-				await waitFor(() => {
-					expect(screen.getByTestId("concert-tickets-dialog")).toBeInTheDocument();
-				});
-			});
-
-			it("should display ticket cards with correct ticket codes", async () => {
+			it("should display ticket codes in dialog", async () => {
+				// Setup concert with 3 tickets
 				const ticketsData = [
 					{
 						userId: "user-1",
@@ -1285,22 +1032,27 @@ describe("Live Music Concerts", () => {
 				setupDetailMocks(concertWithTickets, ticketsData);
 				const user = userEvent.setup();
 
+				// Render concert detail page
 				render(
 					<DetailWrapper concertId="c1">
 						<ConcertDetailPage />
 					</DetailWrapper>,
 				);
 
+				// Wait for view tickets button
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-detail-view-tickets-btn")).toBeInTheDocument();
 				});
 
+				// Click view tickets
 				await user.click(screen.getByTestId("concert-detail-view-tickets-btn"));
 
+				// Wait for tickets dialog
 				await waitFor(() => {
 					expect(screen.getByTestId("concert-tickets-dialog")).toBeInTheDocument();
 				});
 
+				// Verify all ticket codes displayed
 				expect(screen.getByTestId("concert-ticket-CONC-00c1-abc123")).toBeInTheDocument();
 				expect(screen.getByTestId("concert-ticket-CONC-00c1-def456")).toBeInTheDocument();
 				expect(screen.getByTestId("concert-ticket-CONC-00c1-ghi789")).toBeInTheDocument();

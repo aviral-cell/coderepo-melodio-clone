@@ -30,7 +30,7 @@ export function TrackCard({ track, className }: TrackCardProps) {
 
 	const handlePlayClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
-		if (isCurrentTrack) {
+		if (isCurrentTrack && isPlaying) {
 			togglePlayPause();
 		} else {
 			playTrack(track);

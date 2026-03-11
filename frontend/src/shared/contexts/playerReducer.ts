@@ -12,6 +12,7 @@ export const initialState: PlayerState = {
 	repeatMode: "off",
 	volume: 80,
 	isQueueOpen: false,
+	playCount: 0,
 };
 
 export function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
@@ -27,6 +28,7 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
 					queueIndex: existingIndex,
 					isPlaying: true,
 					elapsedSeconds: 0,
+					playCount: state.playCount + 1,
 				};
 			}
 
@@ -37,6 +39,7 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
 				queueIndex: state.queue.length,
 				isPlaying: true,
 				elapsedSeconds: 0,
+				playCount: state.playCount + 1,
 			};
 		}
 
@@ -51,6 +54,7 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
 				elapsedSeconds: 0,
 				shuffleEnabled: false,
 				originalQueue: [],
+				playCount: state.playCount + 1,
 			};
 		}
 

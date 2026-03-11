@@ -33,6 +33,7 @@ export function CreatePlaylistDialog({
 }: CreatePlaylistDialogProps) {
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
+	const [isPublic, setIsPublic] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [playlistCount, setPlaylistCount] = useState(0);
 	const [isLoadingCount, setIsLoadingCount] = useState(true);
@@ -77,6 +78,7 @@ export function CreatePlaylistDialog({
 			const playlist = await playlistsService.create({
 				name: name.trim(),
 				description: description.trim() || undefined,
+				isPublic,
 			});
 
 			addToast({
@@ -87,6 +89,7 @@ export function CreatePlaylistDialog({
 			triggerRefresh();
 			setName("");
 			setDescription("");
+			setIsPublic(false);
 			onOpenChange(false);
 			onSuccess?.(playlist);
 		} catch (error) {
@@ -103,6 +106,7 @@ export function CreatePlaylistDialog({
 		if (!isSubmitting) {
 			setName("");
 			setDescription("");
+			setIsPublic(false);
 			onOpenChange(false);
 		}
 	};
@@ -201,6 +205,39 @@ export function CreatePlaylistDialog({
 								className="bg-melodio-light-gray"
 								data-testid="playlist-description-input"
 							/>
+						</div>
+						<div className="space-y-2">
+							<span className="text-sm font-medium text-white">
+								Visibility
+							</span>
+							<div className="flex gap-4">
+								<label
+									className="flex cursor-pointer items-center gap-2 text-sm text-melodio-text-subdued"
+									data-testid="playlist-visibility-private"
+								>
+									<input
+										type="radio"
+										name="playlist-visibility"
+										checked={!isPublic}
+										onChange={() => setIsPublic(false)}
+										className="accent-melodio-green"
+									/>
+									Private
+								</label>
+								<label
+									className="flex cursor-pointer items-center gap-2 text-sm text-melodio-text-subdued"
+									data-testid="playlist-visibility-public"
+								>
+									<input
+										type="radio"
+										name="playlist-visibility"
+										checked={isPublic}
+										onChange={() => setIsPublic(true)}
+										className="accent-melodio-green"
+									/>
+									Public
+								</label>
+							</div>
 						</div>
 					</div>
 					<DialogFooter>

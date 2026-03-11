@@ -1,7 +1,7 @@
 {
-	"name": "melodio-music-player",
+	"name": "melodio",
 	"version": "1.0.0",
-	"description": "Melodio - Music Player",
+	"description": "Melodio - Music Player App - MERN Stack Monorepo",
 	"private": true,
 	"engines": {
 		"node": ">=20.0.0",
@@ -12,17 +12,13 @@
 		"backend"
 	],
 	"scripts": {
-		"prestart": "bash setup.sh && npm run install:all && npm run seed",
-		"install:all": "npm install",
-		"start": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-		"dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+		"prestart": "bash setup.sh",
+		"start": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
 		"dev:frontend": "npm run dev --workspace=frontend",
 		"dev:backend": "npm run dev --workspace=backend",
-		"build": "npm run build --workspace=backend && npm run build --workspace=frontend",
-		"build:frontend": "npm run build --workspace=frontend",
-		"build:backend": "npm run build --workspace=backend",
 		"seed": "npm run seed --workspace=backend",
-		"test": "npm-run-all -c test:task1 test:task2 test:task3 test:task4 test:task5 test:task6 test:task7 test:task8 test:task9 test:task10 test:task11 test:task12 test:task13 test:task14",
+		"build": "npm run build --workspaces --if-present",
+		"clear": "rm -rf node_modules/ package-lock.json && cd backend && rm -rf node_modules/ dist/ .env && cd .. && cd frontend && rm -rf __mocks__ coverage/ dist/ node_modules/ .env && cd ..",
 		"test:task1": "cross-env JEST_JUNIT_OUTPUT_NAME=task1.xml jest --config=jest.config.js --testPathPattern=__tests__/task1/ --passWithNoTests",
 		"test:task2": "cross-env JEST_JUNIT_OUTPUT_NAME=task2.xml jest --config=jest.config.js --testPathPattern=__tests__/task2 --passWithNoTests",
 		"test:task3": "cross-env JEST_JUNIT_OUTPUT_NAME=task3.xml jest --config=jest.config.js --testPathPattern=__tests__/task3 --passWithNoTests",
@@ -35,12 +31,7 @@
 		"test:task10": "cross-env JEST_JUNIT_OUTPUT_NAME=task10.xml jest --config=jest.config.js --testPathPattern=__tests__/task10 --passWithNoTests",
 		"test:task11": "cross-env JEST_JUNIT_OUTPUT_NAME=task11.xml jest --config=jest.config.js --testPathPattern=__tests__/task11 --passWithNoTests",
 		"test:task12": "cross-env JEST_JUNIT_OUTPUT_NAME=task12.xml jest --config=jest.config.js --testPathPattern=__tests__/task12 --passWithNoTests",
-		"test:task13": "cross-env JEST_JUNIT_OUTPUT_NAME=task13.xml jest --config=jest.config.js --testPathPattern=__tests__/task13 --passWithNoTests",
-		"test:task14": "cross-env JEST_JUNIT_OUTPUT_NAME=task14.xml jest --config=jest.config.js --testPathPattern=__tests__/task14 --passWithNoTests",
-		"test:frontend": "npm test --workspace=frontend",
-		"test:backend": "npm test --workspace=backend",
-		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,html,css,scss}\"",
-		"typesync": "typesync"
+		"test:task13": "cross-env JEST_JUNIT_OUTPUT_NAME=task13.xml jest --config=jest.config.js --testPathPattern=__tests__/task13 --passWithNoTests"
 	},
 	"devDependencies": {
 		"@testing-library/dom": "^10.4.0",
@@ -55,9 +46,6 @@
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"jest-junit": "^16.0.0",
-		"npm-run-all": "^4.1.5",
-		"prettier": "^3.6.2",
-		"ts-jest": "^29.2.5",
-		"typesync": "^0.14.3"
+		"ts-jest": "^29.2.5"
 	}
 }

@@ -21,7 +21,6 @@ const PREMIUM_PRICE = 9.99;
 
 const PREMIUM_FEATURES = [
 	"Unlimited playlists",
-	"Add up to 3 family members",
 	"Ad-free listening",
 	"Higher audio quality",
 	"Offline mode",
@@ -29,7 +28,6 @@ const PREMIUM_FEATURES = [
 
 const FREE_FEATURES = [
 	"Up to 7 playlists",
-	"No family members",
 	"Ads between tracks",
 	"Standard audio quality",
 ];
@@ -39,6 +37,7 @@ function formatDate(dateString: string): string {
 		year: "numeric",
 		month: "long",
 		day: "numeric",
+		timeZone: "UTC",
 	});
 }
 

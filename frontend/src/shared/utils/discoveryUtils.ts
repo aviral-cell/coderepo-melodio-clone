@@ -75,7 +75,7 @@ export function getTracksByEra(
 		const albumId = typeof t.albumId === "object" ? t.albumId._id : t.albumId;
 		const dateStr = albumDateMap[albumId];
 		if (!dateStr) return false;
-		const year = new Date(dateStr).getFullYear();
+		const year = new Date(dateStr).getUTCFullYear();
 		return year >= range.start && year <= range.end;
 	});
 }

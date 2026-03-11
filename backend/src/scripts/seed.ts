@@ -44,6 +44,24 @@ function randomDuration(): number {
 	return Math.floor(Math.random() * (300 - 180 + 1)) + 180;
 }
 
+function futureDate(daysFromNow: number): Date {
+	const date = new Date();
+	date.setUTCDate(date.getUTCDate() + daysFromNow);
+	date.setUTCHours(0, 0, 0, 0);
+	return date;
+}
+
+function recentDate(yearsAgo: number, month: number, day: number): Date {
+	const year = new Date().getUTCFullYear() - yearsAgo;
+	return new Date(Date.UTC(year, month - 1, day));
+}
+
+function trackDate(baseDate: Date, episodeIndex: number, daySpacing: number = 3): Date {
+	const date = new Date(baseDate.getTime());
+	date.setUTCDate(date.getUTCDate() + episodeIndex * daySpacing);
+	return date;
+}
+
 const artistsSeedData: ArtistSeedData[] = [
 	{
 		name: "The Amplifiers",
@@ -277,7 +295,7 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "Code & Coffee",
-				releaseDate: new Date("2024-01-15"),
+				releaseDate: recentDate(2, 1, 15),
 				coverImageUrl: "/images/albums/code-and-coffee.jpg",
 				tracks: [
 					{ title: "Ep 1: The Rise of TypeScript", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-1-the-rise-of-typescript.jpg", description: "Learn the basics of TypeScript and why it matters for modern web development." },
@@ -289,7 +307,7 @@ const artistsSeedData: ArtistSeedData[] = [
 			},
 			{
 				title: "Startup Stories",
-				releaseDate: new Date("2024-06-01"),
+				releaseDate: recentDate(2, 6, 1),
 				coverImageUrl: "/images/albums/startup-stories.jpg",
 				tracks: [
 					{ title: "Ep 1: From Garage to IPO", durationInSeconds: 2700, coverImageUrl: "/images/tracks/ep-1-from-garage-to-ipo.jpg", description: "The inspiring journey of a startup that grew from a small garage project to a successful public offering." },
@@ -301,26 +319,26 @@ const artistsSeedData: ArtistSeedData[] = [
 			},
 			{
 				title: "Data Science Daily",
-				releaseDate: new Date("2024-08-10"),
+				releaseDate: recentDate(1, 8, 10),
 				coverImageUrl: "/images/albums/data-science-daily.jpg",
 				tracks: [
-					{ title: "Ep 1: Introduction to Machine Learning", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-1-introduction-to-machine-learning.jpg", playCount: 6000, createdAt: new Date("2024-08-10"), description: "A beginner-friendly overview of machine learning concepts, algorithms, and real-world applications." },
-					{ title: "Ep 2: Python for Data Analysis", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-2-python-for-data-analysis.jpg", playCount: 6000, createdAt: new Date("2024-08-12"), description: "How Python and its ecosystem of libraries became the go-to language for data analysis and visualization." },
-					{ title: "Ep 3: Deep Learning Demystified", durationInSeconds: 3000, coverImageUrl: "/images/tracks/ep-3-deep-learning-demystified.jpg", playCount: 6000, createdAt: new Date("2024-08-15"), description: "Breaking down neural networks, backpropagation, and the key ideas powering deep learning breakthroughs." },
-					{ title: "Ep 4: Big Data Infrastructure", durationInSeconds: 2700, coverImageUrl: "/images/tracks/ep-4-big-data-infrastructure.jpg", playCount: 6000, createdAt: new Date("2024-08-18"), description: "An overview of distributed computing frameworks like Spark and Hadoop for processing massive datasets." },
-					{ title: "Ep 5: Ethics in AI and Data", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-5-ethics-in-ai-and-data.jpg", playCount: 6000, createdAt: new Date("2024-08-21"), description: "Examining the ethical challenges of bias, privacy, and accountability in artificial intelligence systems." },
+					{ title: "Ep 1: Introduction to Machine Learning", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-1-introduction-to-machine-learning.jpg", playCount: 6000, createdAt: recentDate(1, 8, 10), description: "A beginner-friendly overview of machine learning concepts, algorithms, and real-world applications." },
+					{ title: "Ep 2: Python for Data Analysis", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-2-python-for-data-analysis.jpg", playCount: 6000, createdAt: recentDate(1, 8, 12), description: "How Python and its ecosystem of libraries became the go-to language for data analysis and visualization." },
+					{ title: "Ep 3: Deep Learning Demystified", durationInSeconds: 3000, coverImageUrl: "/images/tracks/ep-3-deep-learning-demystified.jpg", playCount: 6000, createdAt: recentDate(1, 8, 15), description: "Breaking down neural networks, backpropagation, and the key ideas powering deep learning breakthroughs." },
+					{ title: "Ep 4: Big Data Infrastructure", durationInSeconds: 2700, coverImageUrl: "/images/tracks/ep-4-big-data-infrastructure.jpg", playCount: 6000, createdAt: recentDate(1, 8, 18), description: "An overview of distributed computing frameworks like Spark and Hadoop for processing massive datasets." },
+					{ title: "Ep 5: Ethics in AI and Data", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-5-ethics-in-ai-and-data.jpg", playCount: 6000, createdAt: recentDate(1, 8, 21), description: "Examining the ethical challenges of bias, privacy, and accountability in artificial intelligence systems." },
 				],
 			},
 			{
 				title: "DevOps Decoded",
-				releaseDate: new Date("2024-10-05"),
+				releaseDate: recentDate(1, 10, 5),
 				coverImageUrl: "/images/albums/devops-decoded.jpg",
 				tracks: [
-					{ title: "Ep 1: What Is DevOps Really?", durationInSeconds: 1500, coverImageUrl: "/images/tracks/ep-1-what-is-devops-really.jpg", playCount: 2000, createdAt: new Date("2024-10-05"), description: "Cutting through the buzzwords to explain what DevOps culture, practices, and tools actually look like." },
-					{ title: "Ep 2: CI/CD Pipelines from Scratch", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-2-cicd-pipelines-from-scratch.jpg", playCount: 2000, createdAt: new Date("2024-10-08"), description: "A step-by-step guide to building continuous integration and deployment pipelines for modern applications." },
-					{ title: "Ep 3: Containers and Kubernetes 101", durationInSeconds: 3600, coverImageUrl: "/images/tracks/ep-3-containers-and-kubernetes-101.jpg", playCount: 2000, createdAt: new Date("2024-10-11"), description: "Understanding container orchestration with Kubernetes and why it has become the industry standard." },
-					{ title: "Ep 4: Infrastructure as Code", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-4-infrastructure-as-code.jpg", playCount: 2000, createdAt: new Date("2024-10-14"), description: "How tools like Terraform and Pulumi let teams manage cloud infrastructure through declarative code." },
-					{ title: "Ep 5: Monitoring and Observability", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-5-monitoring-and-observability.jpg", playCount: 2000, createdAt: new Date("2024-10-17"), description: "The difference between monitoring and observability, and how to implement both effectively in production." },
+					{ title: "Ep 1: What Is DevOps Really?", durationInSeconds: 1500, coverImageUrl: "/images/tracks/ep-1-what-is-devops-really.jpg", playCount: 2000, createdAt: recentDate(1, 10, 5), description: "Cutting through the buzzwords to explain what DevOps culture, practices, and tools actually look like." },
+					{ title: "Ep 2: CI/CD Pipelines from Scratch", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-2-cicd-pipelines-from-scratch.jpg", playCount: 2000, createdAt: recentDate(1, 10, 8), description: "A step-by-step guide to building continuous integration and deployment pipelines for modern applications." },
+					{ title: "Ep 3: Containers and Kubernetes 101", durationInSeconds: 3600, coverImageUrl: "/images/tracks/ep-3-containers-and-kubernetes-101.jpg", playCount: 2000, createdAt: recentDate(1, 10, 11), description: "Understanding container orchestration with Kubernetes and why it has become the industry standard." },
+					{ title: "Ep 4: Infrastructure as Code", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-4-infrastructure-as-code.jpg", playCount: 2000, createdAt: recentDate(1, 10, 14), description: "How tools like Terraform and Pulumi let teams manage cloud infrastructure through declarative code." },
+					{ title: "Ep 5: Monitoring and Observability", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-5-monitoring-and-observability.jpg", playCount: 2000, createdAt: recentDate(1, 10, 17), description: "The difference between monitoring and observability, and how to implement both effectively in production." },
 				],
 			},
 		],
@@ -333,7 +351,7 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "Behind the Album",
-				releaseDate: new Date("2024-03-20"),
+				releaseDate: recentDate(2, 3, 20),
 				coverImageUrl: "/images/albums/behind-the-album.jpg",
 				tracks: [
 					{ title: "Ep 1: The Making of Dark Side of the Moon", durationInSeconds: 3600, coverImageUrl: "/images/tracks/ep-1-the-making-of-dark-side-of-the-moon.jpg", description: "An in-depth look at the creative process behind Pink Floyd's legendary album and its lasting cultural impact." },
@@ -345,14 +363,14 @@ const artistsSeedData: ArtistSeedData[] = [
 			},
 			{
 				title: "Music Theory 101",
-				releaseDate: new Date("2024-11-01"),
+				releaseDate: recentDate(1, 11, 1),
 				coverImageUrl: "/images/albums/music-theory-101.jpg",
 				tracks: [
-					{ title: "Ep 1: Understanding Scales and Keys", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-1-understanding-scales-and-keys.jpg", playCount: 1000, createdAt: new Date("2024-11-01"), description: "A foundational guide to major and minor scales, key signatures, and how they shape every piece of music." },
-					{ title: "Ep 2: Chord Progressions Explained", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-2-chord-progressions-explained.jpg", playCount: 1000, createdAt: new Date("2024-11-04"), description: "How chords are built and combined into progressions that drive the emotional arc of a song." },
-					{ title: "Ep 3: Rhythm and Time Signatures", durationInSeconds: 1500, coverImageUrl: "/images/tracks/ep-3-rhythm-and-time-signatures.jpg", playCount: 1000, createdAt: new Date("2024-11-07"), description: "Exploring how different time signatures and rhythmic patterns create the feel and groove of music." },
-					{ title: "Ep 4: The Art of Melody Writing", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-4-the-art-of-melody-writing.jpg", playCount: 1000, createdAt: new Date("2024-11-10"), description: "Techniques for crafting memorable melodies, from motif development to contour and phrasing." },
-					{ title: "Ep 5: Harmony and Counterpoint", durationInSeconds: 3000, coverImageUrl: "/images/tracks/ep-5-harmony-and-counterpoint.jpg", playCount: 1000, createdAt: new Date("2024-11-13"), description: "An introduction to harmonic structure and the classical art of writing independent musical lines." },
+					{ title: "Ep 1: Understanding Scales and Keys", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-1-understanding-scales-and-keys.jpg", playCount: 1000, createdAt: recentDate(1, 11, 1), description: "A foundational guide to major and minor scales, key signatures, and how they shape every piece of music." },
+					{ title: "Ep 2: Chord Progressions Explained", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-2-chord-progressions-explained.jpg", playCount: 1000, createdAt: recentDate(1, 11, 4), description: "How chords are built and combined into progressions that drive the emotional arc of a song." },
+					{ title: "Ep 3: Rhythm and Time Signatures", durationInSeconds: 1500, coverImageUrl: "/images/tracks/ep-3-rhythm-and-time-signatures.jpg", playCount: 1000, createdAt: recentDate(1, 11, 7), description: "Exploring how different time signatures and rhythmic patterns create the feel and groove of music." },
+					{ title: "Ep 4: The Art of Melody Writing", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-4-the-art-of-melody-writing.jpg", playCount: 1000, createdAt: recentDate(1, 11, 10), description: "Techniques for crafting memorable melodies, from motif development to contour and phrasing." },
+					{ title: "Ep 5: Harmony and Counterpoint", durationInSeconds: 3000, coverImageUrl: "/images/tracks/ep-5-harmony-and-counterpoint.jpg", playCount: 1000, createdAt: recentDate(1, 11, 13), description: "An introduction to harmonic structure and the classical art of writing independent musical lines." },
 				],
 			},
 		],
@@ -365,14 +383,14 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "Design Matters",
-				releaseDate: new Date("2024-05-01"),
+				releaseDate: recentDate(1, 5, 1),
 				coverImageUrl: "/images/albums/design-matters.jpg",
 				tracks: [
-					{ title: "Ep 1: The Principles of Good Design", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-1-the-principles-of-good-design.jpg", playCount: 7000, createdAt: new Date("2024-05-01"), description: "Exploring timeless design principles from Dieter Rams to modern product thinking and user experience." },
-					{ title: "Ep 2: Color Theory in Practice", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-2-color-theory-in-practice.jpg", playCount: 7000, createdAt: new Date("2024-05-04"), description: "How designers use color psychology and theory to create compelling visual experiences across media." },
-					{ title: "Ep 3: Typography That Speaks", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-3-typography-that-speaks.jpg", playCount: 7000, createdAt: new Date("2024-05-07"), description: "The art and science of choosing typefaces that communicate tone, hierarchy, and brand personality." },
-					{ title: "Ep 4: UX Research Methods", durationInSeconds: 3000, coverImageUrl: "/images/tracks/ep-4-ux-research-methods.jpg", playCount: 7000, createdAt: new Date("2024-05-10"), description: "A practical guide to user research techniques including interviews, usability tests, and survey design." },
-					{ title: "Ep 5: Designing for Accessibility", durationInSeconds: 2700, coverImageUrl: "/images/tracks/ep-5-designing-for-accessibility.jpg", playCount: 7000, createdAt: new Date("2024-05-13"), description: "Why inclusive design matters and how to build products that work for people of all abilities." },
+					{ title: "Ep 1: The Principles of Good Design", durationInSeconds: 2400, coverImageUrl: "/images/tracks/ep-1-the-principles-of-good-design.jpg", playCount: 7000, createdAt: recentDate(1, 5, 1), description: "Exploring timeless design principles from Dieter Rams to modern product thinking and user experience." },
+					{ title: "Ep 2: Color Theory in Practice", durationInSeconds: 1800, coverImageUrl: "/images/tracks/ep-2-color-theory-in-practice.jpg", playCount: 7000, createdAt: recentDate(1, 5, 4), description: "How designers use color psychology and theory to create compelling visual experiences across media." },
+					{ title: "Ep 3: Typography That Speaks", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-3-typography-that-speaks.jpg", playCount: 7000, createdAt: recentDate(1, 5, 7), description: "The art and science of choosing typefaces that communicate tone, hierarchy, and brand personality." },
+					{ title: "Ep 4: UX Research Methods", durationInSeconds: 3000, coverImageUrl: "/images/tracks/ep-4-ux-research-methods.jpg", playCount: 7000, createdAt: recentDate(1, 5, 10), description: "A practical guide to user research techniques including interviews, usability tests, and survey design." },
+					{ title: "Ep 5: Designing for Accessibility", durationInSeconds: 2700, coverImageUrl: "/images/tracks/ep-5-designing-for-accessibility.jpg", playCount: 7000, createdAt: recentDate(1, 5, 13), description: "Why inclusive design matters and how to build products that work for people of all abilities." },
 				],
 			},
 		],
@@ -385,14 +403,14 @@ const artistsSeedData: ArtistSeedData[] = [
 		albums: [
 			{
 				title: "The Indie Hacker",
-				releaseDate: new Date("2024-07-15"),
+				releaseDate: recentDate(1, 7, 15),
 				coverImageUrl: "/images/albums/the-indie-hacker.jpg",
 				tracks: [
-					{ title: "Ep 1: Building in Public", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-1-building-in-public.jpg", playCount: 4000, createdAt: new Date("2024-07-15"), description: "The benefits and risks of sharing your startup journey openly and how transparency builds trust." },
-					{ title: "Ep 2: Finding Your First 100 Customers", durationInSeconds: 1500, coverImageUrl: "/images/tracks/ep-2-finding-your-first-100-customers.jpg", playCount: 4000, createdAt: new Date("2024-07-18"), description: "Practical strategies for acquiring your earliest customers without a marketing budget or brand recognition." },
-					{ title: "Ep 3: Revenue Before Funding", durationInSeconds: 2700, coverImageUrl: "/images/tracks/ep-3-revenue-before-funding.jpg", playCount: 4000, createdAt: new Date("2024-07-21"), description: "Why focusing on revenue from day one can build a more sustainable business than chasing venture capital." },
-					{ title: "Ep 4: Solo Founder Survival Guide", durationInSeconds: 3600, coverImageUrl: "/images/tracks/ep-4-solo-founder-survival-guide.jpg", playCount: 4000, createdAt: new Date("2024-07-24"), description: "Mental health, time management, and prioritization tactics for founders building companies alone." },
-					{ title: "Ep 5: Scaling Without a Team", durationInSeconds: 1200, coverImageUrl: "/images/tracks/ep-5-scaling-without-a-team.jpg", playCount: 4000, createdAt: new Date("2024-07-27"), description: "Leveraging automation, no-code tools, and strategic outsourcing to grow without full-time hires." },
+					{ title: "Ep 1: Building in Public", durationInSeconds: 2100, coverImageUrl: "/images/tracks/ep-1-building-in-public.jpg", playCount: 4000, createdAt: recentDate(1, 7, 15), description: "The benefits and risks of sharing your startup journey openly and how transparency builds trust." },
+					{ title: "Ep 2: Finding Your First 100 Customers", durationInSeconds: 1500, coverImageUrl: "/images/tracks/ep-2-finding-your-first-100-customers.jpg", playCount: 4000, createdAt: recentDate(1, 7, 18), description: "Practical strategies for acquiring your earliest customers without a marketing budget or brand recognition." },
+					{ title: "Ep 3: Revenue Before Funding", durationInSeconds: 2700, coverImageUrl: "/images/tracks/ep-3-revenue-before-funding.jpg", playCount: 4000, createdAt: recentDate(1, 7, 21), description: "Why focusing on revenue from day one can build a more sustainable business than chasing venture capital." },
+					{ title: "Ep 4: Solo Founder Survival Guide", durationInSeconds: 3600, coverImageUrl: "/images/tracks/ep-4-solo-founder-survival-guide.jpg", playCount: 4000, createdAt: recentDate(1, 7, 24), description: "Mental health, time management, and prioritization tactics for founders building companies alone." },
+					{ title: "Ep 5: Scaling Without a Team", durationInSeconds: 1200, coverImageUrl: "/images/tracks/ep-5-scaling-without-a-team.jpg", playCount: 4000, createdAt: recentDate(1, 7, 27), description: "Leveraging automation, no-code tools, and strategic outsourcing to grow without full-time hires." },
 				],
 			},
 		],
@@ -614,24 +632,24 @@ async function seedConcerts(): Promise<number> {
 	console.log("Creating concerts...");
 
 	const concertData = [
-		{ city: "New York", artistName: "The Amplifiers", venue: "Madison Square Garden", date: "2026-03-15", time: "19:30" },
-		{ city: "New York", artistName: "Blue Note Quartet", venue: "Blue Note Jazz Club", date: "2026-05-22", time: "20:00" },
-		{ city: "New York", artistName: "Urban Beats", venue: "Barclays Center", date: "2026-07-10", time: "19:00" },
-		{ city: "New York", artistName: "Pacific Symphony", venue: "Carnegie Hall", date: "2026-10-05", time: "19:30" },
-		{ city: "Las Vegas", artistName: "Neon Dreams", venue: "T-Mobile Arena", date: "2026-04-12", time: "21:00" },
-		{ city: "Las Vegas", artistName: "Synthwave Collective", venue: "The Venetian Theatre", date: "2026-06-28", time: "20:00" },
-		{ city: "Las Vegas", artistName: "Velvet Grooves", venue: "MGM Grand Garden", date: "2026-08-15", time: "21:00" },
-		{ city: "Las Vegas", artistName: "The Amplifiers", venue: "Allegiant Stadium", date: "2026-11-20", time: "19:00" },
-		{ city: "Los Angeles", artistName: "Urban Beats", venue: "The Forum", date: "2026-03-08", time: "19:00" },
-		{ city: "Los Angeles", artistName: "Neon Dreams", venue: "Hollywood Bowl", date: "2026-06-05", time: "20:00" },
-		{ city: "Los Angeles", artistName: "Pacific Symphony", venue: "Walt Disney Concert Hall", date: "2026-09-18", time: "19:30" },
-		{ city: "Los Angeles", artistName: "Velvet Grooves", venue: "Crypto.com Arena", date: "2026-12-12", time: "20:00" },
-		{ city: "Chicago", artistName: "Blue Note Quartet", venue: "Chicago Theatre", date: "2026-04-25", time: "19:30" },
-		{ city: "Chicago", artistName: "Synthwave Collective", venue: "United Center", date: "2026-07-30", time: "20:00" },
-		{ city: "Chicago", artistName: "The Amplifiers", venue: "Soldier Field", date: "2026-10-22", time: "18:00" },
-		{ city: "Miami", artistName: "Neon Dreams", venue: "Kaseya Center", date: "2026-05-03", time: "20:00" },
-		{ city: "Miami", artistName: "Urban Beats", venue: "Hard Rock Stadium", date: "2026-08-08", time: "19:00" },
-		{ city: "Miami", artistName: "Velvet Grooves", venue: "Bayfront Park Amphitheater", date: "2026-11-14", time: "19:30" },
+		{ city: "New York", artistName: "The Amplifiers", venue: "Madison Square Garden", date: futureDate(15), time: "19:30" },
+		{ city: "New York", artistName: "Blue Note Quartet", venue: "Blue Note Jazz Club", date: futureDate(75), time: "20:00" },
+		{ city: "New York", artistName: "Urban Beats", venue: "Barclays Center", date: futureDate(125), time: "19:00" },
+		{ city: "New York", artistName: "Pacific Symphony", venue: "Carnegie Hall", date: futureDate(210), time: "19:30" },
+		{ city: "Las Vegas", artistName: "Neon Dreams", venue: "T-Mobile Arena", date: futureDate(35), time: "21:00" },
+		{ city: "Las Vegas", artistName: "Synthwave Collective", venue: "The Venetian Theatre", date: futureDate(110), time: "20:00" },
+		{ city: "Las Vegas", artistName: "Velvet Grooves", venue: "MGM Grand Garden", date: futureDate(160), time: "21:00" },
+		{ city: "Las Vegas", artistName: "The Amplifiers", venue: "Allegiant Stadium", date: futureDate(260), time: "19:00" },
+		{ city: "Los Angeles", artistName: "Urban Beats", venue: "The Forum", date: futureDate(5), time: "19:00" },
+		{ city: "Los Angeles", artistName: "Neon Dreams", venue: "Hollywood Bowl", date: futureDate(90), time: "20:00" },
+		{ city: "Los Angeles", artistName: "Pacific Symphony", venue: "Walt Disney Concert Hall", date: futureDate(195), time: "19:30" },
+		{ city: "Los Angeles", artistName: "Velvet Grooves", venue: "Crypto.com Arena", date: futureDate(280), time: "20:00" },
+		{ city: "Chicago", artistName: "Blue Note Quartet", venue: "Chicago Theatre", date: futureDate(50), time: "19:30" },
+		{ city: "Chicago", artistName: "Synthwave Collective", venue: "United Center", date: futureDate(145), time: "20:00" },
+		{ city: "Chicago", artistName: "The Amplifiers", venue: "Soldier Field", date: futureDate(230), time: "18:00" },
+		{ city: "Miami", artistName: "Neon Dreams", venue: "Kaseya Center", date: futureDate(60), time: "20:00" },
+		{ city: "Miami", artistName: "Urban Beats", venue: "Hard Rock Stadium", date: futureDate(150), time: "19:00" },
+		{ city: "Miami", artistName: "Velvet Grooves", venue: "Bayfront Park Amphitheater", date: futureDate(250), time: "19:30" },
 	];
 
 	let concertCount = 0;
@@ -649,7 +667,7 @@ async function seedConcerts(): Promise<number> {
 			artist_id: artist._id,
 			venue: data.venue,
 			city: data.city,
-			date: new Date(data.date),
+			date: data.date,
 			time: data.time,
 			cover_image: `/images/concerts/${venueSlug}.jpg`,
 			max_tickets_per_user: 6,

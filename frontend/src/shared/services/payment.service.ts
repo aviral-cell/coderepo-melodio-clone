@@ -9,7 +9,6 @@ export interface PaymentRequest {
 export interface PaymentResponse {
 	success: boolean;
 	paymentId: string;
-	transactionId: string;
 	message: string;
 	subscription: {
 		plan: string;
