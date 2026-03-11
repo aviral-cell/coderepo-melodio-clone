@@ -202,6 +202,35 @@ describe("Family Management", () => {
 			expect(response.body.error).toMatch(/not authorized/i);
 		});
 
+		it("should return 401 when inactive family member tries to access API", async () => {
+			// Add family member
+			const { memberId } = await createFamilyMemberViaApi(primaryToken, {
+				name: "Inactive Member",
+				email: generateUniqueEmail("inactive-member"),
+			});
+
+			// Switch to family member account to get their token
+			const switchResponse = await request(app)
+				.post(`${AUTH_API_BASE}/switch`)
+				.set("Authorization", `Bearer ${primaryToken}`)
+				.send({ targetUserId: memberId });
+
+			const memberToken = switchResponse.body.data.token;
+
+			// Deactivate the family member directly in DB
+			await User.findByIdAndUpdate(memberId, { is_active: false });
+
+			// Attempt to use deactivated member's token
+			const response = await request(app)
+				.get(FAMILY_API_BASE)
+				.set("Authorization", `Bearer ${memberToken}`);
+
+			// Verify rejected with 401
+			expect(response.status).toBe(401);
+			expect(response.body.success).toBe(false);
+			expect(response.body.error).toMatch(/inactive/i);
+		});
+
 		it("should return 403 when family member tries to switch to another family member", async () => {
 			// Create two family members
 			const { memberId: memberAId } = await createFamilyMemberViaApi(primaryToken, {
