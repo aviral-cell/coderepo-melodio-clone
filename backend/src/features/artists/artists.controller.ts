@@ -64,12 +64,12 @@ export const artistsController = {
 		try {
 			const { id } = req.params;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid artist ID format", 400);
 				return;
 			}
 
-			const artist = await artistsService.findById(id);
+			const artist = await artistsService.findById(id as string);
 
 			if (!artist) {
 				sendError(res, "Artist not found", 404);

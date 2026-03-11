@@ -71,12 +71,12 @@ export const familyController = {
 
 			const { memberId } = req.params;
 
-			if (!memberId || !isValidObjectId(memberId)) {
+			if (!memberId || !isValidObjectId(memberId as string)) {
 				sendError(res, "Invalid member ID", 400);
 				return;
 			}
 
-			await familyService.removeFamilyMember(userId, memberId);
+			await familyService.removeFamilyMember(userId, memberId as string);
 
 			sendSuccess(res, { message: "Family member removed successfully" });
 		} catch (error) {

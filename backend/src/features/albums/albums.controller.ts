@@ -72,12 +72,12 @@ export const albumsController = {
 		try {
 			const { id } = req.params;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid album ID format", 400);
 				return;
 			}
 
-			const album = await albumsService.findById(id);
+			const album = await albumsService.findById(id as string);
 
 			if (!album) {
 				sendError(res, "Album not found", 404);

@@ -77,12 +77,12 @@ export const mixesController = {
 			const { id } = req.params;
 			const userId = req.user!.userId;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid mix ID format", 400);
 				return;
 			}
 
-			const mix = await mixesService.getMixById(userId, id);
+			const mix = await mixesService.getMixById(userId, id as string);
 			sendSuccess(res, mix);
 		} catch (error) {
 			if (error instanceof MixError) {
@@ -102,7 +102,7 @@ export const mixesController = {
 			const userId = req.user!.userId;
 			const { title } = req.body;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid mix ID format", 400);
 				return;
 			}
@@ -112,7 +112,7 @@ export const mixesController = {
 				return;
 			}
 
-			const mix = await mixesService.renameMix(userId, id, title.trim());
+			const mix = await mixesService.renameMix(userId, id as string, title.trim());
 			sendSuccess(res, mix);
 		} catch (error) {
 			if (error instanceof MixError) {
@@ -131,12 +131,12 @@ export const mixesController = {
 			const { id } = req.params;
 			const userId = req.user!.userId;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid mix ID format", 400);
 				return;
 			}
 
-			await mixesService.deleteMix(userId, id);
+			await mixesService.deleteMix(userId, id as string);
 			res.status(204).send();
 		} catch (error) {
 			if (error instanceof MixError) {

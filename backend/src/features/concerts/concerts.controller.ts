@@ -35,12 +35,12 @@ export const concertsController = {
 		try {
 			const { id } = req.params;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid concert ID format", 400);
 				return;
 			}
 
-			const concert = await concertsService.getById(id);
+			const concert = await concertsService.getById(id as string);
 
 			if (!concert) {
 				sendError(res, "Concert not found", 404);
@@ -62,7 +62,7 @@ export const concertsController = {
 			const userId = req.user!.userId;
 			const { quantity } = req.body;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid concert ID format", 400);
 				return;
 			}
@@ -81,7 +81,7 @@ export const concertsController = {
 				return;
 			}
 
-			const result = await concertsService.buyTickets(id, userId, quantity);
+			const result = await concertsService.buyTickets(id as string, userId, quantity);
 			sendSuccess(res, result, undefined, 201);
 		} catch (error) {
 			if (error instanceof ConcertError) {
@@ -100,12 +100,12 @@ export const concertsController = {
 			const { id } = req.params;
 			const userId = req.user!.userId;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid concert ID format", 400);
 				return;
 			}
 
-			const tickets = await concertsService.getUserTickets(id, userId);
+			const tickets = await concertsService.getUserTickets(id as string, userId);
 			sendSuccess(res, tickets);
 		} catch (error) {
 			if (error instanceof ConcertError) {

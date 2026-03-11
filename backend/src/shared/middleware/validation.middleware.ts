@@ -30,7 +30,7 @@ export function validateObjectId(paramName = "id") {
 			return;
 		}
 
-		if (!isValidObjectId(id)) {
+		if (!isValidObjectId(id as string)) {
 			sendError(res, `Invalid ${paramName} format`, 400);
 			return;
 		}
@@ -49,7 +49,7 @@ export function validateObjectIds(...paramNames: string[]) {
 				return;
 			}
 
-			if (!isValidObjectId(id)) {
+			if (!isValidObjectId(id as string)) {
 				sendError(res, `Invalid ${paramName} format`, 400);
 				return;
 			}

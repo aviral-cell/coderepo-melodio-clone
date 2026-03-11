@@ -79,12 +79,12 @@ export const tracksController = {
 		try {
 			const { id } = req.params;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const track = await tracksService.findById(id);
+			const track = await tracksService.findById(id as string);
 
 			if (!track) {
 				sendError(res, "Track not found", 404);
@@ -104,12 +104,12 @@ export const tracksController = {
 		try {
 			const { id } = req.params;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const track = await tracksService.incrementPlayCount(id);
+			const track = await tracksService.incrementPlayCount(id as string);
 
 			if (!track) {
 				sendError(res, "Track not found", 404);

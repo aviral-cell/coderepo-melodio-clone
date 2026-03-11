@@ -29,12 +29,12 @@ export const playlistsController = {
 			const { id } = req.params;
 			const userId = req.user!.userId;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			const result = await playlistsService.findById(id, userId);
+			const result = await playlistsService.findById(id as string, userId);
 
 			if (result.accessDenied) {
 				sendError(res, "Access denied to private playlist", 403);
@@ -91,12 +91,12 @@ export const playlistsController = {
 			const userId = req.user!.userId;
 			const { name, description, isPublic, coverImageUrl } = req.body;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			const result = await playlistsService.update(id, userId, {
+			const result = await playlistsService.update(id as string, userId, {
 				name: name?.trim(),
 				description: description?.trim(),
 				isPublic,
@@ -127,12 +127,12 @@ export const playlistsController = {
 			const { id } = req.params;
 			const userId = req.user!.userId;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			const result = await playlistsService.delete(id, userId);
+			const result = await playlistsService.delete(id as string, userId);
 
 			if (result.notFound) {
 				sendError(res, "Playlist not found", 404);
@@ -159,17 +159,17 @@ export const playlistsController = {
 			const userId = req.user!.userId;
 			const { trackId } = req.body;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			if (!trackId || !isValidObjectId(trackId)) {
+			if (!trackId || !isValidObjectId(trackId as string)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const result = await playlistsService.addTrack(id, trackId, userId);
+			const result = await playlistsService.addTrack(id as string, trackId, userId);
 
 			if (result.notFound) {
 				sendError(res, "Playlist not found", 404);
@@ -200,17 +200,17 @@ export const playlistsController = {
 			const { id, trackId } = req.params;
 			const userId = req.user!.userId;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			if (!trackId || !isValidObjectId(trackId)) {
+			if (!trackId || !isValidObjectId(trackId as string)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const result = await playlistsService.removeTrack(id, trackId, userId);
+			const result = await playlistsService.removeTrack(id as string, trackId as string, userId);
 
 			if (result.notFound) {
 				sendError(res, "Playlist not found", 404);
@@ -237,7 +237,7 @@ export const playlistsController = {
 			const userId = req.user!.userId;
 			const { trackIds } = req.body;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
@@ -248,13 +248,13 @@ export const playlistsController = {
 			}
 
 			for (const trackId of trackIds) {
-				if (!isValidObjectId(trackId)) {
+				if (!isValidObjectId(trackId as string)) {
 					sendError(res, "Invalid track ID format in array", 400);
 					return;
 				}
 			}
 
-			const result = await playlistsService.reorderTracks(id, trackIds, userId);
+			const result = await playlistsService.reorderTracks(id as string, trackIds, userId);
 
 			if (result.notFound) {
 				sendError(res, "Playlist not found", 404);
@@ -290,12 +290,12 @@ export const playlistsController = {
 			const { name } = req.body;
 			const userId = req.user!.userId;
 
-			if (!id || !isValidObjectId(id)) {
+			if (!id || !isValidObjectId(id as string)) {
 				sendError(res, "Invalid playlist ID format", 400);
 				return;
 			}
 
-			const playlist = await playlistsService.copyPlaylist(id, userId, name);
+			const playlist = await playlistsService.copyPlaylist(id as string, userId, name);
 
 			sendSuccess(res, playlist, undefined, 201);
 		} catch (error) {

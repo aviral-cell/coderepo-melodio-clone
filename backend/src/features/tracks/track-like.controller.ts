@@ -60,12 +60,12 @@ export const trackLikeController = {
 			const userId = req.user?.userId;
 			const trackId = req.params["id"];
 
-			if (!trackId || !isValidObjectId(trackId)) {
+			if (!trackId || !isValidObjectId(trackId as string)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const result = await trackLikeService.removeReaction(userId!, trackId);
+			const result = await trackLikeService.removeReaction(userId!, trackId as string);
 			sendSuccess(res, result);
 		} catch (error) {
 			res.status(500).json({ success: false, error: "An error occurred" });
@@ -95,12 +95,12 @@ export const trackLikeController = {
 			const userId = req.user?.userId;
 			const trackId = req.params["id"];
 
-			if (!trackId || !isValidObjectId(trackId)) {
+			if (!trackId || !isValidObjectId(trackId as string)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const result = await trackLikeService.getLikeStatus(userId!, trackId);
+			const result = await trackLikeService.getLikeStatus(userId!, trackId as string);
 			sendSuccess(res, result);
 		} catch (error) {
 			res.status(500).json({ success: false, error: "An error occurred" });
