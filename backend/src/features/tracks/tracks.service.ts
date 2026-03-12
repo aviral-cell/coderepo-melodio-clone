@@ -140,26 +140,7 @@ export const tracksService = {
 	},
 
 	async search(query: string, limit = 5): Promise<TrackResponse[]> {
-		if (!query || query.trim() === "") {
-			return [];
-		}
-
-		const trimmedQuery = query.trim();
-		const lowercaseQuery = trimmedQuery.toLowerCase();
-
-		const tracks = await Track.find({
-			$or: [
-				{ title: { $regex: `^${escapeRegex(trimmedQuery)}`, $options: "i" } },
-				{ genre: lowercaseQuery },
-			],
-		})
-			.populate<{ artist_id: PopulatedArtist | null }>("artist_id", "name image_url")
-			.populate<{ album_id: PopulatedAlbum | null }>("album_id", "title cover_image_url")
-			.limit(limit)
-			.lean<LeanTrackWithPopulated[]>()
-			.exec();
-
-		return tracks.map((track) => transformTrack(track));
+		return [];
 	},
 
 	async incrementPlayCount(id: string): Promise<TrackResponse | null> {
