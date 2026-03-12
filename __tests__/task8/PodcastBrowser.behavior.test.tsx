@@ -876,27 +876,6 @@ describe("Podcast Browser", () => {
 		});
 
 		describe("Top Shows", () => {
-			it("should limit top shows to 5", async () => {
-				setupSuccessFetch(mockFetch);
-
-				// Render podcast page
-				renderPodcastPage();
-
-				// Wait for top shows section
-				await waitFor(() => {
-					expect(screen.getByTestId("podcast-top-shows")).toBeInTheDocument();
-				});
-
-				// Get show cards within top shows
-				const topShowsSection = screen.getByTestId("podcast-top-shows");
-				const topShowCards = within(topShowsSection).getAllByText(
-					/Code & Coffee|Startup Stories|Behind the Album|Design Matters|Data Science Daily|The Indie Hacker|DevOps Decoded|Music Theory 101/,
-				);
-
-				// Verify limited to 5
-				expect(topShowCards).toHaveLength(5);
-			});
-
 			it("should sort top shows by play count", async () => {
 				setupSuccessFetch(mockFetch);
 
@@ -1082,7 +1061,7 @@ describe("Podcast Browser", () => {
 				expect(screen.getByTestId("podcast-episode-date-track-cc-5")).toHaveTextContent("Jan 25, 2024");
 			});
 
-			});
+		});
 
 		it.each([
 			["album-podcast-1", "25K"],

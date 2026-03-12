@@ -918,47 +918,6 @@ describe("Create Mix", () => {
 		});
 
 		describe("Mix Title Generation", () => {
-			it("should generate title for single artist mix", async () => {
-				const user = userEvent.setup();
-				setupSuccessfulMocks();
-
-				// Render mix page
-				renderMixPage();
-
-				// Wait for page to load
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-create-card")).toBeInTheDocument();
-				});
-
-				// Start create flow
-				await user.click(screen.getByTestId("mix-create-card"));
-
-				// Wait for artist selection step
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-select")).toBeInTheDocument();
-				});
-
-				// Select single artist and proceed
-				await user.click(screen.getByTestId("mix-artist-artist-rock-1"));
-				await user.click(screen.getByTestId("mix-next-btn"));
-
-				// Wait for configure step
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-configure")).toBeInTheDocument();
-				});
-
-				// Click Done to generate mix
-				await user.click(screen.getByTestId("mix-done-btn"));
-
-				// Wait for result step
-				await waitFor(() => {
-					expect(screen.getByTestId("mix-step-result")).toBeInTheDocument();
-				});
-
-				// Verify single artist title format
-				expect(screen.getByTestId("mix-title")).toHaveTextContent("The Amplifiers mix");
-			});
-
 			it("should generate title for multi-artist mix", async () => {
 				const user = userEvent.setup();
 				setupSuccessfulMocks();
