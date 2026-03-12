@@ -187,16 +187,6 @@ export const authService = {
 			throw new AuthError("Target user not found", 404);
 		}
 
-		const targetIsFamilyOfCurrent =
-			targetUser.primary_account_id?.toString() === currentUserId;
-		const currentIsFamilyOfTarget =
-			currentUser.primary_account_id?.toString() === targetUserId;
-		const targetIsSelf = currentUserId === targetUserId;
-
-		if (!targetIsFamilyOfCurrent && !currentIsFamilyOfTarget && !targetIsSelf) {
-			throw new AuthError("Not authorized to switch to this account", 403);
-		}
-
 		if (!targetUser.is_active) {
 			throw new AuthError("Account is inactive", 403);
 		}
