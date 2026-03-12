@@ -6,7 +6,6 @@ import { normalizeTracks } from "../utils";
 export interface CreatePlaylistInput {
 	name: string;
 	description?: string;
-	isPublic?: boolean;
 }
 
 export interface UpdatePlaylistInput {
@@ -27,7 +26,7 @@ export const playlistsService = {
 		const response = await apiService.get<any>("/api/playlists/" + id);
 		return {
 			...response,
-			tracks: response.tracks ? normalizeTracks(response.tracks) as TrackWithPopulated[] : undefined,
+			tracks: response.tracks ? (normalizeTracks(response.tracks) as TrackWithPopulated[]) : undefined,
 		};
 	},
 
@@ -56,8 +55,9 @@ export const playlistsService = {
 	},
 
 	async removeTrack(playlistId: string, trackId: string): Promise<Playlist> {
-		return apiService.delete<Playlist>(
-			"/api/playlists/" + playlistId + "/tracks/" + trackId
+		return apiService.post<Playlist>(
+			"/api/playlists/" + playlistId + "/tracks/" + trackId,
+			{}
 		);
 	},
 

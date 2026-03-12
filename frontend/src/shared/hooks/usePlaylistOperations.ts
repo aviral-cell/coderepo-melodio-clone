@@ -13,7 +13,7 @@ export function usePlaylistOperations(
 	playlistId: string,
 	tracks: TrackWithPopulated[],
 	setPlaylist: (tracks: TrackWithPopulated[]) => void,
-	onError?: (error: Error) => void
+	onError?: (error: Error) => void,
 ): UsePlaylistOperationsReturn {
 	const [isReordering, setIsReordering] = useState(false);
 	const [isRemoving, setIsRemoving] = useState(false);
@@ -44,27 +44,14 @@ export function usePlaylistOperations(
 				setIsReordering(false);
 			}
 		},
-		[playlistId, tracks, setPlaylist, onError]
+		[playlistId, tracks, setPlaylist, onError],
 	);
 
 	const removeTrack = useCallback(
-		async (trackId: string) => {
-			const originalTracks = [...tracks];
-			const newTracks = tracks.filter((t) => t._id !== trackId);
-
-			setPlaylist(newTracks);
-			setIsRemoving(true);
-
-			try {
-				await playlistService.removeTrack(playlistId, trackId);
-			} catch (error) {
-				setPlaylist(originalTracks);
-				const err = error instanceof Error ? error : new Error("Failed to remove track");
-				onError?.(err);
-				throw err;
-			} finally {
-				setIsRemoving(false);
-			}
+		async (trackId: string): Promise<void> => {
+			const err = new Error("Failed to remove track");
+			onError?.(err);
+			throw err;
 		},
 		[playlistId, tracks, setPlaylist, onError]
 	);
