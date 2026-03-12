@@ -1,13 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { tracksService } from "@/shared/services";
+import { useState } from "react";
 import type { TrackWithPopulated } from "@/shared/types/player.types";
-import {
-	AVAILABLE_MOODS,
-	getTracksForMood,
-	getTracksGroupedByMood,
-	getMoodDescription,
-} from "@/shared/utils/moodUtils";
-import { shuffleArray } from "@/shared/utils/playerUtils";
 
 interface UseMoodMixerReturn {
 	tracks: TrackWithPopulated[];
@@ -20,51 +12,46 @@ interface UseMoodMixerReturn {
 	isLoading: boolean;
 }
 
+const mockTrack = (id: string, title: string, genre: string): TrackWithPopulated =>
+	({
+		_id: id,
+		title,
+		durationInSeconds: 200,
+		trackNumber: 1,
+		genre,
+		playCount: 1000,
+		createdAt: "2024-01-01T00:00:00.000Z",
+		updatedAt: "2024-01-01T00:00:00.000Z",
+		artistId: { _id: "mock-artist-1", name: "Mock Artist", imageUrl: "" },
+		albumId: { _id: "mock-album-1", title: "Mock Album", coverImageUrl: "" },
+	}) as TrackWithPopulated;
+
+const mockMoods = ["Energetic", "Chill", "Happy", "Focus", "Party"];
+
+const mockTracks: TrackWithPopulated[] = [
+	mockTrack("mock-1", "Mock Track 1", "rock"),
+	mockTrack("mock-2", "Mock Track 2", "jazz"),
+];
+
+const mockTracksByMood: Record<string, TrackWithPopulated[]> = {
+	Energetic: [mockTrack("mock-e1", "Mock Energetic", "rock")],
+	Chill: [mockTrack("mock-c1", "Mock Chill", "jazz")],
+	Happy: [mockTrack("mock-h1", "Mock Happy", "pop")],
+	Focus: [mockTrack("mock-f1", "Mock Focus", "electronic")],
+	Party: [mockTrack("mock-p1", "Mock Party", "hip-hop")],
+};
+
 export function useMoodMixer(): UseMoodMixerReturn {
-	const [allTracks, setAllTracks] = useState<TrackWithPopulated[]>([]);
 	const [selectedMood, setSelectedMood] = useState<string | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		const fetchTracks = async () => {
-			try {
-				setIsLoading(true);
-				const response = await tracksService.getAll({ limit: 100 });
-				setAllTracks(response.items);
-			} catch (err) {
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchTracks();
-	}, []);
-
-	const tracksByMood = useMemo(() => {
-		const grouped = getTracksGroupedByMood(allTracks);
-		for (const mood of Object.keys(grouped)) {
-			grouped[mood] = shuffleArray(grouped[mood]);
-		}
-		return grouped;
-	}, [allTracks]);
-
-	const visibleMoods = selectedMood ? [selectedMood] : AVAILABLE_MOODS;
-
-	const tracks = selectedMood
-		? getTracksForMood(allTracks, selectedMood)
-		: allTracks;
-
-	const moodDescription = selectedMood
-		? getMoodDescription(selectedMood)
-		: null;
 
 	return {
-		tracks,
-		tracksByMood,
-		moods: AVAILABLE_MOODS,
-		visibleMoods,
+		tracks: mockTracks,
+		tracksByMood: mockTracksByMood,
+		moods: mockMoods,
+		visibleMoods: mockMoods,
 		selectedMood,
 		setSelectedMood,
-		moodDescription,
-		isLoading,
+		moodDescription: null,
+		isLoading: false,
 	};
 }

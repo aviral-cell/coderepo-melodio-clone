@@ -16,29 +16,21 @@ export const MOOD_IMAGES: Record<string, string> = {
 	Party: "/images/moods/party.jpg",
 };
 
-export const AVAILABLE_MOODS: string[] = Object.keys(MOOD_GENRE_MAP);
-
 export function getTracksForMood(
 	tracks: TrackWithPopulated[],
 	mood: string,
 ): TrackWithPopulated[] {
-	const genres = MOOD_GENRE_MAP[mood];
-	if (!genres) return [];
-	return tracks.filter((track) => genres.includes(track.genre));
+	return [];
 }
 
 export function getTracksGroupedByMood(
 	tracks: TrackWithPopulated[],
 ): Record<string, TrackWithPopulated[]> {
-	const grouped: Record<string, TrackWithPopulated[]> = {};
-	for (const mood of AVAILABLE_MOODS) {
-		grouped[mood] = getTracksForMood(tracks, mood);
-	}
-	return grouped;
+	return {};
 }
 
 export function getMoodImage(mood: string): string {
-	return MOOD_IMAGES[mood] || "";
+	return "";
 }
 
 export function getMoodDescription(mood: string): string {
@@ -49,5 +41,5 @@ export function getMoodDescription(mood: string): string {
 		Focus: "Instrumental beats to help you concentrate",
 		Party: "Bangers to get the party started",
 	};
-	return descriptions[mood] || "";
+	return "";
 }
