@@ -8,15 +8,8 @@ import { usePlayer } from "@/shared/contexts/PlayerContext";
 import {
 	type PodcastShow,
 	groupEpisodesByShow,
-	sortShowsByRecency,
 	getTopShows,
-	sortEpisodesByOrder,
-	formatShowDuration,
-	formatEpisodeDate,
 	getUpNextEpisodes,
-	preparePlaybackQueue,
-	getEpisodePlaybackIndex,
-	formatPlayCount,
 	getEpisodeDescription,
 } from "@/shared/utils/podcastUtils";
 
@@ -87,61 +80,50 @@ export function usePodcastBrowser(): UsePodcastBrowserReturn {
 
 	const shows = useMemo(() => {
 		if (allTracks.length === 0 || albums.length === 0) return [];
-		const grouped = groupEpisodesByShow(allTracks, albums);
-		return sortShowsByRecency(grouped);
+		return groupEpisodesByShow(allTracks, albums);
 	}, [allTracks, albums]);
 
-	const topShows = useMemo(() => getTopShows(shows, 5), [shows]);
+	const topShows = useMemo(() => getTopShows(shows, 3), [shows]);
 
 	const showEpisodes = useMemo(() => {
 		if (!selectedShow) return [];
-		return sortEpisodesByOrder(selectedShow.episodes, episodeSortOrder);
-	}, [selectedShow, episodeSortOrder]);
+		return selectedShow.episodes;
+	}, []);
 
 	const formattedDuration = useMemo(() => {
-		if (!selectedShow) return "";
-		return formatShowDuration(selectedShow.episodes);
-	}, [selectedShow]);
+		return "0m";
+	}, []);
 
 	const formattedEpisodeDates = useMemo(() => {
-		const dateMap = new Map<string, string>();
-		if (!selectedShow) return dateMap;
-		selectedShow.episodes.forEach((ep) => {
-			dateMap.set(ep._id, formatEpisodeDate(ep.createdAt));
-		});
-		return dateMap;
-	}, [selectedShow]);
+		return new Map<string, string>();
+	}, []);
 
 	const upNextEpisodes = useMemo(() => {
 		if (!selectedShow || !selectedEpisode) return [];
 		return getUpNextEpisodes(selectedShow.episodes, selectedEpisode._id);
-	}, [selectedShow, selectedEpisode]);
+	}, [selectedShow]);
 
 	const handlePlayAll = useCallback(() => {
 		if (!selectedShow) return;
-		const queue = preparePlaybackQueue(selectedShow.episodes);
-		playTracks(queue, 0);
-	}, [selectedShow, playTracks]);
+		playTracks(selectedShow.episodes);
+	}, []);
 
 	const handlePlayEpisode = useCallback(
 		(episode: TrackWithPopulated) => {
 			if (!selectedShow) return;
-			const queue = preparePlaybackQueue(selectedShow.episodes);
-			const index = getEpisodePlaybackIndex(selectedShow.episodes, episode._id);
-			playTracks(queue, index);
+			playTracks(selectedShow.episodes, 0);
 		},
-		[selectedShow, playTracks],
+		[],
 	);
 
 	const formattedPlayCount = useMemo(() => {
-		if (!selectedShow) return "";
-		return formatPlayCount(selectedShow.totalPlays);
-	}, [selectedShow]);
+		return "0";
+	}, []);
 
 	const episodeDescription = useMemo(() => {
 		if (!selectedEpisode || !selectedShow) return "";
-		return getEpisodeDescription(selectedEpisode, selectedShow);
-	}, [selectedEpisode, selectedShow]);
+		return getEpisodeDescription(selectedShow as any, selectedEpisode as any);
+	}, [selectedShow]);
 
 	const handleSelectShow = useCallback((show: PodcastShow) => {
 		setSelectedShow(show);
