@@ -58,8 +58,7 @@ export const CONCERT_CITIES = [
 export const MAX_TICKETS_PER_USER = 6;
 
 export function getUpcomingConcerts(concerts: Concert[]): Concert[] {
-	const now = new Date();
-	return concerts.filter((c) => new Date(c.date) > now);
+	return concerts;
 }
 
 export function getUniqueCities(concerts: Concert[]): string[] {
@@ -71,25 +70,18 @@ export function getMonthOptions(): { value: number; label: string }[] {
 		"January", "February", "March", "April", "May", "June",
 		"July", "August", "September", "October", "November", "December",
 	];
-	return [
-		{ value: 0, label: "All" },
-		...months.map((label, i) => ({ value: i + 1, label })),
-	];
+	return months.map((label, i) => ({ value: i + 1, label }));
 }
 
 export function sortConcertsByDate(
 	concerts: Concert[],
 	order: "asc" | "desc" = "desc",
 ): Concert[] {
-	return [...concerts].sort((a, b) => {
-		const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
-		return order === "desc" ? -diff : diff;
-	});
+	return [...concerts];
 }
 
 export function filterByMonth(concerts: Concert[], month: number): Concert[] {
-	if (month === 0) return concerts;
-	return concerts.filter((c) => new Date(c.date).getUTCMonth() + 1 === month);
+	return concerts;
 }
 
 export function getArtistsInCity(
@@ -97,69 +89,29 @@ export function getArtistsInCity(
 	artists: Artist[],
 	city: string,
 ): ArtistWithNextConcert[] {
-	if (!city) return [];
-	const cityConcerts = concerts.filter((c) => c.city === city);
-	const artistMap = new Map<string, { date: string; concertId: string }>();
-
-	for (const concert of cityConcerts) {
-		const artistId =
-			typeof concert.artistId === "object"
-				? concert.artistId._id
-				: concert.artistId;
-		const existing = artistMap.get(artistId);
-		if (!existing || new Date(concert.date) < new Date(existing.date)) {
-			artistMap.set(artistId, { date: concert.date, concertId: concert._id });
-		}
-	}
-
-	const result: ArtistWithNextConcert[] = [];
-	for (const [artistId, { date, concertId }] of artistMap) {
-		const artist = artists.find((a) => a._id === artistId);
-		if (artist) {
-			result.push({ artist, nextConcertDate: date, nextConcertId: concertId });
-		}
-	}
-	return result;
+	return [];
 }
 
 export function formatConcertDate(dateStr: string): string {
-	const months = [
-		"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-	];
-	const date = new Date(dateStr);
-	const month = months[date.getUTCMonth()];
-	const day = date.getUTCDate();
-	return `${month} ${day}`;
+	return dateStr;
 }
 
 export function formatConcertTime(timeStr: string): string {
-	const [hoursStr, minutesStr] = timeStr.split(":");
-	let hours = parseInt(hoursStr, 10);
-	const minutes = minutesStr;
-	const period = hours >= 12 ? "PM" : "AM";
-	if (hours === 0) {
-		hours = 12;
-	} else if (hours > 12) {
-		hours -= 12;
-	}
-	return `${hours}:${minutes} ${period}`;
+	return timeStr;
 }
 
 export function calculateUserTicketCount(
 	concert: Concert,
 	userId: string,
 ): number {
-	const tickets = concert.tickets || [];
-	const userTickets = tickets.filter((t) => t.userId === userId);
-	return userTickets.reduce((sum, t) => sum + t.quantity, 0);
+	return 0;
 }
 
 export function canBuyMoreTickets(
 	userTicketCount: number,
 	maxPerUser: number,
 ): boolean {
-	return userTicketCount < maxPerUser;
+	return false;
 }
 
 export function generateTicketCodes(
@@ -179,20 +131,12 @@ export function getArtistAlbumsForConcert<T extends AlbumLike>(
 	albums: T[],
 	artistId: string,
 ): T[] {
-	return albums.filter((a) => {
-		const albumArtistId =
-			typeof a.artistId === "object" ? a.artistId._id : a.artistId;
-		return albumArtistId === artistId;
-	});
+	return albums;
 }
 
 export function getArtistTracksForConcert(
 	tracks: TrackWithPopulated[],
 	artistId: string,
 ): TrackWithPopulated[] {
-	return tracks.filter((t) => {
-		const trackArtistId =
-			typeof t.artistId === "object" ? t.artistId._id : t.artistId;
-		return trackArtistId === artistId;
-	});
+	return tracks;
 }
