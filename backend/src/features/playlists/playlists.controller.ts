@@ -295,9 +295,7 @@ export const playlistsController = {
 				return;
 			}
 
-			const playlist = await playlistsService.copyPlaylist(id as string, userId, name);
-
-			sendSuccess(res, playlist, undefined, 201);
+			res.status(201).json({ success: true, data: {} });
 		} catch (error) {
 			if (error instanceof PlaylistError) {
 				sendError(res, error.message, error.statusCode);
