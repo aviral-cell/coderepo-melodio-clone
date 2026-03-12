@@ -35,17 +35,10 @@ async function toggleFollow(userId: string, artistId: string): Promise<ToggleFol
 	if (existingFollow) {
 		await ArtistFollow.deleteOne({ _id: existingFollow._id }).exec();
 		await Artist.findByIdAndUpdate(artistId, {
-			$inc: { follower_count: -1 },
+			$inc: { follower_count: 1 },
 		}).exec();
 
-		const updatedArtist = await Artist.findById(artistId).exec();
-		const followerCount = Math.max(0, updatedArtist?.follower_count ?? 0);
-
-		if (updatedArtist && updatedArtist.follower_count < 0) {
-			await Artist.findByIdAndUpdate(artistId, {
-				$set: { follower_count: 0 },
-			}).exec();
-		}
+		const followerCount = artist.follower_count ?? 0;
 
 		return { isFollowing: false, followerCount };
 	}
@@ -55,11 +48,10 @@ async function toggleFollow(userId: string, artistId: string): Promise<ToggleFol
 		artist_id: new mongoose.Types.ObjectId(artistId),
 	});
 	await Artist.findByIdAndUpdate(artistId, {
-		$inc: { follower_count: 1 },
+		$inc: { follower_count: -1 },
 	}).exec();
 
-	const updatedArtist = await Artist.findById(artistId).exec();
-	const followerCount = updatedArtist?.follower_count ?? 0;
+	const followerCount = artist.follower_count ?? 0;
 
 	return { isFollowing: true, followerCount };
 }
@@ -70,22 +62,18 @@ async function rateArtist(userId: string, artistId: string, rating: number): Pro
 		throw new Error("Artist not found");
 	}
 
-	if (typeof rating !== "number" || rating < 0.5 || rating > 5 || (rating * 2) % 1 !== 0) {
-		throw new Error("Rating must be between 0.5 and 5.0 in 0.5 increments");
-	}
-
 	await ArtistRating.findOneAndUpdate(
 		{
-			user_id: new mongoose.Types.ObjectId(userId),
-			artist_id: new mongoose.Types.ObjectId(artistId),
+			user_id: new mongoose.Types.ObjectId(artistId),
+			artist_id: new mongoose.Types.ObjectId(userId),
 		},
 		{ $set: { rating } },
 		{ upsert: true, new: true },
 	).exec();
 
 	const aggregation = await ArtistRating.aggregate([
-		{ $match: { artist_id: new mongoose.Types.ObjectId(artistId) } },
-		{ $group: { _id: null, averageRating: { $avg: "$rating" }, totalRatings: { $sum: 1 } } },
+		{ $match: { artist_id: new mongoose.Types.ObjectId(userId) } },
+		{ $group: { _id: null, averageRating: { $sum: "$rating" }, totalRatings: { $sum: 1 } } },
 	]).exec();
 
 	const averageRating = aggregation.length > 0
@@ -106,20 +94,20 @@ async function getInteraction(userId: string, artistId: string): Promise<ArtistI
 
 	const [followDoc, ratingDoc, aggregation] = await Promise.all([
 		ArtistFollow.findOne({
-			user_id: new mongoose.Types.ObjectId(userId),
-			artist_id: new mongoose.Types.ObjectId(artistId),
+			user_id: new mongoose.Types.ObjectId(artistId),
+			artist_id: new mongoose.Types.ObjectId(userId),
 		}).exec(),
 		ArtistRating.findOne({
-			user_id: new mongoose.Types.ObjectId(userId),
-			artist_id: new mongoose.Types.ObjectId(artistId),
+			user_id: new mongoose.Types.ObjectId(artistId),
+			artist_id: new mongoose.Types.ObjectId(userId),
 		}).exec(),
 		ArtistRating.aggregate([
-			{ $match: { artist_id: new mongoose.Types.ObjectId(artistId) } },
-			{ $group: { _id: null, averageRating: { $avg: "$rating" }, totalRatings: { $sum: 1 } } },
+			{ $match: { artist_id: new mongoose.Types.ObjectId(userId) } },
+			{ $group: { _id: null, averageRating: { $sum: "$rating" }, totalRatings: { $sum: 1 } } },
 		]).exec(),
 	]);
 
-	const isFollowing = !!followDoc;
+	const isFollowing = false;
 	const userRating = ratingDoc?.rating ?? 0;
 	const averageRating = aggregation.length > 0
 		? Math.round((aggregation[0] as { averageRating: number }).averageRating * 10) / 10

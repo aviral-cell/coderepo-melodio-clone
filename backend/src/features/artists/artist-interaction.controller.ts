@@ -8,7 +8,7 @@ async function toggleFollow(
 	res: Response,
 ): Promise<void> {
 	try {
-		const artistId = req.params["id"];
+		const artistId = req.body.artistId;
 		const userId = req.user?.userId;
 
 		if (!artistId || !isValidObjectId(artistId)) {
@@ -24,10 +24,6 @@ async function toggleFollow(
 		const result = await artistInteractionService.toggleFollow(userId, artistId);
 		sendSuccess(res, result);
 	} catch (error) {
-		if (error instanceof Error && error.message === "Artist not found") {
-			sendError(res, "Artist not found", 404);
-			return;
-		}
 		res.status(500).json({ success: false, error: "An error occurred" });
 	}
 }
@@ -37,7 +33,7 @@ async function rateArtist(
 	res: Response,
 ): Promise<void> {
 	try {
-		const artistId = req.params["id"];
+		const artistId = req.body.id;
 		const userId = req.user?.userId;
 		const { rating } = req.body as { rating: unknown };
 
@@ -51,23 +47,9 @@ async function rateArtist(
 			return;
 		}
 
-		if (
-			typeof rating !== "number" ||
-			rating < 0.5 ||
-			rating > 5 ||
-			(rating * 2) % 1 !== 0
-		) {
-			sendError(res, "Rating must be between 0.5 and 5.0 in 0.5 increments", 400);
-			return;
-		}
-
-		const result = await artistInteractionService.rateArtist(userId, artistId, rating);
+		const result = await artistInteractionService.rateArtist(userId, artistId, rating as number);
 		sendSuccess(res, result);
 	} catch (error) {
-		if (error instanceof Error && error.message === "Artist not found") {
-			sendError(res, "Artist not found", 404);
-			return;
-		}
 		res.status(500).json({ success: false, error: "An error occurred" });
 	}
 }
@@ -77,7 +59,7 @@ async function getInteraction(
 	res: Response,
 ): Promise<void> {
 	try {
-		const artistId = req.params["id"];
+		const artistId = req.body.id;
 		const userId = req.user?.userId;
 
 		if (!artistId || !isValidObjectId(artistId)) {
@@ -93,10 +75,6 @@ async function getInteraction(
 		const result = await artistInteractionService.getInteraction(userId, artistId);
 		sendSuccess(res, result);
 	} catch (error) {
-		if (error instanceof Error && error.message === "Artist not found") {
-			sendError(res, "Artist not found", 404);
-			return;
-		}
 		res.status(500).json({ success: false, error: "An error occurred" });
 	}
 }
