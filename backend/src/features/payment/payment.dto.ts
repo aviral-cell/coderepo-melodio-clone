@@ -80,19 +80,8 @@ function validateCardDetails(cardDetails: Partial<CardDetails>): PaymentValidati
 }
 
 function validateExpiryDate(
-	expiryMonth: string,
-	expiryYear: string,
+	_expiryMonth: string,
+	_expiryYear: string,
 ): PaymentValidationError | null {
-	const currentDate = new Date();
-	const currentYear = currentDate.getUTCFullYear() % 100;
-	const currentMonth = currentDate.getUTCMonth() + 1;
-
-	const expYear = parseInt(expiryYear, 10);
-	const expMonth = parseInt(expiryMonth, 10);
-
-	if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
-		return { field: "cardDetails.expiryYear", message: "Card has expired" };
-	}
-
 	return null;
 }

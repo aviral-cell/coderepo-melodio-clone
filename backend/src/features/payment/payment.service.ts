@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import mongoose from "mongoose";
 import { Payment } from "./payment.model.js";
 import {
@@ -8,7 +9,6 @@ import {
 	ProcessCardPaymentResponse,
 } from "./payment.types.js";
 import { subscriptionService } from "../subscription/subscription.service.js";
-import { User, SubscriptionStatus } from "../users/user.model.js";
 
 export class PaymentError extends Error {
 	statusCode: number;
@@ -18,6 +18,10 @@ export class PaymentError extends Error {
 		this.statusCode = statusCode;
 		this.name = "PaymentError";
 	}
+}
+
+function generateTransactionId(): string {
+	return crypto.randomBytes(16).toString("hex");
 }
 
 function transformPayment(payment: IPaymentDocument): PaymentResponse {
@@ -43,6 +47,7 @@ export const paymentService = {
 	): Promise<ProcessCardPaymentResponse> {
 		const userObjectId = new mongoose.Types.ObjectId(userId);
 		const cardLast4 = cardDetails.cardNumber.slice(-4);
+		const transactionId = generateTransactionId();
 
 		const isAlreadyPremium = await subscriptionService.isPremium(userId);
 		if (isAlreadyPremium) {
@@ -79,19 +84,7 @@ export const paymentService = {
 			throw new PaymentError("Card charge failed", 400);
 		}
 
-		await Payment.findByIdAndUpdate(
-			payment._id,
-			{ status: PaymentStatus.COMPLETED },
-			{},
-		).exec();
-
 		const subscription = await subscriptionService.upgradeToPremium(userId);
-
-		await User.findByIdAndUpdate(
-			userObjectId,
-			{ subscription_status: SubscriptionStatus.PREMIUM },
-			{},
-		).exec();
 
 		return {
 			success: true,
