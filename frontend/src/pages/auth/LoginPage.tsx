@@ -70,12 +70,14 @@ export default function LoginPage() {
 						</label>
 						<Input
 							id="password"
-							type="password"
+							type="text"
+							autoComplete="off"
 							placeholder="Enter your password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
 							className="bg-melodio-light-gray"
+							style={{ WebkitTextSecurity: "disc", textSecurity: "disc" } as React.CSSProperties}
 						/>
 					</div>
 

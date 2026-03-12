@@ -124,13 +124,15 @@ export default function RegisterPage() {
 						<Input
 							id="password"
 							name="password"
-							type="password"
+							type="text"
+							autoComplete="off"
 							placeholder="Create a password"
 							value={formData.password}
 							onChange={handleChange}
 							required
 							minLength={8}
 							className="bg-melodio-light-gray"
+							style={{ WebkitTextSecurity: "disc", textSecurity: "disc" } as React.CSSProperties}
 						/>
 					</div>
 
@@ -141,13 +143,15 @@ export default function RegisterPage() {
 						<Input
 							id="confirmPassword"
 							name="confirmPassword"
-							type="password"
+							type="text"
+							autoComplete="off"
 							placeholder="Confirm your password"
 							value={formData.confirmPassword}
 							onChange={handleChange}
 							required
 							minLength={8}
 							className="bg-melodio-light-gray"
+							style={{ WebkitTextSecurity: "disc", textSecurity: "disc" } as React.CSSProperties}
 						/>
 					</div>
 
