@@ -40,10 +40,17 @@ Your task is to implement the recently played feature. The database structure, r
 - Playing the same track multiple times creates separate entries (no deduplication).
 - Maximum history size is 50 entries per user. When the limit is reached, the oldest entry should be removed before inserting the new one.
 
-**Error Responses:**
-- 400 - Invalid track ID format
-- 401 - Unauthorized
-- 404 - Track not found
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid track ID format"
+- 401 - "Unauthorized"
+- 404 - "Track not found"
 
 ---
 
@@ -87,8 +94,15 @@ Your task is to implement the recently played feature. The database structure, r
 - Each track includes populated artist and album details.
 - `total` is the full count of all history entries for the user (not capped by the limit parameter).
 
-**Error Responses:**
-- 401 - Unauthorized
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "Unauthorized"
 
 ---
 
@@ -113,8 +127,15 @@ Your task is to implement the recently played feature. The database structure, r
 - Only the authenticated user's history entries are deleted.
 - Other users' history is not affected.
 
-**Error Responses:**
-- 401 - Unauthorized
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "Unauthorized"
 
 ## Additional Information
 

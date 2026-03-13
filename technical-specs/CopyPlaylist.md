@@ -29,10 +29,13 @@ Note: The `name` field is optional. If not provided, defaults to "Copy of {origi
   "data": {
     "_id": "new-playlist-id",
     "name": "Copy of Original Playlist",
+    "description": "",
     "ownerId": "user-id",
-    "isPublic": false,
     "trackIds": ["track-id-1", "track-id-2"],
-    "createdAt": "2024-01-15T10:00:00.000Z"
+    "coverImageUrl": "/images/playlists/default.jpg",
+    "isPublic": false,
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
   }
 }
 ```
@@ -47,11 +50,19 @@ Note: The `name` field is optional. If not provided, defaults to "Copy of {origi
 - Private playlists can only be copied by their owner.
 - Free users are limited to 7 playlists total. If the user already has 7, the copy should be rejected.
 
-**Error Responses:**
-- 400 - Invalid playlist ID format
-- 403 - Cannot copy a private playlist that you do not own
-- 403 - Free user playlist limit reached (7 playlists)
-- 404 - Playlist not found
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid playlist ID format"
+- 400 - "Playlist name must be between 2 and 100 characters"
+- 403 - "Cannot copy private playlist" (when copying another user's private playlist)
+- 403 - "Free users can only create up to 7 playlists. Upgrade to Premium for unlimited playlists."
+- 404 - "Playlist not found"
 
 ## Additional Information
 

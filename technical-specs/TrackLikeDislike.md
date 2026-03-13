@@ -35,10 +35,17 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 - Must validate the track exists in the database before creating/updating the reaction.
 - Uses `findOneAndUpdate` with `upsert: true` on `user_id` + `track_id`.
 
-**Error Responses:**
-- 400 - Invalid track ID format
-- 401 - Unauthorized
-- 404 - Track not found
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid track ID format"
+- 401 - "Unauthorized"
+- 404 - "Track not found"
 
 ---
 
@@ -69,10 +76,17 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 - Must validate the track exists in the database before creating/updating the reaction.
 - Uses `findOneAndUpdate` with `upsert: true` on `user_id` + `track_id`, setting `type` to `"dislike"`.
 
-**Error Responses:**
-- 400 - Invalid track ID format
-- 401 - Unauthorized
-- 404 - Track not found
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid track ID format"
+- 401 - "Unauthorized"
+- 404 - "Track not found"
 
 ---
 
@@ -101,9 +115,16 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 - Must validate the ObjectId format (return 400 if invalid).
 - Returns success even if no reaction existed.
 
-**Error Responses:**
-- 400 - Invalid track ID format
-- 401 - Unauthorized
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid track ID format"
+- 401 - "Unauthorized"
 
 ---
 
@@ -131,9 +152,16 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 - If a document exists, return its `type` field as `status` (`"like"` or `"dislike"`).
 - If no document exists, return `status: null`.
 
-**Error Responses:**
-- 400 - Invalid track ID format
-- 401 - Unauthorized
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid track ID format"
+- 401 - "Unauthorized"
 
 ---
 
@@ -177,12 +205,12 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
         "likedAt": "2024-01-15T10:00:00.000Z"
       }
     ],
-    "pagination": {
-      "page": 1,
-      "limit": 10,
-      "total": 25,
-      "totalPages": 3
-    }
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3,
+    "hasNext": true,
+    "hasPrev": false
   }
 }
 ```
@@ -193,8 +221,15 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 - Populate `track_id` with the full track document, including nested `artist_id` (fields: `name`, `image_url`) and `album_id` (fields: `title`, `cover_image_url`).
 - Map the response fields: `title` from `track.title`, `description` from `track.description`, `artistId` from `track.artist_id`, `albumId` from `track.album_id`, `likedAt` from the TrackLike's `created_at` timestamp.
 
-**Error Responses:**
-- 401 - Unauthorized
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "Unauthorized"
 
 ---
 
@@ -220,8 +255,15 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 - Partition by `type`: documents with `type: "like"` go to `likedIds`, documents with `type: "dislike"` go to `dislikedIds`.
 - Each array contains the `track_id` values as strings.
 
-**Error Responses:**
-- 401 - Unauthorized
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "Unauthorized"
 
 ## Additional Information
 

@@ -1,4 +1,4 @@
-# Bug Fix: Subscription Card Payment
+# Bug Fix: Subscription Payment
 
 `Hard`
 

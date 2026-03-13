@@ -80,12 +80,50 @@ The backend is pre-built and fully working. These endpoints are provided for ref
 
 **Auth:** Required (Bearer token)
 
+**URL Parameters:**
+- `:id` - Mix ObjectId
+
 **Request Body:**
 ```json
 {
   "title": "New Mix Name"
 }
 ```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "mix-id",
+    "userId": "user-id",
+    "title": "New Mix Name",
+    "artistIds": ["artist-id-1"],
+    "config": {
+      "variety": "medium",
+      "discovery": "blend",
+      "filters": ["Popular"]
+    },
+    "trackIds": ["track-id-1", "track-id-2"],
+    "coverImages": ["/images/artist1.jpg"],
+    "trackCount": 2,
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T12:00:00.000Z"
+  }
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid mix ID format"
+- 400 - "Title is required and cannot be empty"
+- 404 - "Mix not found"
 
 ---
 
@@ -94,6 +132,23 @@ The backend is pre-built and fully working. These endpoints are provided for ref
 **Purpose:** Delete a saved mix
 
 **Auth:** Required (Bearer token)
+
+**URL Parameters:**
+- `:id` - Mix ObjectId
+
+**Success Response (204):**
+No content.
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid mix ID format"
+- 404 - "Mix not found"
 
 ## Additional Information
 

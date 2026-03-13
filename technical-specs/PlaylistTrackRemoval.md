@@ -17,21 +17,33 @@ Currently, the remove tracks feature is broken. When users click the remove butt
 **Success Response (200):**
 ```json
 {
-  "_id": "playlist-id",
-  "name": "My Playlist",
-  "description": "A playlist",
-  "ownerId": "user-id",
-  "trackIds": ["track-id-1", "track-id-3"],
-  "isPublic": true,
-  "createdAt": "2024-01-01T00:00:00.000Z",
-  "updatedAt": "2024-01-01T12:00:00.000Z"
+  "success": true,
+  "data": {
+    "_id": "playlist-id",
+    "name": "My Playlist",
+    "description": "A playlist",
+    "ownerId": "user-id",
+    "trackIds": ["track-id-1", "track-id-3"],
+    "isPublic": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T12:00:00.000Z"
+  }
 }
 ```
 
-**Error Responses:**
-- 401 - Unauthorized
-- 404 - Playlist or track not found
-- 500 - Server error
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid playlist ID format"
+- 400 - "Invalid track ID format"
+- 401 - "Unauthorized"
+- 403 - "Not authorized to modify this playlist"
+- 404 - "Playlist not found"
 
 ## Additional Information
 

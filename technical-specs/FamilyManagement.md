@@ -45,10 +45,19 @@ Your task is to fix the family member management and account switching features.
 - The member's `primaryAccountId` is set to the creating user's ID.
 - Both free and premium users can add family members.
 
-**Error Responses:**
-- 400 - Missing name or email
-- 401 - Unauthorized
-- 409 - Email already in use
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Validation failed" (with details array for invalid name, email, or age)
+- 400 - "Maximum 3 family members allowed"
+- 401 - "Unauthorized"
+- 403 - "Only primary account can manage family"
+- 409 - "Email already registered"
 
 ---
 
@@ -73,14 +82,21 @@ Your task is to fix the family member management and account switching features.
         "isActive": true
       }
     ],
-    "maxMembers": 5,
-    "remainingSlots": 4
+    "maxMembers": 3,
+    "remainingSlots": 2
   }
 }
 ```
 
-**Error Responses:**
-- 401 - Unauthorized
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "Unauthorized"
 
 ---
 
@@ -100,10 +116,19 @@ Your task is to fix the family member management and account switching features.
 }
 ```
 
-**Error Responses:**
-- 401 - Unauthorized
-- 403 - Not authorized to remove this member
-- 404 - Family member not found
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Invalid member ID"
+- 401 - "Unauthorized"
+- 403 - "Not authorized to manage family members"
+- 403 - "Not authorized to remove this family member"
+- 404 - "Family member not found"
 
 ---
 
@@ -144,10 +169,19 @@ Your task is to fix the family member management and account switching features.
 - Switching to an unrelated account is forbidden.
 - The target account must be active (`isActive: true`).
 
-**Error Responses:**
-- 401 - Unauthorized
-- 403 - Not authorized to switch to this account
-- 404 - Target user not found
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Target user ID is required"
+- 400 - "Invalid target user ID"
+- 401 - "Unauthorized" / "Account is inactive"
+- 403 - "Not authorized to switch to this account"
+- 404 - "Target user not found"
 
 ## Additional Information
 

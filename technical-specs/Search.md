@@ -20,34 +20,44 @@ Your task is to build the search feature on both the frontend and backend, enabl
 
 **Success Response (200):**
 ```json
-[
-  {
-    "id": "track-id",
-    "title": "Track Title",
-    "durationInSeconds": 180,
-    "trackNumber": 1,
-    "genre": "rock",
-    "playCount": 100,
-    "coverImageUrl": "/images/track.jpg",
-    "artist": {
-      "id": "artist-id",
-      "name": "Artist Name",
-      "imageUrl": "/images/artist.jpg"
-    },
-    "album": {
-      "id": "album-id",
-      "title": "Album Title",
-      "coverImageUrl": "/images/album.jpg"
-    },
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-  }
-]
+{
+  "success": true,
+  "data": [
+    {
+      "id": "track-id",
+      "title": "Track Title",
+      "durationInSeconds": 180,
+      "trackNumber": 1,
+      "genre": "rock",
+      "playCount": 100,
+      "coverImageUrl": "/images/track.jpg",
+      "artist": {
+        "id": "artist-id",
+        "name": "Artist Name",
+        "imageUrl": "/images/artist.jpg"
+      },
+      "album": {
+        "id": "album-id",
+        "title": "Album Title",
+        "coverImageUrl": "/images/album.jpg"
+      },
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}
 ```
 
-**Error Responses:**
-- 401 - Unauthorized
-- 500 - Server error
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "Unauthorized"
+- 500 - "Server error"
 
 ## Additional Information
 

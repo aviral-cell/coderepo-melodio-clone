@@ -44,19 +44,20 @@ Your task is to fix the card payment flow. The payment infrastructure exists —
 {
   "success": true,
   "data": {
+    "success": true,
     "paymentId": "payment-id",
+    "message": "Payment successful",
     "subscription": {
       "plan": "premium",
       "startDate": "2024-01-15T10:00:00.000Z",
       "endDate": "2024-02-14T10:00:00.000Z"
     }
-  },
-  "message": "Payment processed successfully"
+  }
 }
 ```
 
 **Payment Flow:**
-1. If an `Idempotency-Key` header is present, check the in-memory cache for a previously processed result with that key. If found, return the cached result immediately.
+1. If an `Idempotency-Key` header is present, check the in-memory cache for a previously processed result with that key. If found, return the cached result immediately (200).
 2. Validate the card details including expiry date.
 3. Create a payment record with status `PENDING`.
 4. Simulate card charge processing.
@@ -66,11 +67,33 @@ Your task is to fix the card payment flow. The payment infrastructure exists —
 8. If an `Idempotency-Key` header is present, store the result in the cache.
 9. Return the success response with payment ID and subscription details.
 
-**Error Responses:**
-- 400 - Validation failed (invalid card details, expired card, already subscribed to premium)
-- 401 - Unauthorized
-- 409 - Transaction already processed (idempotency key reused)
-- 500 - Payment processing error
+**Validation Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "details": [
+    {
+      "field": "expiryYear",
+      "message": "Card has expired"
+    }
+  ]
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Validation failed" (invalid card details, expired card)
+- 400 - "Already subscribed to premium"
+- 400 - "Card charge failed"
+- 401 - "User not authenticated"
+- 500 - "Failed to create payment record"
 
 ---
 
@@ -87,21 +110,31 @@ Your task is to fix the card payment flow. The payment infrastructure exists —
   "data": {
     "payments": [
       {
-        "paymentId": "payment-id",
+        "_id": "payment-id",
+        "userId": "user-id",
         "amount": 9.99,
         "status": "completed",
+        "cardLast4": "1111",
         "idempotencyKey": "unique-key",
-        "subscription": {
-          "plan": "premium",
-          "startDate": "2024-01-15T10:00:00.000Z",
-          "endDate": "2024-02-14T10:00:00.000Z"
-        },
-        "createdAt": "2024-01-15T10:00:00.000Z"
+        "timestamp": "2024-01-15T10:00:00.000Z",
+        "createdAt": "2024-01-15T10:00:00.000Z",
+        "updatedAt": "2024-01-15T10:00:00.000Z"
       }
     ]
   }
 }
 ```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "User not authenticated"
+- 404 - "User not found"
 
 ---
 
@@ -116,13 +149,30 @@ Your task is to fix the card payment flow. The payment infrastructure exists —
 {
   "success": true,
   "data": {
+    "_id": "subscription-id",
+    "userId": "user-id",
     "plan": "premium",
     "startDate": "2024-01-15T10:00:00.000Z",
     "endDate": "2024-02-14T10:00:00.000Z",
-    "autoRenew": false
+    "autoRenew": false,
+    "isFamilyMember": false,
+    "primaryAccountId": null,
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
   }
 }
 ```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "User not authenticated"
+- 404 - "User not found"
 
 ## Additional Information
 

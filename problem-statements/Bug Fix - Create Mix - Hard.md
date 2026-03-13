@@ -7,17 +7,15 @@
 **Skills:** React (Advanced)
 **Recommended Duration:** 60 mins
 
-This subjective question evaluates React, state management, and wizard UI concepts, ideal for senior-level roles. The problem requires identifying and fixing bugs in a 3-step mix creation wizard that generates personalized track collections in a music streaming app.
-
 Melodio is a music streaming app with a Mix feature that lets users create personalized track collections. The Mix page has a 3-step wizard: select artists, configure mix settings (variety, discovery, filters), and generate a scored mix. Users can also view and manage their saved mixes.
 
-At the moment, the mix creation feature is completely broken. The wizard shows fake artists instead of real data, no user actions work, mix generation always produces an empty result, and mixes are never saved to or loaded from the backend.
+At the moment, the mix creation feature is completely broken. The wizard shows fake artists and no configuration options are functional.
 
 [SS]
 
 ## Issue Summary
 
-The artist selection grid shows a handful of fake artists instead of real artist data from the database. Selecting an artist has no visual effect — the selection does not register. The "Next" button is permanently disabled regardless of how many artists are selected. Even if navigation worked, the configuration controls (variety, discovery, filters) have no effect. Generating a mix always produces an empty track list with no title. Previously saved mixes never appear in the "Your Mixes" section, and saving a new mix does nothing.
+The artist selection grid shows a handful of fake artists instead of real artist data from the database. Selecting an artist has no visual effect. The Next button is permanently disabled. You Mixes option shows nothing. Your task is to fix the frontend issues in the Mix page to make the entire mix creation flow work smoothly end-to-end.
 
 ## Steps to Reproduce
 

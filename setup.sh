@@ -3,18 +3,18 @@
 echo "Setting up Melodio..."
 
 # Start MongoDB if not already running
-echo "Checking MongoDB status..."
-if pgrep mongod > /dev/null; then
-  echo "MongoDB is already running"
-else
-  echo "Starting MongoDB..."
-  mongod --config /etc/mongod.conf --fork > /dev/null 2>&1
-  if [ $? -eq 0 ]; then
-    echo "MongoDB started successfully"
-  else
-    echo "Warning: Could not start MongoDB. Please ensure MongoDB is installed and configured."
-  fi
-fi
+# echo "Checking MongoDB status..."
+# if pgrep mongod > /dev/null; then
+#   echo "MongoDB is already running"
+# else
+#   echo "Starting MongoDB..."
+#   mongod --config /etc/mongod.conf --fork > /dev/null 2>&1
+#   if [ $? -eq 0 ]; then
+#     echo "MongoDB started successfully"
+#   else
+#     echo "Warning: Could not start MongoDB. Please ensure MongoDB is installed and configured."
+#   fi
+# fi
 
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
