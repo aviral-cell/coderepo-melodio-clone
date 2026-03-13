@@ -7,7 +7,7 @@
 **Skills:** React (Basic)
 **Recommended Duration:** 20 mins
 
-Melodio is a music streaming app that offers a mood-based track discovery feature. The Mood Mixer organizes the music library into five mood categories — Energetic, Chill, Happy, Focus, and Party — based on genre mappings.
+Melodio is a music streaming app that offers a mood-based track discovery feature. The Mood Mixer organizes the music library into five mood categories; Energetic, Chill, Happy, Focus, and Party; based on genre mappings.
 
 Currently, the Mood Mixer page is not implemented. Your task is to implement the Mood Mixer feature in the frontend so that users can browse tracks by mood and filter them accordingly.
 

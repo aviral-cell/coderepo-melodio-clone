@@ -27,7 +27,7 @@ When a user clicks Pay the payment process crashes. Even if that is resolved, ex
 - Navigate to the Subscription page from the sidebar.
 [SS]
 - Click Upgrade to Premium.
-- Enter card details and click Pay — observe that the payment fails.
+- Enter card details and click Pay; observe that the payment fails.
   ```
   Cardholder Name: Sample User
   Card Number: 4242424242424242

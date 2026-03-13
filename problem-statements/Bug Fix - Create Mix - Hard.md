@@ -31,7 +31,7 @@ The artist selection grid shows a handful of fake artists instead of real artist
 [SS]
 - Observe that only a few generic artists appear instead of the real artist.
 [SS]
-- Try selecting an artist — observe no visual feedback.
+- Try selecting an artist; observe no visual feedback.
 - Observe the Next button remains disabled.
 
 ## Expected Behavior

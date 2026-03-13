@@ -26,9 +26,9 @@ Like/Dislike functionality is broken. The Liked Tracks page shows incorrect data
   ```
 - Click on any track to navigate to the track details page.
 [SS]
-- Click the Like/Dislike button on a track — observe nothing works.
+- Click the Like/Dislike button on a track; observe nothing works.
 [SS]
-- Navigate to the Liked Tracks page from the sidebar — observe nothing shows up.
+- Navigate to the Liked Tracks page from the sidebar; observe nothing shows up.
 [SS]
 
 ## Expected Behavior

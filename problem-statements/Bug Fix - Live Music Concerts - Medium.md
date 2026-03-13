@@ -27,8 +27,8 @@ Concert cards show no dates or times. The month and city filters have no effect.
 - Click on the Concerts page from the sidebar.
 [SS]
 - Observe that concerts has no date or time information.
-- Try selecting a month or clicking a city chip — observe no change.
-- Click on a concert to view details — observe the "Buy Tickets" button does nothing.
+- Try selecting a month or clicking a city chip; observe no change.
+- Click on a concert to view details; observe the "Buy Tickets" button does nothing.
 [SS]
 
 ## Expected Behavior
