@@ -2,15 +2,15 @@
 
 ## Overview
 
-Melodio is a music streaming platform that supports family accounts. Primary account holders can add family members, who get their own profiles linked to the primary account. Family members can switch between accounts seamlessly using a single authentication token swap.
+Melodio is a music streaming app that supports family accounts. Primary account holders can add family members, who get their own profiles and can be switched to seamlessly.
 
-Your task is to fix the family member management and account switching features. The infrastructure is in place — routes, controllers, and services exist — but family members are created as inactive, the account switching endpoint has no authorization checks, and the auth middleware doesn't verify active status.
+Currently, the family management feature is not functional; family members, account switching, and access controls all need to be implemented correctly. Your task is to implement the family member management and account switching features in the backend so they work smoothly end-to-end.
 
 ## API Contract
 
 ### POST /api/family
 
-**Purpose:** Add a new family member linked to the authenticated user's account
+**Purpose:** Add a new family member linked to the user's account
 
 **Auth:** Required (Bearer token)
 
@@ -30,7 +30,7 @@ Your task is to fix the family member management and account switching features.
     "_id": "member-id",
     "email": "jamie@melodio.com",
     "displayName": "Jamie Morgan",
-    "username": "jamie-melodio-com",
+    "username": "jamiemorgan_a1b2c3",
     "accountType": "family_member",
     "primaryAccountId": "primary-user-id",
     "isActive": true,
@@ -40,15 +40,23 @@ Your task is to fix the family member management and account switching features.
 ```
 
 **Family Member Rules:**
-- The member's `isActive` field must be `true` so they can be used immediately.
-- The member's `accountType` is set to `"family_member"`.
-- The member's `primaryAccountId` is set to the creating user's ID.
-- Both free and premium users can add family members.
+- A **primary** user can switch to any of their own family members.
+- A **family member** can only switch back to their own primary account.
+- A family member **cannot** switch to another family member.
+- The target account must be active.
 
-**Error Responses:**
-- 400 - Missing name or email
-- 401 - Unauthorized
-- 409 - Email already in use
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Maximum 3 family members allowed"
+- 401 - "Unauthorized"
+- 403 - "Only primary account can manage family"
+- 409 - "Email already registered"
 
 ---
 
@@ -68,6 +76,7 @@ Your task is to fix the family member management and account switching features.
         "_id": "member-id",
         "email": "jamie@melodio.com",
         "displayName": "Jamie Morgan",
+        "username": "jamiemorgan_a1b2c3",
         "accountType": "family_member",
         "primaryAccountId": "primary-user-id",
         "isActive": true
@@ -131,29 +140,30 @@ Your task is to fix the family member management and account switching features.
       "email": "jamie@melodio.com",
       "displayName": "Jamie Morgan",
       "accountType": "family_member",
-      "primaryAccountId": "primary-user-id"
+      "primaryAccountId": "primary-user-id or null",
+      "subscriptionStatus": "free"
     }
   }
 }
 ```
 
-**Authorization Rules:**
-- A **primary** user can switch to any of their own family members (target must have `primaryAccountId` equal to the current user's ID).
-- A **family member** can only switch back to their own primary account (target must be the user referenced by their `primaryAccountId`).
-- A family member **cannot** switch to another family member (even a sibling under the same primary).
-- Switching to an unrelated account is forbidden.
-- The target account must be active (`isActive: true`).
 
-**Error Responses:**
-- 401 - Unauthorized
-- 403 - Not authorized to switch to this account
-- 404 - Target user not found
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 400 - "Target user ID is required"
+- 400 - "Invalid target user ID"
+- 403 - "Account is inactive"
+- 403 - "Not authorized to switch to this account"
+- 404 - "Target user not found"
 
 ## Additional Information
 
-- Family members are stored as `User` documents with `account_type: "family_member"` and a `primary_account_id` reference — there is no separate Family model.
-- The `getFamilyMembers` method already filters by `{ is_active: true }`, so creating members with `is_active: false` makes them invisible in the list.
-- If a user's account is deactivated, any API request with their token should be rejected with a 401 error indicating the account is inactive.
 - To manually reset the database, stop the running server and then restart it.
 - The code repository may intentionally contain other issues that are unrelated to this specific task. Please focus only on the described task requirements and address bugs or errors directly associated with them.
 - If you're using Run and Debug mode in the IDE, the frontend server may start before the backend (including database seeding) is ready. In that case, the frontend might not display any data. Please reload the preview once the backend setup is complete.

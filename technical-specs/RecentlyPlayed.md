@@ -2,9 +2,9 @@
 
 ## Overview
 
-Melodio is a music streaming platform where users can listen to tracks and revisit their listening history. The recently played feature records each track play, displays a chronological history with full track details (artist, album), and allows users to clear their history.
+Melodio is a music streaming app that lets users discover and listen to music. The platform should maintain a play history so users can revisit tracks they have recently enjoyed.
 
-Your task is to implement the recently played feature. The database structure, routes, and frontend are fully built, but the backend methods are stubs that need to be implemented.
+Currently, the recently played feature is not implemented. Your task is to implement the recently played tracks feature in the backend so that users can view their play history, which should be accurate and up-to-date.
 
 ## API Contract
 
@@ -23,7 +23,6 @@ Your task is to implement the recently played feature. The database structure, r
 
 **Validation Rules:**
 - `trackId` (required): Must be a valid ID
-- The track must exist in the database — return 404 if not found
 
 **Success Response (200):**
 ```json
@@ -37,7 +36,7 @@ Your task is to implement the recently played feature. The database structure, r
 ```
 
 **Recording Rules:**
-- Playing the same track multiple times creates separate entries (no deduplication).
+- Playing the same track multiple times creates separate entries.
 - Maximum history size is 50 entries per user. When the limit is reached, the oldest entry should be removed before inserting the new one.
 
 **Error Responses:**
@@ -55,6 +54,7 @@ Your task is to implement the recently played feature. The database structure, r
 
 **Query Parameters:**
 - `limit` (optional): Number of tracks to return (default: 20)
+- `offset` (optional): Number of entries to skip before returning results (default: 0)
 
 **Success Response (200):**
 ```json
@@ -66,14 +66,22 @@ Your task is to implement the recently played feature. The database structure, r
         "id": "track-id",
         "title": "Track Title",
         "durationInSeconds": 240,
+        "trackNumber": 1,
+        "genre": "rock",
+        "playCount": 100,
+        "coverImageUrl": "https://example.com/cover.jpg",
         "playedAt": "2024-01-15T10:00:00.000Z",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-01T00:00:00.000Z",
         "artist": {
           "id": "artist-id",
-          "name": "Artist Name"
+          "name": "Artist Name",
+          "imageUrl": "https://example.com/artist.jpg"
         },
         "album": {
           "id": "album-id",
-          "title": "Album Title"
+          "title": "Album Title",
+          "coverImageUrl": "https://example.com/album.jpg"
         }
       }
     ],
@@ -84,8 +92,6 @@ Your task is to implement the recently played feature. The database structure, r
 
 **Response Rules:**
 - Tracks are sorted by most recently played first.
-- Each track includes populated artist and album details.
-- `total` is the full count of all history entries for the user (not capped by the limit parameter).
 
 **Error Responses:**
 - 401 - Unauthorized
@@ -111,16 +117,12 @@ Your task is to implement the recently played feature. The database structure, r
 
 **Deletion Rules:**
 - Only the authenticated user's history entries are deleted.
-- Other users' history is not affected.
 
 **Error Responses:**
 - 401 - Unauthorized
 
 ## Additional Information
 
-- The database structure and frontend are fully built and expect the API responses described above.
-- The maximum history size is 50 entries per user — oldest entries are removed when the limit is reached.
-- The default limit for retrieving recently played tracks is 20.
 - To manually reset the database, stop the running server and then restart it.
 - The code repository may intentionally contain other issues that are unrelated to this specific task. Please focus only on the described task requirements and address bugs or errors directly associated with them.
 - If you're using Run and Debug mode in the IDE, the frontend server may start before the backend (including database seeding) is ready. In that case, the frontend might not display any data. Please reload the preview once the backend setup is complete.

@@ -2,15 +2,15 @@
 
 ## Overview
 
-Melodio is a music streaming platform where users can create and share playlists. The copy playlist feature allows users to duplicate any public playlist (or their own private playlists) into their library, creating an independent copy they can freely modify.
+Melodio is a music streaming app where users can create playlists to organize their favorite tracks. The platform should allow users to copy any public playlist into their library.
 
-Your task is to implement the copy playlist feature. The route and method stubs exist but need to be implemented.
+Currently, the copy playlist feature is not implemented. Your task is to implement this feature in the backend so that users can easily copy playlists while respecting privacy and ownership rules.
 
 ## API Contract
 
 ### POST /api/playlists/:id/copy
 
-**Purpose:** Copy a playlist into the authenticated user's library
+**Purpose:** Copy a playlist into the user's library
 
 **Auth:** Required (Bearer token)
 
@@ -20,7 +20,6 @@ Your task is to implement the copy playlist feature. The route and method stubs 
   "name": "My Custom Playlist Name"
 }
 ```
-Note: The `name` field is optional. If not provided, defaults to "Copy of {originalName}".
 
 **Success Response (201):**
 ```json
@@ -29,6 +28,7 @@ Note: The `name` field is optional. If not provided, defaults to "Copy of {origi
   "data": {
     "_id": "new-playlist-id",
     "name": "Copy of Original Playlist",
+    "description": "A great playlist",
     "ownerId": "user-id",
     "isPublic": false,
     "trackIds": ["track-id-1", "track-id-2"],
@@ -37,26 +37,22 @@ Note: The `name` field is optional. If not provided, defaults to "Copy of {origi
 }
 ```
 
-**Copy Rules:**
-- The copied playlist's name defaults to "Copy of {originalName}" unless a custom name is provided in the request body.
-- The copied playlist is always private, regardless of the original's visibility.
-- The copied playlist is owned by the authenticated user, not the original owner.
-- All tracks from the original playlist are copied in the same order.
-- The copied playlist is an independent document with a new ID.
-- Public playlists can be copied by anyone.
-- Private playlists can only be copied by their owner.
-- Free users are limited to 7 playlists total. If the user already has 7, the copy should be rejected.
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
 
-**Error Responses:**
-- 400 - Invalid playlist ID format
-- 403 - Cannot copy a private playlist that you do not own
-- 403 - Free user playlist limit reached (7 playlists)
-- 404 - Playlist not found
+- 400 - "Invalid playlist ID format"
+- 400 - "Playlist name must be between 2 and 100 characters"
+- 403 - "Cannot copy private playlist"
+- 403 - "Free users can only create up to 7 playlists. Upgrade to Premium for unlimited playlists."
+- 404 - "Playlist not found"
 
 ## Additional Information
 
-- The route, controller, and service stubs already exist and need to be implemented.
-- The frontend is fully built and sends copy requests with an optional custom name.
 - Free users are limited to 7 playlists total — the same limit applies for copies as for playlist creation.
 - To manually reset the database, stop the running server and then restart it.
 - The code repository may intentionally contain other issues that are unrelated to this specific task. Please focus only on the described task requirements and address bugs or errors directly associated with them.
