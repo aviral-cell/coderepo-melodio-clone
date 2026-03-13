@@ -2,15 +2,15 @@
 
 ## Overview
 
-Melodio is a music streaming platform where users can express preferences for tracks by liking or disliking them. Users can toggle between like and dislike states, remove their reaction entirely, view their current reaction status for any track, and browse a paginated list of all their liked tracks with full artist and album details.
+Melodio is a music streaming app where users can like or dislike individual tracks. Liked tracks are saved to a personal collection for easy access, and the like/dislike status is shown on track cards throughout the app.
 
-Your task is to fix the track like/dislike feature. The routes, controllers, and services exist but contain bugs — the controller reads parameters from the wrong source, calls the wrong service methods, and the service logic for status retrieval, pagination, and ID collection needs to be corrected.
+At the moment, the track like/dislike system is extensively broken. like/dislike is broken, the liked tracks list doesn't work, and the like status indicator does not reflect the actual state.
 
 ## API Contract
 
 ### POST /api/tracks/:id/like
 
-**Purpose:** Like a track (upsert — if already disliked, switches to like)
+**Purpose:** Like a track
 
 **Auth:** Required (Bearer token)
 
@@ -28,13 +28,6 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 }
 ```
 
-**Like Rules:**
-- If no reaction exists: create a `TrackLike` document with `type: "like"`.
-- If the track is already disliked: update the existing document to `type: "like"`.
-- If the track is already liked: no change (idempotent).
-- Must validate the track exists in the database before creating/updating the reaction.
-- Uses `findOneAndUpdate` with `upsert: true` on `user_id` + `track_id`.
-
 **Error Response:**
 ```json
 {
@@ -51,7 +44,7 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 
 ### POST /api/tracks/:id/dislike
 
-**Purpose:** Dislike a track (upsert — if already liked, switches to dislike)
+**Purpose:** Dislike a track
 
 **Auth:** Required (Bearer token)
 
@@ -69,13 +62,6 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 }
 ```
 
-**Dislike Rules:**
-- If no reaction exists: create a `TrackLike` document with `type: "dislike"`.
-- If the track is already liked: update the existing document to `type: "dislike"`.
-- If the track is already disliked: no change (idempotent).
-- Must validate the track exists in the database before creating/updating the reaction.
-- Uses `findOneAndUpdate` with `upsert: true` on `user_id` + `track_id`, setting `type` to `"dislike"`.
-
 **Error Response:**
 ```json
 {
@@ -92,7 +78,7 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 
 ### DELETE /api/tracks/:id/like
 
-**Purpose:** Remove any reaction (like or dislike) for a track
+**Purpose:** Remove any reaction for a track
 
 **Auth:** Required (Bearer token)
 
@@ -109,11 +95,6 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
   }
 }
 ```
-
-**Removal Rules:**
-- Deletes the `TrackLike` document for the `user_id` + `track_id` pair regardless of its current type.
-- Must validate the ObjectId format (return 400 if invalid).
-- Returns success even if no reaction existed.
 
 **Error Response:**
 ```json
@@ -146,11 +127,6 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
   }
 }
 ```
-
-**Status Rules:**
-- Must query the database for a `TrackLike` document matching `user_id` + `track_id`.
-- If a document exists, return its `type` field as `status` (`"like"` or `"dislike"`).
-- If no document exists, return `status: null`.
 
 **Error Response:**
 ```json
@@ -215,12 +191,6 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 }
 ```
 
-**Pagination Rules:**
-- Filter by `type: "like"` only (do not include disliked tracks).
-- Sort by `created_at` descending (most recently liked first).
-- Populate `track_id` with the full track document, including nested `artist_id` (fields: `name`, `image_url`) and `album_id` (fields: `title`, `cover_image_url`).
-- Map the response fields: `title` from `track.title`, `description` from `track.description`, `artistId` from `track.artist_id`, `albumId` from `track.album_id`, `likedAt` from the TrackLike's `created_at` timestamp.
-
 **Error Response:**
 ```json
 {
@@ -250,11 +220,6 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 }
 ```
 
-**Response Rules:**
-- Query all `TrackLike` documents for the authenticated user.
-- Partition by `type`: documents with `type: "like"` go to `likedIds`, documents with `type: "dislike"` go to `dislikedIds`.
-- Each array contains the `track_id` values as strings.
-
 **Error Response:**
 ```json
 {
@@ -267,8 +232,6 @@ Your task is to fix the track like/dislike feature. The routes, controllers, and
 
 ## Additional Information
 
-- The `TrackLike` model has a unique compound index on `(user_id, track_id)` — this is why using `create()` instead of `findOneAndUpdate()` causes duplicate key errors on repeated likes.
-- Pay attention to the populate chain: `track_id` -> `artist_id` (from Track) -> and `album_id` (from Track). Without these populates, the nested fields will be ObjectIds rather than full documents.
 - To manually reset the database, stop the running server and then restart it.
 - The code repository may intentionally contain other issues that are unrelated to this specific task. Please focus only on the described task requirements and address bugs or errors directly associated with them.
 - If you're using Run and Debug mode in the IDE, the frontend server may start before the backend (including database seeding) is ready. In that case, the frontend might not display any data. Please reload the preview once the backend setup is complete.

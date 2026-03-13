@@ -1,8 +1,8 @@
-# Melodio: Playlist Operations
+# Melodio: Playlist track Removal
 
 ## Overview
 
-Melodio is a music streaming application where users can create and manage playlists. Key features include creating playlists, adding tracks, reordering tracks via drag-and-drop, and removing tracks from playlists.
+Melodio is a music streaming application where users can create and manage playlists. A key feature is the ability to reorder tracks within a playlist via drag-and-drop and remove tracks from playlists.
 
 Currently, the remove tracks feature is broken. When users click the remove button on a track, the track remains in the playlist. Your task is to fix this issue on the frontend.
 
@@ -44,6 +44,14 @@ Currently, the remove tracks feature is broken. When users click the remove butt
 - 401 - "Unauthorized"
 - 403 - "Not authorized to modify this playlist"
 - 404 - "Playlist not found"
+
+## Testing Requirements
+
+The component includes specific data-testid attributes required for automated test execution. These identifiers must not be modified:
+
+| data-testid | Description |
+|-------------|-------------|
+| `remove-track-menu-item` | Menu item button to remove a track from the playlist |
 
 ## Additional Information
 

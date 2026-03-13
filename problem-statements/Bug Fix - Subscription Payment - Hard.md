@@ -7,17 +7,15 @@
 **Skills:** Node.js (Advanced)
 **Recommended Duration:** 60 mins
 
-This backend development question evaluates Node.js, payment processing, and subscription management concepts, ideal for senior-level roles. The problem requires identifying and fixing critical bugs in the card payment and subscription upgrade flow of a music streaming app.
+Melodio is a music streaming app with a premium subscription model. Users can upgrade from a free to premium plan by paying with a credit or debit card. Premium unlocks adding unlimited playlists.
 
-Melodio is a music streaming app with a freemium subscription model. Users can upgrade from a free to premium plan by paying with a credit or debit card. Premium unlocks features like unlimited playlists and higher audio quality. Each subscription lasts 30 days from the payment date.
-
-At the moment, the card payment functionality is completely broken. When users attempt to pay for a premium subscription, the payment crashes, validation is missing, the subscription never actually upgrades to premium, and duplicate payments are not prevented.
+At the moment, the card payment functionality is completely broken and the subscription never actually upgrades.
 
 [SS]
 
 ## Issue Summary
 
-When a user clicks "Pay," the payment process crashes because the server reads the wrong field from the request. Even if that is resolved, expired credit cards are accepted because the expiry date validation does nothing. After a successful payment, the subscription plan remains set to "free" instead of changing to "premium." The subscription end date is never advanced — it equals the start date instead of being 30 days later. The payment record stays in "Pending" status and is never updated to "Completed." The user's account-level subscription status is never changed, so the rest of the app still treats them as a free user. If the user clicks "Pay" again with the same request, a duplicate payment is processed instead of being prevented.
+When a user clicks Pay the payment process crashes. Even if that is resolved, expired credit cards are accepted, the subscription does not upgrade to premium, and the payment status remains Pending. Duplicate payments are not prevented. Your task is to fix these backend issues so the subscription payment flow works smoothly end-to-end.
 
 ## Steps to Reproduce
 
@@ -27,20 +25,25 @@ When a user clicks "Pay," the payment process crashes because the server reads t
   Password: password123
   ```
 - Navigate to the Subscription page from the sidebar.
-- Click "Upgrade to Premium."
-- Enter valid card details and click "Pay."
-- Observe that the payment fails or produces incorrect results.
-- If the initial failure is bypassed, observe the subscription plan is still "free" on the account.
-- Try submitting the same payment again — observe that a duplicate charge occurs.
-- Check the payment history — observe that the payment status shows "pending" instead of "completed."
+[SS]
+- Click Upgrade to Premium.
+- Enter card details and click Pay — observe that the payment fails.
+  ```
+  Cardholder Name: Sample User
+  Card Number: 4242424242424242
+  Expiry Month: 12
+  Expiry Year: 50
+  CVV: 123
+  ```
+
+[SS]
 
 ## Expected Behavior
 
 - Expired cards should be rejected with an appropriate error message.
-- The payment amount should match the subscription price from the request.
-- After successful payment, the subscription plan should change to "premium" with a 30-day duration.
-- The payment record status should update to "Completed."
-- The user's account-level subscription status should reflect "premium."
-- Sending the same payment request twice (using the same idempotency key) should return the cached result instead of processing a duplicate payment.
+- After successful payment, the subscription should change to premium with a 30-day duration.
+- The payment record status should update to Completed.
+- The user's account subscription status should reflect premium.
+- Sending the same payment request twice should not create a duplicate payment.
 
 **Note:** Make sure to review the `technical-specs/SubscriptionPayment.md` file carefully to understand all the specifications and expected behavior.
