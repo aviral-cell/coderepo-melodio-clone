@@ -55,7 +55,7 @@ Currently, the copy playlist feature is not implemented. Your task is to impleme
 
 ## Additional Information
 
-- Free users are limited to 7 playlists total — the same limit applies for copies as for playlist creation.
+- Free users are limited to 7 playlists total; the same limit applies for copies as for playlist creation.
 - To manually reset the database, stop the running server and then restart it.
 - The code repository may intentionally contain other issues that are unrelated to this specific task. Please focus only on the described task requirements and address bugs or errors directly associated with them.
 - If you're using Run and Debug mode in the IDE, the frontend server may start before the backend (including database seeding) is ready. In that case, the frontend might not display any data. Please reload the preview once the backend setup is complete.

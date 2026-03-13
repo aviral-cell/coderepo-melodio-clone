@@ -28,8 +28,8 @@ When a user tries to follow an artist, the follow button doesn't work and the sa
 [SS]
 - Click on the Artist hyperlink to navigate to any artist's profile page.
 [SS]
-- Click the "Follow" button — observe the button is unresponsive.
-- Try to rate the artist — observe that is not captured.
+- Click the "Follow" button; observe the button is unresponsive.
+- Try to rate the artist; observe that is not captured.
 [SS]
 
 ## Expected Behavior

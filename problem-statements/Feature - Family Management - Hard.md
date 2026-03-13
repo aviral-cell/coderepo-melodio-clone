@@ -28,7 +28,7 @@ Currently, the family management feature is not functional; family members, acco
   ```
 - Click on the user profile at the top right of the screen and click on Family settings. You can also click on the Family page from the sidebar for the same page.
 [SS]
-- Switch to the newly created family member account — observe it succeeds.
-- From the family member, switch back to the primary — observe it succeeds.
+- Switch to the newly created family member account; observe it succeeds.
+- From the family member, switch back to the primary; observe it succeeds.
 
 **Note:** Make sure to review the `technical-specs/FamilyManagement.md` file carefully to understand all the specifications and expected behavior.

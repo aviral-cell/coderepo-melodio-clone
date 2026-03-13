@@ -19,7 +19,7 @@ Currently, the copy playlist feature is not implemented. Your task is to impleme
 - Copying another user's private playlist should return error.
 - The copied playlist name defaults to "Copy of {originalName}" unless a custom name is provided.
 - The copied playlist should always be private, with all tracks preserved in order.
-- Free users are limited to 7 playlists — exceeding the limit should be rejected with a clear error.
+- Free users are limited to 7 playlists; exceeding the limit should be rejected with a clear error.
 
 ## Steps to Test Functionality
 
@@ -29,7 +29,7 @@ Currently, the copy playlist feature is not implemented. Your task is to impleme
   Password: password123
   ```
 - Navigate to the existing playlist named Playlist 1 from the sidebar.
-- Click the Copy button — observe the playlist is copied.
+- Click the Copy button; observe the playlist is copied.
 [SS]
 - Verify the copied playlist appears in your library as a private playlist with all tracks.
 
