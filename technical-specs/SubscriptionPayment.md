@@ -51,6 +51,7 @@ At the moment, the card payment functionality is completely broken and the subsc
 }
 ```
 
+
 **Validation Error Response (400):**
 ```json
 {
