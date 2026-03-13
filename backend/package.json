@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "nodemon --delay 2500ms --exec tsx src/server.ts",
 		"build": "tsc",
-		"start": "node dist/server.js",
+		"start": "bun dist/server.js",
 		"seed": "tsx src/scripts/seed.ts",
 		"test": "jest --passWithNoTests",
 		"test:watch": "jest --watch --passWithNoTests",

@@ -179,6 +179,9 @@ dist
 /docs
 
 **/junit.xml
+
+# npm lockfile (migrated to Bun)
+package-lock.json
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,node
 
 CLAUDE.md

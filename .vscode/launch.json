@@ -5,7 +5,7 @@
 			"type": "node",
 			"name": "Debug Melodio Application",
 			"request": "launch",
-			"runtimeExecutable": "npm",
+			"runtimeExecutable": "bun",
 			"runtimeArgs": [
 				"run",
 				"start"

@@ -11,6 +11,6 @@ configuration:
       - backend/src/app.ts
       - frontend/src/app/routes.tsx
     project_menu:
-      run: npm start
-      install: npm run prestart
+      run: bun start
+      install: bun run prestart
       test: echo "No test command configured"
