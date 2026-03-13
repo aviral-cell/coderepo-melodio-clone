@@ -1,8 +1,5 @@
 // @ts-nocheck
-/**
- * @jest-environment jsdom
- */
-
+import type { Mock } from "vitest";
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -15,44 +12,44 @@ import { ToastProvider } from "@/shared/hooks/useToast";
 
 // ========== MOCKS ==========
 
-jest.mock("@/shared/services", () => ({
+vi.mock("@/shared/services", () => ({
 	tracksService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 	albumsService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 	artistsService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 }));
 
-jest.mock("@/shared/contexts/AuthContext", () => ({
+vi.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
 		user: { _id: "user-1", email: "test@melodio.com", name: "Test User" },
 		isAuthenticated: true,
 		isLoading: false,
-		login: jest.fn(),
-		register: jest.fn(),
-		logout: jest.fn(),
+		login: vi.fn(),
+		register: vi.fn(),
+		logout: vi.fn(),
 	}),
 }));
 
-jest.mock("@/shared/contexts/SidebarContext", () => ({
+vi.mock("@/shared/contexts/SidebarContext", () => ({
 	SidebarProvider: ({ children }: { children: React.ReactNode }) => children,
 	useSidebar: () => ({
 		isMobileSidebarOpen: false,
-		toggleMobileSidebar: jest.fn(),
-		closeMobileSidebar: jest.fn(),
+		toggleMobileSidebar: vi.fn(),
+		closeMobileSidebar: vi.fn(),
 	}),
 }));
 
-jest.mock("@/lib/utils", () => ({
+vi.mock("@/lib/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 }));
 
-jest.mock("@/shared/utils", () => ({
+vi.mock("@/shared/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 	formatDuration: (seconds: number) => {
 		const totalSeconds = Math.floor(seconds);
@@ -79,7 +76,7 @@ jest.mock("@/shared/utils", () => ({
 			.slice(0, 2),
 	DEFAULT_IMAGE: "/melodio.svg",
 	getImageUrl: (path: any) => path || "/melodio.svg",
-	preloadImages: jest.fn(),
+	preloadImages: vi.fn(),
 	debounce: (func: any, wait: number) => func,
 	generateId: () => Math.random().toString(36).substring(2, 11),
 	sleep: (ms: number) => new Promise((resolve: any) => setTimeout(resolve, ms)),
@@ -510,13 +507,13 @@ function renderDiscoveryPageWithLocation() {
 const originalFetch = global.fetch;
 const originalLocation = window.location;
 
-let mockFetch: jest.Mock;
+let mockFetch: Mock;
 
 import { tracksService, albumsService, artistsService } from "@/shared/services";
 
-const mockTracksGetAll = tracksService.getAll as jest.Mock;
-const mockAlbumsGetAll = albumsService.getAll as jest.Mock;
-const mockArtistsGetAll = artistsService.getAll as jest.Mock;
+const mockTracksGetAll = tracksService.getAll as Mock;
+	const mockAlbumsGetAll = albumsService.getAll as Mock;
+	const mockArtistsGetAll = artistsService.getAll as Mock;
 
 function setupSuccessfulMocks() {
 	mockTracksGetAll.mockResolvedValue(mockTracksResponse);
@@ -546,7 +543,7 @@ describe("Music Discovery", () => {
 	});
 
 	beforeEach(() => {
-		mockFetch = jest.fn();
+		mockFetch = vi.fn();
 		global.fetch = mockFetch;
 		localStorage.setItem("accessToken", "test-token");
 	});
@@ -554,7 +551,7 @@ describe("Music Discovery", () => {
 	afterEach(() => {
 		global.fetch = originalFetch;
 		localStorage.clear();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	describe("Page Loading", () => {

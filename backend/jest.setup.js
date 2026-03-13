@@ -1,3 +1,5 @@
+"use strict";
+
 beforeAll(() => {
 	jest.spyOn(console, "log").mockImplementation(() => {});
 	jest.spyOn(console, "warn").mockImplementation(() => {});

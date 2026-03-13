@@ -1,3 +1,309 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="0" failures="0" errors="0" time="0.659">
+<testsuites name="jest tests" tests="2" failures="2" errors="0" time="2.852">
+  <testsuite name="Playlist Operations" errors="0" failures="2" skipped="0" timestamp="2026-03-13T10:30:45" time="2.572" tests="2">
+    <testcase classname="Playlist Operations Remove Track should make DELETE request to correct endpoint when removing track" name="Playlist Operations Remove Track should make DELETE request to correct endpoint when removing track" time="1.175">
+      <failure>Error: expect(received).toBeDefined()
+
+Received: undefined
+
+Ignored nodes: comments, script, style
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;link
+      href=&quot;/melodio.svg&quot;
+      rel=&quot;preload&quot;
+    /&gt;
+    &lt;link
+      href=&quot;/cover.jpg&quot;
+      rel=&quot;preload&quot;
+    /&gt;
+  &lt;/head&gt;
+  &lt;body
+    style=&quot;&quot;
+  &gt;
+    &lt;div&gt;
+      &lt;div
+        class=&quot;relative p-4 sm:p-8&quot;
+      &gt;
+        &lt;div
+          class=&quot;absolute inset-0&quot;
+          style=&quot;opacity: 1; transition: opacity 0.6s ease-in-out;&quot;
+        /&gt;
+        &lt;div
+          class=&quot;relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6&quot;
+        &gt;
+          &lt;div
+            class=&quot;relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56&quot;
+          &gt;
+            &lt;img
+              alt=&quot;Test Playlist&quot;
+              class=&quot;bg-zinc-800 h-full w-full object-cover&quot;
+              decoding=&quot;async&quot;
+              src=&quot;/melodio.svg&quot;
+            /&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;text-center sm:text-left&quot;
+          &gt;
+            &lt;p
+              class=&quot;text-sm font-medium text-white&quot;
+            &gt;
+              Playlist
+            &lt;/p&gt;
+            &lt;h1
+              class=&quot;mb-4 text-2xl font-bold text-white sm:mb-6 sm:text-6xl&quot;
+            &gt;
+              Test Playlist
+            &lt;/h1&gt;
+            &lt;p
+              class=&quot;mb-2 text-sm text-melodio-text-subdued&quot;
+            &gt;
+              A test playlist
+            &lt;/p&gt;
+            &lt;p
+              class=&quot;text-sm text-melodio-text-subdued&quot;
+            &gt;
+              2
+               
+              tracks
+               - 6:00
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6&quot;
+      &gt;
+        &lt;div
+          class=&quot;flex items-center justify-center gap-4 sm:justify-start sm:gap-6&quot;
+        &gt;
+          &lt;button
+            aria-label=&quot;Play all&quot;
+            class=&quot;inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 text-primary-foreground px-8 h-16 w-14 rounded-full bg-melodio-green hover:scale-105 hover:bg-melodio-green-dark&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-play h-6 w-6 text-black&quot;
+              fill=&quot;black&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;polygon
+                points=&quot;6 3 20 12 6 21 6 3&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/button&gt;
+          &lt;button
+            class=&quot;inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 gap-2 rounded-full&quot;
+            data-testid=&quot;playlist-copy-btn&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-copy h-4 w-4&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;rect
+                height=&quot;14&quot;
+                rx=&quot;2&quot;
+                ry=&quot;2&quot;
+                width=&quot;14&quot;
+                x=&quot;8&quot;
+                y=&quot;8&quot;
+              /&gt;
+              &lt;path
+                d=&quot;M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2&quot;
+              /&gt;
+            &lt;/svg&gt;
+            Copy
+          &lt;/button&gt;
+          &lt;button
+            aria-expanded=&quot;false&quot;
+            aria-haspopup=&quot;menu&quot;
+            class=&quot;inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent h-10 w-10 rounded-full text-melodio-text-subdued hover:text-white&quot;
+            data-state=&quot;closed&quot;
+            id=&quot;radix-_r_0_&quot;
+            type=&quot;button&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-ellipsis h-6 w-6&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;[...
+    at /Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/__tests__/task1/PlaylistOperations.behavior.test.tsx:254:24
+    at runWithExpensiveErrorDiagnosticsDisabled (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:47:12)
+    at checkCallback (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:124:77)
+    at checkRealTimersCallback (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:118:16)
+    at Timeout.task [as _onTimeout] (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/jsdom@20.0.3/node_modules/jsdom/lib/jsdom/browser/Window.js:520:19)
+    at listOnTimeout (node:internal/timers:588:17)
+    at processTimers (node:internal/timers:523:7)</failure>
+    </testcase>
+    <testcase classname="Playlist Operations Remove Track should keep track in list when API returns error" name="Playlist Operations Remove Track should keep track in list when API returns error" time="1.089">
+      <failure>Error: expect(received).toBeDefined()
+
+Received: undefined
+
+Ignored nodes: comments, script, style
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;link
+      href=&quot;/melodio.svg&quot;
+      rel=&quot;preload&quot;
+    /&gt;
+    &lt;link
+      href=&quot;/cover.jpg&quot;
+      rel=&quot;preload&quot;
+    /&gt;
+  &lt;/head&gt;
+  &lt;body
+    style=&quot;&quot;
+  &gt;
+    &lt;div&gt;
+      &lt;div
+        class=&quot;relative p-4 sm:p-8&quot;
+      &gt;
+        &lt;div
+          class=&quot;absolute inset-0&quot;
+          style=&quot;opacity: 1; transition: opacity 0.6s ease-in-out;&quot;
+        /&gt;
+        &lt;div
+          class=&quot;relative flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-6&quot;
+        &gt;
+          &lt;div
+            class=&quot;relative h-40 w-40 overflow-hidden rounded shadow-2xl sm:h-56 sm:w-56&quot;
+          &gt;
+            &lt;img
+              alt=&quot;Test Playlist&quot;
+              class=&quot;bg-zinc-800 h-full w-full object-cover&quot;
+              decoding=&quot;async&quot;
+              src=&quot;/melodio.svg&quot;
+            /&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;text-center sm:text-left&quot;
+          &gt;
+            &lt;p
+              class=&quot;text-sm font-medium text-white&quot;
+            &gt;
+              Playlist
+            &lt;/p&gt;
+            &lt;h1
+              class=&quot;mb-4 text-2xl font-bold text-white sm:mb-6 sm:text-6xl&quot;
+            &gt;
+              Test Playlist
+            &lt;/h1&gt;
+            &lt;p
+              class=&quot;mb-2 text-sm text-melodio-text-subdued&quot;
+            &gt;
+              A test playlist
+            &lt;/p&gt;
+            &lt;p
+              class=&quot;text-sm text-melodio-text-subdued&quot;
+            &gt;
+              2
+               
+              tracks
+               - 6:00
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6&quot;
+      &gt;
+        &lt;div
+          class=&quot;flex items-center justify-center gap-4 sm:justify-start sm:gap-6&quot;
+        &gt;
+          &lt;button
+            aria-label=&quot;Play all&quot;
+            class=&quot;inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 text-primary-foreground px-8 h-16 w-14 rounded-full bg-melodio-green hover:scale-105 hover:bg-melodio-green-dark&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-play h-6 w-6 text-black&quot;
+              fill=&quot;black&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;polygon
+                points=&quot;6 3 20 12 6 21 6 3&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/button&gt;
+          &lt;button
+            class=&quot;inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 gap-2 rounded-full&quot;
+            data-testid=&quot;playlist-copy-btn&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-copy h-4 w-4&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;rect
+                height=&quot;14&quot;
+                rx=&quot;2&quot;
+                ry=&quot;2&quot;
+                width=&quot;14&quot;
+                x=&quot;8&quot;
+                y=&quot;8&quot;
+              /&gt;
+              &lt;path
+                d=&quot;M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2&quot;
+              /&gt;
+            &lt;/svg&gt;
+            Copy
+          &lt;/button&gt;
+          &lt;button
+            aria-expanded=&quot;false&quot;
+            aria-haspopup=&quot;menu&quot;
+            class=&quot;inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent h-10 w-10 rounded-full text-melodio-text-subdued hover:text-white&quot;
+            data-state=&quot;closed&quot;
+            id=&quot;radix-_r_g_&quot;
+            type=&quot;button&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-ellipsis h-6 w-6&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;[...
+    at /Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/__tests__/task1/PlaylistOperations.behavior.test.tsx:306:24
+    at runWithExpensiveErrorDiagnosticsDisabled (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:47:12)
+    at checkCallback (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:124:77)
+    at checkRealTimersCallback (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:118:16)
+    at Timeout.task [as _onTimeout] (/Users/aviralsrivastava/Desktop/Sanity-Pipeline/melodio-modified/coderepo-react-node-melodio/node_modules/.bun/jsdom@20.0.3/node_modules/jsdom/lib/jsdom/browser/Window.js:520:19)
+    at listOnTimeout (node:internal/timers:588:17)
+    at processTimers (node:internal/timers:523:7)</failure>
+    </testcase>
+  </testsuite>
 </testsuites>

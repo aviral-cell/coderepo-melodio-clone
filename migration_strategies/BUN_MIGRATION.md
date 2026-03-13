@@ -21,7 +21,7 @@ This repo uses **Bun** as the single package manager and script runner. This doc
 4. **Workspace semantics:** We use `bun run <script> --cwd <dir>` for workspace scripts instead of `npm run --workspace=...`. Root `build` runs `frontend` then `backend` explicitly.
 5. **prestart:** `bun start` still runs `prestart` (which runs `setup.sh`). No change to lifecycle behavior.
 
-6. **Jest / tests:** Root tests (e.g. `bun run test:task1`) run Jest from the root. If you see "Cannot find module 'react/jsx-runtime'" or similar, it may be due to Bun’s workspace hoisting. Running tests from the `frontend` directory (`cd frontend && bun run test`) or ensuring Jest’s `moduleDirectories` / `roots` include the right workspace can help. The app and scripts do not assume npm; only the test runner’s resolution might need tuning.
+6. **Vitest / tests:** Root tests (e.g. `bun run test:task1`) run Vitest from the root. If you see "Cannot find module 'react/jsx-runtime'" or similar, it may be due to Bun’s workspace hoisting. Running tests from the `frontend` directory (`cd frontend && bun run test`) (see vitest.config.*.ts for resolution). The app and scripts do not assume npm; only the test runner’s resolution might need tuning.
 
 ## Rollback to npm
 
@@ -76,4 +76,4 @@ After that, use `npm install`, `npm run <script>`, and `npx` as before.
    bun run seed
    ```
 
-Note: `bun run build` may fail due to existing TypeScript errors in the codebase (unrelated to Bun). Root-level Jest tests may hit module resolution with Bun’s node_modules layout; running tests from the workspace (`cd frontend && bun run test`) is a workaround if needed.
+Note: `bun run build` may fail due to existing TypeScript errors in the codebase (unrelated to Bun). Root-level Vitest tests may hit module resolution with Bun’s node_modules layout; running tests from the workspace (`cd frontend && bun run test`) is a workaround if needed.

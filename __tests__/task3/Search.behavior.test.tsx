@@ -1,8 +1,5 @@
 // @ts-nocheck
-/**
- * @jest-environment jsdom
- */
-
+import type { Mock } from "vitest";
 import React from "react";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -10,7 +7,7 @@ import { MemoryRouter, Routes, Route, useLocation } from "react-router";
 
 import { SearchDropdown } from "@/shared/components/common/SearchDropdown";
 
-jest.mock("@/shared/utils", () => ({
+vi.mock("@/shared/utils", () => ({
 	formatDuration: (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
@@ -113,9 +110,9 @@ function TestWrapper({
 function renderSearchDropdown(props: {
 	query: string;
 	isOpen: boolean;
-	onClose?: jest.Mock;
+	onClose?: Mock;
 }) {
-	const onClose = props.onClose || jest.fn();
+	const onClose = props.onClose || vi.fn();
 	return render(
 		<TestWrapper>
 			<SearchDropdown
@@ -135,7 +132,7 @@ const DEBOUNCE_DELAY = 300;
 const originalFetch = global.fetch;
 const originalLocation = window.location;
 
-let mockFetch: jest.Mock;
+let mockFetch: Mock;
 
 describe("Search Feature", () => {
 	beforeAll(() => {
@@ -159,17 +156,17 @@ describe("Search Feature", () => {
 	});
 
 	beforeEach(() => {
-		mockFetch = jest.fn();
+		mockFetch = vi.fn();
 		global.fetch = mockFetch;
 		localStorage.setItem("accessToken", "test-token");
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	});
 
 	afterEach(() => {
 		global.fetch = originalFetch;
 		localStorage.clear();
-		jest.useRealTimers();
-		jest.clearAllMocks();
+		vi.useRealTimers();
+		vi.clearAllMocks();
 	});
 
 	function setupSearchFetch(tracks: BackendTrackResponse[]) {
@@ -230,12 +227,12 @@ describe("Search Feature", () => {
 
 			render(
 				<TestWrapper>
-					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="Thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			// Verify API request
@@ -253,12 +250,12 @@ describe("Search Feature", () => {
 
 			render(
 				<TestWrapper>
-					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="Thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			// Verify authorization header
@@ -280,7 +277,7 @@ describe("Search Feature", () => {
 
 			const { rerender } = render(
 				<TestWrapper>
-					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
@@ -289,7 +286,7 @@ describe("Search Feature", () => {
 			// Change query
 			rerender(
 				<TestWrapper>
-					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="Thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
@@ -303,7 +300,7 @@ describe("Search Feature", () => {
 
 			// Complete debounce delay
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			// Verify API call made
@@ -320,7 +317,7 @@ describe("Search Feature", () => {
 
 			const { rerender } = render(
 				<TestWrapper>
-					<SearchDropdown query="" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
@@ -332,62 +329,62 @@ describe("Search Feature", () => {
 			// Type "T"
 			rerender(
 				<TestWrapper>
-					<SearchDropdown query="T" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="T" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 			await act(async () => {
-				jest.advanceTimersByTime(100);
+				vi.advanceTimersByTime(100);
 			});
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Th"
 			rerender(
 				<TestWrapper>
-					<SearchDropdown query="Th" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="Th" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 			await act(async () => {
-				jest.advanceTimersByTime(100);
+				vi.advanceTimersByTime(100);
 			});
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Thu"
 			rerender(
 				<TestWrapper>
-					<SearchDropdown query="Thu" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="Thu" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 			await act(async () => {
-				jest.advanceTimersByTime(100);
+				vi.advanceTimersByTime(100);
 			});
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Thun"
 			rerender(
 				<TestWrapper>
-					<SearchDropdown query="Thun" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="Thun" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 			await act(async () => {
-				jest.advanceTimersByTime(100);
+				vi.advanceTimersByTime(100);
 			});
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Thunder" (final)
 			rerender(
 				<TestWrapper>
-					<SearchDropdown query="Thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="Thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(100);
+				vi.advanceTimersByTime(100);
 			});
 			expect(getSearchCalls().length).toBe(0);
 
 			// Complete debounce
 			await act(async () => {
-				jest.advanceTimersByTime(200);
+				vi.advanceTimersByTime(200);
 			});
 
 			// Verify single API call with final query
@@ -409,12 +406,12 @@ describe("Search Feature", () => {
 
 			const { unmount } = render(
 				<TestWrapper>
-					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			await waitFor(() => {
@@ -430,12 +427,12 @@ describe("Search Feature", () => {
 
 			render(
 				<TestWrapper>
-					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			await waitFor(() => {
@@ -452,12 +449,12 @@ describe("Search Feature", () => {
 
 			render(
 				<TestWrapper>
-					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			// Verify track information
@@ -482,12 +479,12 @@ describe("Search Feature", () => {
 
 			render(
 				<TestWrapper>
-					<SearchDropdown query="nonexistenttrack" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="nonexistenttrack" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			// Verify no results message
@@ -504,12 +501,12 @@ describe("Search Feature", () => {
 
 			const { unmount } = render(
 				<TestWrapper>
-					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			// Verify error state (API returns error)
@@ -534,12 +531,12 @@ describe("Search Feature", () => {
 
 			render(
 				<TestWrapper>
-					<SearchDropdown query="thunder" isOpen={true} onClose={jest.fn()} />
+					<SearchDropdown query="thunder" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			// Verify error state (network failure)
@@ -551,8 +548,8 @@ describe("Search Feature", () => {
 
 	describe("Track Selection Navigation", () => {
 		it("should navigate to track detail page and close dropdown when track is clicked", async () => {
-			const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-			const onClose = jest.fn();
+			const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime as (ms: number) => void });
+			const onClose = vi.fn();
 			const mockTracks = [
 				createMockTrack("abc-123", "First Track"),
 				createMockTrack("xyz-789", "Second Track"),
@@ -566,7 +563,7 @@ describe("Search Feature", () => {
 			});
 
 			await act(async () => {
-				jest.advanceTimersByTime(DEBOUNCE_DELAY);
+				vi.advanceTimersByTime(DEBOUNCE_DELAY);
 			});
 
 			await waitFor(() => {

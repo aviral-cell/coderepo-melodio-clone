@@ -3,7 +3,10 @@ configuration:
   has_webserver: true
   readonly_paths:
     - __tests__/**
-    - jest.config.js
+    - vitest.workspace.ts
+    - vitest.config.frontend.ts
+    - vitest.config.backend.ts
+    - test/**
     - backend/src/scripts/seed.ts
     - backend/src/shared/config/index.ts
   ide_config:
@@ -13,4 +16,4 @@ configuration:
     project_menu:
       run: bun start
       install: bun run prestart
-      test: echo "No test command configured"
+      test: bun run test

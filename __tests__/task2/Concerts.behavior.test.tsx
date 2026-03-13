@@ -1,8 +1,5 @@
 // @ts-nocheck
-/**
- * @jest-environment jsdom
- */
-
+import type { Mock } from "vitest";
 import React from "react";
 import { render, screen, waitFor, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -13,89 +10,89 @@ import ConcertDetailPage from "@/pages/ConcertDetailPage";
 
 // ========== MOCKS ==========
 
-jest.mock("embla-carousel-react", () => ({
+vi.mock("embla-carousel-react", () => ({
 	__esModule: true,
-	default: jest.fn(() => [
-		jest.fn(),
+	default: vi.fn(() => [
+		vi.fn(),
 		{
-			on: jest.fn(),
-			off: jest.fn(),
-			canScrollPrev: jest.fn(() => false),
-			canScrollNext: jest.fn(() => false),
-			scrollPrev: jest.fn(),
-			scrollNext: jest.fn(),
+			on: vi.fn(),
+			off: vi.fn(),
+			canScrollPrev: vi.fn(() => false),
+			canScrollNext: vi.fn(() => false),
+			scrollPrev: vi.fn(),
+			scrollNext: vi.fn(),
 		},
 	]),
 }));
 
-jest.mock("@/shared/services", () => ({
+vi.mock("@/shared/services", () => ({
 	artistsService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 	albumsService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 	tracksService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 }));
 
-jest.mock("@/shared/contexts/AuthContext", () => ({
+vi.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
 		user: { _id: "user-1", email: "test@melodio.com", name: "Test User" },
 		isAuthenticated: true,
 		isLoading: false,
-		login: jest.fn(),
-		register: jest.fn(),
-		logout: jest.fn(),
+		login: vi.fn(),
+		register: vi.fn(),
+		logout: vi.fn(),
 	}),
 }));
 
-jest.mock("@/shared/contexts/SidebarContext", () => ({
+vi.mock("@/shared/contexts/SidebarContext", () => ({
 	SidebarProvider: ({ children }: { children: React.ReactNode }) => children,
 	useSidebar: () => ({
 		isMobileSidebarOpen: false,
-		toggleMobileSidebar: jest.fn(),
-		closeMobileSidebar: jest.fn(),
+		toggleMobileSidebar: vi.fn(),
+		closeMobileSidebar: vi.fn(),
 	}),
 }));
 
-jest.mock("@/shared/contexts/PlayerContext", () => ({
+vi.mock("@/shared/contexts/PlayerContext", () => ({
 	PlayerProvider: ({ children }: { children: React.ReactNode }) => children,
 	usePlayer: () => ({
 		state: { currentTrack: null, isPlaying: false, queue: [], volume: 1, isMuted: false, currentTime: 0, duration: 0, repeat: "off", shuffle: false },
-		playTrack: jest.fn(),
-		togglePlayPause: jest.fn(),
-		pauseTrack: jest.fn(),
-		resumeTrack: jest.fn(),
-		setVolume: jest.fn(),
-		seekTo: jest.fn(),
-		playNext: jest.fn(),
-		playPrevious: jest.fn(),
-		addToQueue: jest.fn(),
-		removeFromQueue: jest.fn(),
-		clearQueue: jest.fn(),
-		setRepeat: jest.fn(),
-		toggleShuffle: jest.fn(),
-		toggleMute: jest.fn(),
+		playTrack: vi.fn(),
+		togglePlayPause: vi.fn(),
+		pauseTrack: vi.fn(),
+		resumeTrack: vi.fn(),
+		setVolume: vi.fn(),
+		seekTo: vi.fn(),
+		playNext: vi.fn(),
+		playPrevious: vi.fn(),
+		addToQueue: vi.fn(),
+		removeFromQueue: vi.fn(),
+		clearQueue: vi.fn(),
+		setRepeat: vi.fn(),
+		toggleShuffle: vi.fn(),
+		toggleMute: vi.fn(),
 	}),
 }));
 
-jest.mock("@/shared/hooks/useToast", () => ({
+vi.mock("@/shared/hooks/useToast", () => ({
 	ToastProvider: ({ children }: { children: React.ReactNode }) => children,
 	useToast: () => ({
 		toasts: [],
-		addToast: jest.fn(),
-		removeToast: jest.fn(),
+		addToast: vi.fn(),
+		removeToast: vi.fn(),
 	}),
 }));
 
-jest.mock("@/lib/utils", () => ({
+vi.mock("@/lib/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 }));
 
-jest.mock("@/shared/utils", () => ({
+vi.mock("@/shared/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 	formatDuration: (seconds: number) => {
 		const totalSeconds = Math.floor(seconds);
@@ -122,7 +119,7 @@ jest.mock("@/shared/utils", () => ({
 			.slice(0, 2),
 	DEFAULT_IMAGE: "/melodio.svg",
 	getImageUrl: (path: any) => path || "/melodio.svg",
-	preloadImages: jest.fn(),
+	preloadImages: vi.fn(),
 	debounce: (func: any, wait: number) => func,
 	generateId: () => Math.random().toString(36).substring(2, 11),
 	sleep: (ms: number) => new Promise((resolve: any) => setTimeout(resolve, ms)),
@@ -132,9 +129,9 @@ jest.mock("@/shared/utils", () => ({
 
 import { artistsService, albumsService, tracksService } from "@/shared/services";
 
-const mockGetAllArtists = artistsService.getAll as jest.Mock;
-const mockGetAllAlbums = albumsService.getAll as jest.Mock;
-const mockGetAllTracks = tracksService.getAll as jest.Mock;
+const mockGetAllArtists = artistsService.getAll as Mock;
+const mockGetAllAlbums = albumsService.getAll as Mock;
+const mockGetAllTracks = tracksService.getAll as Mock;
 
 // ========== FACTORY FUNCTIONS ==========
 
@@ -311,7 +308,7 @@ function DetailWrapper({ concertId = "c1", children }: { concertId?: string; chi
 const originalFetch = global.fetch;
 const originalLocation = window.location;
 
-let mockFetch: jest.Mock;
+let mockFetch: Mock;
 
 describe("Live Music Concerts", () => {
 	beforeAll(() => {
@@ -335,7 +332,7 @@ describe("Live Music Concerts", () => {
 	});
 
 	beforeEach(() => {
-		mockFetch = jest.fn();
+		mockFetch = vi.fn();
 		global.fetch = mockFetch;
 		localStorage.setItem("accessToken", "test-token");
 	});
@@ -343,7 +340,7 @@ describe("Live Music Concerts", () => {
 	afterEach(() => {
 		global.fetch = originalFetch;
 		localStorage.clear();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	describe("Concerts Page", () => {

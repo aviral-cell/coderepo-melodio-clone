@@ -1,8 +1,5 @@
 // @ts-nocheck
-/**
- * @jest-environment jsdom
- */
-
+import type { Mock } from "vitest";
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -15,28 +12,28 @@ import { ToastProvider } from "@/shared/hooks/useToast";
 
 // ========== MOCKS ==========
 
-jest.mock("@/shared/contexts/AuthContext", () => ({
+vi.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
 		user: { _id: "user-1", email: "test@melodio.com", name: "Test User" },
 		isAuthenticated: true,
 		isLoading: false,
-		login: jest.fn(),
-		register: jest.fn(),
-		logout: jest.fn(),
+		login: vi.fn(),
+		register: vi.fn(),
+		logout: vi.fn(),
 	}),
 }));
 
-jest.mock("@/shared/contexts/SidebarContext", () => ({
+vi.mock("@/shared/contexts/SidebarContext", () => ({
 	SidebarProvider: ({ children }: { children: React.ReactNode }) => children,
 	useSidebar: () => ({
 		isMobileSidebarOpen: false,
-		toggleMobileSidebar: jest.fn(),
-		closeMobileSidebar: jest.fn(),
+		toggleMobileSidebar: vi.fn(),
+		closeMobileSidebar: vi.fn(),
 	}),
 }));
 
-jest.mock("@/shared/utils", () => ({
+vi.mock("@/shared/utils", () => ({
 	normalizeTracks: (tracks: any[]) => tracks,
 	normalizeTrack: (track: any) => track,
 	getImageUrl: (path: string | undefined | null) => path || "/melodio.svg",
@@ -55,7 +52,7 @@ jest.mock("@/shared/utils", () => ({
 			.map((n: string) => n[0])
 			.join("")
 			.toUpperCase(),
-	preloadImages: jest.fn(),
+	preloadImages: vi.fn(),
 }));
 
 // ========== FACTORY FUNCTIONS ==========
@@ -759,7 +756,7 @@ function renderPodcastPage() {
 
 // ========== FETCH MOCK HELPERS ==========
 
-function setupSuccessFetch(mockFetch: jest.Mock) {
+function setupSuccessFetch(mockFetch: Mock) {
 	mockFetch.mockImplementation((url: string) => {
 		if (url.includes("/api/tracks")) {
 			return Promise.resolve({
@@ -791,7 +788,7 @@ function setupSuccessFetch(mockFetch: jest.Mock) {
 const originalFetch = global.fetch;
 const originalLocation = window.location;
 
-let mockFetch: jest.Mock;
+let mockFetch: Mock;
 
 describe("Podcast Browser", () => {
 	beforeAll(() => {
@@ -815,7 +812,7 @@ describe("Podcast Browser", () => {
 	});
 
 	beforeEach(() => {
-		mockFetch = jest.fn();
+		mockFetch = vi.fn();
 		global.fetch = mockFetch;
 		localStorage.setItem("accessToken", "test-token");
 	});
@@ -823,7 +820,7 @@ describe("Podcast Browser", () => {
 	afterEach(() => {
 		global.fetch = originalFetch;
 		localStorage.clear();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	describe("Browse View", () => {

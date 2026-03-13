@@ -1,8 +1,5 @@
 // @ts-nocheck
-/**
- * @jest-environment jsdom
- */
-
+import type { Mock } from "vitest";
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -15,53 +12,53 @@ import { ToastProvider } from "@/shared/hooks/useToast";
 
 // ========== MOCKS ==========
 
-jest.mock("@/shared/services", () => ({
+vi.mock("@/shared/services", () => ({
 	tracksService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 	albumsService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 	artistsService: {
-		getAll: jest.fn(),
+		getAll: vi.fn(),
 	},
 }));
 
-jest.mock("@/shared/services/mix.service", () => ({
+vi.mock("@/shared/services/mix.service", () => ({
 	mixService: {
-		create: jest.fn(),
-		getAll: jest.fn(),
-		getById: jest.fn(),
-		delete: jest.fn(),
+		create: vi.fn(),
+		getAll: vi.fn(),
+		getById: vi.fn(),
+		delete: vi.fn(),
 	},
 }));
 
-jest.mock("@/shared/contexts/AuthContext", () => ({
+vi.mock("@/shared/contexts/AuthContext", () => ({
 	AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 	useAuth: () => ({
 		user: { _id: "user-1", email: "test@melodio.com", name: "Test User" },
 		isAuthenticated: true,
 		isLoading: false,
-		login: jest.fn(),
-		register: jest.fn(),
-		logout: jest.fn(),
+		login: vi.fn(),
+		register: vi.fn(),
+		logout: vi.fn(),
 	}),
 }));
 
-jest.mock("@/shared/contexts/SidebarContext", () => ({
+vi.mock("@/shared/contexts/SidebarContext", () => ({
 	SidebarProvider: ({ children }: { children: React.ReactNode }) => children,
 	useSidebar: () => ({
 		isMobileSidebarOpen: false,
-		toggleMobileSidebar: jest.fn(),
-		closeMobileSidebar: jest.fn(),
+		toggleMobileSidebar: vi.fn(),
+		closeMobileSidebar: vi.fn(),
 	}),
 }));
 
-jest.mock("@/lib/utils", () => ({
+vi.mock("@/lib/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 }));
 
-jest.mock("@/shared/utils", () => ({
+vi.mock("@/shared/utils", () => ({
 	cn: (...inputs: any[]) => inputs.filter(Boolean).join(" "),
 	formatDuration: (seconds: number) => {
 		const totalSeconds = Math.floor(seconds);
@@ -88,7 +85,7 @@ jest.mock("@/shared/utils", () => ({
 			.slice(0, 2),
 	DEFAULT_IMAGE: "/melodio.svg",
 	getImageUrl: (path: any) => path || "/melodio.svg",
-	preloadImages: jest.fn(),
+	preloadImages: vi.fn(),
 	debounce: (func: any, wait: number) => func,
 	generateId: () => Math.random().toString(36).substring(2, 11),
 	sleep: (ms: number) => new Promise((resolve: any) => setTimeout(resolve, ms)),
@@ -455,10 +452,10 @@ const originalLocation = window.location;
 import { tracksService, artistsService } from "@/shared/services";
 import { mixService } from "@/shared/services/mix.service";
 
-const mockTracksGetAll = tracksService.getAll as jest.Mock;
-const mockArtistsGetAll = artistsService.getAll as jest.Mock;
-const mockMixGetAll = mixService.getAll as jest.Mock;
-const mockMixCreate = mixService.create as jest.Mock;
+const mockTracksGetAll = tracksService.getAll as Mock;
+const mockArtistsGetAll = artistsService.getAll as Mock;
+const mockMixGetAll = mixService.getAll as Mock;
+const mockMixCreate = mixService.create as Mock;
 
 function setupSuccessfulMocks() {
 	mockTracksGetAll.mockResolvedValue(mockTracksResponse);
@@ -481,7 +478,7 @@ describe("Create Mix", () => {
 			hash: "",
 			href: "http://localhost:3000/",
 			origin: "http://localhost:3000",
-			reload: jest.fn(),
+			reload: vi.fn(),
 		} as Location;
 	});
 
@@ -495,7 +492,7 @@ describe("Create Mix", () => {
 
 	afterEach(() => {
 		localStorage.clear();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	describe("Page Loading", () => {
