@@ -20,34 +20,59 @@ Your task is to build the search feature on both the frontend and backend, enabl
 
 **Success Response (200):**
 ```json
-[
-  {
-    "id": "track-id",
-    "title": "Track Title",
-    "durationInSeconds": 180,
-    "trackNumber": 1,
-    "genre": "rock",
-    "playCount": 100,
-    "coverImageUrl": "/images/track.jpg",
-    "artist": {
-      "id": "artist-id",
-      "name": "Artist Name",
-      "imageUrl": "/images/artist.jpg"
-    },
-    "album": {
-      "id": "album-id",
-      "title": "Album Title",
-      "coverImageUrl": "/images/album.jpg"
-    },
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-  }
-]
+{
+  "success": true,
+  "data": [
+    {
+      "id": "track-id",
+      "title": "Track Title",
+      "durationInSeconds": 180,
+      "trackNumber": 1,
+      "genre": "rock",
+      "playCount": 100,
+      "coverImageUrl": "/images/track.jpg",
+      "artist": {
+        "id": "artist-id",
+        "name": "Artist Name",
+        "imageUrl": "/images/artist.jpg"
+      },
+      "album": {
+        "id": "album-id",
+        "title": "Album Title",
+        "coverImageUrl": "/images/album.jpg"
+      },
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}
 ```
 
-**Error Responses:**
-- 401 - Unauthorized
-- 500 - Server error
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "<message>"
+}
+```
+
+- 401 - "Unauthorized"
+- 500 - "Server error"
+
+## Testing Requirements
+
+The component includes specific data-testid attributes required for automated test execution. These identifiers must not be modified:
+
+| data-testid | Description |
+|-------------|-------------|
+| `search-results-count` | Display showing the number of search results |
+| `search-results-list` | Container for the list of search result items |
+| `search-result-item-{trackId}` | Individual search result item (replace `{trackId}` with the actual track ID) |
+| `search-result-title-{trackId}` | Track title in search result item (replace `{trackId}` with the actual track ID) |
+| `search-result-artist-{trackId}` | Artist name in search result item (replace `{trackId}` with the actual track ID) |
+| `search-result-duration-{trackId}` | Duration display in search result item (replace `{trackId}` with the actual track ID) |
+| `search-no-results` | Message displayed when no search results found |
+| `search-error` | Message displayed when search encounters an error |
 
 ## Additional Information
 

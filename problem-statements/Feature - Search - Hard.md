@@ -1,4 +1,4 @@
-# Feature: Search Functionality
+# Feature: Search
 
 `Hard`
 
