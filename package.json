@@ -1,17 +1,31 @@
 {
 	"name": "melodio",
 	"version": "1.0.0",
+	"devDependencies": {
+		"@testing-library/dom": "^10.4.0",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.1.0",
+		"@testing-library/user-event": "^14.5.2",
+		"@vitejs/plugin-react": "^4.3.4",
+		"@vitest/coverage-v8": "^2.1.0",
+		"concurrently": "^8.2.2",
+		"dotenv": "^16.4.7",
+		"jsdom": "^25.0.0",
+		"knip": "^5.86.0",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"react-router": "^7.1.1",
+		"react-router-dom": "^7.10.1",
+		"supertest": "^7.0.0",
+		"vitest": "^2.1.0"
+	},
 	"description": "Melodio - Music Player App - MERN Stack Monorepo",
-	"private": true,
-	"packageManager": "bun@1.1.0",
 	"engines": {
 		"node": ">=20.0.0",
 		"bun": ">=1.0.0"
 	},
-	"workspaces": [
-		"frontend",
-		"backend"
-	],
+	"packageManager": "bun@1.1.0",
+	"private": true,
 	"scripts": {
 		"prestart": "bash setup.sh",
 		"start": "concurrently \"bun run dev:frontend\" \"bun run dev:backend\"",
@@ -38,24 +52,11 @@
 		"test:task11": "vitest run --project frontend __tests__/task11/",
 		"test:task12": "cd backend && jest --passWithNoTests --testPathPattern=__tests__/task12/",
 		"test:task13": "cd backend && jest --passWithNoTests --testPathPattern=__tests__/task13/",
-		"check:unused": "depcheck . && cd frontend && depcheck . && cd ../backend && depcheck ."
+		"unused:check": "knip",
+		"check:unused": "bun run unused:check"
 	},
-	"devDependencies": {
-		"@testing-library/dom": "^10.4.0",
-		"@testing-library/jest-dom": "^6.6.3",
-		"@testing-library/react": "^16.1.0",
-		"@testing-library/user-event": "^14.5.2",
-		"@vitejs/plugin-react": "^4.3.4",
-		"@vitest/coverage-v8": "^2.1.0",
-		"concurrently": "^8.2.2",
-		"dotenv": "^16.4.7",
-		"jsdom": "^25.0.0",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"react-router": "^7.1.1",
-		"react-router-dom": "^7.10.1",
-		"supertest": "^7.0.0",
-		"vitest": "^2.1.0",
-		"depcheck": "^1.4.7"
-	}
+	"workspaces": [
+		"frontend",
+		"backend"
+	]
 }

@@ -36,9 +36,9 @@ export interface PaginatedResponse<T> {
 	hasPrev: boolean;
 }
 
-export type ObjectId = Types.ObjectId;
+type ObjectId = Types.ObjectId;
 
-export interface BaseDocument {
+interface BaseDocument {
 	_id: ObjectId;
 	createdAt: Date;
 	updatedAt: Date;
@@ -52,7 +52,7 @@ export interface JwtPayload {
 	exp?: number;
 }
 
-export interface EnvConfig {
+interface EnvConfig {
 	PORT: number;
 	MONGODB_URI: string;
 	JWT_SECRET: string;

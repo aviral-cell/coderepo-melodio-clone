@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { validationResult, ValidationChain } from "express-validator";
 import { isValidObjectId, sendError } from "../utils/index.js";
 
-export function validate(validations: ValidationChain[]) {
+function validate(validations: ValidationChain[]) {
 	return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		await Promise.all(validations.map((validation) => validation.run(req)));
 
@@ -21,7 +21,7 @@ export function validate(validations: ValidationChain[]) {
 	};
 }
 
-export function validateObjectId(paramName = "id") {
+function validateObjectId(paramName = "id") {
 	return (req: Request, res: Response, next: NextFunction): void => {
 		const id = req.params[paramName];
 
@@ -39,7 +39,7 @@ export function validateObjectId(paramName = "id") {
 	};
 }
 
-export function validateObjectIds(...paramNames: string[]) {
+function validateObjectIds(...paramNames: string[]) {
 	return (req: Request, res: Response, next: NextFunction): void => {
 		for (const paramName of paramNames) {
 			const id = req.params[paramName];

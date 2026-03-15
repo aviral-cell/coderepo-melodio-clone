@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export interface IArtistRating {
+interface IArtistRating {
 	user_id: mongoose.Types.ObjectId;
 	artist_id: mongoose.Types.ObjectId;
 	rating: number;
@@ -8,7 +8,7 @@ export interface IArtistRating {
 	updated_at: Date;
 }
 
-export interface IArtistRatingDocument extends IArtistRating, Document {
+interface IArtistRatingDocument extends IArtistRating, Document {
 	_id: mongoose.Types.ObjectId;
 }
 

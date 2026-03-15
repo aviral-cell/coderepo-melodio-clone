@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { playlistService } from "../services/playlist.service";
+import { playlistsService } from "../services/playlist.service";
 import type { TrackWithPopulated } from "../types/player.types";
 
 interface UsePlaylistOperationsReturn {
@@ -34,7 +34,7 @@ export function usePlaylistOperations(
 
 			try {
 				const trackIds = newTracks.map((t) => t._id);
-				await playlistService.reorderTracks(playlistId, trackIds);
+				await playlistsService.reorderTracks(playlistId, trackIds);
 			} catch (error) {
 				setPlaylist(originalTracks);
 				const err = error instanceof Error ? error : new Error("Failed to reorder tracks");

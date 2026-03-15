@@ -110,6 +110,65 @@ Commands (from root):
 
 Frontend uses `vi` (Vitest) for mocks; backend tests are integration-only (supertest). Setup: frontend uses `test/setup.ts` and `test/setup-dom.ts`; backend uses `backend/jest.setup.js`.
 
+## Candidate Contract Surface
+
+This repo keeps two root-level contract files for candidate-facing exports:
+
+- `candidate-contracts/candidate-frontend-contract.ts`
+- `candidate-contracts/candidate-backend-contract.ts`
+
+These files exist for Knip reachability, so candidate-facing code is treated as intentionally used (not stale/dead).
+
+### Adding a new candidate-visible export
+
+1. **Frontend:** Add the new module/export to `candidate-contracts/candidate-frontend-contract.ts` (re-export from the real source).
+2. **Backend:** Add the new module/export to `candidate-contracts/candidate-backend-contract.ts`.
+3. Run `bun run unused:check` to verify no candidate-facing exports are flagged as stale.
+
+## Unused code detection (Knip)
+
+[Knip](https://knip.dev) finds unused files, exports, and dependencies. The two root contract files are configured as entry files so candidate-facing code is never reported as dead.
+
+### How to run Knip
+
+From the repo root:
+
+```bash
+bun run unused:check
+```
+
+Or call Knip directly:
+
+```bash
+bunx knip
+```
+
+- **Exit code 0** — no issues (or only ignored ones).
+- **Exit code 1** — Knip reported unused files, exports, or dependencies; fix or add targeted ignores in `knip.json`.
+
+### What’s configured
+
+- **`knip.json`** (repo root):
+  - **Root workspace** — entry: test dirs (`__tests__/`), test setup (`test/`), Vitest config. So test files are not reported as unused.
+  - **Frontend** — entry: `../candidate-contracts/candidate-frontend-contract.ts`. Project: `src/**/*.{ts,tsx}`.
+  - **Backend** — entry: `src/app.ts`, `../candidate-contracts/candidate-backend-contract.ts`. Project: `src/**/*.ts`.
+  - **ignoreDependencies** — test/build-only packages (Vitest, Testing Library, supertest, etc.) so they aren’t flagged as unused.
+  - **ignoreBinaries** — `jest`, `vitest` (used via scripts).
+
+Only add extra **entry** or **ignore** when needed (e.g. generated or dynamic-import-only code), and document the reason in `knip.json` or a comment.
+
+**Scaffold / candidate-facing files:** Some files (e.g. `ErrorMessage.tsx`, `LoadingSpinner.tsx`, `useLocalStorage.ts`, `cache.service.ts`) are not imported by the app but are part of the **scaffold** that candidates may use or that must exist for the platform. They are listed in **ignoreFiles** in `knip.json` so Knip does not report them as "Unused files". They are intentionally kept; do not remove them.
+
+### Optional: run in CI
+
+Add a step so the main branch stays clean:
+
+```yaml
+- run: bun run unused:check
+```
+
+**Limitations:** Code loaded only via dynamic imports may need to be added to `entry` or `ignoreFiles` in `knip.json` if it should count as used.
+
 ## Contributing
 
-Use **Bun** for all installs and scripts: `bun install`, `bun run <script>`, `bunx` for one-off tools. Do not commit `package-lock.json`; the lockfile for this repo is `bun.lock`. Write and run tests with Vitest (see **Testing** above).
+Use **Bun** for all installs and scripts: `bun install`, `bun run <script>`, `bunx` for one-off tools. Do not commit `package-lock.json`; the lockfile for this repo is `bun.lock`. Write and run tests with Vitest (frontend) or Jest (backend). See **Candidate Contract Surface** for how to add or change candidate-visible exports; see **Unused code detection** for running the unused-code check.

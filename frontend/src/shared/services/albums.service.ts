@@ -97,4 +97,3 @@ export const albumsService = {
 	},
 };
 
-export const albumService = albumsService;

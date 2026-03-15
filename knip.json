@@ -1,0 +1,45 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"workspaces": {
+		".": {
+			"entry": [
+				"__tests__/**/*.behavior.test.ts",
+				"__tests__/**/*.behavior.test.tsx",
+				"test/**/*.ts",
+				"test/**/*.js",
+				"vitest.config.frontend.ts"
+			],
+			"project": ["__tests__/**/*.ts", "__tests__/**/*.tsx", "test/**/*", "vitest.*.ts"]
+		},
+		"frontend": {
+			"entry": ["../candidate-contracts/candidate-frontend-contract.ts"],
+			"project": ["src/**/*.ts", "src/**/*.tsx"],
+			"ignoreFiles": [
+				"src/shared/components/common/ErrorMessage.tsx",
+				"src/shared/components/common/LoadingSpinner.tsx",
+				"src/shared/components/layout/index.ts",
+				"src/shared/hooks/index.ts",
+				"src/shared/hooks/useLocalStorage.ts"
+			]
+		},
+		"backend": {
+			"entry": [
+				"src/app.ts",
+				"../candidate-contracts/candidate-backend-contract.ts"
+			],
+			"project": ["src/**/*.ts"],
+			"ignoreFiles": ["src/shared/services/cache.service.ts"]
+		}
+	},
+	"ignoreDependencies": [
+		"@types/supertest",
+		"@testing-library/dom",
+		"@testing-library/react",
+		"@testing-library/user-event",
+		"@vitest/coverage-v8",
+		"express",
+		"mongoose",
+		"supertest"
+	],
+	"ignoreBinaries": ["jest", "dist/server.js"]
+}

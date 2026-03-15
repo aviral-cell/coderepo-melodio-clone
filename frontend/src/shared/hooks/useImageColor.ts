@@ -3,7 +3,7 @@ import ColorThief from "colorthief";
 
 const DEFAULT_COLOR = "rgb(40, 40, 40)";
 
-export interface ImageColorResult {
+interface ImageColorResult {
 	color: string;
 	isReady: boolean;
 }

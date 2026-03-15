@@ -1,6 +1,6 @@
 import { User, IUserDocument } from "./user.model.js";
 
-export interface CreateUserData {
+interface CreateUserData {
 	email: string;
 	username: string;
 	passwordHash: string;
