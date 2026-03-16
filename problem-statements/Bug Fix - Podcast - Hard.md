@@ -1,4 +1,4 @@
-# Bug Fix: Podcast Browser
+# Bug Fix: Podcast
 
 ```
 Tags: Theme:Melodio, MERN, Frontend, BugFix, Hard
@@ -10,9 +10,9 @@ Score: 100
 
 **Skills:** React (Advanced)
 
-Melodio is a music streaming app that also hosts podcasts. The Podcast Browser lets users explore podcast shows, view episode details, read descriptions, and play episodes.
+Melodio is a music streaming app that also hosts podcasts. The Podcast lets users explore podcast shows, view episode details, read descriptions, and play episodes.
 
-At the moment, the podcast browser is extensively broken. Show durations are wrong, episodes don't load, and playback does not work.
+At the moment, the podcast feature is extensively broken. Show durations are wrong, episodes don't load, and playback does not work.
 
 [SS]
 
