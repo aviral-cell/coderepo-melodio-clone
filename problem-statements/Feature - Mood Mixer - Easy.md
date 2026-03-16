@@ -1,6 +1,10 @@
 # Feature: Mood Mixer
 
-`Easy`
+```
+Tags: Theme:Melodio, MERN, Frontend, Feature Implementation, Easy
+Time: 20 mins
+Score: 50
+```
 
 ## Overview
 

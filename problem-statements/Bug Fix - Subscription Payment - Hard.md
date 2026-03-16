@@ -1,11 +1,14 @@
 # Bug Fix: Subscription Payment
 
-`Hard`
+```
+Tags: Theme:Melodio, MERN, backend, BugFix, Medium
+Time: 40 mins
+Score: 75
+```
 
 ## Overview
 
 **Skills:** Node.js (Advanced)
-**Recommended Duration:** 60 mins
 
 Melodio is a music streaming app with a premium subscription model. Users can upgrade from a free to premium plan by paying with a credit or debit card. Premium unlocks adding unlimited playlists.
 

@@ -1,11 +1,14 @@
 # Bug Fix: Podcast Browser
 
-`Hard`
+```
+Tags: Theme:Melodio, MERN, Frontend, BugFix, Hard
+Time: 60 mins
+Score: 100
+```
 
 ## Overview
 
 **Skills:** React (Advanced)
-**Recommended Duration:** 60 mins
 
 Melodio is a music streaming app that also hosts podcasts. The Podcast Browser lets users explore podcast shows, view episode details, read descriptions, and play episodes.
 

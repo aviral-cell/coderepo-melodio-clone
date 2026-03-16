@@ -1,11 +1,14 @@
 # Bug Fix: Music Discovery
 
-`Hard`
+```
+Tags: Theme:Melodio, MERN, Frontend, Feature Implementation, Medium
+Time: 40 mins
+Score: 75
+```
 
 ## Overview
 
 **Skills:** React (Advanced)
-**Recommended Duration:** 60 mins
 
 Melodio is a music streaming app with a Discovery page that helps users explore music through multiple filter dimensions; language, genre, and era; along with a "New This Week" section and a "Top Artists" ranking.
 

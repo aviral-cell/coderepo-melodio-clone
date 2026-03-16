@@ -1,11 +1,14 @@
 # Bug Fix: Create Mix
 
-`Hard`
+```
+Tags: Theme:Melodio, MERN, Frontend, Feature Implementation, Hard
+Time: 60 mins
+Score: 100
+```
 
 ## Overview
 
 **Skills:** React (Advanced)
-**Recommended Duration:** 60 mins
 
 Melodio is a music streaming app with a Mix feature that lets users create personalized track collections. The Mix page has a 3-step wizard: select artists, configure mix settings (variety, discovery, filters), and generate a scored mix. Users can also view and manage their saved mixes.
 

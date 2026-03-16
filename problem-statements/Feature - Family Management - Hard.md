@@ -1,11 +1,14 @@
 # Feature: Family Management
 
-`Hard`
+```
+Tags: Theme:Melodio, MERN, backend, Feature Implementation, Hard
+Time: 60 mins
+Score: 100
+```
 
 ## Overview
 
 **Skills:** Node.js (Advanced)
-**Recommended Duration:** 60 mins
 
 Melodio is a music streaming app that supports family accounts. Primary account holders can add family members, who get their own profiles and can be switched to seamlessly.
 
