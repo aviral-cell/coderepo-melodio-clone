@@ -56,9 +56,8 @@ export const playlistsService = {
 	},
 
 	async removeTrack(playlistId: string, trackId: string): Promise<Playlist> {
-		return apiService.post<Playlist>(
-			"/api/playlists/" + playlistId + "/tracks/" + trackId,
-			{}
+		return apiService.delete<Playlist>(
+			"/api/playlists/" + playlistId + "/tracks/" + trackId
 		);
 	},
 

@@ -110,6 +110,7 @@ export { useArtistInteraction } from "../frontend/src/shared/hooks/useArtistInte
 
 // Shared app barrels intentionally exposed to candidates/tasks
 export * from "../frontend/src/shared/services/index";
+export type { PlaylistWithTracks } from "../frontend/src/shared/services/playlist.service";
 export * from "../frontend/src/shared/utils/index";
 export * from "../frontend/src/shared/types/index";
 export type { TrackWithPopulated } from "../frontend/src/shared/types/player.types";

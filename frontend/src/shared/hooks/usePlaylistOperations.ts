@@ -49,9 +49,14 @@ export function usePlaylistOperations(
 
 	const removeTrack = useCallback(
 		async (trackId: string): Promise<void> => {
-			const err = new Error("Failed to remove track");
-			onError?.(err);
-			throw err;
+			try {
+				await playlistsService.removeTrack(playlistId, trackId);
+				setPlaylist(tracks.filter((t) => t._id !== trackId));
+			} catch (error) {
+				const err = error instanceof Error ? error : new Error("Failed to remove track");
+				onError?.(err);
+				throw err;
+			}
 		},
 		[playlistId, tracks, setPlaylist, onError]
 	);

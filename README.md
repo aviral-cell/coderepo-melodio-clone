@@ -25,6 +25,23 @@ For a reproducible install (e.g. CI):
 bun install --frozen-lockfile
 ```
 
+## Locked dependencies
+
+Dependencies use **exact versions** (no `^` or `~`). The lockfile (`bun.lock`) is the source of truth.
+
+- **Install new dependencies (intentional updates):** From the repo root, add the dependency so the lockfile is updated:
+  ```bash
+  bun add <pkg>              # root
+  bun add <pkg> --cwd frontend
+  bun add <pkg> --cwd backend
+  bun add -d <pkg>           # dev at root
+  ```
+- **Frozen check before committing:** Ensure install/build/start use the lockfile without changing it:
+  ```bash
+  bun run deps:check
+  ```
+  This runs `bun install --frozen-lockfile` and fails if `package.json` or the lockfile would change. `bun run build` and `bun start` run this check automatically via `prebuild` and `prestart`.
+
 ## Running scripts
 
 From the repo root:
