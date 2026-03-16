@@ -1,11 +1,14 @@
 # Feature: Recently Played Tracks
 
-`Easy`
+```
+Tags: Theme:Melodio, MERN, backend, Feature Implementation, Medium
+Time: 40 mins
+Score: 75
+```
 
 ## Overview
 
 **Skills:** Node.js (Basic)
-**Recommended Duration:** 20 mins
 
 Melodio is a music streaming app that lets users discover and listen to music. The platform should maintain a play history so users can revisit tracks they have recently enjoyed.
 

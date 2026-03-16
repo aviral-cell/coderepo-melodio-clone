@@ -1,11 +1,14 @@
 # Bug Fix: Playlist Track Removal
 
-`Easy`
+```
+Tags: Theme:Melodio, MERN, Frontend, BugFix, Easy
+Time: 20 mins
+Score: 50
+```
 
 ## Overview
 
 **Skills:** React (Basic)
-**Recommended Duration:** 20 mins
 
 This subjective question evaluates React, playlist management, and user interface concepts, ideal for junior-level roles. The problem requires identifying and fixing a bug where users cannot remove tracks from their playlists in a music app.
 

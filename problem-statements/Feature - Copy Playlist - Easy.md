@@ -1,11 +1,14 @@
 # Feature: Copy Playlist
 
-`Easy`
+```
+Tags: Theme:Melodio, MERN, backend, Feature Implementation, Easy
+Time: 20 mins
+Score: 50
+```
 
 ## Overview
 
 **Skills:** Node.js (Basic)
-**Recommended Duration:** 20 mins
 
 Melodio is a music streaming app where users can create playlists to organize their favorite tracks. The platform should allow users to copy any public playlist into their library.
 

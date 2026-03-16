@@ -1,11 +1,14 @@
 # Bug Fix: Live Music Concerts
 
-`Medium`
+```
+Tags: Theme:Melodio, MERN, Frontend, BugFix, Medium
+Time: 40 mins
+Score: 75
+```
 
 ## Overview
 
 **Skills:** React (Intermediate)
-**Recommended Duration:** 40 mins
 
 Melodio is a music streaming app with a Live Music Concerts feature that lets users browse upcoming concerts, filter by month and city, view concert details, buy tickets, and explore the performing artist's albums and tracks.
 

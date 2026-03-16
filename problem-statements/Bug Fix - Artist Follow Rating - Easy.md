@@ -1,11 +1,14 @@
 # Bug Fix: Artist Follow & Rating
 
-`Easy`
+```
+Tags: Theme:Melodio, MERN, backend, BugFix, Easy
+Time: 20 mins
+Score: 50
+```
 
 ## Overview
 
 **Skills:** Node.js (Basic)
-**Recommended Duration:** 20 mins
 
 Melodio is a music streaming app where users can follow their favorite artists and rate them. Following an artist subscribes the user to updates, and ratings contribute to the artist's overall community score. These interactions are tracked per user and displayed on artist profile pages.
 

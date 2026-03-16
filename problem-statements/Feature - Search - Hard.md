@@ -1,11 +1,14 @@
 # Feature: Search
 
-`Hard`
+```
+Tags: Theme:Melodio, MERN, Full-Stack, Feature Implementation, Hard
+Time: 60 mins
+Score: 100
+```
 
 ## Overview
 
 **Skills:** Node.js (Advanced), React (Advanced)
-**Recommended Duration:** 60 mins
 
 This subjective question evaluates React, Node.js, and full-stack development concepts, ideal for senior-level roles. The task involves building a responsive search feature for a music streaming app that provides real-time results based on user input.
 

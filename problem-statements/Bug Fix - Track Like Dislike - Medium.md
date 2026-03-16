@@ -1,11 +1,14 @@
 # Bug Fix: Track Like Dislike
 
-`Medium`
+```
+Tags: Theme:Melodio, MERN, backend, BugFix, Medium
+Time: 40 mins
+Score: 75
+```
 
 ## Overview
 
 **Skills:** Node.js (Intermediate)
-**Recommended Duration:** 40 mins
 
 Melodio is a music streaming app where users can like or dislike individual tracks. Liked tracks are saved to a personal collection for easy access, and the like/dislike status is shown on track cards throughout the app.
 
