@@ -6,6 +6,7 @@ import { normalizeTracks } from "../utils";
 export interface CreatePlaylistInput {
 	name: string;
 	description?: string;
+	isPublic?: boolean;
 }
 
 export interface UpdatePlaylistInput {

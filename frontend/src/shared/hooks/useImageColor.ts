@@ -8,6 +8,10 @@ interface ImageColorResult {
 	isReady: boolean;
 }
 
+type BrowserColorThief = {
+	getColor: (image: HTMLImageElement, quality?: number) => [number, number, number];
+};
+
 export function useImageColor(imageUrl: string | undefined): ImageColorResult {
 	const [color, setColor] = useState<string>(DEFAULT_COLOR);
 	const [isReady, setIsReady] = useState<boolean>(false);
@@ -26,7 +30,7 @@ export function useImageColor(imageUrl: string | undefined): ImageColorResult {
 
 		img.onload = () => {
 			try {
-				const colorThief = new ColorThief();
+				const colorThief = ColorThief as unknown as BrowserColorThief;
 				const [r, g, b] = colorThief.getColor(img);
 				setColor(`rgb(${r}, ${g}, ${b})`);
 			} catch {
