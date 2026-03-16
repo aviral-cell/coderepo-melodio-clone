@@ -9,4 +9,4 @@ router.post("/login", authController.login);
 router.get("/me", authMiddleware, authController.getMe);
 router.post("/switch", authMiddleware, authController.switchAccount);
 
-export const authRoutes = router;
+export const authRoutes: Router = router;

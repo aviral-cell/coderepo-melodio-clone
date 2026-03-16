@@ -6,4 +6,4 @@ const router = Router();
 
 router.get("/", authMiddleware, subscriptionController.getSubscription);
 
-export const subscriptionRoutes = router;
+export const subscriptionRoutes: Router = router;

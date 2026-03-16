@@ -79,10 +79,10 @@ export function SearchDropdown({
 									onClick={() => handleTrackClick(track)}
 									className={cn(
 										"flex w-full items-center gap-3 px-4 py-2 text-left transition-colors",
-										"hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:outline-none"
+										"hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:outline-hidden"
 									)}
 								>
-									<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
+									<div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
 										<AppImage
 											src={getImageUrl(trackCover)}
 											alt={track.title}
@@ -97,7 +97,7 @@ export function SearchDropdown({
 											{artistName} - {albumTitle}
 										</p>
 									</div>
-									<span data-testid={`search-result-duration-${track._id}`} className="flex-shrink-0 text-sm text-melodio-text-subdued">
+									<span data-testid={`search-result-duration-${track._id}`} className="shrink-0 text-sm text-melodio-text-subdued">
 										{formatDuration(track.durationInSeconds)}
 									</span>
 								</button>

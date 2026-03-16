@@ -49,17 +49,17 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 			role="alert"
 			aria-live="assertive"
 			className={cn(
-				"pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300",
+				"pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-lg border p-4 shadow-lg backdrop-blur-xs transition-all duration-300",
 				"animate-in slide-in-from-top-2 fade-in-0",
 				getToastStyles(toast.type)
 			)}
 		>
 			<Icon className={cn("h-5 w-5 shrink-0", getIconColor(toast.type))} />
-			<p className="flex-1 min-w-0 text-sm font-medium break-words">{toast.message}</p>
+			<p className="flex-1 min-w-0 text-sm font-medium wrap-break-word">{toast.message}</p>
 			<button
 				type="button"
 				onClick={onClose}
-				className="shrink-0 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/20"
+				className="shrink-0 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-white/20"
 				aria-label="Dismiss"
 			>
 				<X className="h-4 w-4" />
@@ -77,7 +77,7 @@ export function Toaster() {
 
 	return (
 		<div
-			className="pointer-events-none fixed right-0 top-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:flex-col sm:right-4 sm:top-4 sm:w-auto"
+			className="pointer-events-none fixed right-0 top-0 z-100 flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:flex-col sm:right-4 sm:top-4 sm:w-auto"
 			aria-label="Notifications"
 		>
 			{toasts.map((toast) => (

@@ -8,4 +8,4 @@ router.post("/", authMiddleware, familyController.addFamilyMember);
 router.get("/", authMiddleware, familyController.getFamilyMembers);
 router.delete("/:memberId", authMiddleware, familyController.removeFamilyMember);
 
-export const familyRoutes = router;
+export const familyRoutes: Router = router;

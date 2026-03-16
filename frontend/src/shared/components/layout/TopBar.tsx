@@ -80,7 +80,7 @@ export function TopBar({ initialQuery = "" }: TopBarProps) {
 		"U";
 
 	return (
-		<header className="sticky top-0 z-20 flex h-16 items-center justify-between bg-melodio-black/95 px-3 md:px-6 backdrop-blur-sm">
+		<header className="sticky top-0 z-20 flex h-16 items-center justify-between bg-melodio-black/95 px-3 md:px-6 backdrop-blur-xs">
 			<div className="hidden md:block md:w-32" />
 
 			<form onSubmit={handleSearch} className="flex-1 max-w-xl">

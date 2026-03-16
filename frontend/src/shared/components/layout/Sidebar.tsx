@@ -174,7 +174,7 @@ export function Sidebar() {
 				)}
 				data-testid={item.testId}
 			>
-				<Icon className={cn("h-5 w-5 flex-shrink-0", item.href === "/subscription" && isPremium && "text-yellow-500")} />
+				<Icon className={cn("h-5 w-5 shrink-0", item.href === "/subscription" && isPremium && "text-yellow-500")} />
 				{label}
 			</Link>
 		);
@@ -208,7 +208,7 @@ export function Sidebar() {
 				)}
 				data-testid={item.testId}
 			>
-				<Icon className={cn("h-6 w-6 flex-shrink-0", item.href === "/subscription" && isPremium && "text-yellow-500")} />
+				<Icon className={cn("h-6 w-6 shrink-0", item.href === "/subscription" && isPremium && "text-yellow-500")} />
 				{label}
 			</Link>
 		);
@@ -263,7 +263,7 @@ export function Sidebar() {
 				)}
 				title={group.label}
 			>
-				<SectionIcon className="h-6 w-6 flex-shrink-0" />
+				<SectionIcon className="h-6 w-6 shrink-0" />
 			</button>
 		);
 	};
@@ -280,7 +280,7 @@ export function Sidebar() {
 					isCollapsed ? "w-20" : "w-64"
 				)}
 			>
-				<div className="flex items-center justify-center p-4 flex-shrink-0">
+				<div className="flex items-center justify-center p-4 shrink-0">
 					<Link
 						to="/"
 						className={cn(
@@ -288,7 +288,7 @@ export function Sidebar() {
 							isCollapsed && "justify-center w-full"
 						)}
 					>
-						<Music className="h-8 w-8 text-melodio-green flex-shrink-0" />
+						<Music className="h-8 w-8 text-melodio-green shrink-0" />
 						{!isCollapsed && (
 							<span className="text-xl font-bold text-white">Melodio</span>
 						)}
@@ -296,7 +296,7 @@ export function Sidebar() {
 				</div>
 
 				{isCollapsed ? (
-					<nav className="flex-shrink-0 px-3 space-y-1">
+					<nav className="shrink-0 px-3 space-y-1">
 						{NAV_GROUPS.map(renderCollapsedSectionButton)}
 						<button
 							type="button"
@@ -309,11 +309,11 @@ export function Sidebar() {
 							)}
 							title="Your Library"
 						>
-							<Library className="h-6 w-6 flex-shrink-0" />
+							<Library className="h-6 w-6 shrink-0" />
 						</button>
 					</nav>
 				) : (
-					<ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block [&_[data-radix-scroll-area-scrollbar]]:w-0.5">
+					<ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:block! **:data-radix-scroll-area-scrollbar:w-0.5">
 						<nav className="px-3 space-y-3">
 							{NAV_GROUPS.map(renderNavGroup)}
 						</nav>
@@ -326,7 +326,7 @@ export function Sidebar() {
 									className="flex flex-1 items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-melodio-text-subdued/60 hover:text-melodio-text-subdued cursor-pointer transition-colors"
 								>
 									<span className="flex items-center gap-2">
-										<Library className="h-4 w-4 flex-shrink-0" />
+										<Library className="h-4 w-4 shrink-0" />
 										Your Library
 									</span>
 									<div className="flex items-center gap-1">
@@ -356,7 +356,7 @@ export function Sidebar() {
 												key={index}
 												className="flex items-center gap-3 rounded-md p-2"
 											>
-												<Skeleton className="h-12 w-12 rounded flex-shrink-0" />
+												<Skeleton className="h-12 w-12 rounded shrink-0" />
 												<div className="flex-1">
 													<Skeleton className="mb-1 h-4 w-3/4" />
 													<Skeleton className="h-3 w-1/2" />
@@ -381,7 +381,7 @@ export function Sidebar() {
 															: "hover:bg-melodio-light-gray/50",
 													)}
 												>
-													<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
+													<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray shrink-0">
 														<Music className="h-6 w-6 text-melodio-text-subdued" />
 													</div>
 													<div className="min-w-0 flex-1 overflow-hidden">
@@ -474,12 +474,12 @@ export function Sidebar() {
 							Your Library
 						</SheetTitle>
 					</SheetHeader>
-					<ScrollArea className="h-[calc(100vh-80px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
+					<ScrollArea className="h-[calc(100vh-80px)] [&_[data-radix-scroll-area-viewport]>div]:block!">
 						<div className="space-y-1 p-2">
 							{isLoading ? (
 								Array.from({ length: 5 }).map((_, index) => (
 									<div key={index} className="flex items-center gap-3 rounded-md p-2">
-										<Skeleton className="h-12 w-12 rounded flex-shrink-0" />
+										<Skeleton className="h-12 w-12 rounded shrink-0" />
 										<div className="flex-1">
 											<Skeleton className="mb-1 h-4 w-3/4" />
 											<Skeleton className="h-3 w-1/2" />
@@ -505,7 +505,7 @@ export function Sidebar() {
 													: "hover:bg-melodio-light-gray/50"
 											)}
 										>
-											<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray flex-shrink-0">
+											<div className="flex h-12 w-12 items-center justify-center rounded bg-melodio-light-gray shrink-0">
 												<Music className="h-6 w-6 text-melodio-text-subdued" />
 											</div>
 											<div className="min-w-0 flex-1 overflow-hidden">

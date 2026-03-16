@@ -182,7 +182,7 @@ export default function TrackDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
+			<div className="bg-linear-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 				<div className="flex items-center justify-center gap-4 sm:justify-start">
 					<Button
 						size="lg"

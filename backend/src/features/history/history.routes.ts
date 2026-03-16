@@ -12,4 +12,4 @@ router.get("/recently-played", historyController.getRecentlyPlayed);
 
 router.delete("/recently-played", historyController.clearHistory);
 
-export const historyRoutes = router;
+export const historyRoutes: Router = router;

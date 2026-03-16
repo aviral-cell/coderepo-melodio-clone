@@ -37,7 +37,11 @@ async function startServer(): Promise<void> {
 	const app = createApp();
 
 	const host = "0.0.0.0";
-	const server = app.listen(config.port, host, () => {
+	const server = app.listen(config.port, host, (err?: Error) => {
+		if (err) {
+			console.error("Server failed to start:", err);
+			process.exit(1);
+		}
 		console.log(`Server running on http://${host}:${config.port}`);
 	});
 
