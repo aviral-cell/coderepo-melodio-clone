@@ -99,6 +99,17 @@ xychart
 
 **Summary.** A candidate who runs a full install, build, and test cycle during the interview can expect to save on the order of a minute or more per cycle—more time to spend on the actual problem instead of waiting on the toolchain.
 
+### Tooling structure summary
+
+| Strategy | How it’s done |
+|----------|----------------|
+| Workspace at root | `workspaces: ["frontend", "backend"]`; single `bun.lock`; run from root. |
+| Bun as installer | `bun install`; `packageManager: "bun@1.1.0"`; `engines.bun`. |
+| Vite as bundler | Frontend: `vite`, `@vitejs/plugin-react`; dev + build. |
+| Vitest (frontend tests) | `frontend/__tests__/**/*.behavior.test.tsx`; `vitest.config.frontend.ts`. |
+| Jest + SWC (backend tests) | `@swc/jest` in `backend/jest.config.cjs`; `backend/__tests__/**/*.behavior.test.ts`. |
+| Knip | `bun run unused:check`; entry files = contract files; optional `bunx depcheck`. |
+
 ---
 
 ## 4. What we changed (high level)
@@ -109,9 +120,9 @@ The following changes were made with the candidate experience in mind: faster se
 
 **Frontend build and dev server.** The frontend is built with **Vite** and the React plugin. The build command is `tsc && vite build`; the dev server runs through Vite as well. This gives faster startup and faster rebuilds during development.
 
-**Frontend tests.** Frontend tests were moved from Jest to **Vitest**. They live under `__tests__/**/*.behavior.test.tsx` and are run with Vitest’s runner, which shares the same project and config as Vite. Coverage is handled by `@vitest/coverage-v8`.
+**Frontend tests.** Frontend tests were moved from Jest to **Vitest**. They now live under `frontend/__tests__/**/*.behavior.test.tsx` and are run with Vitest’s runner, which shares the same project and config as Vite. Coverage is handled by `@vitest/coverage-v8`.
 
-**Backend tests.** We kept **Jest** for the backend but added **SWC** as the transpiler. That’s the main reason backend test time dropped from about 2.5 seconds to about 1.9 seconds. The tests themselves and their structure are unchanged.
+**Backend tests.** We kept **Jest** for the backend but added **SWC** as the transpiler. That’s the main reason backend test time dropped from about 2.5 seconds to about 1.9 seconds. Backend tests now live under `backend/__tests__/**/*.behavior.test.ts`.
 
 **Unused code and dependencies.** We added **Knip** to report unused files, exports, and dependencies. So that we don’t flag candidate-facing code as “unused,” we maintain two contract files at the repo root that re-export the symbols candidates are expected to use. Knip is configured to treat those contracts as entry points. We also excluded a small set of scaffold files (e.g. shared error message components, cache service) from the unused-file check, since they are intentionally present for candidates even if not imported by the app. The rule is: we never change task code for Knip; we only add symbols to the contract or, in rare cases, to the scaffold ignore list.
 
@@ -185,19 +196,19 @@ The root `package.json` sets `"packageManager": "bun@1.1.0"` and `"engines": { "
 
 ### Frontend: Vite and Vitest
 
-The frontend is built with Vite; the build step is `tsc && vite build`. The dev server is also Vite. Tests are in `__tests__/**/*.behavior.test.tsx` and run with Vitest; the config lives in `vitest.config.frontend.ts` and the workspace in `vitest.workspace.ts`. Vitest is set up with jsdom, path aliases matching the app, and coverage via `@vitest/coverage-v8`.
+The frontend is built with Vite; the build step is `tsc && vite build`. The dev server is also Vite. Tests are in `frontend/__tests__/**/*.behavior.test.tsx` and run with Vitest; the config lives in `vitest.config.frontend.ts` and the workspace in `vitest.workspace.ts`. Vitest is set up with jsdom, path aliases matching the app, and coverage via `@vitest/coverage-v8`.
 
 ### Backend: Jest and SWC
 
-Backend tests stay in Jest; the config is `backend/jest.config.cjs`. We added the `@swc/jest` transform so that TypeScript is compiled with SWC (target `es2022`, CommonJS). Test roots point to the repo-level `__tests__` directory, and we have a small module name mapper so that `.js` imports resolve correctly. The tests themselves are unchanged; only the way they are compiled is different.
+Backend tests stay in Jest; the config is `backend/jest.config.cjs`. We added the `@swc/jest` transform so that TypeScript is compiled with SWC (target `es2022`, CommonJS). Test roots now point to `backend/__tests__`, and we have a small module name mapper so that `.js` imports resolve correctly. The tests themselves are unchanged; only the way they are compiled is different.
 
 ### Knip configuration
 
 Knip is invoked with `bun run unused:check` (which runs `knip`). The config is in `knip.json` at the root.
 
-- **Root workspace:** Entry points include the behavior test files (`__tests__/**/*.behavior.test.ts` and `*.tsx`), the test setup under `test/`, and `vitest.config.frontend.ts`, so test and config files are not reported as unused.
-- **Frontend:** The entry is `../candidate-contracts/candidate-frontend-contract.ts`. The project is `src/**/*.{ts,tsx}`. A few scaffold files (e.g. `ErrorMessage.tsx`, `LoadingSpinner.tsx`, `useLocalStorage.ts`) are in `ignoreFiles` because they are intentionally unused by the app but provided for candidates.
-- **Backend:** Entry points are `src/app.ts` and `../candidate-contracts/candidate-backend-contract.ts`. The project is `src/**/*.ts`. The scaffold file `cache.service.ts` is in `ignoreFiles` for the same reason as above.
+- **Root workspace:** Entry points include `vitest.config.frontend.ts` and repo-level scripts so workspace config files are not reported as unused.
+- **Frontend:** Entry points include `../candidate-contracts/candidate-frontend-contract.ts`, `frontend/__tests__/**/*.behavior.test.tsx`, and `frontend/test/**/*`. The project includes `src/**/*.{ts,tsx}`, `__tests__/**/*.tsx`, and `test/**/*`. A few scaffold files (e.g. `ErrorMessage.tsx`, `LoadingSpinner.tsx`, `useLocalStorage.ts`) are in `ignoreFiles` because they are intentionally unused by the app but provided for candidates.
+- **Backend:** Entry points are `src/app.ts`, `../candidate-contracts/candidate-backend-contract.ts`, and `backend/__tests__/**/*.behavior.test.ts`. The project includes `src/**/*.ts` and `__tests__/**/*.ts`. The scaffold file `cache.service.ts` is in `ignoreFiles` for the same reason as above.
 
 We only list *specific* symbols in the contract files—exports, types, or functions that candidates are expected to use. We do not ignore entire task files. That keeps Knip useful for finding real dead code while avoiding false positives on candidate surface.
 
@@ -239,7 +250,7 @@ This table lists the main libraries that were added or upgraded as part of this 
 | File | What changed |
 |------|------------------|
 | `backend/package.json` | Scripts updated to use Bun; the start script runs `bun dist/server.js`; test setup uses Jest with SWC. |
-| `backend/jest.config.cjs` | Added SWC transform for TypeScript; set test roots to the repo-level `__tests__`; added module name mapper for `.js` resolution. |
+| `backend/jest.config.cjs` | Added SWC transform for TypeScript; set test roots to `backend/__tests__`; added module name mapper for `.js` resolution. |
 | `backend/src/app.ts` | Introduced `getPublicDir()` that uses `__dirname` when available (Node) and falls back to `process.cwd()` (e.g. Bun). Serves static files from that directory and registers both `/api/payment` and `/api/payments` with the same payment routes so that different client code can call either path. |
 
 No other backend source files were changed. In particular, no candidate-facing services (e.g. tracks, playlists, payment logic) were modified.
