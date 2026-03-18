@@ -46,9 +46,11 @@ Dependencies use **exact versions** (no `^` or `~`). The lockfile (`bun.lock`) i
 
 From the repo root:
 
-- **Start dev (frontend + backend):** `bun start` (runs `setup.sh` then dev servers)
+- **Install + setup:** `bun install` (runs install lifecycle hooks that start Mongo if needed, create `.env` files, and seed the DB)
+- **Manual reseed/setup:** `bun run setup`
+- **Start dev (frontend + backend):** `bun start` (runs lightweight startup checks, then dev servers)
 - **Dev per workspace:**  
-  `bun run dev:frontend` or `bun run dev:backend`
+  `bun run dev`, `bun run dev:frontend`, or `bun run dev:backend`
 - **Build all:** `bun run build`
 - **Seed DB:** `bun run seed`
 - **Tests:** `bun run test` (all), `bun run test:watch` (watch), `bun run test:coverage` (coverage), or `bun run test:task1` … `bun run test:task13` (per-task; see root `package.json`)
