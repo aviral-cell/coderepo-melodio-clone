@@ -40,15 +40,15 @@ Dependencies use **exact versions** (no `^` or `~`). The lockfile (`bun.lock`) i
   ```bash
   bun run deps:check
   ```
-  This runs `bun install --frozen-lockfile` and fails if `package.json` or the lockfile would change. `bun run build` and `bun start` run this check automatically via `prebuild` and `prestart`.
+  This runs `bun install --frozen-lockfile --ignore-scripts` and fails if `package.json` or the lockfile would change. `bun run build` runs this check automatically via `prebuild`.
 
 ## Running scripts
 
 From the repo root:
 
-- **Install + setup:** `bun install` (runs install lifecycle hooks that start Mongo if needed, create `.env` files, and seed the DB)
-- **Manual reseed/setup:** `bun run setup`
-- **Start dev (frontend + backend):** `bun start` (runs lightweight startup checks, then dev servers)
+- **Install + setup:** `bun install` (starts Mongo if needed, creates `.env` files, and seeds only when Mongo target or seed source changed)
+- **Manual reseed/setup:** `bun run setup` (forces reseed)
+- **Start dev (frontend + backend):** `bun start` (runs startup checks only, then starts dev servers)
 - **Dev per workspace:**  
   `bun run dev`, `bun run dev:frontend`, or `bun run dev:backend`
 - **Build all:** `bun run build`
