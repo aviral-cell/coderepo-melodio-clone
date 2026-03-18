@@ -6,12 +6,12 @@ export default defineConfig({
 	plugins: [react()],
 	test: {
 		name: "frontend",
-		include: ["__tests__/**/*.behavior.test.tsx"],
+		include: ["frontend/__tests__/**/*.behavior.test.tsx"],
 		environment: "jsdom",
 		globals: true,
 		setupFiles: [
-			path.resolve(__dirname, "test/setup.ts"),
-			path.resolve(__dirname, "test/setup-dom.ts"),
+			path.resolve(__dirname, "frontend/test/setup.ts"),
+			path.resolve(__dirname, "frontend/test/setup-dom.ts"),
 		],
 		clearMocks: true,
 		restoreMocks: true,
@@ -30,8 +30,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "frontend/src"),
-			"\\.(css|less|scss|sass)$": path.resolve(__dirname, "test/styleMock.ts"),
-			"\\.(jpg|jpeg|png|gif|svg|webp)$": path.resolve(__dirname, "test/fileMock.js"),
+			"\\.(css|less|scss|sass)$": path.resolve(__dirname, "frontend/test/styleMock.ts"),
+			"\\.(jpg|jpeg|png|gif|svg|webp)$": path.resolve(__dirname, "frontend/test/fileMock.js"),
 		},
 		dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
 	},

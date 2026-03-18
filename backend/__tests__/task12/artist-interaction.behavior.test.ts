@@ -1,17 +1,17 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, "../../backend/.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 import request from "supertest";
 import mongoose from "mongoose";
 import { Application } from "express";
-import { createApp } from "../../backend/src/app";
-import { loadConfig, Config } from "../../backend/src/shared/config";
-import { User } from "../../backend/src/features/users/user.model";
-import { Artist, IArtistDocument } from "../../backend/src/features/artists/artist.model";
-import { ArtistFollow } from "../../backend/src/features/artists/artist-follow.model";
-import { ArtistRating } from "../../backend/src/features/artists/artist-rating.model";
+import { createApp } from "../../src/app";
+import { loadConfig, Config } from "../../src/shared/config";
+import { User } from "../../src/features/users/user.model";
+import { Artist, IArtistDocument } from "../../src/features/artists/artist.model";
+import { ArtistFollow } from "../../src/features/artists/artist-follow.model";
+import { ArtistRating } from "../../src/features/artists/artist-rating.model";
 
 const config: Config = loadConfig(true);
 

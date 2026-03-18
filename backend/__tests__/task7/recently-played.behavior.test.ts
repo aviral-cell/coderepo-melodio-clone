@@ -1,18 +1,18 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, "../../backend/.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 import request from "supertest";
 import mongoose from "mongoose";
 import { Application } from "express";
-import { createApp } from "../../backend/src/app";
-import { loadConfig, Config } from "../../backend/src/shared/config";
-import { User } from "../../backend/src/features/users/user.model";
-import { Artist } from "../../backend/src/features/artists/artist.model";
-import { Album } from "../../backend/src/features/albums/album.model";
-import { Track, ITrackDocument } from "../../backend/src/features/tracks/track.model";
-import { PlayHistory } from "../../backend/src/features/history/history.model";
+import { createApp } from "../../src/app";
+import { loadConfig, Config } from "../../src/shared/config";
+import { User } from "../../src/features/users/user.model";
+import { Artist } from "../../src/features/artists/artist.model";
+import { Album } from "../../src/features/albums/album.model";
+import { Track, ITrackDocument } from "../../src/features/tracks/track.model";
+import { PlayHistory } from "../../src/features/history/history.model";
 
 const config: Config = loadConfig(true);
 

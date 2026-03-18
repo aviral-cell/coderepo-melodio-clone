@@ -113,8 +113,8 @@ bun install
 
 ## Testing
 
-- **Frontend:** **Vitest** (jsdom, React Testing Library). Tests: `__tests__/**/*.behavior.test.tsx`. From root: `bun run test:vitest`; from frontend: `cd frontend && bun run test`.
-- **Backend:** **Jest + SWC** (Node, supertest). Tests: `__tests__/**/*.behavior.test.ts` (task3, 4, 5, 6, 7, 12, 13). From root: `bun run test:backend`; from backend: `cd backend && bun run test`.
+- **Frontend:** **Vitest** (jsdom, React Testing Library). Tests: `frontend/__tests__/**/*.behavior.test.tsx`. From root: `bun run test:vitest`; from frontend: `cd frontend && bun run test`.
+- **Backend:** **Jest + SWC** (Node, supertest). Tests: `backend/__tests__/**/*.behavior.test.ts` (task3, 4, 5, 6, 7, 12, 13). From root: `bun run test:backend`; from backend: `cd backend && bun run test`.
 
 Commands (from root):
 
@@ -123,9 +123,9 @@ Commands (from root):
 - `bun run test:vitest` — frontend only (Vitest)  
 - `bun run test:watch` — Vitest watch (frontend)  
 - `bun run test:coverage` — backend Jest coverage then frontend Vitest coverage  
-- `bun run test:task1` … `bun run test:task13` — run tests for a specific task (task3–7, 12, 13 use Jest; others use Vitest)
+- `bun run test:task1` … `bun run test:task13` — run tests for a specific task; each command runs the frontend side, backend side, or both, depending on what exists for that task
 
-Frontend uses `vi` (Vitest) for mocks; backend tests are integration-only (supertest). Setup: frontend uses `test/setup.ts` and `test/setup-dom.ts`; backend uses `backend/jest.setup.js`.
+Frontend uses `vi` (Vitest) for mocks; backend tests are integration-only (supertest). Setup: frontend uses `frontend/test/setup.ts` and `frontend/test/setup-dom.ts`; backend uses `backend/jest.setup.js`.
 
 ## Candidate Contract Surface
 
@@ -166,9 +166,9 @@ bunx knip
 ### What’s configured
 
 - **`knip.json`** (repo root):
-  - **Root workspace** — entry: test dirs (`__tests__/`), test setup (`test/`), Vitest config. So test files are not reported as unused.
-  - **Frontend** — entry: `../candidate-contracts/candidate-frontend-contract.ts`. Project: `src/**/*.{ts,tsx}`.
-  - **Backend** — entry: `src/app.ts`, `../candidate-contracts/candidate-backend-contract.ts`. Project: `src/**/*.ts`.
+  - **Root workspace** — entry: `vitest.config.frontend.ts` plus repo-level scripts.
+  - **Frontend** — entry: candidate contract plus `frontend/__tests__` and `frontend/test/`. Project: `src/**/*.{ts,tsx}`, `__tests__/**/*.tsx`, and `test/**/*`.
+  - **Backend** — entry: `src/app.ts`, candidate contract, and `backend/__tests__/**/*.behavior.test.ts`. Project: `src/**/*.ts` and `__tests__/**/*.ts`.
   - **ignoreDependencies** — test/build-only packages (Vitest, Testing Library, supertest, etc.) so they aren’t flagged as unused.
   - **ignoreBinaries** — `jest`, `vitest` (used via scripts).
 
