@@ -24,4 +24,4 @@ router.patch("/:id/reorder", playlistsController.reorderTracks);
 
 router.post("/:id/copy", playlistsController.copyPlaylist);
 
-export const playlistRoutes: Router = router;
+export const playlistRoutes = router;

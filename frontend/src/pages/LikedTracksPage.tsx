@@ -87,7 +87,7 @@ export default function LikedTracksPage(): JSX.Element {
 		<div className="p-4 sm:p-8" data-testid="liked-tracks-page">
 			<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div className="flex items-center gap-3">
-					<div className="flex h-12 w-12 items-center justify-center rounded bg-linear-to-br from-melodio-green to-emerald-600">
+					<div className="flex h-12 w-12 items-center justify-center rounded bg-gradient-to-br from-melodio-green to-emerald-600">
 						<ThumbsUp className="h-6 w-6 text-white" />
 					</div>
 					<h1 className="text-2xl font-bold text-white sm:text-3xl">Liked Tracks</h1>
@@ -180,7 +180,7 @@ export default function LikedTracksPage(): JSX.Element {
 								</div>
 
 								<div className="flex min-w-0 items-center gap-3">
-									<div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
+									<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
 										<AppImage
 											src={getImageUrl(coverImage)}
 											alt={track.title}

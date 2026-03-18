@@ -3,14 +3,10 @@ import ColorThief from "colorthief";
 
 const DEFAULT_COLOR = "rgb(40, 40, 40)";
 
-interface ImageColorResult {
+export interface ImageColorResult {
 	color: string;
 	isReady: boolean;
 }
-
-type BrowserColorThief = {
-	getColor: (image: HTMLImageElement, quality?: number) => [number, number, number];
-};
 
 export function useImageColor(imageUrl: string | undefined): ImageColorResult {
 	const [color, setColor] = useState<string>(DEFAULT_COLOR);
@@ -30,7 +26,7 @@ export function useImageColor(imageUrl: string | undefined): ImageColorResult {
 
 		img.onload = () => {
 			try {
-				const colorThief = ColorThief as unknown as BrowserColorThief;
+				const colorThief = new ColorThief();
 				const [r, g, b] = colorThief.getColor(img);
 				setColor(`rgb(${r}, ${g}, ${b})`);
 			} catch {

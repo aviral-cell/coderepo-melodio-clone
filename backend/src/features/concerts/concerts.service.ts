@@ -27,14 +27,14 @@ interface LeanConcertRaw extends IConcert {
 	_id: mongoose.Types.ObjectId;
 }
 
-interface ConcertTicketResponse {
+export interface ConcertTicketResponse {
 	userId: string;
 	quantity: number;
 	ticketCodes: string[];
 	purchasedAt: Date;
 }
 
-interface ConcertResponse {
+export interface ConcertResponse {
 	_id: string;
 	artistId: {
 		_id: string;

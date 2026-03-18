@@ -7,4 +7,4 @@ const router = Router();
 router.post("/card", authMiddleware, paymentController.processCardPayment);
 router.get("/", authMiddleware, paymentController.getPaymentHistory);
 
-export const paymentRoutes: Router = router;
+export const paymentRoutes = router;

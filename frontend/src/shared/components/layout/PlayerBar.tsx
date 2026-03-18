@@ -96,7 +96,7 @@ export function PlayerBar() {
 							<AppImage
 								src={getImageUrl(trackCover)}
 								alt={currentTrack.title}
-								className="h-8 w-8 rounded shrink-0"
+								className="h-8 w-8 rounded flex-shrink-0"
 							/>
 							<p className="truncate text-xs text-white max-w-[150px]">
 								{currentTrack.title}

@@ -8,6 +8,7 @@ import { MemoryRouter, Routes, Route, useLocation } from "react-router";
 import { SearchDropdown } from "@/shared/components/common/SearchDropdown";
 
 vi.mock("@/shared/utils", () => ({
+	DEFAULT_IMAGE: "/melodio.svg",
 	formatDuration: (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
@@ -134,6 +135,12 @@ const originalLocation = window.location;
 
 let mockFetch: Mock;
 
+async function advanceTimers(ms: number) {
+	await act(async () => {
+		await vi.advanceTimersByTimeAsync(ms);
+	});
+}
+
 describe("Search Feature", () => {
 	beforeAll(() => {
 		delete (window as { location?: Location }).location;
@@ -231,9 +238,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			// Verify API request
 			await waitFor(() => {
@@ -254,9 +260,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			// Verify authorization header
 			await waitFor(() => {
@@ -291,17 +296,14 @@ describe("Search Feature", () => {
 			);
 
 			// Verify no call yet
-			await waitFor(() => {
-				const searchCalls = mockFetch.mock.calls.filter(
-					(call) => call[0].includes("/api/tracks/search")
-				);
-				expect(searchCalls.length).toBe(0);
-			});
+			const pendingSearchCalls = mockFetch.mock.calls.filter(
+				(call) => call[0].includes("/api/tracks/search")
+			);
+			expect(pendingSearchCalls.length).toBe(0);
 
 			// Complete debounce delay
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			// Verify API call made
 			await waitFor(() => {
@@ -332,9 +334,7 @@ describe("Search Feature", () => {
 					<SearchDropdown query="T" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
-			await act(async () => {
-				vi.advanceTimersByTime(100);
-			});
+			await advanceTimers(100);
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Th"
@@ -343,9 +343,7 @@ describe("Search Feature", () => {
 					<SearchDropdown query="Th" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
-			await act(async () => {
-				vi.advanceTimersByTime(100);
-			});
+			await advanceTimers(100);
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Thu"
@@ -354,9 +352,7 @@ describe("Search Feature", () => {
 					<SearchDropdown query="Thu" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
-			await act(async () => {
-				vi.advanceTimersByTime(100);
-			});
+			await advanceTimers(100);
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Thun"
@@ -365,9 +361,7 @@ describe("Search Feature", () => {
 					<SearchDropdown query="Thun" isOpen={true} onClose={vi.fn()} />
 				</TestWrapper>
 			);
-			await act(async () => {
-				vi.advanceTimersByTime(100);
-			});
+			await advanceTimers(100);
 			expect(getSearchCalls().length).toBe(0);
 
 			// Type "Thunder" (final)
@@ -377,15 +371,12 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(100);
-			});
+			await advanceTimers(100);
 			expect(getSearchCalls().length).toBe(0);
 
 			// Complete debounce
-			await act(async () => {
-				vi.advanceTimersByTime(200);
-			});
+			await advanceTimers(200);
+			vi.useRealTimers();
 
 			// Verify single API call with final query
 			await waitFor(() => {
@@ -410,9 +401,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			await waitFor(() => {
 				expect(screen.getByTestId("search-results-list")).toBeInTheDocument();
@@ -423,6 +413,7 @@ describe("Search Feature", () => {
 			unmount();
 
 			// Test singular
+			vi.useFakeTimers();
 			setupSearchFetch([createMockTrack("track-1", "Thunder")]);
 
 			render(
@@ -431,9 +422,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			await waitFor(() => {
 				expect(screen.getByTestId("search-results-count")).toHaveTextContent("1 RESULT");
@@ -453,9 +443,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			// Verify track information
 			await waitFor(() => {
@@ -483,9 +472,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			// Verify no results message
 			await waitFor(() => {
@@ -505,9 +493,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			// Verify error state (API returns error)
 			await waitFor(() => {
@@ -517,6 +504,7 @@ describe("Search Feature", () => {
 			unmount();
 
 			// Test network failure
+			vi.useFakeTimers();
 			mockFetch.mockImplementation((url: string) => {
 				if (url.includes("/api/tracks/search")) {
 					return Promise.reject(new Error("Network failure"));
@@ -535,9 +523,8 @@ describe("Search Feature", () => {
 				</TestWrapper>
 			);
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
 
 			// Verify error state (network failure)
 			await waitFor(() => {
@@ -548,7 +535,6 @@ describe("Search Feature", () => {
 
 	describe("Track Selection Navigation", () => {
 		it("should navigate to track detail page and close dropdown when track is clicked", async () => {
-			const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime as (ms: number) => void });
 			const onClose = vi.fn();
 			const mockTracks = [
 				createMockTrack("abc-123", "First Track"),
@@ -562,9 +548,9 @@ describe("Search Feature", () => {
 				onClose,
 			});
 
-			await act(async () => {
-				vi.advanceTimersByTime(DEBOUNCE_DELAY);
-			});
+			await advanceTimers(DEBOUNCE_DELAY);
+			vi.useRealTimers();
+			const user = userEvent.setup();
 
 			await waitFor(() => {
 				expect(screen.getByTestId("search-result-item-xyz-789")).toBeInTheDocument();

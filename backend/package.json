@@ -8,9 +8,9 @@
 		"build": "bun build ./src/server.ts --outdir ./dist --target bun --format esm",
 		"start": "bun dist/server.js",
 		"seed": "tsx src/scripts/seed.ts",
-		"test": "jest --passWithNoTests",
-		"test:watch": "jest --watch --passWithNoTests",
-		"test:coverage": "jest --coverage --passWithNoTests"
+		"test": "NODE_ENV=test jest --passWithNoTests",
+		"test:watch": "NODE_ENV=test jest --watch --passWithNoTests",
+		"test:coverage": "NODE_ENV=test jest --coverage --passWithNoTests"
 	},
 	"keywords": [
 		"express",

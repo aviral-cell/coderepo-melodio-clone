@@ -16,7 +16,7 @@ export interface IMix {
 	updated_at: Date;
 }
 
-interface IMixDocument extends IMix, Document {
+export interface IMixDocument extends IMix, Document {
 	_id: mongoose.Types.ObjectId;
 }
 

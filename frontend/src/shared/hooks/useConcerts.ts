@@ -13,7 +13,10 @@ import {
 	getUpcomingConcerts,
 	sortConcertsByDate,
 	filterByMonth,
+	getArtistsInCity,
 	formatConcertDate,
+	formatConcertTime,
+	calculateUserTicketCount,
 	canBuyMoreTickets,
 	getArtistAlbumsForConcert,
 	getArtistTracksForConcert,
@@ -75,7 +78,7 @@ export function useConcertListing(): UseConcertListingReturn {
 	);
 
 	const sortedConcerts = useMemo(
-		() => sortConcertsByDate(upcomingConcerts, "asc"),
+		() => sortConcertsByDate(upcomingConcerts, "desc"),
 		[upcomingConcerts],
 	);
 
@@ -85,23 +88,52 @@ export function useConcertListing(): UseConcertListingReturn {
 	);
 
 	const artistsInCity = useMemo(() => {
-		return [];
+		if (selectedCity) {
+			return getArtistsInCity(concerts, artists, selectedCity);
+		}
+		const artistMap = new Map<string, { date: string; concertId: string }>();
+		for (const concert of concerts) {
+			const artistId =
+				typeof concert.artistId === "object"
+					? concert.artistId._id
+					: concert.artistId;
+			const existing = artistMap.get(artistId);
+			if (!existing || new Date(concert.date) < new Date(existing.date)) {
+				artistMap.set(artistId, { date: concert.date, concertId: concert._id });
+			}
+		}
+		const result: ArtistWithNextConcert[] = [];
+		for (const [artistId, { date, concertId }] of artistMap) {
+			const artist = artists.find((a) => a._id === artistId);
+			if (artist) {
+				result.push({ artist, nextConcertDate: date, nextConcertId: concertId });
+			}
+		}
+		return result;
 	}, [concerts, artists, selectedCity]);
 
 	const formattedDates = useMemo(() => {
-		return new Map<string, string>();
+		const dateMap = new Map<string, string>();
+		for (const concert of concerts) {
+			dateMap.set(concert._id, formatConcertDate(concert.date));
+		}
+		return dateMap;
 	}, [concerts]);
 
 	const formattedTimes = useMemo(() => {
-		return new Map<string, string>();
+		const timeMap = new Map<string, string>();
+		for (const concert of concerts) {
+			timeMap.set(concert._id, formatConcertTime(concert.time));
+		}
+		return timeMap;
 	}, [concerts]);
 
 	const handleMonthChange = useCallback((month: number) => {
-		setSelectedMonth(0);
+		setSelectedMonth(month);
 	}, []);
 
 	const handleCityChange = useCallback((city: string | null) => {
-		setSelectedCity(null);
+		setSelectedCity(city);
 	}, []);
 
 	return {
@@ -194,7 +226,8 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 	}, [concertId]);
 
 	const userTicketCount = useMemo(() => {
-		return 0;
+		if (!concert) return 0;
+		return calculateUserTicketCount(concert, userId);
 	}, [concert, userId]);
 
 	const handleBuyTickets = useCallback(async () => {
@@ -208,7 +241,7 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${token}`,
 				},
-				body: JSON.stringify({ quantity: 1 }),
+				body: JSON.stringify({ quantity: ticketQuantity }),
 			});
 			const data = await res.json();
 			if (data.success) {
@@ -227,7 +260,7 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 		if (!concert) return [];
 		const artistId =
 			typeof concert.artistId === "object"
-				? concert.artistId.name
+				? concert.artistId._id
 				: concert.artistId;
 		return getArtistAlbumsForConcert(albums, artistId);
 	}, [albums, concert]);
@@ -236,7 +269,7 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 		if (!concert) return [];
 		const artistId =
 			typeof concert.artistId === "object"
-				? concert.artistId.name
+				? concert.artistId._id
 				: concert.artistId;
 		return getArtistTracksForConcert(tracks, artistId);
 	}, [tracks, concert]);
@@ -249,7 +282,7 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 				: "Unknown Artist";
 		return userTickets.flatMap((ticket) =>
 			ticket.ticketCodes.map((code) => ({
-				ticketCode: ticket.purchasedAt,
+				ticketCode: code,
 				concertName: `${artistName} at ${concert.venue}`,
 				artistName,
 				venue: concert.venue,
@@ -259,7 +292,7 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 	}, [concert, userTickets]);
 
 	const handleOpenBuyDialog = useCallback(() => {
-		setShowBuyDialog(false);
+		setShowBuyDialog(true);
 		setTicketQuantity(1);
 	}, []);
 
@@ -268,7 +301,7 @@ export function useConcertDetail(concertId: string): UseConcertDetailReturn {
 	}, []);
 
 	const handleOpenTicketsDialog = useCallback(() => {
-		setShowTicketsDialog(false);
+		setShowTicketsDialog(true);
 	}, []);
 
 	const handleCloseTicketsDialog = useCallback(() => {

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { IPlayHistoryDocument } from "./history.model.js";
+import { PlayHistory, IPlayHistoryDocument } from "./history.model.js";
+import { Track } from "../tracks/track.model.js";
 
 const MAX_HISTORY_SIZE = 50;
 
@@ -99,7 +100,42 @@ export const historyService = {
 	async recordPlay(
 		userId: string,
 		trackId: string,
-	): Promise<void> {
+	): Promise<IPlayHistoryDocument> {
+		const trackObjectId = new mongoose.Types.ObjectId(trackId);
+		const track = await Track.findById(trackObjectId).lean().exec();
+
+		if (!track) {
+			throw new Error("Track not found");
+		}
+
+		const userObjectId = new mongoose.Types.ObjectId(userId);
+
+		const entry = await PlayHistory.create({
+			user_id: userObjectId,
+			track_id: trackObjectId,
+			played_at: new Date(),
+		});
+
+		const historyCount = await PlayHistory.countDocuments({
+			user_id: userObjectId,
+		}).exec();
+
+		if (historyCount > MAX_HISTORY_SIZE) {
+			const excessCount = historyCount - MAX_HISTORY_SIZE;
+
+			const oldestEntries = await PlayHistory.find({ user_id: userObjectId })
+				.sort({ played_at: 1 })
+				.limit(excessCount)
+				.select("_id")
+				.lean()
+				.exec();
+
+			const idsToDelete = oldestEntries.map((e) => e._id);
+
+			await PlayHistory.deleteMany({ _id: { $in: idsToDelete } }).exec();
+		}
+
+		return entry;
 	},
 
 	async getRecentlyPlayed(
@@ -107,9 +143,38 @@ export const historyService = {
 		limit: number = 20,
 		offset: number = 0,
 	): Promise<RecentlyPlayedResponse> {
-		return { tracks: [], total: 0 };
+		const effectiveLimit = Math.min(Math.max(limit, 1), 50);
+		const effectiveOffset = Math.max(offset, 0);
+		const userObjectId = new mongoose.Types.ObjectId(userId);
+
+		const history = await PlayHistory.find({ user_id: userObjectId })
+			.sort({ played_at: -1 })
+			.skip(effectiveOffset)
+			.limit(effectiveLimit)
+			.populate<{ track_id: PopulatedTrack }>({
+				path: "track_id",
+				populate: [
+					{ path: "artist_id", select: "name image_url" },
+					{ path: "album_id", select: "title cover_image_url" },
+				],
+			})
+			.lean<PopulatedPlayHistory[]>()
+			.exec();
+
+		const validHistory = history.filter((h) => h.track_id !== null);
+
+		const total = await PlayHistory.countDocuments({
+			user_id: userObjectId,
+		}).exec();
+
+		return {
+			tracks: validHistory.map((h) => transformTrack(h)),
+			total,
+		};
 	},
 
 	async clearHistory(userId: string): Promise<void> {
+		const userObjectId = new mongoose.Types.ObjectId(userId);
+		await PlayHistory.deleteMany({ user_id: userObjectId }).exec();
 	},
 };

@@ -2,8 +2,33 @@ import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
+const frontendNodeModules = path.resolve(__dirname, "frontend/node_modules");
+const resolveFrontendDep = (relativePath: string) =>
+	path.resolve(frontendNodeModules, relativePath);
+
+const frontendRuntimeResolver = {
+	name: "frontend-runtime-resolver",
+	enforce: "pre" as const,
+	resolveId(source: string) {
+		switch (source) {
+			case "react":
+				return resolveFrontendDep("react/index.js");
+			case "react/jsx-runtime":
+				return resolveFrontendDep("react/jsx-runtime.js");
+			case "react/jsx-dev-runtime":
+				return resolveFrontendDep("react/jsx-dev-runtime.js");
+			case "react-dom":
+				return resolveFrontendDep("react-dom/index.js");
+			case "react-dom/client":
+				return resolveFrontendDep("react-dom/client.js");
+			default:
+				return null;
+		}
+	},
+};
+
 export default defineConfig({
-	plugins: [react()],
+	plugins: [frontendRuntimeResolver, react()],
 	test: {
 		name: "frontend",
 		include: ["frontend/__tests__/**/*.behavior.test.tsx"],

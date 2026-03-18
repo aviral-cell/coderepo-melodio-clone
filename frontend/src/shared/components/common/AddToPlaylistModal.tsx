@@ -136,7 +136,7 @@ export function AddToPlaylistModal({
 							</p>
 						</div>
 					) : (
-						<ScrollArea className="max-h-[300px] [&_[data-radix-scroll-area-viewport]>div]:block!">
+						<ScrollArea className="max-h-[300px] [&_[data-radix-scroll-area-viewport]>div]:!block">
 							<div className="space-y-1">
 								{playlists.map((playlist) => {
 									const isAdding = addingToPlaylistId === playlist._id;
@@ -152,12 +152,12 @@ export function AddToPlaylistModal({
 											disabled={isAdding || isAdded}
 											className={cn(
 												"flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors",
-												"hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:outline-hidden",
+												"hover:bg-melodio-light-gray focus:bg-melodio-light-gray focus:outline-none",
 												"disabled:cursor-not-allowed disabled:opacity-50",
 												isAdded && "bg-melodio-light-gray/50"
 											)}
 										>
-											<div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
+											<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
 												<AppImage
 													src={getImageUrl(playlist.coverImageUrl)}
 													alt={playlist.name}
@@ -174,7 +174,7 @@ export function AddToPlaylistModal({
 												</p>
 											</div>
 
-											<div className="shrink-0">
+											<div className="flex-shrink-0">
 												{isAdding ? (
 													<Loader2 className="h-5 w-5 animate-spin text-melodio-text-subdued" />
 												) : isAdded ? (

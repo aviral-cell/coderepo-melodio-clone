@@ -30,7 +30,7 @@ export function MainLayout({
 				)}
 			>
 				{showTopBar && <TopBar initialQuery={initialSearchQuery} />}
-				<div className="mx-auto max-w-(--breakpoint-2xl) px-2 lg:px-4 rounded-lg overflow-hidden">
+				<div className="mx-auto max-w-screen-2xl px-2 lg:px-4 rounded-lg overflow-hidden">
 					{children}
 				</div>
 			</main>

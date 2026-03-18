@@ -44,7 +44,7 @@ function ConcertCard({ concert, formattedDate, formattedTime }: ConcertCardProps
 				/>
 				<div
 					data-testid={`concerts-card-date-${concert._id}`}
-					className="absolute top-2 left-2 min-w-12 rounded-lg bg-black/80 px-2.5 py-1.5 text-center backdrop-blur-xs"
+					className="absolute top-2 left-2 min-w-[3rem] rounded-lg bg-black/80 px-2.5 py-1.5 text-center backdrop-blur-sm"
 				>
 					<div className="text-[10px] font-semibold uppercase tracking-wider text-melodio-green">
 						{month}

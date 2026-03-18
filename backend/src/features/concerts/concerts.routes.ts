@@ -14,4 +14,4 @@ router.post("/:id/tickets", concertsController.buyTickets);
 
 router.get("/:id/tickets", concertsController.getUserTickets);
 
-export const concertRoutes: Router = router;
+export const concertRoutes = router;

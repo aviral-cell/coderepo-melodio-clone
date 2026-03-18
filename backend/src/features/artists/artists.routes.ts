@@ -12,4 +12,4 @@ router.get("/search", artistsController.search);
 
 router.get("/:id", artistsController.getById);
 
-export const artistRoutes: Router = router;
+export const artistRoutes = router;

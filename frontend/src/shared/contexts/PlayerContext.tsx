@@ -13,6 +13,8 @@ import { playerReducer, initialState } from "./playerReducer";
 import { shuffleArray } from "../utils/playerUtils";
 import { historyService } from "@/shared/services/history.service";
 
+export { playerReducer, initialState };
+
 interface PlayerContextType {
 	state: PlayerState;
 	dispatch: React.Dispatch<PlayerAction>;

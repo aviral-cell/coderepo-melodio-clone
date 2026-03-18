@@ -85,7 +85,7 @@ function SortableQueueItem({
 
 			<button
 				onClick={onPlay}
-				className="relative h-10 w-10 shrink-0 overflow-hidden rounded"
+				className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded"
 			>
 				<AppImage
 					src={getImageUrl(trackCover)}
@@ -226,7 +226,7 @@ export function QueuePanel() {
 									"group flex items-center gap-3 rounded-md bg-melodio-light-gray p-2"
 								)}
 							>
-								<div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
+								<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
 									<AppImage
 										src={getImageUrl(currentTrack.coverImageUrl || (typeof currentTrack.albumId === "object" ? currentTrack.albumId.coverImageUrl : undefined))}
 										alt={currentTrack.title}

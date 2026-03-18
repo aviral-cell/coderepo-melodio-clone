@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDebounce } from "./useDebounce";
+import { searchService } from "../services/search.service";
 import type { TrackWithPopulated } from "../types/player.types";
+import { getImageUrl, preloadImages } from "../utils/imageUtils";
 
 interface UseSearchReturn {
 	tracks: TrackWithPopulated[];
@@ -9,33 +11,6 @@ interface UseSearchReturn {
 }
 
 const DEBOUNCE_DELAY = 300;
-
-const mockTracks: TrackWithPopulated[] = [
-	{
-		_id: "mock-1",
-		title: "Mock Song 1",
-		durationInSeconds: 180,
-		trackNumber: 1,
-		genre: "Pop",
-		playCount: 0,
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		artistId: { _id: "artist-1", name: "Mock Artist", imageUrl: "" },
-		albumId: { _id: "album-1", title: "Mock Album", coverImageUrl: "" },
-	},
-	{
-		_id: "mock-2",
-		title: "Mock Song 2",
-		durationInSeconds: 240,
-		trackNumber: 2,
-		genre: "Pop",
-		playCount: 0,
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		artistId: { _id: "artist-1", name: "Mock Artist", imageUrl: "" },
-		albumId: { _id: "album-1", title: "Mock Album", coverImageUrl: "" },
-	},
-];
 
 export function useSearch(query: string): UseSearchReturn {
 	const [tracks, setTracks] = useState<TrackWithPopulated[]>([]);
@@ -54,10 +29,37 @@ export function useSearch(query: string): UseSearchReturn {
 			return;
 		}
 
-		setIsLoading(true);
-		setError(null);
-		setTracks(mockTracks);
-		setIsLoading(false);
+		let cancelled = false;
+
+		const fetchResults = async () => {
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const result = await searchService.search(trimmedQuery);
+				if (!cancelled) {
+					preloadImages(result.tracks.map((t) => getImageUrl(typeof t.albumId === "object" ? t.albumId.coverImageUrl : undefined)));
+					setTracks(result.tracks);
+				}
+			} catch (err) {
+				if (!cancelled) {
+					const errorMessage =
+						err instanceof Error ? err.message : "Search failed";
+					setError(errorMessage);
+					setTracks([]);
+				}
+			} finally {
+				if (!cancelled) {
+					setIsLoading(false);
+				}
+			}
+		};
+
+		fetchResults();
+
+		return () => {
+			cancelled = true;
+		};
 	}, [debouncedQuery]);
 
 	return { tracks, isLoading, error };

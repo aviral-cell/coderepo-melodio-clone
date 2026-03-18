@@ -46,3 +46,4 @@ export const artistsService = {
 	},
 };
 
+export const artistService = artistsService;

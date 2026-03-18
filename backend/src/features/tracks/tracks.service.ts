@@ -140,17 +140,25 @@ export const tracksService = {
 	},
 
 	async search(query: string, limit = 5): Promise<TrackResponse[]> {
-		const trimmed = (query || "").trim();
-		if (!trimmed) {
+		if (!query || query.trim() === "") {
 			return [];
 		}
-		const prefixRegex = new RegExp(`^${escapeRegex(trimmed)}`, "i");
-		const tracks = await Track.find({ title: prefixRegex })
+
+		const trimmedQuery = query.trim();
+		const lowercaseQuery = trimmedQuery.toLowerCase();
+
+		const tracks = await Track.find({
+			$or: [
+				{ title: { $regex: `^${escapeRegex(trimmedQuery)}`, $options: "i" } },
+				{ genre: lowercaseQuery },
+			],
+		})
 			.populate<{ artist_id: PopulatedArtist | null }>("artist_id", "name image_url")
 			.populate<{ album_id: PopulatedAlbum | null }>("album_id", "title cover_image_url")
 			.limit(limit)
 			.lean<LeanTrackWithPopulated[]>()
 			.exec();
+
 		return tracks.map((track) => transformTrack(track));
 	},
 

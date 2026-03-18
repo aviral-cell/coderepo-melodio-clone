@@ -14,4 +14,4 @@ router.get("/:id", tracksController.getById);
 
 router.post("/:id/play", tracksController.play);
 
-export const trackRoutes: Router = router;
+export const trackRoutes = router;

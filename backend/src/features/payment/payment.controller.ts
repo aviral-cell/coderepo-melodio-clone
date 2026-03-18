@@ -4,8 +4,11 @@ import { validateCardPaymentRequest } from "./payment.dto.js";
 import { ProcessCardPaymentRequest } from "./payment.types.js";
 import { sendSuccess, sendError } from "../../shared/utils/index.js";
 import { AuthenticatedRequest } from "../../shared/types/index.js";
+import { cacheService } from "../../shared/services/cache.service.js";
 import { usersService } from "../users/users.service.js";
 import { AccountType } from "../users/user.model.js";
+
+const IDEMPOTENCY_CACHE_TTL = 3600;
 
 export const paymentController = {
 	async processCardPayment(
@@ -19,6 +22,19 @@ export const paymentController = {
 				return;
 			}
 
+			const idempotencyKey = req.headers["idempotency-key"] as string | undefined;
+
+			if (idempotencyKey) {
+				const cachedResult = cacheService.get<{ success: boolean; data: unknown }>(
+					`payment:${idempotencyKey}`,
+				);
+
+				if (cachedResult) {
+					sendSuccess(res, cachedResult.data);
+					return;
+				}
+			}
+
 			const validationErrors = validateCardPaymentRequest(req.body);
 			if (validationErrors.length > 0) {
 				sendError(res, "Validation failed", 400, validationErrors);
@@ -29,10 +45,18 @@ export const paymentController = {
 
 			const result = await paymentService.processCardPayment(
 				userId,
-				body.amount,
+				body.subscriptionPrice,
 				body.cardDetails,
-				null,
+				idempotencyKey || null,
 			);
+
+			if (idempotencyKey) {
+				cacheService.set(
+					`payment:${idempotencyKey}`,
+					{ success: true, data: result },
+					IDEMPOTENCY_CACHE_TTL,
+				);
+			}
 
 			sendSuccess(res, result);
 		} catch (error) {
@@ -40,7 +64,8 @@ export const paymentController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			res.status(500).json({ success: false, error: "An error occurred" });
+			const message = error instanceof Error ? error.message : "An error occurred";
+			res.status(500).json({ success: false, error: message });
 		}
 	},
 
@@ -75,7 +100,8 @@ export const paymentController = {
 				sendError(res, error.message, error.statusCode);
 				return;
 			}
-			res.status(500).json({ success: false, error: "An error occurred" });
+			const message = error instanceof Error ? error.message : "An error occurred";
+			res.status(500).json({ success: false, error: message });
 		}
 	},
 };

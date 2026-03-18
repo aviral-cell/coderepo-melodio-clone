@@ -153,7 +153,7 @@ function SortableTrackItem({
 			</div>
 
 			<div className="flex min-w-0 items-center gap-3">
-				<div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
+				<div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded">
 					<AppImage
 						src={getImageUrl(trackCover)}
 						alt={track.title}
@@ -439,7 +439,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 						</div>
 					</div>
 				</div>
-				<div className="bg-linear-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
+				<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 					<div className="flex justify-center sm:justify-start">
 						<Skeleton className="h-14 w-14 rounded-full" />
 					</div>
@@ -523,7 +523,7 @@ export default function PlaylistDetailPage(): JSX.Element {
 				</div>
 			</div>
 
-			<div className="bg-linear-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
+			<div className="bg-gradient-to-b from-melodio-dark-gray/60 to-melodio-black px-4 py-4 sm:px-8 sm:py-6">
 				<div className="flex items-center justify-center gap-4 sm:justify-start sm:gap-6">
 					<Button
 						size="lg"

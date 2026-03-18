@@ -92,7 +92,7 @@ export const familyService = {
 			display_name: memberData.name,
 			account_type: AccountType.FAMILY_MEMBER,
 			primary_account_id: primaryUserObjectId,
-			is_active: false,
+			is_active: true,
 		});
 
 		return transformFamilyMember(familyMember);

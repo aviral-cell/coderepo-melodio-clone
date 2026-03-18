@@ -122,7 +122,7 @@ export default function GenrePage(): JSX.Element {
 									{genre.name}
 								</span>
 
-								<div className="absolute -bottom-2 -right-4 h-24 w-24 rotate-25 overflow-hidden rounded shadow-lg">
+								<div className="absolute -bottom-2 -right-4 h-24 w-24 rotate-[25deg] overflow-hidden rounded shadow-lg">
 									<AppImage
 										src={getImageUrl(genre.image)}
 										alt={genre.name}

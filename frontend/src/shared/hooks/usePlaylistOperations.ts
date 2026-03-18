@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { playlistsService } from "../services/playlist.service";
+import { playlistService } from "../services/playlist.service";
 import type { TrackWithPopulated } from "../types/player.types";
 
 interface UsePlaylistOperationsReturn {
@@ -13,7 +13,7 @@ export function usePlaylistOperations(
 	playlistId: string,
 	tracks: TrackWithPopulated[],
 	setPlaylist: (tracks: TrackWithPopulated[]) => void,
-	onError?: (error: Error) => void,
+	onError?: (error: Error) => void
 ): UsePlaylistOperationsReturn {
 	const [isReordering, setIsReordering] = useState(false);
 	const [isRemoving, setIsRemoving] = useState(false);
@@ -34,7 +34,7 @@ export function usePlaylistOperations(
 
 			try {
 				const trackIds = newTracks.map((t) => t._id);
-				await playlistsService.reorderTracks(playlistId, trackIds);
+				await playlistService.reorderTracks(playlistId, trackIds);
 			} catch (error) {
 				setPlaylist(originalTracks);
 				const err = error instanceof Error ? error : new Error("Failed to reorder tracks");
@@ -44,18 +44,26 @@ export function usePlaylistOperations(
 				setIsReordering(false);
 			}
 		},
-		[playlistId, tracks, setPlaylist, onError],
+		[playlistId, tracks, setPlaylist, onError]
 	);
 
 	const removeTrack = useCallback(
-		async (trackId: string): Promise<void> => {
+		async (trackId: string) => {
+			const originalTracks = [...tracks];
+			const newTracks = tracks.filter((t) => t._id !== trackId);
+
+			setPlaylist(newTracks);
+			setIsRemoving(true);
+
 			try {
-				await playlistsService.removeTrack(playlistId, trackId);
-				setPlaylist(tracks.filter((t) => t._id !== trackId));
+				await playlistService.removeTrack(playlistId, trackId);
 			} catch (error) {
+				setPlaylist(originalTracks);
 				const err = error instanceof Error ? error : new Error("Failed to remove track");
 				onError?.(err);
 				throw err;
+			} finally {
+				setIsRemoving(false);
 			}
 		},
 		[playlistId, tracks, setPlaylist, onError]

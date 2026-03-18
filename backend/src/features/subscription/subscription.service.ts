@@ -76,12 +76,13 @@ export const subscriptionService = {
 
 		const now = new Date();
 		const oneMonthFromNow = new Date(now);
+		oneMonthFromNow.setUTCMonth(oneMonthFromNow.getUTCMonth() + 1);
 
 		const updateData = {
-			plan: SubscriptionPlan.FREE,
+			plan: SubscriptionPlan.PREMIUM,
 			start_date: now,
 			end_date: oneMonthFromNow,
-			auto_renew: false,
+			auto_renew: true,
 		};
 
 		const options = { new: true, upsert: true };

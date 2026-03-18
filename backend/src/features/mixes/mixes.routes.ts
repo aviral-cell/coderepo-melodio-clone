@@ -16,4 +16,4 @@ router.patch("/:id", mixesController.rename);
 
 router.delete("/:id", mixesController.delete);
 
-export const mixRoutes: Router = router;
+export const mixRoutes = router;

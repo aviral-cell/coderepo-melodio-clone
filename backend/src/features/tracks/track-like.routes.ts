@@ -14,4 +14,4 @@ router.post("/:id/dislike", trackLikeController.dislikeTrack);
 router.delete("/:id/like", trackLikeController.removeReaction);
 router.get("/:id/like-status", trackLikeController.getLikeStatus);
 
-export const trackLikeRoutes: Router = router;
+export const trackLikeRoutes = router;

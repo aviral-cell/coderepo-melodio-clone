@@ -10,7 +10,7 @@ export enum SubscriptionStatus {
 	PREMIUM = "premium",
 }
 
-interface IUser {
+export interface IUser {
 	email: string;
 	username: string;
 	password_hash: string;

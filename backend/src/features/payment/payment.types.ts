@@ -55,7 +55,6 @@ export interface UpdatePaymentDto {
 }
 
 export interface ProcessCardPaymentRequest {
-	amount: number;
 	subscriptionPrice: number;
 	cardDetails: CardDetails;
 }

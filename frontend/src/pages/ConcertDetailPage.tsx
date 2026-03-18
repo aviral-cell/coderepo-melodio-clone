@@ -192,7 +192,7 @@ export default function ConcertDetailPage(): JSX.Element {
 					/>
 					<div
 						data-testid="concert-detail-date-badge"
-						className="absolute top-2 left-2 min-w-12 rounded-lg bg-black/80 px-2.5 py-1.5 text-center backdrop-blur-xs"
+						className="absolute top-2 left-2 min-w-[3rem] rounded-lg bg-black/80 px-2.5 py-1.5 text-center backdrop-blur-sm"
 					>
 						<div className="text-[10px] font-semibold uppercase tracking-wider text-melodio-green">
 							{month}
@@ -347,7 +347,7 @@ export default function ConcertDetailPage(): JSX.Element {
 							</button>
 							<span
 								data-testid="concert-buy-quantity"
-								className="min-w-12 text-center text-2xl font-bold text-white"
+								className="min-w-[3rem] text-center text-2xl font-bold text-white"
 							>
 								{ticketQuantity}
 							</span>

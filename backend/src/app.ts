@@ -64,8 +64,8 @@ export function createApp(): Application {
 	app.use("/api/artists", artistInteractionRoutes);
 	app.use("/api/artists", artistRoutes);
 	app.use("/api/albums", albumRoutes);
-	app.use("/api/tracks", trackRoutes);
 	app.use("/api/tracks", trackLikeRoutes);
+	app.use("/api/tracks", trackRoutes);
 	app.use("/api/playlists", playlistRoutes);
 	app.use("/api/subscription", subscriptionRoutes);
 	app.use("/api/payment", paymentRoutes);

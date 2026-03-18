@@ -29,28 +29,39 @@ export const ERA_RANGES: { label: string; start: number; end: number }[] = [
 	{ label: "80's", start: 1980, end: 1989 },
 ];
 
-export const AVAILABLE_LANGUAGES: string[] = [];
-export const AVAILABLE_GENRES: string[] = [];
-export const AVAILABLE_ERAS: string[] = [];
+export const AVAILABLE_LANGUAGES = [...new Set(Object.values(GENRE_LANGUAGE_MAP))];
+export const AVAILABLE_GENRES = Object.keys(GENRE_LANGUAGE_MAP);
+export const AVAILABLE_ERAS = ERA_RANGES.map((e) => e.label);
 
 export function getGenreDisplayName(genre: string): string {
-	return genre;
+	return GENRE_DISPLAY_NAMES[genre] || genre.charAt(0).toUpperCase() + genre.slice(1);
 }
 
 export function getTrackLanguage(genre: string): string {
-	return "Unknown";
+	return GENRE_LANGUAGE_MAP[genre] || "Unknown";
 }
 
 export function getNewThisWeek(tracks: TrackWithPopulated[], now?: Date): TrackWithPopulated[] {
-	return [];
+	const reference = now || new Date();
+	const sevenDaysAgo = new Date(reference.getTime() - 7 * 24 * 60 * 60 * 1000);
+	return tracks.filter((t) => new Date(t.createdAt) >= sevenDaysAgo);
 }
 
 export function getPopularInLanguage(tracks: TrackWithPopulated[], language: string, limit: number): TrackWithPopulated[] {
-	return [];
+	const matchingGenres = Object.entries(GENRE_LANGUAGE_MAP)
+		.filter(([_, lang]) => lang === language)
+		.map(([genre]) => genre);
+	return tracks
+		.filter((t) => matchingGenres.includes(t.genre))
+		.sort((a, b) => b.playCount - a.playCount)
+		.slice(0, limit);
 }
 
 export function getPopularInGenre(tracks: TrackWithPopulated[], genre: string, limit: number): TrackWithPopulated[] {
-	return [];
+	return tracks
+		.filter((t) => t.genre === genre)
+		.sort((a, b) => b.playCount - a.playCount)
+		.slice(0, limit);
 }
 
 export function getTracksByEra(
@@ -58,13 +69,24 @@ export function getTracksByEra(
 	era: string,
 	albumDateMap: Record<string, string>,
 ): TrackWithPopulated[] {
-	return [];
+	const range = ERA_RANGES.find((r) => r.label === era);
+	if (!range) return [];
+	return tracks.filter((t) => {
+		const albumId = typeof t.albumId === "object" ? t.albumId._id : t.albumId;
+		const dateStr = albumDateMap[albumId];
+		if (!dateStr) return false;
+		const year = new Date(dateStr).getUTCFullYear();
+		return year >= range.start && year <= range.end;
+	});
 }
 
 export function getTopArtists(artists: Artist[], limit: number): Artist[] {
-	return [];
+	return [...artists]
+		.filter((a) => !a.genres.includes("podcast"))
+		.sort((a, b) => b.followerCount - a.followerCount)
+		.slice(0, limit);
 }
 
 export function formatLanguageLabel(language: string): string {
-	return language;
+	return `Popular in ${language}`;
 }

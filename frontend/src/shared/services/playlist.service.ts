@@ -27,7 +27,7 @@ export const playlistsService = {
 		const response = await apiService.get<any>("/api/playlists/" + id);
 		return {
 			...response,
-			tracks: response.tracks ? (normalizeTracks(response.tracks) as TrackWithPopulated[]) : undefined,
+			tracks: response.tracks ? normalizeTracks(response.tracks) as TrackWithPopulated[] : undefined,
 		};
 	},
 
@@ -66,3 +66,4 @@ export const playlistsService = {
 	},
 };
 
+export const playlistService = playlistsService;

@@ -20,7 +20,7 @@ export interface IConcert {
 	updated_at: Date;
 }
 
-interface IConcertDocument extends IConcert, Document {
+export interface IConcertDocument extends IConcert, Document {
 	_id: mongoose.Types.ObjectId;
 }
 

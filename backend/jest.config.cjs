@@ -36,4 +36,5 @@ module.exports = {
 	coverageReporters: ["text", "lcov", "html"],
 	testPathIgnorePatterns: ["/node_modules/"],
 	modulePathIgnorePatterns: ["<rootDir>/dist/"],
+	maxWorkers: 1,
 };
