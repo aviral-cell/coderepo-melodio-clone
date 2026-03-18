@@ -39,8 +39,8 @@ What changed, why, and how to keep quality checks passing. Optimized for **speed
 | Workspace at root | `workspaces: ["frontend", "backend"]`; single `bun.lock`; run from root. |
 | Bun as installer | `bun install`; `packageManager: "bun@1.1.0"`; `engines.bun`. |
 | Vite as bundler | Frontend: `vite`, `@vitejs/plugin-react`; dev + build. |
-| Vitest (frontend tests) | `__tests__/**/*.behavior.test.tsx`; `vitest.config.frontend.ts`. |
-| Jest + SWC (backend tests) | `@swc/jest` in `backend/jest.config.cjs`; `__tests__/**/*.behavior.test.ts`. |
+| Vitest (frontend tests) | `frontend/__tests__/**/*.behavior.test.tsx`; `vitest.config.frontend.ts`. |
+| Jest + SWC (backend tests) | `@swc/jest` in `backend/jest.config.cjs`; `backend/__tests__/**/*.behavior.test.ts`. |
 | Knip | `bun run unused:check`; entry files = contract files; optional `bunx depcheck`. |
 
 ---

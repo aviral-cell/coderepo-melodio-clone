@@ -1,20 +1,20 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, "../../backend/.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 import request from "supertest";
 import mongoose from "mongoose";
 import { Application } from "express";
-import { createApp } from "../../backend/src/app";
-import { loadConfig, Config } from "../../backend/src/shared/config";
-import { User, SubscriptionStatus } from "../../backend/src/features/users/user.model";
-import { Subscription } from "../../backend/src/features/subscription/subscription.model";
-import { SubscriptionPlan } from "../../backend/src/features/subscription/subscription.types";
-import { Payment } from "../../backend/src/features/payment/payment.model";
-import { PaymentStatus } from "../../backend/src/features/payment/payment.types";
-import { Playlist } from "../../backend/src/features/playlists/playlist.model";
-import { FREE_PLAYLIST_LIMIT } from "../../backend/src/features/subscription/subscription.types";
+import { createApp } from "../../src/app";
+import { loadConfig, Config } from "../../src/shared/config";
+import { User, SubscriptionStatus } from "../../src/features/users/user.model";
+import { Subscription } from "../../src/features/subscription/subscription.model";
+import { SubscriptionPlan } from "../../src/features/subscription/subscription.types";
+import { Payment } from "../../src/features/payment/payment.model";
+import { PaymentStatus } from "../../src/features/payment/payment.types";
+import { Playlist } from "../../src/features/playlists/playlist.model";
+import { FREE_PLAYLIST_LIMIT } from "../../src/features/subscription/subscription.types";
 
 const config: Config = loadConfig(true);
 
