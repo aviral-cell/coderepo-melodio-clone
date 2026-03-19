@@ -1,4 +1,9 @@
+import { cleanup } from "@testing-library/react";
 import { vi } from "vitest";
+
+afterEach(() => {
+	cleanup();
+});
 
 beforeAll(() => {
 	vi.spyOn(console, "log").mockImplementation(() => {});
