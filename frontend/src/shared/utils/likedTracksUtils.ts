@@ -26,32 +26,3 @@ export function sortLikedTracks(tracks: LikedTrackItem[], sortBy: LikedSortOptio
 
 	return sorted;
 }
-
-export function getLikedTrackStats(
-	likedIds: Set<string>,
-	dislikedIds: Set<string>,
-): { likedCount: number; dislikedCount: number; totalReactions: number } {
-	return {
-		likedCount: likedIds.size,
-		dislikedCount: dislikedIds.size,
-		totalReactions: likedIds.size + dislikedIds.size,
-	};
-}
-
-export function isTrackLiked(trackId: string, likedIds: Set<string>): boolean {
-	return likedIds.has(trackId);
-}
-
-export function isTrackDisliked(trackId: string, dislikedIds: Set<string>): boolean {
-	return dislikedIds.has(trackId);
-}
-
-export function getReactionForTrack(
-	trackId: string,
-	likedIds: Set<string>,
-	dislikedIds: Set<string>,
-): "like" | "dislike" | null {
-	if (likedIds.has(trackId)) return "like";
-	if (dislikedIds.has(trackId)) return "dislike";
-	return null;
-}

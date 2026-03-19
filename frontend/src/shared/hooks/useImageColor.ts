@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import ColorThief from "colorthief";
 
 const DEFAULT_COLOR = "rgb(40, 40, 40)";
+type BrowserColorThief = {
+	getColor: (image: HTMLImageElement) => [number, number, number];
+};
+const ColorThiefConstructor = ColorThief as unknown as { new (): BrowserColorThief };
 
 export interface ImageColorResult {
 	color: string;
@@ -26,7 +30,7 @@ export function useImageColor(imageUrl: string | undefined): ImageColorResult {
 
 		img.onload = () => {
 			try {
-				const colorThief = new ColorThief();
+				const colorThief = new ColorThiefConstructor();
 				const [r, g, b] = colorThief.getColor(img);
 				setColor(`rgb(${r}, ${g}, ${b})`);
 			} catch {

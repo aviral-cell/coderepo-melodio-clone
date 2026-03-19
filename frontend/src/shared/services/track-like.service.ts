@@ -46,7 +46,7 @@ interface LikedTracksResponse {
 	totalPages: number;
 }
 
-export type { LikeStatusResponse, LikeActionResponse, LikedIdsResponse, LikedTrackItem, LikedTracksResponse };
+export type { LikedTrackItem };
 
 export const trackLikeService = {
 	likeTrack: (trackId: string): Promise<LikeActionResponse> =>

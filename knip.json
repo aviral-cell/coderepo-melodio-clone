@@ -7,7 +7,7 @@
 		},
 		"frontend": {
 			"entry": [
-				"../candidate-contracts/candidate-frontend-contract.ts",
+				"src/app/routes.tsx",
 				"__tests__/**/*.behavior.test.tsx",
 				"test/**/*.ts",
 				"test/**/*.js"
@@ -24,17 +24,21 @@
 		"backend": {
 			"entry": [
 				"src/app.ts",
-				"../candidate-contracts/candidate-backend-contract.ts",
 				"__tests__/**/*.behavior.test.ts"
 			],
-			"project": ["src/**/*.ts", "__tests__/**/*.ts"],
-			"ignoreFiles": ["src/shared/services/cache.service.ts"]
+			"project": ["src/**/*.ts", "__tests__/**/*.ts"]
 		}
 	},
 	"ignoreDependencies": [
 		"tailwindcss",
 		"tailwindcss-animate",
-		"@vitest/coverage-v8"
+		"@vitest/coverage-v8",
+		"react",
+		"react-dom"
 	],
+	"ignoreExportsUsedInFile": {
+		"interface": true,
+		"type": true
+	},
 	"ignoreBinaries": ["dist/server.js"]
 }

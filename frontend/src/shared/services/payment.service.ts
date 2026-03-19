@@ -1,12 +1,12 @@
 import { apiService } from "./api.service";
 import type { CardDetails, Payment } from "../types";
 
-export interface PaymentRequest {
+interface PaymentRequest {
 	subscriptionPrice: number;
 	cardDetails: CardDetails;
 }
 
-export interface PaymentResponse {
+interface PaymentResponse {
 	success: boolean;
 	paymentId: string;
 	message: string;
@@ -17,7 +17,7 @@ export interface PaymentResponse {
 	};
 }
 
-export interface PaymentHistoryResponse {
+interface PaymentHistoryResponse {
 	payments: Payment[];
 }
 

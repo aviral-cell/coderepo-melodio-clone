@@ -8,7 +8,7 @@ async function toggleFollow(
 	res: Response,
 ): Promise<void> {
 	try {
-		const artistId = req.params["id"];
+		const artistId = typeof req.params["id"] === "string" ? req.params["id"] : undefined;
 		const userId = req.user?.userId;
 
 		if (!artistId || !isValidObjectId(artistId)) {
@@ -37,7 +37,7 @@ async function rateArtist(
 	res: Response,
 ): Promise<void> {
 	try {
-		const artistId = req.params["id"];
+		const artistId = typeof req.params["id"] === "string" ? req.params["id"] : undefined;
 		const userId = req.user?.userId;
 		const { rating } = req.body as { rating: unknown };
 
@@ -77,7 +77,7 @@ async function getInteraction(
 	res: Response,
 ): Promise<void> {
 	try {
-		const artistId = req.params["id"];
+		const artistId = typeof req.params["id"] === "string" ? req.params["id"] : undefined;
 		const userId = req.user?.userId;
 
 		if (!artistId || !isValidObjectId(artistId)) {

@@ -47,7 +47,7 @@ export function groupEpisodesByShow(
 	return shows;
 }
 
-export function calculateShowDuration(episodes: TrackWithPopulated[]): number {
+function calculateShowDuration(episodes: TrackWithPopulated[]): number {
 	return episodes.reduce((sum, ep) => sum + ep.durationInSeconds, 0);
 }
 

@@ -10,7 +10,7 @@ export const trackLikeController = {
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
-			const trackId = req.params["id"];
+			const trackId = typeof req.params["id"] === "string" ? req.params["id"] : undefined;
 
 			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
@@ -34,7 +34,7 @@ export const trackLikeController = {
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
-			const trackId = req.params["id"];
+			const trackId = typeof req.params["id"] === "string" ? req.params["id"] : undefined;
 
 			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
@@ -58,14 +58,14 @@ export const trackLikeController = {
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
-			const trackId = req.params["id"];
+			const trackId = typeof req.params["id"] === "string" ? req.params["id"] : undefined;
 
-			if (!trackId || !isValidObjectId(trackId as string)) {
+			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const result = await trackLikeService.removeReaction(userId!, trackId as string);
+			const result = await trackLikeService.removeReaction(userId!, trackId);
 			sendSuccess(res, result);
 		} catch (error) {
 			res.status(500).json({ success: false, error: "An error occurred" });
@@ -93,14 +93,14 @@ export const trackLikeController = {
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
-			const trackId = req.params["id"];
+			const trackId = typeof req.params["id"] === "string" ? req.params["id"] : undefined;
 
-			if (!trackId || !isValidObjectId(trackId as string)) {
+			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
 				return;
 			}
 
-			const result = await trackLikeService.getLikeStatus(userId!, trackId as string);
+			const result = await trackLikeService.getLikeStatus(userId!, trackId);
 			sendSuccess(res, result);
 		} catch (error) {
 			res.status(500).json({ success: false, error: "An error occurred" });

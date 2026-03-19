@@ -1,7 +1,7 @@
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 import type { Artist } from "@/shared/types";
 
-export const GENRE_LANGUAGE_MAP: Record<string, string> = {
+const GENRE_LANGUAGE_MAP: Record<string, string> = {
 	rock: "English",
 	"r-and-b": "English",
 	pop: "Korean",
@@ -11,7 +11,7 @@ export const GENRE_LANGUAGE_MAP: Record<string, string> = {
 	classical: "Chinese",
 };
 
-export const GENRE_DISPLAY_NAMES: Record<string, string> = {
+const GENRE_DISPLAY_NAMES: Record<string, string> = {
 	rock: "Rock",
 	"r-and-b": "R&B",
 	pop: "Pop",
@@ -21,7 +21,7 @@ export const GENRE_DISPLAY_NAMES: Record<string, string> = {
 	classical: "Classical",
 };
 
-export const ERA_RANGES: { label: string; start: number; end: number }[] = [
+const ERA_RANGES: { label: string; start: number; end: number }[] = [
 	{ label: "2020's", start: 2020, end: 2029 },
 	{ label: "2010's", start: 2010, end: 2019 },
 	{ label: "2000's", start: 2000, end: 2009 },
@@ -37,7 +37,7 @@ export function getGenreDisplayName(genre: string): string {
 	return GENRE_DISPLAY_NAMES[genre] || genre.charAt(0).toUpperCase() + genre.slice(1);
 }
 
-export function getTrackLanguage(genre: string): string {
+function getTrackLanguage(genre: string): string {
 	return GENRE_LANGUAGE_MAP[genre] || "Unknown";
 }
 
@@ -87,6 +87,6 @@ export function getTopArtists(artists: Artist[], limit: number): Artist[] {
 		.slice(0, limit);
 }
 
-export function formatLanguageLabel(language: string): string {
+function formatLanguageLabel(language: string): string {
 	return `Popular in ${language}`;
 }

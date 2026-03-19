@@ -96,5 +96,3 @@ export const albumsService = {
 		return response.map(normalizeAlbum);
 	},
 };
-
-export const albumService = albumsService;

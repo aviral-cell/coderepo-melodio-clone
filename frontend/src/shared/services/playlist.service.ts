@@ -65,5 +65,3 @@ export const playlistsService = {
 		return apiService.post<Playlist>("/api/playlists/" + playlistId + "/copy", { name });
 	},
 };
-
-export const playlistService = playlistsService;

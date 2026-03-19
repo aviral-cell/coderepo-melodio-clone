@@ -38,7 +38,7 @@ export function getUniqueArtists(
 	return Array.from(seen.values());
 }
 
-export function scoreTrack(
+function scoreTrack(
 	track: TrackWithPopulated,
 	selectedArtistIds: string[],
 	selectedGenres: string[],

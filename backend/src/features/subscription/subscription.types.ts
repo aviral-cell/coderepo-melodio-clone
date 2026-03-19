@@ -30,19 +30,4 @@ export interface SubscriptionResponse {
 	updatedAt: string;
 }
 
-export interface CreateSubscriptionDto {
-	user_id: mongoose.Types.ObjectId;
-	plan?: SubscriptionPlan;
-	start_date: Date;
-	end_date?: Date | null;
-	auto_renew?: boolean;
-}
-
-export interface UpdateSubscriptionDto {
-	plan?: SubscriptionPlan;
-	start_date?: Date;
-	end_date?: Date | null;
-	auto_renew?: boolean;
-}
-
 export const FREE_PLAYLIST_LIMIT = 7;

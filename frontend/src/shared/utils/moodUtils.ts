@@ -1,6 +1,6 @@
 import type { TrackWithPopulated } from "@/shared/types/player.types";
 
-export const MOOD_GENRE_MAP: Record<string, string[]> = {
+const MOOD_GENRE_MAP: Record<string, string[]> = {
 	Energetic: ["rock", "electronic"],
 	Chill: ["jazz"],
 	Happy: ["pop"],
@@ -8,7 +8,7 @@ export const MOOD_GENRE_MAP: Record<string, string[]> = {
 	Party: ["pop", "hip-hop"],
 };
 
-export const MOOD_IMAGES: Record<string, string> = {
+const MOOD_IMAGES: Record<string, string> = {
 	Energetic: "/images/moods/energetic.jpg",
 	Chill: "/images/moods/chill.jpg",
 	Happy: "/images/moods/happy.jpg",

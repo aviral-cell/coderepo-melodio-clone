@@ -91,41 +91,6 @@ export interface Playlist {
 	updatedAt: string;
 }
 
-export interface AuthTokens {
-	accessToken: string;
-	refreshToken?: string;
-}
-
-export interface LoginCredentials {
-	email: string;
-	password: string;
-}
-
-export interface RegisterData {
-	email: string;
-	username: string;
-	password: string;
-	displayName: string;
-}
-
-export interface SearchResults {
-	artists: Artist[];
-	albums: Album[];
-	tracks: Track[];
-	playlists: Playlist[];
-}
-
-export interface PlayerState {
-	currentTrack: Track | null;
-	queue: Track[];
-	isPlaying: boolean;
-	volume: number;
-	progress: number;
-	duration: number;
-	repeat: "none" | "one" | "all";
-	shuffle: boolean;
-}
-
 export interface Subscription {
 	_id: string;
 	userId: string;

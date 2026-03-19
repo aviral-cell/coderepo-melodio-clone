@@ -41,19 +41,6 @@ export interface PaymentResponse {
 	updatedAt: string;
 }
 
-export interface CreatePaymentDto {
-	user_id: mongoose.Types.ObjectId;
-	amount: number;
-	status?: PaymentStatus;
-	card_last4: string;
-	idempotency_key?: string | null;
-	timestamp: Date;
-}
-
-export interface UpdatePaymentDto {
-	status?: PaymentStatus;
-}
-
 export interface ProcessCardPaymentRequest {
 	subscriptionPrice: number;
 	cardDetails: CardDetails;

@@ -1,6 +1,4 @@
 import { Request } from "express";
-import { Types } from "mongoose";
-
 export interface AuthenticatedRequest extends Request {
 	user?: {
 		userId: string;
@@ -36,26 +34,10 @@ export interface PaginatedResponse<T> {
 	hasPrev: boolean;
 }
 
-export type ObjectId = Types.ObjectId;
-
-export interface BaseDocument {
-	_id: ObjectId;
-	createdAt: Date;
-	updatedAt: Date;
-}
-
 export interface JwtPayload {
 	userId: string;
 	email: string;
 	username: string;
 	iat?: number;
 	exp?: number;
-}
-
-export interface EnvConfig {
-	PORT: number;
-	MONGODB_URI: string;
-	JWT_SECRET: string;
-	JWT_EXPIRES_IN: string;
-	NODE_ENV: "development" | "production" | "test";
 }

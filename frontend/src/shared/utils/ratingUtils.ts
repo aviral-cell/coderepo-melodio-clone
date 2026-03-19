@@ -1,7 +1,3 @@
-export function roundToHalfStar(value: number): number {
-	return Math.round(value * 2) / 2;
-}
-
 export function getStarState(starIndex: number, displayValue: number): "full" | "half" | "empty" {
 	if (displayValue >= starIndex) return "full";
 	if (displayValue >= starIndex - 0.5) return "half";

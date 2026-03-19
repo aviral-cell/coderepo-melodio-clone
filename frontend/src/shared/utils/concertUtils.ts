@@ -55,14 +55,12 @@ export const CONCERT_CITIES = [
 	"Miami",
 ] as const;
 
-export const MAX_TICKETS_PER_USER = 6;
-
 export function getUpcomingConcerts(concerts: Concert[]): Concert[] {
 	const now = new Date();
 	return concerts.filter((c) => new Date(c.date) > now);
 }
 
-export function getUniqueCities(concerts: Concert[]): string[] {
+function getUniqueCities(concerts: Concert[]): string[] {
 	return [...new Set(concerts.map((c) => c.city))];
 }
 
@@ -162,7 +160,7 @@ export function canBuyMoreTickets(
 	return userTicketCount < maxPerUser;
 }
 
-export function generateTicketCodes(
+function generateTicketCodes(
 	quantity: number,
 	concertId: string,
 ): string[] {
