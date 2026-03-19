@@ -6,7 +6,7 @@ import {
 	getCandidateSkippableLines,
 	isCandidateSurfaceFile,
 	shouldSkipCandidateLine,
-} from "./candidate-surface.mjs";
+} from "./solution-diff-surface.mjs";
 
 const candidateFiles = getCandidateSurfaceFiles();
 const skippableLineMap = getCandidateSkippableLines(candidateFiles);

@@ -5,10 +5,17 @@ expect.extend(matchers);
 import { vi } from "vitest";
 import { TextEncoder, TextDecoder } from "node:util";
 
-(globalThis as typeof globalThis & { TextEncoder: typeof TextEncoder }).TextEncoder =
-	TextEncoder;
-(globalThis as typeof globalThis & { TextDecoder: typeof TextDecoder }).TextDecoder =
-	TextDecoder as typeof globalThis extends { TextDecoder: infer T } ? T : typeof TextDecoder;
+Object.defineProperty(globalThis, "TextEncoder", {
+	configurable: true,
+	writable: true,
+	value: TextEncoder,
+});
+
+Object.defineProperty(globalThis, "TextDecoder", {
+	configurable: true,
+	writable: true,
+	value: TextDecoder,
+});
 
 if (typeof window !== "undefined") {
 	Object.defineProperty(window, "matchMedia", {
@@ -30,8 +37,11 @@ if (typeof window !== "undefined") {
 		unobserve = vi.fn();
 		disconnect = vi.fn();
 	}
-	(globalThis as typeof globalThis & { ResizeObserver: typeof MockResizeObserver }).ResizeObserver =
-		MockResizeObserver as unknown as typeof ResizeObserver;
+	Object.defineProperty(globalThis, "ResizeObserver", {
+		configurable: true,
+		writable: true,
+		value: MockResizeObserver,
+	});
 
 	class MockIntersectionObserver {
 		observe = vi.fn();
@@ -41,8 +51,11 @@ if (typeof window !== "undefined") {
 		rootMargin = "";
 		thresholds: number[] = [];
 	}
-	(globalThis as typeof globalThis & { IntersectionObserver: typeof MockIntersectionObserver }).IntersectionObserver =
-		MockIntersectionObserver as unknown as typeof IntersectionObserver;
+	Object.defineProperty(globalThis, "IntersectionObserver", {
+		configurable: true,
+		writable: true,
+		value: MockIntersectionObserver,
+	});
 }
 
 const originalError = console.error;
