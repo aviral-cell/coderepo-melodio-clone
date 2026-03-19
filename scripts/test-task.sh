@@ -23,7 +23,7 @@ fi
 
 if [[ -d "$frontend_path" ]]; then
 	ran_any=true
-	commands+=("vitest run --project frontend ${frontend_path}/")
+	commands+=("vitest run --config vitest.workspace.mts --project frontend ${frontend_path}/")
 	names+=("frontend")
 fi
 

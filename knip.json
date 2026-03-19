@@ -2,8 +2,8 @@
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"workspaces": {
 		".": {
-			"entry": ["vitest.config.frontend.ts"],
-			"project": ["vitest.*.ts", "scripts/**/*.sh"]
+			"entry": ["vitest.config.frontend.mts"],
+			"project": ["vitest.*.ts", "vitest.*.mts", "scripts/**/*.sh"]
 		},
 		"frontend": {
 			"entry": [
