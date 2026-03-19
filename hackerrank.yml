@@ -3,8 +3,8 @@ configuration:
   has_webserver: true
   readonly_paths:
     - __tests__/**
-    - vitest.workspace.ts
-    - vitest.config.frontend.ts
+    - vitest.workspace.mts
+    - vitest.config.frontend.mts
     - vitest.config.backend.ts
     - test/**
     - backend/src/scripts/seed.ts
