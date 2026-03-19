@@ -1,116 +1,109 @@
 /**
- * Candidate Contract Surface — frontend
+ * Candidate Contract Surface - frontend direct exports
  *
- * Knip entrypoint only. This file marks candidate-facing exports as intentionally
- * reachable from a single root-level contract surface.
+ * Knip entrypoint only. This file lists candidate-added frontend exports that
+ * are not legacy barrel re-exports.
  */
 
-// Task utilities
-export {
-	DEFAULT_CONFIG,
-	FILTER_OPTIONS,
-	MIX_LIMIT,
-	STEP_ORDER,
-	getUniqueArtists,
-	scoreTrack,
-	generateMix,
-	getMixTitle,
-	getMixCoverImages,
-	type MixConfig,
-	type MixStep,
-	type Variety,
-	type Discovery,
-} from "../frontend/src/shared/utils/mixUtils";
+// Existing files with candidate-added named exports
+export type {
+	SwitchAccountInput,
+	SwitchAccountResponse,
+} from "../frontend/src/shared/services/auth.service";
 
-export {
-	MOOD_GENRE_MAP,
-	MOOD_IMAGES,
-	getTracksForMood,
-	getTracksGroupedByMood,
-	getMoodImage,
-	getMoodDescription,
-} from "../frontend/src/shared/utils/moodUtils";
+export type {
+	AccountType,
+	SubscriptionPlan,
+	SubscriptionStatus,
+	Subscription,
+	PaymentStatus,
+	Payment,
+	CardDetails,
+	FamilyMember,
+	FamilyMembersResponse,
+} from "../frontend/src/shared/types/index";
 
+// Candidate-added hook files
+export * from "../frontend/src/shared/hooks/useArtistInteraction";
+export * from "../frontend/src/shared/hooks/useConcerts";
+export * from "../frontend/src/shared/hooks/useDiscovery";
+export * from "../frontend/src/shared/hooks/useLikedTracks";
+export * from "../frontend/src/shared/hooks/useMixCreator";
+export * from "../frontend/src/shared/hooks/useMoodMixer";
+export * from "../frontend/src/shared/hooks/usePodcastBrowser";
+
+// Candidate-added service files
+export * from "../frontend/src/shared/services/artist-interaction.service";
+export * from "../frontend/src/shared/services/concert.service";
+export * from "../frontend/src/shared/services/family.service";
+export * from "../frontend/src/shared/services/history.service";
+export * from "../frontend/src/shared/services/mix.service";
+export * from "../frontend/src/shared/services/payment.service";
+export * from "../frontend/src/shared/services/subscription.service";
+export * from "../frontend/src/shared/services/track-like.service";
+
+// Candidate-added utility files
+export * from "../frontend/src/shared/utils/concertUtils";
+export * from "../frontend/src/shared/utils/discoveryUtils";
+export * from "../frontend/src/shared/utils/history.utils";
+export * from "../frontend/src/shared/utils/imageUtils";
+export * from "../frontend/src/shared/utils/likedTracksUtils";
+export * from "../frontend/src/shared/utils/mixUtils";
+export * from "../frontend/src/shared/utils/moodUtils";
+export * from "../frontend/src/shared/utils/podcastUtils";
+export * from "../frontend/src/shared/utils/ratingUtils";
+
+// Candidate-added barrel re-exports from existing files
 export {
-	CONCERT_CITIES,
-	MAX_TICKETS_PER_USER,
-	getUpcomingConcerts,
-	getUniqueCities,
-	getMonthOptions,
-	sortConcertsByDate,
-	filterByMonth,
-	getArtistsInCity,
-	formatConcertDate,
-	formatConcertTime,
-	calculateUserTicketCount,
-	canBuyMoreTickets,
-	generateTicketCodes,
-	getArtistAlbumsForConcert,
-	getArtistTracksForConcert,
+	type SwitchAccountInput,
+	type SwitchAccountResponse,
+	subscriptionService,
+	paymentService,
+	type PaymentRequest,
+	type PaymentResponse,
+	type PaymentHistoryResponse,
+	familyService,
+	type AddFamilyMemberInput,
+	type AddFamilyMemberResponse,
+	historyService,
+	type RecentlyPlayedTrack,
+	type RecentlyPlayedResponse,
+	mixService,
+	type Mix,
+	type MixDetail,
+	type CreateMixInput,
+	concertService,
 	type Concert,
 	type ConcertTicket,
-	type ArtistWithNextConcert,
-	type TicketDisplayItem,
-} from "../frontend/src/shared/utils/concertUtils";
+	type BuyTicketsResponse,
+	artistInteractionService,
+	trackLikeService,
+	type LikeStatusResponse,
+	type LikeActionResponse,
+	type LikedIdsResponse,
+	type LikedTrackItem,
+	type LikedTracksResponse,
+} from "../frontend/src/shared/services/index";
 
 export {
-	GENRE_LANGUAGE_MAP,
-	GENRE_DISPLAY_NAMES,
-	ERA_RANGES,
-	AVAILABLE_LANGUAGES,
-	AVAILABLE_GENRES,
-	AVAILABLE_ERAS,
-	getGenreDisplayName,
-	getTrackLanguage,
-	getNewThisWeek,
-	getPopularInLanguage,
-	getPopularInGenre,
-	getTracksByEra,
-	getTopArtists,
-	formatLanguageLabel,
-} from "../frontend/src/shared/utils/discoveryUtils";
-
-export {
-	groupEpisodesByShow,
-	calculateShowDuration,
-	sortShowsByRecency,
-	formatEpisodeDuration,
-	getTopShows,
-	sortEpisodesByOrder,
-	formatShowDuration,
-	formatEpisodeDate,
-	getUpNextEpisodes,
-	preparePlaybackQueue,
-	getEpisodePlaybackIndex,
-	formatPlayCount,
-	getEpisodeDescription,
-	type PodcastShow,
-} from "../frontend/src/shared/utils/podcastUtils";
-
-export {
+	DEFAULT_IMAGE,
+	preloadImages,
+	getImageUrl,
+	configureImageBaseUrl,
+	toTrackWithPopulated,
+	roundToHalfStar,
+	getStarState,
+	formatRatingDisplay,
+	formatFollowerCount,
 	sortLikedTracks,
 	getLikedTrackStats,
 	isTrackLiked,
 	isTrackDisliked,
 	getReactionForTrack,
 	type LikedSortOption,
-} from "../frontend/src/shared/utils/likedTracksUtils";
+} from "../frontend/src/shared/utils/index";
 
-// Task hooks
-export { useMixCreator } from "../frontend/src/shared/hooks/useMixCreator";
-export type { UseMixCreatorReturn } from "../frontend/src/shared/hooks/useMixCreator";
-export { useMoodMixer } from "../frontend/src/shared/hooks/useMoodMixer";
-export { useConcertListing, useConcertDetail } from "../frontend/src/shared/hooks/useConcerts";
-export { usePlaylistOperations } from "../frontend/src/shared/hooks/usePlaylistOperations";
-export { useSearch } from "../frontend/src/shared/hooks/useSearch";
-export { useDiscovery } from "../frontend/src/shared/hooks/useDiscovery";
-export { usePodcastBrowser } from "../frontend/src/shared/hooks/usePodcastBrowser";
-export { useLikedTracks } from "../frontend/src/shared/hooks/useLikedTracks";
-export { useArtistInteraction } from "../frontend/src/shared/hooks/useArtistInteraction";
-
-// Shared app barrels intentionally exposed to candidates/tasks
-export * from "../frontend/src/shared/services/index";
-export type { PlaylistWithTracks } from "../frontend/src/shared/services/playlist.service";
-export * from "../frontend/src/shared/utils/index";
-export * from "../frontend/src/shared/types/index";
-export type { TrackWithPopulated } from "../frontend/src/shared/types/player.types";
+export {
+	useArtistInteraction,
+	useLikedTracks,
+} from "../frontend/src/shared/hooks/index";

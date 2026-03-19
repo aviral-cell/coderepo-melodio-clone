@@ -6,7 +6,7 @@ import {
 	getCandidateSkippableLines,
 	isCandidateSurfaceFile,
 	shouldSkipCandidateLine,
-} from "./candidate-surface.mjs";
+} from "./solution-diff-surface.mjs";
 
 const candidateFiles = getCandidateSurfaceFiles();
 const skippableLineMap = getCandidateSkippableLines(candidateFiles);
@@ -114,11 +114,4 @@ const backend = runAndFilterTypecheck("backend", path.join(REPO_ROOT, "backend")
 
 if (frontend.output) console.log(frontend.output);
 if (backend.output) console.log(backend.output);
-
-if (!frontend.ok) {
-	console.log(
-		"Frontend typecheck diagnostics are non-blocking for candidate compatibility.",
-	);
-}
-
-process.exit(backend.ok ? 0 : 1);
+process.exit(frontend.ok && backend.ok ? 0 : 1);

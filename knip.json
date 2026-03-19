@@ -12,14 +12,7 @@
 				"test/**/*.ts",
 				"test/**/*.js"
 			],
-			"project": ["src/**/*.ts", "src/**/*.tsx", "__tests__/**/*.tsx", "test/**/*"],
-			"ignoreFiles": [
-				"src/shared/components/common/ErrorMessage.tsx",
-				"src/shared/components/common/LoadingSpinner.tsx",
-				"src/shared/components/layout/index.ts",
-				"src/shared/hooks/index.ts",
-				"src/shared/hooks/useLocalStorage.ts"
-			]
+			"project": ["src/**/*.ts", "src/**/*.tsx", "__tests__/**/*.tsx", "test/**/*"]
 		},
 		"backend": {
 			"entry": [
@@ -27,21 +20,27 @@
 				"../candidate-contracts/candidate-backend-contract.ts",
 				"__tests__/**/*.behavior.test.ts"
 			],
-			"project": ["src/**/*.ts", "__tests__/**/*.ts"],
-			"ignoreFiles": ["src/shared/services/cache.service.ts"]
+			"project": ["src/**/*.ts", "__tests__/**/*.ts"]
 		}
 	},
 	"ignoreDependencies": [
-		"@types/supertest",
+		"@testing-library/jest-dom",
 		"tailwindcss",
 		"tailwindcss-animate",
 		"@testing-library/dom",
 		"@testing-library/react",
 		"@testing-library/user-event",
 		"@vitest/coverage-v8",
-		"express",
-		"mongoose",
+		"dotenv",
+		"react",
+		"react-dom",
+		"react-router",
+		"react-router-dom",
 		"supertest"
 	],
-	"ignoreBinaries": ["jest", "dist/server.js"]
+	"ignoreFiles": [
+		"frontend/src/shared/components/common/ErrorMessage.tsx",
+		"frontend/src/shared/components/common/LoadingSpinner.tsx"
+	],
+	"ignoreBinaries": ["dist/server.js"]
 }
