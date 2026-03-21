@@ -14,7 +14,7 @@ Melodio is a music streaming app that supports family accounts. Primary account 
 
 Currently, the family management feature is not functional; family members, account switching, and access controls all need to be implemented correctly. Your task is to implement the family member management and account switching features in the backend so they work smoothly end-to-end.
 
-[SS]
+![1](images/FamilyManagement/1.png)
 
 ## Product Requirements
 
@@ -30,8 +30,11 @@ Currently, the family management feature is not functional; family members, acco
   Password: password123
   ```
 - Click on the user profile at the top right of the screen and click on Family settings. You can also click on the Family page from the sidebar for the same page.
-[SS]
-- Switch to the newly created family member account; observe it succeeds.
-- From the family member, switch back to the primary; observe it succeeds.
+![2](images/FamilyManagement/2.png)
+- Fill the form to add new family member.
+![3](images/FamilyManagement/3.png)
+- Click on Switch Account from the user profile dropdown to switch to the newly created family member account.
+![4](images/FamilyManagement/4.png)
+- From the family member, switching back to the primary account should be possible from the user profile dropdown.
 
 **Note:** Make sure to review the `technical-specs/FamilyManagement.md` file carefully to understand all the specifications and expected behavior.

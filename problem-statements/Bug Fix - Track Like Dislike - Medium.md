@@ -14,7 +14,7 @@ Melodio is a music streaming app where users can like or dislike individual trac
 
 At the moment, the track like/dislike system is extensively broken. like/dislike is broken, the liked tracks list doesn't work, and the like status indicator does not reflect the actual state.
 
-[SS]
+![1](images/TrackLikeDislike/1.png)
 
 ## Issue Summary
 
@@ -28,11 +28,11 @@ Like/Dislike functionality is broken. The Liked Tracks page shows incorrect data
   Password: password123
   ```
 - Click on any track to navigate to the track details page.
-[SS]
+![2](images/TrackLikeDislike/2.png)
 - Click the Like/Dislike button on a track; observe nothing works.
-[SS]
+![3](images/TrackLikeDislike/3.png)
 - Navigate to the Liked Tracks page from the sidebar; observe nothing shows up.
-[SS]
+![4](images/TrackLikeDislike/4.png)
 
 ## Expected Behavior
 

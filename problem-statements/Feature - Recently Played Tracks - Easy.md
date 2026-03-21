@@ -14,7 +14,7 @@ Melodio is a music streaming app that lets users discover and listen to music. T
 
 Currently, the recently played feature is not implemented. Your task is to implement the recently played tracks feature in the backend so that users can view their play history, which should be accurate and up-to-date.
 
-[SS]
+![1](images/RecentlyPlayed/1.png)
 
 ## Product Requirements
 
@@ -32,8 +32,9 @@ Currently, the recently played feature is not implemented. Your task is to imple
   ```
 - Play several tracks from different albums and artists in the home page.
 - Navigate to the Recently Played page from the sidebar.
-[SS]
-- Observe that played tracks appear sorted by most recent first with correct details.
+![2](images/RecentlyPlayed/2.png)
+- The played tracks appear sorted by most recent first with correct details.
 - Clicking on Clear History clears the list.
+![3](images/RecentlyPlayed/3.png)
 
 **Note:** Make sure to review the `technical-specs/RecentlyPlayed.md` file carefully to understand all the specifications and expected behavior.

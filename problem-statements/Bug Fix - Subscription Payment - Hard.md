@@ -14,7 +14,7 @@ Melodio is a music streaming app with a premium subscription model. Users can up
 
 At the moment, the card payment functionality is completely broken and the subscription never actually upgrades.
 
-[SS]
+![1](images/SubscriptionPayment/1.png)
 
 ## Issue Summary
 
@@ -28,18 +28,16 @@ When a user clicks Pay the payment process crashes. Even if that is resolved, ex
   Password: password123
   ```
 - Navigate to the Subscription page from the sidebar.
-[SS]
+![2](images/SubscriptionPayment/2.png)
 - Click Upgrade to Premium.
 - Enter card details and click Pay; observe that the payment fails.
   ```
-  Cardholder Name: Sample User
   Card Number: 4242424242424242
   Expiry Month: 12
   Expiry Year: 50
   CVV: 123
   ```
-
-[SS]
+![3](images/SubscriptionPayment/3.png)
 
 ## Expected Behavior
 
