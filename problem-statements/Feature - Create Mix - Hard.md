@@ -14,7 +14,7 @@ Melodio is a music streaming app with a Mix feature that lets users create perso
 
 The artist selection grid shows a handful of fake artists instead of real artist data from the database. Selecting an artist has no visual effect. The Next button is permanently disabled. You Mixes option shows nothing. Your task is to implement the frontend feature in the Mix page to make the entire mix creation flow work smoothly end-to-end.
 
-[SS]
+![1](images/CreateMix/1.png)
 
 ## Product Requirements
 
@@ -33,16 +33,18 @@ The artist selection grid shows a handful of fake artists instead of real artist
   Password: password123
   ```
 - Click on the Mix page from the sidebar.
-[SS]
+![2](images/CreateMix/2.png)
 - Your Mixes shows saved mixes.
 - Click the Create Mix card to start the wizard.
-[SS]
-- Real artists list appears.
-[SS]
-- Artists can be selected/deselected with visual feedback.
-- Click Next; configuration options appear.
-[SS]
+![3](images/CreateMix/3.png)
+- Artists list appears.
+![4](images/CreateMix/4.png)
+- Artists can be selected/deselected with visual feedback and click Next.
+![5](images/CreateMix/5.png)
+- Configuration options appear.
+![6](images/CreateMix/6.png)
 - Configure variety, discovery, and filters; click Done.
 - A scored mix is generated with a title based on selected artists.
+![7](images/CreateMix/7.png)
 
 **Note:** Make sure to review the `technical-specs/CreateMix.md` file carefully to understand all the specifications and expected behavior.

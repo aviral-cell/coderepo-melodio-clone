@@ -14,7 +14,7 @@ Melodio is a music streaming app where users can follow their favorite artists a
 
 At the moment, the artist follow and rating system is completely broken because there are bugs present that prevent it from working correctly.
 
-[SS]
+![1](images/ArtistFollowRating/1.png)
 
 ## Issue Summary
 
@@ -28,12 +28,12 @@ When a user tries to follow an artist, the follow button doesn't work and the sa
   Password: password123
   ```
 - Click on any track to navigate to the track details page.
-[SS]
+![2](images/ArtistFollowRating/2.png)
 - Click on the Artist hyperlink to navigate to any artist's profile page.
-[SS]
+![3](images/ArtistFollowRating/3.png)
 - Click the "Follow" button; observe the button is unresponsive.
 - Try to rate the artist; observe that is not captured.
-[SS]
+![4](images/ArtistFollowRating/4.png)
 
 ## Expected Behavior
 

@@ -14,7 +14,7 @@ Melodio is a music streaming app that also hosts podcasts. The Podcast lets user
 
 At the moment, the podcast feature is extensively broken. Show durations are wrong, episodes don't load, and playback does not work.
 
-[SS]
+![1](images/Podcast/1.png)
 
 ## Issue Summary
 
@@ -28,11 +28,11 @@ The Top Shows durations and count is incorrect. Clicking a show opens the detail
   Password: password123
   ```
 - Click on the Podcasts page from the sidebar.
-[SS]
-- Observe that show durations and count is incorrect.
-- Click on a show; observe that episodes don't load, duration and show count is incorrect.
-[SS]
-- Click Play All; observe nothing happens.
+![2](images/Podcast/2.png)
+- Click on any of the podcast to see podcast details page.
+![3](images/Podcast/3.png)
+- Observe that show durations and count is incorrect, and no episodes are shown.
+![4](images/Podcast/4.png)
 
 ## Expected Behavior
 
@@ -42,4 +42,4 @@ The Top Shows durations and count is incorrect. Clicking a show opens the detail
 - Episode dates should display formatted (e.g., "Jan 21, 2024"). Descriptions should show correct content.
 - "Play All" and individual episode play buttons should work correctly.
 
-**Note:** Make sure to review the `technical-specs/PodcastBrowser.md` file carefully to understand all the specifications and expected behavior.
+**Note:** Make sure to review the `technical-specs/Podcast.md` file carefully to understand all the specifications and expected behavior.

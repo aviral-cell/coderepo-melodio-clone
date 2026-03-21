@@ -15,7 +15,7 @@ Melodio is a music streaming app that offers a mood-based track discovery featur
 
 Currently, the Mood Mixer page is not implemented. Your task is to implement the Mood Mixer feature in the frontend so that users can browse tracks by mood and filter them accordingly.
 
-[SS]
+![1](images/MoodMixer/1.png)
 
 ## Product Requirements
 
@@ -32,9 +32,11 @@ Currently, the Mood Mixer page is not implemented. Your task is to implement the
   Password: password123
   ```
 - Navigate to the Mood Mixer page from the sidebar.
-[SS]
-- Observe that all 5 mood sections are displayed with real tracks in each section.
-- Click the "Energetic" mood chip; observe only the Energetic section is visible with a description.
-- Click it again to deselect it; observe all 5 sections reappear.
+![2](images/MoodMixer/2.png)
+- All 5 mood sections are displayed with tracks in each section.
+- Click the "Energetic" mood chip; only the Energetic section is visible with a description.
+![3](images/MoodMixer/3.png)
+- Click it again to deselect it; all 5 sections reappear.
+![4](images/MoodMixer/4.png)
 
 **Note:** Make sure to review the `technical-specs/MoodMixer.md` file carefully to understand all the specifications and expected behavior.

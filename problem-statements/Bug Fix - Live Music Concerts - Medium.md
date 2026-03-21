@@ -14,7 +14,7 @@ Melodio is a music streaming app with a Live Music Concerts feature that lets us
 
 At the moment, the concerts feature is extensively broken. Concert cards are missing dates and times, filters don't work, and the detail page has multiple issues with ticket purchasing and artist content.
 
-[SS]
+![1](images/LiveMusicConcerts/1.png)
 
 ## Issue Summary
 
@@ -28,11 +28,13 @@ Concert cards show no dates or times. The month and city filters have no effect.
   Password: password123
   ```
 - Click on the Concerts page from the sidebar.
-[SS]
+![2](images/LiveMusicConcerts/2.png)
 - Observe that concerts has no date or time information.
-- Try selecting a month or clicking a city chip; observe no change.
+- Try selecting a month, observe no change.
+- Click any concert to go to the concert details page.
+![3](images/LiveMusicConcerts/3.png)
 - Click on a concert to view details; observe the "Buy Tickets" button does nothing.
-[SS]
+![4](images/LiveMusicConcerts/4.png)
 
 ## Expected Behavior
 
