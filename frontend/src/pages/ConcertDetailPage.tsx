@@ -394,7 +394,7 @@ export default function ConcertDetailPage(): JSX.Element {
 						</DialogDescription>
 					</DialogHeader>
 
-					<div className="py-4" data-testid="concert-ticket-carousel">
+					<div className="overflow-hidden py-4" data-testid="concert-ticket-carousel">
 						<Carousel
 							opts={{ align: "start" }}
 							className="w-full"
