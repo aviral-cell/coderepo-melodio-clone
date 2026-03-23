@@ -262,6 +262,11 @@ describe("Track Like/Dislike", () => {
 			(item: { title: string }) => item.title,
 		);
 		expect(likedTitles).not.toContain("Track 2");
+
+		// Verify likedIds and dislikedIds arrays
+		expect(response.body.data.likedIds).toContain(testTracks[0]._id.toString());
+		expect(response.body.data.likedIds).toContain(testTracks[2]._id.toString());
+		expect(response.body.data.dislikedIds).toContain(testTracks[1]._id.toString());
 	});
 
 	it("should like a track and include it in the liked list", async () => {
@@ -281,10 +286,11 @@ describe("Track Like/Dislike", () => {
 			.get(`${TRACKS_API_BASE}/liked`)
 			.set("Authorization", `Bearer ${authToken}`);
 
-		// Verify track appears in liked list
+		// Verify track appears in liked list and likedIds
 		expect(listRes.status).toBe(200);
-		const likedIds = listRes.body.data.items.map((item: { _id: string }) => item._id);
-		expect(likedIds).toContain(trackId);
+		const itemIds = listRes.body.data.items.map((item: { _id: string }) => item._id);
+		expect(itemIds).toContain(trackId);
+		expect(listRes.body.data.likedIds).toContain(trackId);
 	});
 
 	it("should dislike a track and exclude it from the liked list", async () => {
@@ -304,10 +310,11 @@ describe("Track Like/Dislike", () => {
 			.get(`${TRACKS_API_BASE}/liked`)
 			.set("Authorization", `Bearer ${authToken}`);
 
-		// Verify track does not appear in liked list
+		// Verify track does not appear in liked list but appears in dislikedIds
 		expect(listRes.status).toBe(200);
-		const likedIds = listRes.body.data.items.map((item: { _id: string }) => item._id);
-		expect(likedIds).not.toContain(trackId);
+		const itemIds = listRes.body.data.items.map((item: { _id: string }) => item._id);
+		expect(itemIds).not.toContain(trackId);
+		expect(listRes.body.data.dislikedIds).toContain(trackId);
 	});
 
 	it("should use default pagination when no query params are provided", async () => {

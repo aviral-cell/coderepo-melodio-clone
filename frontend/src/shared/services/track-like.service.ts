@@ -39,8 +39,8 @@ interface LikedTracksResponse {
 	page: number;
 	limit: number;
 	totalPages: number;
-	likedIds?: string[];
-	dislikedIds?: string[];
+	likedIds: string[];
+	dislikedIds: string[];
 }
 
 export type { LikeStatusResponse, LikeActionResponse, LikedTrackItem, LikedTracksResponse };
@@ -55,11 +55,10 @@ export const trackLikeService = {
 	removeReaction: (trackId: string): Promise<LikeActionResponse> =>
 		apiService.delete<LikeActionResponse>(`/api/tracks/${trackId}/like`),
 
-	getLikedTracks: (params?: { page?: number; limit?: number; includeReactionIds?: boolean }): Promise<LikedTracksResponse> => {
+	getLikedTracks: (params?: { page?: number; limit?: number }): Promise<LikedTracksResponse> => {
 		const query = new URLSearchParams();
 		if (params?.page) query.set("page", params.page.toString());
 		if (params?.limit) query.set("limit", params.limit.toString());
-		if (params?.includeReactionIds) query.set("includeReactionIds", "true");
 		const qs = query.toString();
 		return apiService.get<LikedTracksResponse>(`/api/tracks/liked${qs ? `?${qs}` : ""}`);
 	},
