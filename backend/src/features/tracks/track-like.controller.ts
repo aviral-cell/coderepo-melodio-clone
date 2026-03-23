@@ -82,9 +82,8 @@ export const trackLikeController = {
 			if (typeof req.query["limit"] !== "string") {
 				paginationParams.limit = 7;
 			}
-			const includeReactionIds = req.query["includeReactionIds"] === "true";
 
-			const result = await trackLikeService.getLikedTracks(userId!, paginationParams, includeReactionIds);
+			const result = await trackLikeService.getLikedTracks(userId!, paginationParams);
 			sendSuccess(res, result);
 		} catch (error) {
 			res.status(500).json({ success: false, error: "An error occurred" });

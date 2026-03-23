@@ -184,7 +184,9 @@ At the moment, the track like/dislike system is broken. The like/dislike actions
     "total": 25,
     "totalPages": 4,
     "hasNext": true,
-    "hasPrev": false
+    "hasPrev": false,
+    "likedIds": ["track-id-1", "track-id-2"],
+    "dislikedIds": ["track-id-3"]
   }
 }
 ```
