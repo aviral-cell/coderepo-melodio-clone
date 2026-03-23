@@ -67,7 +67,7 @@ export async function authMiddleware(
 	}
 }
 
-export function optionalAuthMiddleware(
+function optionalAuthMiddleware(
 	req: AuthenticatedRequest,
 	res: Response,
 	next: NextFunction,

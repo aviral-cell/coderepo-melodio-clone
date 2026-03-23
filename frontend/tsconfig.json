@@ -20,8 +20,8 @@
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"types": ["node", "jest", "@testing-library/jest-dom"]
+		"types": ["node", "vite/client", "vitest/globals", "@testing-library/jest-dom"]
 	},
-	"include": ["src", "__tests__"],
+	"include": ["src", "__tests__", "test"],
 	"references": [{ "path": "./tsconfig.node.json" }]
 }

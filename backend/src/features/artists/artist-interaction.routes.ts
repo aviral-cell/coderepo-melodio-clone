@@ -12,4 +12,4 @@ router.post("/:id/rate", artistInteractionController.rateArtist);
 
 router.get("/:id/interaction", artistInteractionController.getInteraction);
 
-export const artistInteractionRoutes = router;
+export const artistInteractionRoutes: Router = router;

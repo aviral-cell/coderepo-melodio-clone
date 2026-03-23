@@ -15,7 +15,7 @@
 		"paths": {
 			"@/*": ["./frontend/src/*"]
 		},
-		"types": ["node", "jest", "@testing-library/jest-dom"]
+		"types": ["node", "vitest/globals", "@testing-library/jest-dom"]
 	},
 	"include": ["__tests__"],
 	"exclude": ["node_modules", "frontend", "backend"]

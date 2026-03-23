@@ -1,0 +1,46 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"workspaces": {
+		".": {
+			"entry": ["vitest.config.frontend.mts"],
+			"project": ["vitest.*.ts", "vitest.*.mts", "scripts/**/*.sh"]
+		},
+		"frontend": {
+			"entry": [
+				"../candidate-contracts/candidate-frontend-contract.ts",
+				"__tests__/**/*.behavior.test.tsx",
+				"test/**/*.ts",
+				"test/**/*.js"
+			],
+			"project": ["src/**/*.ts", "src/**/*.tsx", "__tests__/**/*.tsx", "test/**/*"]
+		},
+		"backend": {
+			"entry": [
+				"src/app.ts",
+				"../candidate-contracts/candidate-backend-contract.ts",
+				"__tests__/**/*.behavior.test.ts"
+			],
+			"project": ["src/**/*.ts", "__tests__/**/*.ts"]
+		}
+	},
+	"ignoreDependencies": [
+		"@testing-library/jest-dom",
+		"tailwindcss",
+		"tailwindcss-animate",
+		"@testing-library/dom",
+		"@testing-library/react",
+		"@testing-library/user-event",
+		"@vitest/coverage-v8",
+		"dotenv",
+		"react",
+		"react-dom",
+		"react-router",
+		"react-router-dom",
+		"supertest"
+	],
+	"ignoreFiles": [
+		"frontend/src/shared/components/common/ErrorMessage.tsx",
+		"frontend/src/shared/components/common/LoadingSpinner.tsx"
+	],
+	"ignoreBinaries": ["dist/server.js"]
+}

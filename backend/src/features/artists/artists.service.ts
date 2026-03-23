@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Artist, IArtist } from "./artist.model.js";
 
-export interface ArtistResponse {
+interface ArtistResponse {
 	_id: string;
 	name: string;
 	bio?: string;
@@ -12,7 +12,7 @@ export interface ArtistResponse {
 	updatedAt: Date;
 }
 
-export interface PaginatedArtistsResponse {
+interface PaginatedArtistsResponse {
 	items: ArtistResponse[];
 	total: number;
 	page: number;

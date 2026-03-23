@@ -111,7 +111,7 @@ export default function SubscriptionPage() {
 
 			{isFamilyMember && (
 				<Card
-					className="mb-6 border-melodio-green bg-gradient-to-r from-melodio-dark-gray to-melodio-light-gray"
+					className="mb-6 border-melodio-green bg-linear-to-r from-melodio-dark-gray to-melodio-light-gray"
 					data-testid="family-member-subscription-banner"
 				>
 					<CardContent className="flex items-center gap-4 py-4">
@@ -229,7 +229,7 @@ export default function SubscriptionPage() {
 
 				{/* Premium Benefits Card (for free users) / Payment History (for premium) */}
 				{!isPremium && !isFamilyMember ? (
-					<Card className="flex flex-col border-melodio-green bg-gradient-to-br from-melodio-dark-gray to-melodio-light-gray">
+					<Card className="flex flex-col border-melodio-green bg-linear-to-br from-melodio-dark-gray to-melodio-light-gray">
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2 text-white">
 								<Crown className="h-5 w-5 text-melodio-green" />

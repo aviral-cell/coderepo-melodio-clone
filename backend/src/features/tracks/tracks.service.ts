@@ -140,7 +140,18 @@ export const tracksService = {
 	},
 
 	async search(query: string, limit = 5): Promise<TrackResponse[]> {
-		return [];
+		const trimmed = (query || "").trim();
+		if (!trimmed) {
+			return [];
+		}
+		const prefixRegex = new RegExp(`^${escapeRegex(trimmed)}`, "i");
+		const tracks = await Track.find({ title: prefixRegex })
+			.populate<{ artist_id: PopulatedArtist | null }>("artist_id", "name image_url")
+			.populate<{ album_id: PopulatedAlbum | null }>("album_id", "title cover_image_url")
+			.limit(limit)
+			.lean<LeanTrackWithPopulated[]>()
+			.exec();
+		return tracks.map((track) => transformTrack(track));
 	},
 
 	async incrementPlayCount(id: string): Promise<TrackResponse | null> {

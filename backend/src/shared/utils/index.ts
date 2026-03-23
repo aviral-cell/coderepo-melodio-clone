@@ -51,7 +51,7 @@ export function calculatePagination<T>(
 	};
 }
 
-export function parsePaginationParams(query: Record<string, unknown>): PaginationParams {
+function parsePaginationParams(query: Record<string, unknown>): PaginationParams {
 	const page = typeof query["page"] === "string" ? parseInt(query["page"], 10) : 1;
 	const limit = typeof query["limit"] === "string" ? parseInt(query["limit"], 10) : 10;
 	const sortBy = typeof query["sortBy"] === "string" ? query["sortBy"] : "createdAt";
@@ -72,12 +72,12 @@ export function isValidObjectId(id: string): boolean {
 	return /^[0-9a-fA-F]{24}$/.test(id);
 }
 
-export function formatDuration(seconds: number): string {
+function formatDuration(seconds: number): string {
 	const minutes = Math.floor(seconds / 60);
 	const remainingSeconds = seconds % 60;
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
-export function sleep(ms: number): Promise<void> {
+function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }

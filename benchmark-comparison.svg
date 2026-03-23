@@ -1,0 +1,82 @@
+<svg width="1100" height="620" viewBox="0 0 1100 620" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Benchmark comparison between Current Repo and New Repo</title>
+  <desc id="desc">Grouped bar chart showing benchmark times converted to milliseconds for Current Repo and New Repo across install, build, backend task test, frontend task test, backend refresh, and frontend HMR.</desc>
+
+  <rect width="1100" height="620" fill="white"/>
+
+  <rect x="780" y="22" width="14" height="14" rx="2" fill="#94A3B8"/>
+  <text x="802" y="34" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111827">Current Repo</text>
+  <rect x="915" y="22" width="14" height="14" rx="2" fill="#2563EB"/>
+  <text x="937" y="34" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111827">New Repo</text>
+
+  <line x1="80" y1="500" x2="1030" y2="500" stroke="#111827" stroke-width="1.5"/>
+  <line x1="80" y1="60" x2="80" y2="500" stroke="#111827" stroke-width="1.5"/>
+
+  <line x1="80" y1="500" x2="1030" y2="500" stroke="#E5E7EB"/>
+  <line x1="80" y1="402.22" x2="1030" y2="402.22" stroke="#E5E7EB"/>
+  <line x1="80" y1="304.44" x2="1030" y2="304.44" stroke="#E5E7EB"/>
+  <line x1="80" y1="206.67" x2="1030" y2="206.67" stroke="#E5E7EB"/>
+  <line x1="80" y1="108.89" x2="1030" y2="108.89" stroke="#E5E7EB"/>
+
+  <text x="68" y="504" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6B7280">0</text>
+  <text x="68" y="406" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6B7280">10,000</text>
+  <text x="68" y="308" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6B7280">20,000</text>
+  <text x="68" y="210" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6B7280">30,000</text>
+  <text x="68" y="112" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#6B7280">40,000</text>
+  <text x="28" y="285" transform="rotate(-90 28 285)" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#374151">Time (ms)</text>
+
+  <rect x="140" y="99.11" width="28" height="400.89" rx="3" fill="#94A3B8"/>
+  <rect x="178" y="333.78" width="28" height="166.22" rx="3" fill="#2563EB"/>
+
+  <rect x="280" y="382.67" width="28" height="117.33" rx="3" fill="#94A3B8"/>
+  <rect x="318" y="451.11" width="28" height="48.89" rx="3" fill="#2563EB"/>
+
+  <rect x="420" y="68.59" width="28" height="431.41" rx="3" fill="#94A3B8"/>
+  <rect x="458" y="246.73" width="28" height="253.27" rx="3" fill="#2563EB"/>
+
+  <rect x="560" y="265.83" width="28" height="234.17" rx="3" fill="#94A3B8"/>
+  <rect x="598" y="364.03" width="28" height="135.97" rx="3" fill="#2563EB"/>
+
+  <rect x="700" y="469.35" width="28" height="30.65" rx="3" fill="#94A3B8"/>
+  <rect x="738" y="497.55" width="28" height="2.45" rx="2" fill="#2563EB"/>
+
+  <rect x="840" y="497.56" width="28" height="2.44" rx="2" fill="#94A3B8"/>
+  <rect x="878" y="498.96" width="28" height="1.04" rx="2" fill="#2563EB"/>
+
+  <text x="173" y="528" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111827">
+    <tspan x="173" dy="0">Cold</tspan>
+    <tspan x="173" dy="14">install</tspan>
+  </text>
+
+  <text x="313" y="528" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111827">
+    <tspan x="313" dy="0">Cold</tspan>
+    <tspan x="313" dy="14">build</tspan>
+  </text>
+
+  <text x="453" y="528" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111827">
+    <tspan x="453" dy="0">Backend</tspan>
+    <tspan x="453" dy="14">tests</tspan>
+  </text>
+
+  <text x="593" y="528" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111827">
+    <tspan x="593" dy="0">Frontend</tspan>
+    <tspan x="593" dy="14">tests</tspan>
+  </text>
+
+  <text x="733" y="528" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111827">
+    <tspan x="733" dy="0">Backend</tspan>
+    <tspan x="733" dy="14">refresh</tspan>
+  </text>
+
+  <text x="873" y="528" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111827">
+    <tspan x="873" dy="0">Frontend</tspan>
+    <tspan x="873" dy="14">HMR</tspan>
+  </text>
+
+  <text x="173" y="584" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6B7280">41s vs 17s</text>
+  <text x="313" y="584" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6B7280">12s vs 5s</text>
+  <text x="453" y="584" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6B7280">40.2s vs 23.6s</text>
+  <text x="593" y="584" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6B7280">21.82s vs 12.67s</text>
+  <text x="733" y="584" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6B7280">3135ms vs 251ms</text>
+  <text x="873" y="584" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6B7280">250ms vs 106ms</text>
+</svg>

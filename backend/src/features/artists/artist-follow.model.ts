@@ -1,13 +1,13 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export interface IArtistFollow {
+interface IArtistFollow {
 	user_id: mongoose.Types.ObjectId;
 	artist_id: mongoose.Types.ObjectId;
 	created_at: Date;
 	updated_at: Date;
 }
 
-export interface IArtistFollowDocument extends IArtistFollow, Document {
+interface IArtistFollowDocument extends IArtistFollow, Document {
 	_id: mongoose.Types.ObjectId;
 }
 

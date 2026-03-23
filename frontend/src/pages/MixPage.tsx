@@ -257,14 +257,14 @@ export default function MixPage(): JSX.Element {
 										if (e.key === "Enter") handleConfirmRename();
 										if (e.key === "Escape") handleCancelRename();
 									}}
-									className="min-w-0 flex-1 rounded-md border border-melodio-light-gray bg-melodio-dark-gray px-3 py-1.5 text-xl font-bold text-white outline-none focus:border-melodio-green sm:text-3xl"
+									className="min-w-0 flex-1 rounded-md border border-melodio-light-gray bg-melodio-dark-gray px-3 py-1.5 text-xl font-bold text-white outline-hidden focus:border-melodio-green sm:text-3xl"
 									data-testid="mix-rename-input"
 									autoFocus
 								/>
 								<button
 									type="button"
 									onClick={handleConfirmRename}
-									className="flex-shrink-0 rounded p-1 text-melodio-green hover:bg-melodio-green/10"
+									className="shrink-0 rounded p-1 text-melodio-green hover:bg-melodio-green/10"
 									data-testid="mix-rename-confirm"
 								>
 									<Check className="h-5 w-5" />
@@ -272,7 +272,7 @@ export default function MixPage(): JSX.Element {
 								<button
 									type="button"
 									onClick={handleCancelRename}
-									className="flex-shrink-0 rounded p-1 text-melodio-text-subdued hover:bg-white/10"
+									className="shrink-0 rounded p-1 text-melodio-text-subdued hover:bg-white/10"
 									data-testid="mix-rename-cancel"
 								>
 									<X className="h-5 w-5" />
@@ -571,7 +571,7 @@ export default function MixPage(): JSX.Element {
 							handleStartCreate();
 						}
 					}}
-					className="flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg bg-gradient-to-br from-teal-800 to-emerald-900 p-10 transition-all hover:brightness-110"
+					className="flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg bg-linear-to-br from-teal-800 to-emerald-900 p-10 transition-all hover:brightness-110"
 				>
 					<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white">
 						<Plus className="h-8 w-8 text-teal-800" />

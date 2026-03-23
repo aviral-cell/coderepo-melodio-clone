@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import { Album, IAlbum } from "./album.model.js";
 
-export interface PopulatedArtist {
+interface PopulatedArtist {
 	_id: mongoose.Types.ObjectId;
 	name: string;
 	image_url?: string;
 }
 
-export interface AlbumResponse {
+interface AlbumResponse {
 	_id: string;
 	title: string;
 	artist: {
@@ -22,7 +22,7 @@ export interface AlbumResponse {
 	updatedAt: Date;
 }
 
-export interface PaginatedAlbumsResponse {
+interface PaginatedAlbumsResponse {
 	items: AlbumResponse[];
 	total: number;
 	page: number;

@@ -45,7 +45,7 @@ function RootLayout(): JSX.Element {
 
 function AuthLayout(): JSX.Element {
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-melodio-dark-gray to-melodio-black px-4 py-8">
+		<div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-b from-melodio-dark-gray to-melodio-black px-4 py-8">
 			<div className="mb-8 flex items-center gap-2">
 				<Music className="h-10 w-10 text-melodio-green" />
 				<span className="text-3xl font-bold text-white">Melodio</span>
