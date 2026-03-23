@@ -10,11 +10,6 @@ export interface LikeStatusResult {
 	status: "like" | "dislike" | null;
 }
 
-export interface LikedIdsResult {
-	likedIds: string[];
-	dislikedIds: string[];
-}
-
 export interface LikedTrackResponse {
 	_id: string;
 	title: string;

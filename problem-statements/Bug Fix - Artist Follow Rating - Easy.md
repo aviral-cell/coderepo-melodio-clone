@@ -1,8 +1,8 @@
 # Bug Fix: Artist Follow & Rating
 
 ```
-Tags: Theme:Melodio, MERN, backend, BugFix, Easy
-Time: 20 mins
+Tags: Theme:Melodio, MERN, backend, Bug Fix, Easy
+Time: 30 mins
 Score: 50
 ```
 
@@ -12,13 +12,11 @@ Score: 50
 
 Melodio is a music streaming app where users can follow their favorite artists and rate them. Following an artist subscribes the user to updates, and ratings contribute to the artist's overall community score. These interactions are tracked per user and displayed on artist profile pages.
 
-At the moment, the artist follow and rating system is completely broken because there are bugs present that prevent it from working correctly.
-
 ![1](images/ArtistFollowRating/1.png)
 
 ## Issue Summary
 
-When a user tries to follow an artist, the follow button doesn't work and the same is with the rating system. Your task is to fix these backend issues so the artist follow and rating system works smoothly end-to-end.
+When a user clicks the Follow button on an artist's profile, nothing happens. Rating an artist also has no effect. Your task is to fix these backend issues so the artist follow and rating system works smoothly end-to-end.
 
 ## Steps to Reproduce
 
@@ -38,9 +36,9 @@ When a user tries to follow an artist, the follow button doesn't work and the sa
 ## Expected Behavior
 
 - Following an unfollowed artist should increment the follower count by 1. Unfollowing should decrement by 1.
-- Ratings should be between 0.5 and 5 in 0.5 increments.
-- The average rating should be a true average (not a sum).
-- The interaction endpoint should return the correct follow status and rating data.
-- If the artist does not exist, all endpoints should return a 404 error.
+- Ratings should be accepted within a valid range.
+- The displayed rating should reflect the true community average.
+- The interaction data should return the correct follow status and rating.
+- Interacting with a non-existent artist should return an error.
 
 **Note:** Make sure to review the `technical-specs/ArtistInteraction.md` file carefully to understand all the specifications and expected behavior.

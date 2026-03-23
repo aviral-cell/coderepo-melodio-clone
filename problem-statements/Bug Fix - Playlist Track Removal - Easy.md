@@ -1,7 +1,7 @@
 # Bug Fix: Playlist Track Removal
 
 ```
-Tags: Theme:Melodio, MERN, Frontend, BugFix, Easy
+Tags: Theme:Melodio, MERN, Frontend, Bug Fix, Easy
 Time: 20 mins
 Score: 50
 ```

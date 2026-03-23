@@ -94,17 +94,4 @@ export const trackLikeController = {
 		}
 	},
 
-	async getLikedIds(
-		req: AuthenticatedRequest,
-		res: Response,
-	): Promise<void> {
-		try {
-			const userId = req.user?.userId;
-
-			const result = await trackLikeService.getLikedIds(userId!);
-			sendSuccess(res, result);
-		} catch (error) {
-			res.status(500).json({ success: false, error: "An error occurred" });
-		}
-	},
 };

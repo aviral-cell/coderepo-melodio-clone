@@ -131,19 +131,23 @@ describe("Track Like/Dislike", () => {
 	it("should switch from dislike to like", async () => {
 		const trackId = testTracks[0]._id.toString();
 
+		// Dislike the track first
 		await request(app)
 			.post(`${TRACKS_API_BASE}/${trackId}/dislike`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Switch to like
 		const response = await request(app)
 			.post(`${TRACKS_API_BASE}/${trackId}/like`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify like response
 		expect(response.status).toBe(200);
 		expect(response.body.success).toBe(true);
 		expect(response.body.data.status).toBe("like");
 		expect(response.body.data.trackId).toBe(trackId);
 
+		// Verify status persists via like-status endpoint
 		const statusRes = await request(app)
 			.get(`${TRACKS_API_BASE}/${trackId}/like-status`)
 			.set("Authorization", `Bearer ${authToken}`);
@@ -154,19 +158,23 @@ describe("Track Like/Dislike", () => {
 	it("should switch from like to dislike", async () => {
 		const trackId = testTracks[1]._id.toString();
 
+		// Like the track first
 		await request(app)
 			.post(`${TRACKS_API_BASE}/${trackId}/like`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Switch to dislike
 		const response = await request(app)
 			.post(`${TRACKS_API_BASE}/${trackId}/dislike`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify dislike response
 		expect(response.status).toBe(200);
 		expect(response.body.success).toBe(true);
 		expect(response.body.data.status).toBe("dislike");
 		expect(response.body.data.trackId).toBe(trackId);
 
+		// Verify status persists via like-status endpoint
 		const statusRes = await request(app)
 			.get(`${TRACKS_API_BASE}/${trackId}/like-status`)
 			.set("Authorization", `Bearer ${authToken}`);
@@ -177,18 +185,22 @@ describe("Track Like/Dislike", () => {
 	it("should return 404 for non-existent track", async () => {
 		const fakeId = new mongoose.Types.ObjectId().toString();
 
+		// Attempt to like a non-existent track
 		const likeRes = await request(app)
 			.post(`${TRACKS_API_BASE}/${fakeId}/like`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify 404 for like
 		expect(likeRes.status).toBe(404);
 		expect(likeRes.body.success).toBe(false);
 		expect(likeRes.body.error).toMatch(/not found/i);
 
+		// Attempt to dislike a non-existent track
 		const dislikeRes = await request(app)
 			.post(`${TRACKS_API_BASE}/${fakeId}/dislike`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify 404 for dislike
 		expect(dislikeRes.status).toBe(404);
 		expect(dislikeRes.body.success).toBe(false);
 		expect(dislikeRes.body.error).toMatch(/not found/i);
@@ -197,19 +209,23 @@ describe("Track Like/Dislike", () => {
 	it("should remove a reaction", async () => {
 		const trackId = testTracks[0]._id.toString();
 
+		// Like the track
 		await request(app)
 			.post(`${TRACKS_API_BASE}/${trackId}/like`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Remove the reaction
 		const response = await request(app)
 			.delete(`${TRACKS_API_BASE}/${trackId}/like`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify removal response
 		expect(response.status).toBe(200);
 		expect(response.body.success).toBe(true);
 		expect(response.body.data.status).toBeNull();
 		expect(response.body.data.trackId).toBe(trackId);
 
+		// Verify status is null via like-status endpoint
 		const statusRes = await request(app)
 			.get(`${TRACKS_API_BASE}/${trackId}/like-status`)
 			.set("Authorization", `Bearer ${authToken}`);
@@ -218,6 +234,7 @@ describe("Track Like/Dislike", () => {
 	});
 
 	it("should exclude disliked tracks from liked list", async () => {
+		// Like two tracks, dislike one
 		await request(app)
 			.post(`${TRACKS_API_BASE}/${testTracks[0]._id.toString()}/like`)
 			.set("Authorization", `Bearer ${authToken}`);
@@ -230,32 +247,106 @@ describe("Track Like/Dislike", () => {
 			.post(`${TRACKS_API_BASE}/${testTracks[2]._id.toString()}/like`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Fetch liked tracks list
 		const response = await request(app)
 			.get(`${TRACKS_API_BASE}/liked`)
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify only liked tracks are returned
 		expect(response.status).toBe(200);
 		expect(response.body.data.items).toHaveLength(2);
 		expect(response.body.data.total).toBe(2);
 
+		// Verify disliked track is excluded
 		const likedTitles = response.body.data.items.map(
 			(item: { title: string }) => item.title,
 		);
 		expect(likedTitles).not.toContain("Track 2");
 	});
 
-	it("should respect pagination params", async () => {
+	it("should like a track and include it in the liked list", async () => {
+		const trackId = testTracks[0]._id.toString();
+
+		// Like the track
+		const likeRes = await request(app)
+			.post(`${TRACKS_API_BASE}/${trackId}/like`)
+			.set("Authorization", `Bearer ${authToken}`);
+
+		// Verify like response
+		expect(likeRes.status).toBe(200);
+		expect(likeRes.body.data.status).toBe("like");
+
+		// Fetch liked tracks list
+		const listRes = await request(app)
+			.get(`${TRACKS_API_BASE}/liked`)
+			.set("Authorization", `Bearer ${authToken}`);
+
+		// Verify track appears in liked list
+		expect(listRes.status).toBe(200);
+		const likedIds = listRes.body.data.items.map((item: { _id: string }) => item._id);
+		expect(likedIds).toContain(trackId);
+	});
+
+	it("should dislike a track and exclude it from the liked list", async () => {
+		const trackId = testTracks[0]._id.toString();
+
+		// Dislike the track
+		const dislikeRes = await request(app)
+			.post(`${TRACKS_API_BASE}/${trackId}/dislike`)
+			.set("Authorization", `Bearer ${authToken}`);
+
+		// Verify dislike response
+		expect(dislikeRes.status).toBe(200);
+		expect(dislikeRes.body.data.status).toBe("dislike");
+
+		// Fetch liked tracks list
+		const listRes = await request(app)
+			.get(`${TRACKS_API_BASE}/liked`)
+			.set("Authorization", `Bearer ${authToken}`);
+
+		// Verify track does not appear in liked list
+		expect(listRes.status).toBe(200);
+		const likedIds = listRes.body.data.items.map((item: { _id: string }) => item._id);
+		expect(likedIds).not.toContain(trackId);
+	});
+
+	it("should use default pagination when no query params are provided", async () => {
+		// Like all 3 tracks
 		for (const track of testTracks) {
 			await request(app)
 				.post(`${TRACKS_API_BASE}/${track._id.toString()}/like`)
 				.set("Authorization", `Bearer ${authToken}`);
 		}
 
+		// Fetch liked tracks without pagination params
+		const response = await request(app)
+			.get(`${TRACKS_API_BASE}/liked`)
+			.set("Authorization", `Bearer ${authToken}`);
+
+		// Verify default pagination values
+		expect(response.status).toBe(200);
+		expect(response.body.data.page).toBe(1);
+		expect(response.body.data.limit).toBe(7);
+		expect(response.body.data.total).toBe(3);
+		expect(response.body.data.totalPages).toBe(1);
+		expect(response.body.data.items).toHaveLength(3);
+	});
+
+	it("should paginate liked tracks when page and limit are provided", async () => {
+		// Like all 3 tracks
+		for (const track of testTracks) {
+			await request(app)
+				.post(`${TRACKS_API_BASE}/${track._id.toString()}/like`)
+				.set("Authorization", `Bearer ${authToken}`);
+		}
+
+		// Fetch page 1 with limit 2
 		const page1Response = await request(app)
 			.get(`${TRACKS_API_BASE}/liked`)
 			.query({ page: 1, limit: 2 })
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify page 1 metadata and items
 		expect(page1Response.status).toBe(200);
 		expect(page1Response.body.data.items).toHaveLength(2);
 		expect(page1Response.body.data.page).toBe(1);
@@ -263,39 +354,15 @@ describe("Track Like/Dislike", () => {
 		expect(page1Response.body.data.total).toBe(3);
 		expect(page1Response.body.data.totalPages).toBe(2);
 
+		// Fetch page 2 with limit 2
 		const page2Response = await request(app)
 			.get(`${TRACKS_API_BASE}/liked`)
 			.query({ page: 2, limit: 2 })
 			.set("Authorization", `Bearer ${authToken}`);
 
+		// Verify page 2 has remaining item
 		expect(page2Response.status).toBe(200);
 		expect(page2Response.body.data.items).toHaveLength(1);
 		expect(page2Response.body.data.page).toBe(2);
-	});
-
-	it("should remove track from liked tracks list after disliking it", async () => {
-		const trackId = testTracks[0]._id.toString();
-
-		await request(app)
-			.post(`${TRACKS_API_BASE}/${trackId}/like`)
-			.set("Authorization", `Bearer ${authToken}`);
-
-		let response = await request(app)
-			.get(`${TRACKS_API_BASE}/liked/ids`)
-			.set("Authorization", `Bearer ${authToken}`);
-
-		expect(response.body.data.likedIds).toContain(trackId);
-		expect(response.body.data.dislikedIds).not.toContain(trackId);
-
-		await request(app)
-			.post(`${TRACKS_API_BASE}/${trackId}/dislike`)
-			.set("Authorization", `Bearer ${authToken}`);
-
-		response = await request(app)
-			.get(`${TRACKS_API_BASE}/liked/ids`)
-			.set("Authorization", `Bearer ${authToken}`);
-
-		expect(response.body.data.likedIds).not.toContain(trackId);
-		expect(response.body.data.dislikedIds).toContain(trackId);
 	});
 });

@@ -64,7 +64,6 @@ export {
 	trackLikeService,
 	type LikeStatusResponse,
 	type LikeActionResponse,
-	type LikedIdsResponse,
 	type LikedTrackItem,
 	type LikedTracksResponse,
 } from "./track-like.service";

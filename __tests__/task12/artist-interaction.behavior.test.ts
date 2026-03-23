@@ -235,7 +235,9 @@ describe("Artist Interaction", () => {
 
 	it("should return follow and rating via interaction endpoint", async () => {
 		// Follow the artist
-		await request(app).post(`${ARTIST_API_BASE}/${testArtist._id}/follow`).set("Authorization", `Bearer ${authToken}`);
+		await request(app)
+			.post(`${ARTIST_API_BASE}/${testArtist._id}/follow`)
+			.set("Authorization", `Bearer ${authToken}`);
 
 		// Rate the artist
 		await request(app)

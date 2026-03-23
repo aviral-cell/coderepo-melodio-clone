@@ -4,7 +4,6 @@ import { calculatePagination } from "../../shared/utils/index.js";
 import {
 	LikeActionResult,
 	LikeStatusResult,
-	LikedIdsResult,
 	LikedTrackResponse,
 	PopulatedTrackLike,
 } from "./track-like.types.js";
@@ -95,17 +94,4 @@ export const trackLikeService = {
 		return { status: "like" as const };
 	},
 
-	async getLikedIds(userId: string): Promise<LikedIdsResult> {
-		const docs = await TrackLike.find({ user_id: userId }).lean().exec();
-
-		const likedIds: string[] = [];
-		const dislikedIds: string[] = [];
-
-		for (const doc of docs) {
-			const trackIdStr = doc.track_id.toString();
-			likedIds.push(trackIdStr);
-		}
-
-		return { likedIds, dislikedIds };
-	},
 };

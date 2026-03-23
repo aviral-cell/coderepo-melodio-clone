@@ -1,7 +1,7 @@
 # Bug Fix: Podcast
 
 ```
-Tags: Theme:Melodio, MERN, Frontend, BugFix, Hard
+Tags: Theme:Melodio, MERN, Frontend, Bug Fix, Hard
 Time: 60 mins
 Score: 100
 ```

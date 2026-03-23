@@ -7,7 +7,6 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/liked", trackLikeController.getLikedTracks);
-router.get("/liked/ids", trackLikeController.getLikedIds);
 
 router.post("/:id/like", trackLikeController.likeTrack);
 router.post("/:id/dislike", trackLikeController.dislikeTrack);

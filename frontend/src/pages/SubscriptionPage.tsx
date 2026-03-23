@@ -149,7 +149,7 @@ export default function SubscriptionPage() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="flex-1">
-						<div className="flex h-full flex-col space-y-4">
+						<div className="flex h-full flex-col gap-4">
 							{isPremium && subscription ? (
 								<>
 									<div className="space-y-3">

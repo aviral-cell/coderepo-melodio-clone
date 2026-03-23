@@ -6,6 +6,15 @@ import { Clock, History, Play, Pause, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppImage } from "@/shared/components/common/AppImage";
 import { Button } from "@/shared/components/ui/button";
+import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from "@/shared/components/ui/pagination";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/common/EmptyState";
 import { usePlayer } from "@/shared/contexts/PlayerContext";
@@ -45,54 +54,61 @@ function formatRelativeTime(dateString: string): string {
 	}).format(date);
 }
 
+function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
+	if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+	const pages: (number | "ellipsis")[] = [1];
+	if (current > 3) pages.push("ellipsis");
+	for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+		pages.push(i);
+	}
+	if (current < total - 2) pages.push("ellipsis");
+	pages.push(total);
+	return pages;
+}
+
 export default function RecentlyPlayedPage(): JSX.Element {
 	const { state, playTrack, togglePlayPause } = usePlayer();
 	const { addToast } = useToast();
 
-	const PAGE_SIZE = 20;
+	const PAGE_SIZE = 10;
 
 	const [tracks, setTracks] = useState<RecentlyPlayedTrack[]>([]);
 	const [total, setTotal] = useState(0);
+	const [page, setPage] = useState(1);
 	const [isLoading, setIsLoading] = useState(true);
-	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const [isClearing, setIsClearing] = useState(false);
 
-	const fetchRecentlyPlayed = useCallback(async () => {
-		try {
-			setIsLoading(true);
-			const response = await historyService.getRecentlyPlayed(PAGE_SIZE, 0);
-			preloadImages(response.tracks.map((t) => getImageUrl(t.coverImageUrl)));
-			setTracks(response.tracks);
-			setTotal(response.total);
-		} catch (error) {
-			addToast({
-				type: "error",
-				message: error instanceof Error ? error.message : "Failed to load recently played",
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	}, [addToast]);
+	const totalPages = Math.ceil(total / PAGE_SIZE);
+
+	const fetchPage = useCallback(
+		async (targetPage: number, showSkeleton = false) => {
+			try {
+				if (showSkeleton) setIsLoading(true);
+				const offset = (targetPage - 1) * PAGE_SIZE;
+				const response = await historyService.getRecentlyPlayed(PAGE_SIZE, offset);
+				preloadImages(response.tracks.map((t) => getImageUrl(t.coverImageUrl)));
+				setTracks(response.tracks);
+				setTotal(response.total);
+				setPage(targetPage);
+			} catch (error) {
+				addToast({
+					type: "error",
+					message: error instanceof Error ? error.message : "Failed to load recently played",
+				});
+			} finally {
+				if (showSkeleton) setIsLoading(false);
+			}
+		},
+		[addToast],
+	);
 
 	useEffect(() => {
-		fetchRecentlyPlayed();
-	}, [fetchRecentlyPlayed]);
+		fetchPage(1, true);
+	}, [fetchPage]);
 
-	const handleLoadMore = async () => {
-		try {
-			setIsLoadingMore(true);
-			const response = await historyService.getRecentlyPlayed(PAGE_SIZE, tracks.length);
-			preloadImages(response.tracks.map((t) => getImageUrl(t.coverImageUrl)));
-			setTracks((prev) => [...prev, ...response.tracks]);
-			setTotal(response.total);
-		} catch (error) {
-			addToast({
-				type: "error",
-				message: error instanceof Error ? error.message : "Failed to load more tracks",
-			});
-		} finally {
-			setIsLoadingMore(false);
-		}
+	const handlePageChange = (newPage: number) => {
+		if (newPage < 1 || newPage > totalPages) return;
+		fetchPage(newPage);
 	};
 
 	const handleClearHistory = async () => {
@@ -101,6 +117,7 @@ export default function RecentlyPlayedPage(): JSX.Element {
 			await historyService.clearHistory();
 			setTracks([]);
 			setTotal(0);
+			setPage(1);
 			addToast({
 				type: "success",
 				message: "Play history cleared",
@@ -298,18 +315,51 @@ export default function RecentlyPlayedPage(): JSX.Element {
 						);
 					})}
 
-					{tracks.length < total && (
-						<div className="mt-4 flex justify-center">
-							<Button
-								variant="outline"
-								onClick={handleLoadMore}
-								disabled={isLoadingMore}
-								className="rounded-full border-melodio-light-gray text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white"
-								data-testid="recently-played-load-more-btn"
-							>
-								{isLoadingMore ? "Loading..." : "Load More"}
-							</Button>
-						</div>
+					{totalPages > 1 && (
+						<Pagination className="mt-6" data-testid="recently-played-pagination">
+							<PaginationContent>
+								<PaginationItem>
+									<PaginationPrevious
+										onClick={() => handlePageChange(page - 1)}
+										className={cn(
+											"cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white",
+											page <= 1 && "pointer-events-none opacity-50",
+										)}
+									/>
+								</PaginationItem>
+								{getPageNumbers(page, totalPages).map((pageNum, i) =>
+									pageNum === "ellipsis" ? (
+										<PaginationItem key={`ellipsis-${i}`}>
+											<PaginationEllipsis className="text-melodio-text-subdued" />
+										</PaginationItem>
+									) : (
+										<PaginationItem key={pageNum}>
+											<PaginationLink
+												isActive={pageNum === page}
+												onClick={() => handlePageChange(pageNum)}
+												className={cn(
+													"cursor-pointer",
+													pageNum === page
+														? "border-melodio-green bg-melodio-green text-black hover:bg-melodio-green/90 hover:text-black"
+														: "text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white",
+												)}
+											>
+												{pageNum}
+											</PaginationLink>
+										</PaginationItem>
+									),
+								)}
+								<PaginationItem>
+									<PaginationNext
+										onClick={() => handlePageChange(page + 1)}
+										className={cn(
+											"cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white",
+											page >= totalPages && "pointer-events-none opacity-50",
+										)}
+									/>
+								</PaginationItem>
+							</PaginationContent>
+						</Pagination>
 					)}
 				</div>
 			)}

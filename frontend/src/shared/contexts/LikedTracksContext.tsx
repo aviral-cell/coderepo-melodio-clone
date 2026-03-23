@@ -129,12 +129,12 @@ export function LikedTracksProvider({ children }: { children: ReactNode }) {
 
 		async function fetchIds() {
 			try {
-				const data = await trackLikeService.getLikedIds();
+				const data = await trackLikeService.getLikedTracks({ page: 1, limit: 1, includeReactionIds: true });
 				if (!cancelled) {
 					dispatch({
 						type: "SET_IDS",
-						likedIds: data.likedIds,
-						dislikedIds: data.dislikedIds,
+						likedIds: data.likedIds ?? [],
+						dislikedIds: data.dislikedIds ?? [],
 					});
 				}
 			} catch (err) {
