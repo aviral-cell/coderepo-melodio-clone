@@ -18,13 +18,14 @@
 
 ## Benchmark Snapshot
 
-Method: cold install was measured from empty `node_modules`. Task timings are warm timings after one warm-up run.
+Method: cold install and cold build below use the VM measurements. Task timings are warm timings after one warm-up run.
 
 | Metric | Optimised Solution | Actual Solution |
 | --- | ---: | ---: |
-| Cold install | `1.08s` | `8.99s` |
-| Backend task benchmark, task 3 (`1` suite / `3` tests) | `1.01s` | `1.51s` |
-| Frontend task benchmark, task 2 (`1` suite / `21` tests) | `1.50s` | `1.97s` |
+| Cold install | `17s` | `41s` |
+| Cold build | `5s` | `12s` |
+| Backend task benchmark, task 4 (`1` suite / `10` tests) | `5.5s` | `12s` |
+| Frontend task benchmark, task 2 (`1` suite / `21` tests) | `5s` | `7.5s` |
 | Backend dev refresh | `251ms` | `3135ms` |
 | Frontend HMR | `106ms` | `250ms` |
 
@@ -35,8 +36,8 @@ This section compares `Optimised Solution` and `Actual Solution`.
 ### 1. Installer
 
 ```text
-Optimised Solution   1.08 s | ███
-Actual Solution      8.99 s | ██████████████████████████
+Optimised Solution    17 s | ███████████
+Actual Solution       41 s | ██████████████████████████
 ```
 
 What this means in simple words:
@@ -44,31 +45,43 @@ What this means in simple words:
 - The cold install path is much faster in `Optimised Solution`.
 - `Actual Solution` is slower on install because it still pays the older npm install cost.
 
-### 2. Backend Task Benchmark: Task 3 (`1` suite / `3` tests)
+### 2. Cold Build
 
 ```text
-Optimised Solution  1.01 s | ███████
-Actual Solution     1.51 s | ██████████
+Optimised Solution     5 s | ██████████
+Actual Solution       12 s | ████████████████████████
+```
+
+What this means in simple words:
+
+- The cold build path is also clearly faster in `Optimised Solution`.
+- `Actual Solution` takes more time to get to a fresh build output.
+
+### 3. Backend Task Benchmark: Task 4 (`1` suite / `10` tests)
+
+```text
+Optimised Solution   5.5 s | ███████████
+Actual Solution      12 s  | ████████████████████████
 ```
 
 What this means:
 
-- This comparison uses the stable backend search task.
+- This comparison uses the backend task 4 suite from the VM run.
 - `Optimised Solution` is faster than `Actual Solution` on this backend task path.
 
-### 3. Frontend Task Benchmark: Task 2 (`1` suite / `21` tests)
+### 4. Frontend Task Benchmark: Task 2 (`1` suite / `21` tests)
 
 ```text
-Optimised Solution  1.50 s | ████████
-Actual Solution     1.97 s | ██████████
+Optimised Solution   5 s   | ███████████
+Actual Solution      7.5 s | ████████████████
 ```
 
 What this means:
 
-- This comparison uses the stable frontend concerts task.
+- This comparison uses the frontend task 2 suite from the VM run.
 - `Optimised Solution` is faster than `Actual Solution` on this frontend task path.
 
-### 4. Backend HMR / Refresh Time
+### 5. Backend HMR / Refresh Time
 
 This is really restart-on-save, not true backend HMR.
 
@@ -83,7 +96,7 @@ What this means:
 - Moving away from `nodemon --delay 2500ms --exec tsx` removed most of the waiting after each save.
 - `Optimised Solution` is dramatically faster than `Actual Solution` for backend save-and-refresh.
 
-### 5. Frontend HMR
+### 6. Frontend HMR
 
 ```text
 Optimised Solution  106 ms | █████
@@ -320,6 +333,7 @@ Along with the tooling work, a small amount of code-side cleanup was also done.
 Compared with `Actual Solution`, `Optimised Solution` is clearly ahead on the main tooling and workflow benchmarks in this report.
 
 - cold install is much faster
+- cold build is faster
 - the representative backend task test is faster
 - the representative frontend task test is faster
 - backend save-and-refresh time is dramatically faster
