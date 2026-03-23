@@ -4,17 +4,18 @@
 
 | Area | Older state | New state |
 | --- | --- | --- |
-| Package manager | npm-first repo | Bun-first repo with Bun declared in `packageManager` and `engines` |
-| Install flow | install and setup were more mixed | install, start, and seed responsibilities are clearer |
-| Lockfile | npm lockfile story | `bun.lock` is the main dependency contract |
+| Package manager | `npm` | `Bun` |
+| Install flow | `prestart + setup.sh + npm install + seed` | `postinstall + prestart + setup.sh modes` |
+| Lockfile | `package-lock.json` | `bun.lock` |
 | Backend dev loop | `nodemon --delay 2500ms --exec tsx` | `bun --watch` |
-| Backend build | `tsc` output then Node runtime | `bun build` output then Bun runtime |
-| Backend tests | older `ts-jest` style path | Jest with `@swc/jest` and focused behavior-test matching |
-| Frontend tests | older Jest-first path | dedicated Vitest path |
-| Task test runs | broader and less split | backend and frontend task suites can run together |
-| Quality checks | more noisy dependency signal | better signal from Knip, lint, and typecheck |
-| Dependency upgrades | older package versions across the stack | upgraded core tooling and app dependencies |
-| Dependency lock | npm lockfile style story | Bun-first lockfile story with `bun.lock` |
+| Backend build | `tsc + node` | `bun build + bun` |
+| Frontend build | `Vite` | `Vite` |
+| Backend tests | `ts-jest` | `@swc/jest` |
+| Frontend tests | `Jest` | `Vitest` |
+| Task test runs | `Jest multi-project` | `parallel backend + frontend` |
+| Quality checks | `tsc` | `lint-solution-diff + typecheck-solution-diff + knip-solution-baseline` |
+| Dependency upgrades | `npm + Jest + ts-jest + Tailwind 3` | `Bun + Vitest + @swc/jest + Tailwind 4` |
+| Dependency lock | `package-lock.json` | `bun.lock` |
 
 ## Benchmark Snapshot
 
@@ -111,17 +112,19 @@ What this means:
 
 | Topic | Older state | Optimised Question | Result |
 | --- | --- | --- | --- |
-| Package manager | npm-first | Bun-first | clearer install and run contract |
-| Lockfile | `package-lock.json` style flow | `bun.lock` is the main lockfile | dependency resolution is more predictable |
-| Install flow | mixed install/setup behavior | Bun install flow with clearer ownership | less surprise during setup |
-| Start flow | heavier, more setup mixed in | lighter startup path | faster normal app startup |
+| Package manager | `npm` | `Bun` | clearer install and run contract |
+| Lockfile | `package-lock.json` | `bun.lock` | dependency resolution is more predictable |
+| Install flow | `prestart + setup.sh + npm install + seed` | `postinstall + prestart + setup.sh modes` | less surprise during setup |
+| Start flow | `prestart + setup.sh` | `prestart + setup.sh --start` | faster normal app startup |
 | Backend dev | `nodemon --delay 2500ms --exec tsx` | `bun --watch` | much faster save-and-refresh loop |
-| Backend build | `tsc` then Node runtime | `bun build` then Bun runtime | simpler backend toolchain |
-| Frontend tests | older Jest path | dedicated Vitest path | cleaner frontend test ownership |
-| Backend tests | `ts-jest` style transform | Jest with `@swc/jest` | leaner backend transform path |
-| Task tests | more monolithic | backend and frontend task suites can run together | faster task-level feedback |
-| Unused dependency checks | more noisy | cleaner Knip output | better tooling signal |
-| Dependency upgrades | older versions across tooling and app packages | upgraded package set | better alignment with the current stack |
+| Backend build | `tsc + node` | `bun build + bun` | simpler backend toolchain |
+| Frontend build | `Vite` | `Vite` | same build tool, faster cold build |
+| Frontend tests | `Jest` | `Vitest` | cleaner frontend test ownership |
+| Backend tests | `ts-jest` | `@swc/jest` | leaner backend transform path |
+| Task tests | `Jest multi-project` | `parallel backend + frontend` | faster task-level feedback |
+| Quality checks | `tsc` | `lint-solution-diff + typecheck-solution-diff + knip-solution-baseline` | broader quality coverage |
+| Unused dependency checks | `none` | `Knip` | unused dependency checks added |
+| Dependency upgrades | `npm + Jest + ts-jest + Tailwind 3` | `Bun + Vitest + @swc/jest + Tailwind 4` | better alignment with the current stack |
 
 ## What Changed
 
@@ -169,8 +172,9 @@ The practical result is simple:
 
 ### Frontend Tooling
 
-Frontend work was mostly about keeping the modern Vite path while cleaning up the supporting stack.
+Frontend work was mostly about keeping the Vite path while updating the surrounding frontend setup.
 
+- frontend build stays on `Vite`
 - frontend tests were split into a dedicated Vitest path
 - Vite-based frontend tooling stayed in place
 - Tailwind moved to v4
@@ -339,4 +343,4 @@ Compared with `Actual Solution`, `Optimised Solution` is clearly ahead on the ma
 - backend save-and-refresh time is dramatically faster
 - frontend HMR is also faster on the measured comparison
 
-At the repo level, the important result is that install, lockfile handling, backend dev, backend build, test targeting, and dependency hygiene are all in a cleaner state than the older npm-first setup. The repo is easier to reason about, faster in the day-to-day loops that matter, and has better signal from quality checks.
+At the repo level, the important result is that install, lockfile handling, backend dev, backend build, frontend build, test targeting, and dependency hygiene are all in a cleaner state than the older npm-first setup. The repo is easier to reason about, faster in the day-to-day loops that matter, and has better signal from quality checks.
