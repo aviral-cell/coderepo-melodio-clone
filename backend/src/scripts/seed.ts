@@ -12,7 +12,6 @@ import { Subscription } from "../features/subscription/subscription.model.js";
 import { SubscriptionPlan } from "../features/subscription/subscription.types.js";
 import { Mix } from "../features/mixes/mix.model.js";
 import { Concert } from "../features/concerts/concert.model.js";
-import { TrackLike } from "../features/tracks/track-like.model.js";
 import { initConfig } from "../shared/config/index.js";
 
 const config = initConfig();
@@ -445,7 +444,6 @@ async function clearDatabase(): Promise<void> {
 		Subscription.deleteMany({}),
 		Mix.deleteMany({}),
 		Concert.deleteMany({}),
-		TrackLike.deleteMany({}),
 	]);
 
 	console.log("Existing data cleared.");
@@ -683,29 +681,6 @@ async function seedConcerts(): Promise<number> {
 	return concertCount;
 }
 
-async function seedTrackLikes(): Promise<number> {
-	console.log("Creating track likes...");
-
-	const user = await User.findOne({ email: "alex.morgan@melodio.com" });
-	if (!user) {
-		console.log("  Warning: Primary test user not found, skipping track likes");
-		return 0;
-	}
-
-	const tracks = await Track.find().limit(4).exec();
-
-	for (const track of tracks) {
-		await TrackLike.create({
-			user_id: user._id,
-			track_id: track._id,
-			type: "like",
-		});
-	}
-
-	console.log(`  Created ${tracks.length} track likes for ${user.email}`);
-	return tracks.length;
-}
-
 async function seed(): Promise<void> {
 	try {
 		console.log("Connecting to MongoDB...");
@@ -724,8 +699,6 @@ async function seed(): Promise<void> {
 
 		const concertCount = await seedConcerts();
 
-		const trackLikeCount = await seedTrackLikes();
-
 		console.log("\n========================================");
 		console.log("Seeding completed successfully!");
 		console.log("========================================");
@@ -737,7 +710,6 @@ async function seed(): Promise<void> {
 		console.log(`Playlists created: ${playlistCount}`);
 		console.log(`Mixes created: ${mixCount}`);
 		console.log(`Concerts created: ${concertCount}`);
-		console.log(`Track likes created: ${trackLikeCount}`);
 		console.log("========================================");
 		console.log("\nTest Users:");
 		console.log("  Email: alex.morgan@melodio.com | Password: password123");
