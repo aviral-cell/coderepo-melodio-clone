@@ -4,7 +4,7 @@
 
 Melodio is a music streaming app where users can follow their favorite artists and rate them. Following an artist subscribes the user to updates, and ratings contribute to the artist's overall community score. These interactions are tracked per user and displayed on artist profile pages.
 
-At the moment, the artist follow and rating system is completely broken because there are bugs present that prevent it from working correctly.
+The routes, controllers, and services exist but contain bugs that prevent correct behavior.
 
 ## API Contract
 
@@ -38,7 +38,6 @@ At the moment, the artist follow and rating system is completely broken because 
 
 - 400 - "Invalid artist ID format"
 - 401 - "Unauthorized"
-- 404 - "Artist not found"
 
 ---
 
@@ -85,7 +84,6 @@ At the moment, the artist follow and rating system is completely broken because 
 - 400 - "Invalid artist ID format"
 - 400 - "Rating must be between 0.5 and 5.0 in 0.5 increments"
 - 401 - "Unauthorized"
-- 404 - "Artist not found"
 
 ---
 
@@ -121,7 +119,6 @@ At the moment, the artist follow and rating system is completely broken because 
 
 - 400 - "Invalid artist ID format"
 - 401 - "Unauthorized"
-- 404 - "Artist not found"
 
 ## Additional Information
 

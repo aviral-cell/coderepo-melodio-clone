@@ -15,6 +15,15 @@ import {
 	DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { Button } from "@/shared/components/ui/button";
+import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from "@/shared/components/ui/pagination";
 import { useLikedTracks } from "@/shared/hooks/useLikedTracks";
 import { formatDuration, getImageUrl } from "@/shared/utils";
 import type { LikedSortOption } from "@/shared/utils/likedTracksUtils";
@@ -30,16 +39,27 @@ function getSortLabel(sortBy: LikedSortOption): string {
 	return SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label ?? "Recently Liked";
 }
 
+function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
+	if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+	const pages: (number | "ellipsis")[] = [1];
+	if (current > 3) pages.push("ellipsis");
+	for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+		pages.push(i);
+	}
+	if (current < total - 2) pages.push("ellipsis");
+	pages.push(total);
+	return pages;
+}
+
 export default function LikedTracksPage(): JSX.Element {
 	const {
 		tracks,
 		sortBy,
 		handleSortChange,
 		isLoadingTracks,
-		isLoadingMore,
 		pagination,
 		fetchLikedTracks,
-		loadMore,
+		goToPage,
 		isLiked,
 	} = useLikedTracks();
 
@@ -239,18 +259,51 @@ export default function LikedTracksPage(): JSX.Element {
 						);
 					})}
 
-					{pagination.page < pagination.totalPages && (
-						<div className="mt-4 flex justify-center">
-							<Button
-								variant="outline"
-								onClick={loadMore}
-								disabled={isLoadingMore}
-								className="rounded-full border-melodio-light-gray text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white"
-								data-testid="liked-tracks-load-more-btn"
-							>
-								{isLoadingMore ? "Loading..." : "Load More"}
-							</Button>
-						</div>
+					{pagination.totalPages > 1 && (
+						<Pagination className="mt-6" data-testid="liked-tracks-pagination">
+							<PaginationContent>
+								<PaginationItem>
+									<PaginationPrevious
+										onClick={() => goToPage(pagination.page - 1)}
+										className={cn(
+											"cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white",
+											pagination.page <= 1 && "pointer-events-none opacity-50",
+										)}
+									/>
+								</PaginationItem>
+								{getPageNumbers(pagination.page, pagination.totalPages).map((pageNum, i) =>
+									pageNum === "ellipsis" ? (
+										<PaginationItem key={`ellipsis-${i}`}>
+											<PaginationEllipsis className="text-melodio-text-subdued" />
+										</PaginationItem>
+									) : (
+										<PaginationItem key={pageNum}>
+											<PaginationLink
+												isActive={pageNum === pagination.page}
+												onClick={() => goToPage(pageNum)}
+												className={cn(
+													"cursor-pointer",
+													pageNum === pagination.page
+														? "border-melodio-green bg-melodio-green text-black hover:bg-melodio-green/90 hover:text-black"
+														: "text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white",
+												)}
+											>
+												{pageNum}
+											</PaginationLink>
+										</PaginationItem>
+									),
+								)}
+								<PaginationItem>
+									<PaginationNext
+										onClick={() => goToPage(pagination.page + 1)}
+										className={cn(
+											"cursor-pointer text-melodio-text-subdued hover:bg-melodio-light-gray hover:text-white",
+											pagination.page >= pagination.totalPages && "pointer-events-none opacity-50",
+										)}
+									/>
+								</PaginationItem>
+							</PaginationContent>
+						</Pagination>
 					)}
 				</div>
 			)}

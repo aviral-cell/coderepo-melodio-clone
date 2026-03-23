@@ -4,7 +4,7 @@
 
 Melodio is a music streaming app where users can like or dislike individual tracks. Liked tracks are saved to a personal collection for easy access, and the like/dislike status is shown on track cards throughout the app.
 
-At the moment, the track like/dislike system is extensively broken. like/dislike is broken, the liked tracks list doesn't work, and the like status indicator does not reflect the actual state.
+At the moment, the track like/dislike system is broken. The like/dislike actions fail, the liked tracks list doesn't load, and the like status indicator does not reflect the actual state.
 
 ## API Contract
 
@@ -38,7 +38,6 @@ At the moment, the track like/dislike system is extensively broken. like/dislike
 
 - 400 - "Invalid track ID format"
 - 401 - "Unauthorized"
-- 404 - "Track not found"
 
 ---
 
@@ -72,7 +71,6 @@ At the moment, the track like/dislike system is extensively broken. like/dislike
 
 - 400 - "Invalid track ID format"
 - 401 - "Unauthorized"
-- 404 - "Track not found"
 
 ---
 
@@ -149,7 +147,7 @@ At the moment, the track like/dislike system is extensively broken. like/dislike
 
 **Query Parameters:**
 - `page` (optional): Page number (default: 1)
-- `limit` (optional): Items per page (default: 10)
+- `limit` (optional): Items per page (default: 7)
 
 **Success Response (200):**
 ```json
@@ -182,40 +180,11 @@ At the moment, the track like/dislike system is extensively broken. like/dislike
       }
     ],
     "page": 1,
-    "limit": 10,
+    "limit": 7,
     "total": 25,
-    "totalPages": 3,
+    "totalPages": 4,
     "hasNext": true,
     "hasPrev": false
-  }
-}
-```
-
-**Error Response:**
-```json
-{
-  "success": false,
-  "error": "<message>"
-}
-```
-
-- 401 - "Unauthorized"
-
----
-
-### GET /api/tracks/liked/ids
-
-**Purpose:** Get arrays of liked and disliked track IDs for the authenticated user
-
-**Auth:** Required (Bearer token)
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "likedIds": ["track-id-1", "track-id-2"],
-    "dislikedIds": ["track-id-3"]
   }
 }
 ```

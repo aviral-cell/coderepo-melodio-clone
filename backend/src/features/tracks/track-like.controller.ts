@@ -10,7 +10,7 @@ export const trackLikeController = {
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
-			const trackId = req.params["id"];
+			const trackId = req.params["id"] as string;
 
 			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
@@ -34,7 +34,7 @@ export const trackLikeController = {
 	): Promise<void> {
 		try {
 			const userId = req.user?.userId;
-			const trackId = req.params["id"];
+			const trackId = req.params["id"] as string;
 
 			if (!trackId || !isValidObjectId(trackId)) {
 				sendError(res, "Invalid track ID format", 400);
@@ -79,8 +79,12 @@ export const trackLikeController = {
 		try {
 			const userId = req.user?.userId;
 			const paginationParams = parsePaginationParams(req.query as Record<string, unknown>);
+			if (typeof req.query["limit"] !== "string") {
+				paginationParams.limit = 7;
+			}
+			const includeReactionIds = req.query["includeReactionIds"] === "true";
 
-			const result = await trackLikeService.getLikedTracks(userId!, paginationParams);
+			const result = await trackLikeService.getLikedTracks(userId!, paginationParams, includeReactionIds);
 			sendSuccess(res, result);
 		} catch (error) {
 			res.status(500).json({ success: false, error: "An error occurred" });
@@ -107,17 +111,4 @@ export const trackLikeController = {
 		}
 	},
 
-	async getLikedIds(
-		req: AuthenticatedRequest,
-		res: Response,
-	): Promise<void> {
-		try {
-			const userId = req.user?.userId;
-
-			const result = await trackLikeService.getLikedIds(userId!);
-			sendSuccess(res, result);
-		} catch (error) {
-			res.status(500).json({ success: false, error: "An error occurred" });
-		}
-	},
 };

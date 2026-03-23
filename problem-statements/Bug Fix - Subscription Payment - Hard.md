@@ -1,7 +1,7 @@
 # Bug Fix: Subscription Payment
 
 ```
-Tags: Theme:Melodio, MERN, backend, BugFix, Medium
+Tags: Theme:Melodio, MERN, backend, Bug Fix, Medium
 Time: 40 mins
 Score: 75
 ```

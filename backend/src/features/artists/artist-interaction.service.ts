@@ -70,10 +70,6 @@ async function rateArtist(userId: string, artistId: string, rating: number): Pro
 		throw new Error("Artist not found");
 	}
 
-	if (typeof rating !== "number" || rating < 0.5 || rating > 5 || (rating * 2) % 1 !== 0) {
-		throw new Error("Rating must be between 0.5 and 5.0 in 0.5 increments");
-	}
-
 	await ArtistRating.findOneAndUpdate(
 		{
 			user_id: new mongoose.Types.ObjectId(userId),

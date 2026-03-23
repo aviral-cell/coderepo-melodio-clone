@@ -5,7 +5,6 @@ import { calculatePagination } from "../../shared/utils/index.js";
 import {
 	LikeActionResult,
 	LikeStatusResult,
-	LikedIdsResult,
 	LikedTrackResponse,
 	PopulatedTrackLike,
 } from "./track-like.types.js";
@@ -50,7 +49,8 @@ export const trackLikeService = {
 	async getLikedTracks(
 		userId: string,
 		paginationParams: PaginationParams,
-	): Promise<PaginatedResponse<LikedTrackResponse>> {
+		includeReactionIds = false,
+	): Promise<PaginatedResponse<LikedTrackResponse> & { likedIds?: string[]; dislikedIds?: string[] }> {
 		const page = paginationParams.page ?? 1;
 		const limit = paginationParams.limit ?? 10;
 		const skip = (page - 1) * limit;
@@ -106,7 +106,26 @@ export const trackLikeService = {
 				};
 			});
 
-		return calculatePagination(items, total, paginationParams);
+		const result = calculatePagination(items, total, paginationParams);
+
+		if (includeReactionIds) {
+			const allDocs = await TrackLike.find({ user_id: userId }).select("track_id type").lean().exec();
+			const likedIds: string[] = [];
+			const dislikedIds: string[] = [];
+
+			for (const doc of allDocs) {
+				const trackIdStr = doc.track_id.toString();
+				if (doc.type === "like") {
+					likedIds.push(trackIdStr);
+				} else {
+					dislikedIds.push(trackIdStr);
+				}
+			}
+
+			return { ...result, likedIds, dislikedIds };
+		}
+
+		return result;
 	},
 
 	async getLikeStatus(userId: string, trackId: string): Promise<LikeStatusResult> {
@@ -117,21 +136,4 @@ export const trackLikeService = {
 		return { status: doc?.type ?? null };
 	},
 
-	async getLikedIds(userId: string): Promise<LikedIdsResult> {
-		const docs = await TrackLike.find({ user_id: userId }).lean().exec();
-
-		const likedIds: string[] = [];
-		const dislikedIds: string[] = [];
-
-		for (const doc of docs) {
-			const trackIdStr = doc.track_id.toString();
-			if (doc.type === "like") {
-				likedIds.push(trackIdStr);
-			} else {
-				dislikedIds.push(trackIdStr);
-			}
-		}
-
-		return { likedIds, dislikedIds };
-	},
 };

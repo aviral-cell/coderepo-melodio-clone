@@ -1,7 +1,7 @@
 # Bug Fix: Live Music Concerts
 
 ```
-Tags: Theme:Melodio, MERN, Frontend, BugFix, Medium
+Tags: Theme:Melodio, MERN, Frontend, Bug Fix, Medium
 Time: 40 mins
 Score: 75
 ```

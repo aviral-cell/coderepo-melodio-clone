@@ -1,8 +1,8 @@
 # Bug Fix: Track Like Dislike
 
 ```
-Tags: Theme:Melodio, MERN, backend, BugFix, Medium
-Time: 40 mins
+Tags: Theme:Melodio, MERN, backend, Bug Fix, Medium
+Time: 45 mins
 Score: 75
 ```
 
@@ -12,7 +12,6 @@ Score: 75
 
 Melodio is a music streaming app where users can like or dislike individual tracks. Liked tracks are saved to a personal collection for easy access, and the like/dislike status is shown on track cards throughout the app.
 
-At the moment, the track like/dislike system is extensively broken. like/dislike is broken, the liked tracks list doesn't work, and the like status indicator does not reflect the actual state.
 
 ![1](images/TrackLikeDislike/1.png)
 
@@ -38,7 +37,7 @@ Like/Dislike functionality is broken. The Liked Tracks page shows incorrect data
 
 - Like/Dislike functionality should work.
 - The Liked Tracks page should show only liked tracks with correct details, sorted by most recent.
-- Pagination should respect the page and limit parameters.
+- The liked tracks list should be paginated.
 - The like status indicator should return the actual reaction state.
 - Reacting to a non-existent track should return an error.
 
